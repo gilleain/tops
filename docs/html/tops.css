@@ -1,0 +1,7 @@
+H1 { font-size: 1.5em; margin: 0.5em; }
+IMG { border-width: 0px; }
+LI.with-bullet { list-style-type: circle; padding: 0.2em; }
+LI.no-bullet { list-style-type: none; padding: 0.5em; }
+# brc-link { font-size: 0.1em; }
+TABLE.header { border-style: solid; border-width: 1px; border-color: gray; }
+TABLE.form { border-style: solid; border-width: 1px; border-color: gray; }

@@ -1,0 +1,51 @@
+<html>
+    <form action="http://localhost:8080/tops/pattern/simple" method="POST">
+    <table>
+        <tr>
+            <td><b>TOPS String : Name</b></td>
+            <td><input type="text" name="target-name" size="10" value="GreekKey"></td>
+        <tr>
+            <td><b>TOPS String : SSEs</b></td>
+            <td><input type="text" name="target-body" size="15" value="N[1]E[0]e[0]E[0]e[0]E[0]C"></td>
+        </tr>
+        <tr>
+            <td><b>TOPS String : Edges</b></td>
+            <td><input type="text" name="target-tail" size="15" value="1:4A2:3A2:5A3:4A"></td>
+        </tr>
+        <tr>
+            <td>
+                <b>number of results to return</b>
+            </td>
+            <td>
+                <input type="radio" name="topnum" value="10" checked>10</input>
+                <input type="radio" name="topnum" value="100">100</input>
+                <input type="radio" name="topnum" value="1000">1000</input>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>page size - results per 'page'</b>
+            </td>
+            <td>
+                <input type="radio" name="pagesize" value="10" checked>10</input>
+                <input type="radio" name="pagesize" value="100">100</input>
+            </td>
+        </tr>
+        <tr>
+            <td><b>class and subclasses</b></td>
+            <td>
+                <input type="radio" name="subclasses" value="cath,crep,arep,trep" checked>CATH treps</input><br/>
+                <input type="radio" name="subclasses" value="cath,crep,arep,trep,hrep">CATH hreps</input><br/>
+                <input type="radio" name="subclasses" value="cath,crep,arep,trep,hrep,nrep">CATH nreps</input><br/>
+                <input type="radio" name="subclasses" value="cath,all">CATH all</input><br/>
+            </td>
+            <td>
+                <input type="radio" name="subclasses" value="scop,class,fold">SCOP folds</input><br/>
+                <input type="radio" name="subclasses" value="scop,class,fold,superfamily">SCOP superfamilies</input><br/>
+                <input type="radio" name="subclasses" value="scop,class,fold,superfamily,family">SCOP families</input><br/>
+                <input type="radio" name="subclasses" value="scop,all">SCOP all</input><br/>
+            </td>
+        </tr>
+        <tr><td><input type="submit" name="targetService" value="insert-match"/></td></tr>
+    </form>
+</html>

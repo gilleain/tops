@@ -1,0 +1,94 @@
+package tops.dw.editor;
+
+import java.awt.event.*;
+
+import tops.dw.protein.*;
+
+/**
+ * a class which handles editor commands issued by the DomainInfoPanel
+ */
+class DomainInfoPanelCommand implements ItemListener {
+
+    /* START class variables */
+
+    static final int SET_VISIBLE_COMMAND = 0;
+
+    static final int CHANGE_EDIT_MODE_COMMAND = 1;
+
+    /* END class variables */
+
+    /* START instance variables */
+
+    private TopsEditor TopsEd;
+
+    private SecStrucElement DiagramSS;
+
+    private int CommandID;
+
+    /* END instance variables */
+
+    /* START constructors */
+    public DomainInfoPanelCommand(TopsEditor te, SecStrucElement s, int id) {
+        this.TopsEd = te;
+        this.DiagramSS = s;
+        this.CommandID = id;
+    }
+
+    /* END constructors */
+
+    /* START the ItemListener interface */
+
+    public void itemStateChanged(ItemEvent e) {
+
+        TopsDisplayScroll tds = this.TopsEd.getDisplayScroll();
+
+        switch (this.CommandID) {
+            case CHANGE_EDIT_MODE_COMMAND:
+                if (tds != null) {
+                    int em = 0;
+                    String cs = e.getItem().toString();
+                    if (cs.equals("Display information"))
+                        em = TopsDrawCanvas.INFO_MODE;
+                    else if (cs.equals("Colour symbols"))
+                        em = TopsDrawCanvas.COLOUR_SYMBOLS_MODE;
+                    else if (cs.equals("Move symbols"))
+                        em = TopsDrawCanvas.MOVE_SYMBOLS_MODE;
+                    else if (cs.equals("Move fixed structures"))
+                        em = TopsDrawCanvas.MOVE_FIXEDS_MODE;
+                    else if (cs.equals("Redraw connections"))
+                        em = TopsDrawCanvas.REDRAW_CONNECTIONS_MODE;
+                    else if (cs.equals("Delete symbols"))
+                        em = TopsDrawCanvas.DELETE_SYMBOLS_MODE;
+                    else if (cs.equals("Rotate 180 about x"))
+                        em = TopsDrawCanvas.ROTATE_X_MODE;
+                    else if (cs.equals("Rotate 180 about y"))
+                        em = TopsDrawCanvas.ROTATE_Y_MODE;
+                    else if (cs.equals("Rotate 180 about z"))
+                        em = TopsDrawCanvas.ROTATE_Z_MODE;
+                    else if (cs.equals("Reflect in xy plane"))
+                        em = TopsDrawCanvas.REFLECT_XY_MODE;
+                    else if (cs.equals("Add label"))
+                        em = TopsDrawCanvas.ADD_USER_LABEL;
+                    else if (cs.equals("Delete label"))
+                        em = TopsDrawCanvas.DELETE_USER_LABEL;
+                    else if (cs.equals("Move label"))
+                        em = TopsDrawCanvas.MOVE_USER_LABEL;
+                    else if (cs.equals("Add arrow"))
+                        em = TopsDrawCanvas.ADD_USER_ARROW;
+                    else if (cs.equals("Delete arrow"))
+                        em = TopsDrawCanvas.DELETE_USER_ARROW;
+                    else if (cs.equals("Align X direction"))
+                        em = TopsDrawCanvas.ALIGN_X_MODE;
+                    else if (cs.equals("Align Y direction"))
+                        em = TopsDrawCanvas.ALIGN_Y_MODE;
+
+                    tds.setEditMode(this.DiagramSS, em);
+                }
+                break;
+        }
+
+    }
+
+    /* END the ItemListener interface */
+
+}

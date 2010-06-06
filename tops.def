@@ -1,0 +1,46 @@
+# the defaults file for Tops
+# created 24/10/97 by D. Westhead
+
+# defaults related to files and directories
+FileType dssp
+DomainFile DomainFile
+PDBDirectory /Users/maclean/tops/web/scratch
+DSSPDirectory /Users/maclean/tops/web/scratch
+STRIDEDirectory ./
+DSSPExtension dssp
+DSSPPrefix
+STRIDEExtension stride
+STRIDEPrefix 
+PDBExtension pdb
+PDBPrefix
+
+# cartoon properties
+GridSize 50
+Radius 20
+MergeStrands 0
+MergeBetweenSheets FALSE
+
+# energy function parameters
+ClashPenalty 1500
+AnglePenalty 0
+Multiplicity 4
+ChainPenalty 10
+CrossPenalty 250
+HandPenalty 500
+NeighbourPenalty 50
+CutoffDistance 13.5
+InsideBarrelPenalty 500
+
+# optimization parameters
+NoConfigs 500
+RandomSeed 28464
+StartTemperature 500000
+FinishTemperature 499999
+Decrement 10
+StepSize 100
+LineSample 25
+ArcSample 0 
+
+# how much to write out (nothing if FALSE)
+Verbose F
+

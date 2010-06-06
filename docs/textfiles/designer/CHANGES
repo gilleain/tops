@@ -1,0 +1,42 @@
+Changes from the original (Martin's code) to the new version.
+
+Features Removed:
+- Constraints dialog : an advanced feature that could be in the application.
+- Colors dialog : a non-feature; TOPS cartoons look the way they look. Use photoshop.
+- Single/Multiple selection radiobuttons. Multiple selection is better using shift-click.
+- Switching the visibility of toolbars and figure types. Not necessary.
+
+Alterations:
+- Terminii are 'first-class' Symbols; they have their own position & are moveable.
+- No arrows on connectors. This is non-standard, and unnecessary because...
+- ...connectors to edge/center works right now.
+- Selection boxes on connectors are larger (and better) and visible on mouseover.
+- Helices are back to being circles.
+- No jump on first dragging.
+- The symbol library is shared with the DiagramEditor.
+- Delete is now click-delete, not 'delete selected'. The latter is fine, but redundant.
+- Selection is multiple, not sure whether to use shift-click or not.
+- Chirals are dashed lines, not arcs. Could change.
+
+Features as normal:
+- Selecting, dragging, multiple dragging all work fine.
+- Select all menu item works. (Accelerator keys don't on the mac, though :(
+- Undo works again. Really, really. Now that clone is implemented properly...
+- Align (with ONE 'l') works for horizontal and vertical.
+- Adding bonds works, but could be better.
+- Exporting works to jpg.
+- Deleting symbols works.
+
+Features that don't yet work:
+- Flip X axis/Y axis never did what it was meant to.
+- Zoom In/Zoom Out.
+- Printing. May not be needed.
+- Help system has been removed, but needs to be added back.
+- Templates need to be back!
+- Symbol number checkmenuitem. This should be added back, as it is a good idea.
+- Custom cursors are disabled, but not removed. Add back when the images are better.
+
+New Features:
+- Center menu item. Works.
+- Export to png menu item. Works.
+- Highlight symbols on mouseover.

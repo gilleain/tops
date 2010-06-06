@@ -1,0 +1,103 @@
+<html>
+<head>
+	<title>Glasgow TOPS Structure Comparison</title>
+	<link rel="stylesheet" type="text/css" href="tops.css">
+</head>
+<body>
+		<!------------------------------------------- HEADER ---------------------------------------------->
+		<p>
+		<table class=header align="center">
+			<tr>
+				<td><a href="http://www.brc.dcs.gla.ac.uk"><b id="brc-link">Bioinformatics Research Centre</b></a></td>
+				<td></td>
+				<td><h1><a href="/tops/index.html">TOPS Services At Glasgow University</a></h1></td>
+				<td></td>
+				<td><a href="http://www.gla.ac.uk"><img src="http://www.gla.ac.uk/gg200/unicrest.gif" width="120" height="50"/></a></td>
+			</tr>
+		</table>
+		</p>
+		<!------------------------------------------- HEADER ---------------------------------------------->
+<!--
+<h2 align="center">Compare A Structure (PDB Format) To A Database Of Structures Or Scan A Structure Against A Library Of Motifs</h2>
+-->
+<h2 align="center">Compare A Structure (PDB Format) To A Database Of Structures</h2>
+<p>
+Protein coordinates - in the form of PDB like files - can be submitted to the server. The structure is converted to a simplified, TOPS representation and then compared against a non-redundant subset of all known structures. The results are returned as a sorted list; showing the compression value, the ids of the structures, and the common pattern. The compression is <b>1</b> for a pair of identical structures and <b>0</b> for two structures with no common features.
+</p>
+<!--<p>
+Alternatively, a structure can be matched to a set of predefined patterns. Each pattern in the 'library' is given an attempt to match the uploaded structure and those patterns that successfully match are returned as a list. This is generally much faster than comparison, but will only show those similarities to other structures that have been encoded already as patterns. 
+</p> -->
+<p>
+By default, only the 'top' 10 of the sorted results are returned. Since the comparisons are sorted by a measure of 'goodness' called compression, these top results should be the most interesting. If required, more results or all the results can be returned. 
+</p>
+<p>
+<b>Please click the 'Browse...' button below to open a file dialog, and select a PDB FILE that you want to compare to the database</b>
+</p>
+<p>
+<form action="http://localhost:8080/tops/translate" enctype="multipart/form-data" method="post">
+<table class="form" align="center">
+<tr><td><b>pdb file to upload</b></td><td><input type="file" name="pdbfile" accept="*.pdb"></td></tr>
+<tr><td><b>number of results to return</b></td><td>
+	<input type="radio" name="topnum" value="10" checked>10</input>
+	<input type="radio" name="topnum" value="100">100</input>
+	<input type="radio" name="topnum" value="1000">1000</input>
+	<!-- WEIRDED OUT! -->
+	<!-- er... COMMENTED OUT! -->
+	<!--<input type="radio" name="topnum" value="all">all</input>-->
+</td></tr>
+<tr><td><b>page size - results per 'page'</b></td><td>
+	<input type="radio" name="pagesize" value="10" checked>10</input>
+	<input type="radio" name="pagesize" value="100">100</input>
+</td></tr>
+<tr><td><b>class and subclasses</b></td>
+	<td>
+	<input type="radio" name="subclasses" value="cath,crep,arep,trep" checked>CATH treps</input><br/>
+	<input type="radio" name="subclasses" value="cath,crep,arep,trep,hrep">CATH hreps</input><br/>
+	<input type="radio" name="subclasses" value="cath,crep,arep,trep,hrep,nrep">CATH nreps</input><br/>
+	<input type="radio" name="subclasses" value="cath,all">CATH all</input><br/>
+	</td>
+	<td>
+	<input type="radio" name="subclasses" value="scop,class,fold">SCOP folds</input><br/>
+	<input type="radio" name="subclasses" value="scop,class,fold,superfamily">SCOP superfamilies</input><br/>
+	<input type="radio" name="subclasses" value="scop,class,fold,superfamily,family">SCOP families</input><br/>
+	<input type="radio" name="subclasses" value="scop,all">SCOP all</input><br/>
+	</td>
+</td></tr>
+<!--
+<tr><td><b>compare or match?</b></td><td>
+	<input type="radio" name="targetService" value="compare" checked>compare</input>
+	<input type="radio" name="targetService" value="match">match</input>
+</td></tr>
+-->
+<tr><td><b>submit to be processed</b></td><td><input type="submit"></td></tr>
+</table>
+<input type="hidden" name="targetService" value="compare"></input>
+</form>
+</p>
+<u>Form Key</u><p>
+<dl>
+<dt><strong>File</strong></dt><dd>The file format must be PDB (Brookhaven).</dd>
+<dt><strong>Top</strong></dt><dd>The top 10, 100, or all the sorted groups are returned.</dd>
+<dt><strong>Page</strong></dt><dd>The number of results per 'page' to display.</dd>
+<!--
+<dt><strong>Compare...</strong></dt><dd>Compare your structure with a database of structures</dd>
+<dt><strong>...or Match?</strong></dt><dd>Match a library of patterns to your structure.</dd>
+-->
+</dl>
+		<!------------------------------------------- FOOTER ---------------------------------------------->
+		<hr>
+		<p align="center">
+			<table>
+				<tr>
+					<td> <img src="epsrc_logo.gif" width="80" height="50"/> </td>
+					<td>
+						<small>Page maintained by : <a href="http://www.dcs.gla.ac.uk/~maclean">Gilleain Torrance</a>.</small><br>
+						<small>Mail to : tops@dcs.gla.ac.uk</small>
+					</td>
+					<td> <img src="bbsrc_logo.gif" width="100" height="50"/> </td>
+				</tr>
+			</table>
+		</p>
+		<!------------------------------------------- FOOTER ---------------------------------------------->
+</body>
+</html>

@@ -1,0 +1,232 @@
+##
+## TOPS: protein topology information file
+##
+## Protein code 1hzeA
+## Number of domains 1
+##
+
+DOMAIN_NUMBER 0 1hzeA0 1 1 97
+
+SecondaryStructureType N
+Direction U
+Label N1
+Colour 255 255 255
+Next 2
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue -9999
+SeqFinishResidue -9999
+PDBStartResidue -9999
+PDBFinishResidue -9999
+SymbolNumber 0
+Chain  
+Chirality 0
+CartoonX 331
+CartoonY -181
+AxesStartPoint -9999.0 -9999.0 -9999.0
+AxesFinishPoint -9999.0 -9999.0 -9999.0
+SymbolRadius 20
+AxisLength -9999.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType BARREL
+BridgePartner 2 9
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 6 3 5 4
+SeqStartResidue 7
+SeqFinishResidue 16
+PDBStartResidue 8
+PDBFinishResidue 17
+SymbolNumber 1
+Chain A
+Chirality 0
+CartoonX 254
+CartoonY -181
+AxesStartPoint 4.283691 11.570409 -3.564979
+AxesFinishPoint -4.419993 1.266357 -24.845572
+SymbolRadius 20
+AxisLength 25.195063
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next 3
+Fixed 6
+FixedType BARREL
+BridgePartner 1 6
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 5 7 8 4 9
+SeqStartResidue 21
+SeqFinishResidue 26
+PDBStartResidue 22
+PDBFinishResidue 27
+SymbolNumber 2
+Chain A
+Chirality 0
+CartoonX 205
+CartoonY -181
+AxesStartPoint -8.511866 -9.217207 -18.952389
+AxesFinishPoint 1.14171 4.272154 -17.337038
+SymbolRadius 20
+AxisLength 16.666245
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed 9
+FixedType BARREL
+BridgePartner 5 9
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 6 1 3 2
+SeqStartResidue 40
+SeqFinishResidue 43
+PDBStartResidue 41
+PDBFinishResidue 44
+SymbolNumber 4
+Chain A
+Chirality 0
+CartoonX 255
+CartoonY -267
+AxesStartPoint 5.390075 -6.012549 -7.33916
+AxesFinishPoint -1.093489 0.919659 -5.84856
+SymbolRadius 20
+AxisLength 9.608018
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next -1
+Fixed 4
+FixedType BARREL
+BridgePartner 4 6
+BridgePartnerSide R L
+BridgePartnerType A A
+Neighbour 2 9 1
+SeqStartResidue 46
+SeqFinishResidue 54
+PDBStartResidue 47
+PDBFinishResidue 55
+SymbolNumber 5
+Chain A
+Chirality 0
+CartoonX 205
+CartoonY -267
+AxesStartPoint -5.915998 -1.041428 -2.552382
+AxesFinishPoint 6.033285 -5.650776 -17.525475
+SymbolRadius 20
+AxisLength 19.703424
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed 5
+FixedType BARREL
+BridgePartner 2 5
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 1 4 9 3
+SeqStartResidue 57
+SeqFinishResidue 62
+PDBStartResidue 58
+PDBFinishResidue 63
+SymbolNumber 6
+Chain A
+Chirality 0
+CartoonX 181
+CartoonY -224
+AxesStartPoint 8.46265 5.177985 -18.641445
+AxesFinishPoint -3.002029 -6.081537 -14.204614
+SymbolRadius 20
+AxisLength 16.670368
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next -1
+Fixed 1
+FixedType BARREL
+BridgePartner 1 4
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 3 5 6 2
+SeqStartResidue 80
+SeqFinishResidue 86
+PDBStartResidue 81
+PDBFinishResidue 87
+SymbolNumber 9
+Chain A
+Chirality 0
+CartoonX 279
+CartoonY -224
+AxesStartPoint -5.984361 11.754827 -15.412292
+AxesFinishPoint 3.924525 1.847846 -2.342009
+SymbolRadius 20
+AxisLength 19.161592
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType C
+Direction U
+Label C2
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue -9999
+SeqFinishResidue -9999
+PDBStartResidue -9999
+PDBFinishResidue -9999
+SymbolNumber 10
+Chain  
+Chirality 0
+CartoonX 332
+CartoonY -224
+AxesStartPoint -9999.0 -9999.0 -9999.0
+AxesFinishPoint -9999.0 -9999.0 -9999.0
+SymbolRadius 20
+AxisLength -9999.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0

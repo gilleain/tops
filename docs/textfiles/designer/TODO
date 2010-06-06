@@ -1,0 +1,33 @@
+Validation:
+- Need to be able to set cartoons to accept or reject certain bond types.
+- The main (only?) use for this is to occasianally allow EE 1:2A oddities.
+- Also possible that cartoons could validate in 3D? (archie's code)
+- Better to have a separate TopologyObject?
+
+Zoom:
+- Recreate...
+- Centering with zoom.
+
+Dragging:
+- With multiple selections, simply dragging relative to total bounds.
+
+Selections:
+- Selection by elastic box?
+
+Centering:
+- When adding a new figure, could center.
+
+Flipping:
+- Port the ReflectXY code from TopsDrawCanvas?
+- Same with the Rotate methods.
+
+General:
+- Fix the load/save.
+- Centering button. Four arrows pointing to the center?
+
+Ideas:
+- Alignment by Strategy pattern (just like awt.Layout objects, really)
+- Bigger icons.
+- Multiple cartoons on one canvas? Cartoon bounding box selection halos!
+- Add more stuff from TopsDrawCanvas.
+- Multi-point connections.

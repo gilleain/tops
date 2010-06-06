@@ -1,0 +1,40 @@
+<chapter id="introduction">
+	<title>Introduction</title>
+	<section>
+			<section>
+			<title>Who is this manual for?</title>
+			There are two main reasons for this manual. One is to provide users of the TOPS system with a reference; the other is to allow programmers to re-use or alter parts of the system.
+			</section>
+			<section>
+			<title>What does the manual contain?</title>
+			<para>
+			Each major part of the system is documented in a separate chapter. Since the parts are necessarily integrated into a whole, there is a final chapter on integration.
+			</para>
+			<para>
+			In addition, there are a couple of appendices on building the code - and this manual! - from source. Each part of the system is a task in a buildfile.
+			</para>
+			</section>
+			<section>
+			<title>What software do I need?</title>
+			<para>
+			To run most of the Java classes, nothing more than a version of Java is required. Where particular programs need more than this it is indicated in the appropriate chapter.
+			</para>
+			<para>
+			To build the software from source, the java make-equivalent software called <application>ant</application> is required. To make a version of this manual, some more software (DocBook and an XSL processor) is required. This is described in more detail in the appendices.
+			</para>
+			</section>
+			<section>
+				<title>Filesystem Organisation</title>
+				<para>
+				From the root of the tops file tree there should at least be the following files and directories :
+				</para>
+				<figure>
+					<title>File Tree</title>
+					<graphic srccredit="gmt" fileref="images/filetree.png"/>
+				</figure>
+				<para>
+				The <filename>build.xml</filename> file is a "makefile" for the project, and is necessary only for rebuilding from source (see : <xref linkend="codebuilding"/> and <xref linkend="publishing"/>). The source itself is in the <filename class="directory">src</filename> directory, with each package in a subdirectory of the same name. The classes are in <filename class="directory">classes</filename> directory, with the same organization. 
+				</para>
+			</section>
+	</section>
+</chapter>

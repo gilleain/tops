@@ -1,0 +1,17 @@
+<appendix id="publishing">
+		<title>Rebuilding this Manual from the XML Source</title>
+		<section>
+			<section>
+				<title>Essential Software</title>
+				<para>
+				You will need DocBook from <ulink url="http://www.oasis-open.org/">OASIS</ulink> and apache foundation's ant (see : <xref linkend="codebuilding"/>).
+				</para>
+			</section>
+			<section>
+				<title>How to Build</title>
+				<para>
+				The ant target "manual" is the one to use. It will first <command>delete</command> the old copy of the manual (move it somewhere else if you want to be safe!), and then attempt to parse the XML files in <filename class="directory">docs/manual-src</filename> and generate the HTML in <filename class="directory">docs/manual</filename>.
+				</para>
+			</section>
+		</section>
+</appendix>

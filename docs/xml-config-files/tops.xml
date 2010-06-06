@@ -1,0 +1,20 @@
+<Context path="/tops" docBase="/local/brc/users/maclean/tops/web" debug="0" reloadable="true" crossContext="false">
+	<Logger className="org.apache.catalina.logger.FileLogger" directory="/local/brc/users/maclean/tops/web/filelogs"  prefix="tops." suffix=".log"
+                timestamp="true"/>
+	<Valve className="org.apache.catalina.valves.AccessLogValve" directory="/local/brc/users/maclean/tops/web/accesslogs"
+		prefix="access_log." suffix=".txt" pattern="[%t] [%a] [%S] [%q] [%s]"/>
+        <!--
+                TOPS MYSQL DB
+        -->
+	<Resource name="jdbc/TopsDB" auth="Container" type="javax.sql.DataSource"/>
+	<ResourceParams name="jdbc/TopsDB">
+		<parameter><name>factory</name><value>org.apache.commons.dbcp.BasicDataSourceFactory</value></parameter>
+		<parameter><name>maxActive</name><value>10</value></parameter>
+		<parameter><name>maxIdle</name><value>10</value></parameter>
+		<parameter><name>maxWait</name><value>10000</value></parameter>
+		<parameter><name>username</name><value>tops</value></parameter>
+		<parameter><name>password</name><value>8505</value></parameter>
+		<parameter><name>driverClassName</name><value>org.gjt.mm.mysql.Driver</value></parameter>
+		<parameter><name>url</name><value>jdbc:mysql://tabuaeran.dcs.gla.ac.uk/tops?autoReconnect=true</value></parameter>
+	</ResourceParams>
+</Context>

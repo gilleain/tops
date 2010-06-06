@@ -1,0 +1,76 @@
+<html>
+<head>
+<title>parsing xml responses with w3c dom</title>
+<script type="text/javascript">
+var xmlHttp;
+var requestType = "";
+
+function createXMLHttpRequest() {
+    if (window.ActiveXObject) {
+        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    else if (window.XMLHttpRequest) {
+        xmlHttp = new XMLHttpRequest();
+    }
+}
+
+function startRequest(requestedList) {
+    requestType = requestedList;
+    createXMLHttpRequest();
+    xmlHttp.onreadystatechange = handleStateChange;
+    xmlHttp.open("GET", "parseXML.xml", true);
+    xmlHttp.send(null);
+}
+
+function handleStateChange() {
+    if (xmlHttp.readyState == 4) {
+        if (xmlHttp.readyState == 200) {
+            window.status="hello";
+            if (requestType == "north") {
+                listNorthStates();
+            }
+            else if (requestType == "all") {
+                listAllStates();
+            }
+        }
+    }   
+}
+
+function listNorthStates() {
+    var xmlDoc = xmlHttp.responseXML;
+    var northNode = xmDoc.getElementsByTagName("north")[0];
+
+    var out = "Northern States";
+    var northStates = northNodes.getElementsByTagName("state");
+
+    outputList("Northern States", northStates);
+}
+
+function listAllStates() {
+    var xmlDoc = xmlHttp.responseXML;
+    var allStates = xmlDoc.getElementsByTagName("state");
+
+    outputList("All States in Doc", allStates);
+}
+
+function outputList(title, states) {
+    var out = title;
+    var currentState = null;
+
+    for (var i = 0; i < states.length; i++) {
+        currentState = states[i];
+        out = out + "\n- " + currentState.childNodes[0].nodeValue;
+    }
+    alert(out);
+}
+</script>
+</head>
+<body>
+    <h1> Process XML Document of U.S. </h1>
+    <form action="#">
+        <input type="button" value="View all listed states" onClick="startRequest('all'); return true"/>
+        <input type="button" value="View all northern states" onClick="window.status='hello'; startRequest('north');"/>
+    </form>
+    <div id="results"></div>
+</body>
+</html>

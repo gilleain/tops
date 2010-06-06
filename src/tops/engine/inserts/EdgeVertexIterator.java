@@ -1,0 +1,44 @@
+package tops.engine.inserts;
+
+import java.util.Iterator;
+import java.util.TreeSet;
+
+import tops.engine.Edge;
+import tops.engine.Vertex;
+
+/**
+ * This Iterator provides a view on a Pattern's vertices through its Edges. It
+ * takes a reference to an Iterator that is a view on the edges. The edges MUST
+ * be sorted.
+ */
+public class EdgeVertexIterator implements Iterator {
+
+    private TreeSet edge_vertices;
+
+    private Iterator vertexIterator;
+
+    public EdgeVertexIterator(Iterator edgeIterator) {
+        this.edge_vertices = new TreeSet();
+        while (edgeIterator.hasNext()) {
+            Edge e = (Edge) edgeIterator.next();
+
+            Vertex left = e.getLeftVertex();
+            this.edge_vertices.add(left);
+
+            Vertex right = e.getRightVertex();
+            this.edge_vertices.add(right);
+        }
+        this.vertexIterator = this.edge_vertices.iterator();
+    }
+
+    public boolean hasNext() {
+        return this.vertexIterator.hasNext();
+    }
+
+    public Object next() {
+        return this.vertexIterator.next();
+    }
+
+    public void remove() {
+    }
+}

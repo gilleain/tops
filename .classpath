@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="thirdpartylibs/cos.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/iText.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/mysql.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/pja.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/pjatools.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/vecmath.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/colt.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Applications/eclipse/plugins/javax.servlet_2.4.0.v200806031604.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

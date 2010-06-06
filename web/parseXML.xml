@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<states>
+    <north>
+        <state>Minnesota</state>
+        <state>Yanksville</state>
+        <state>Hicktown</state>
+    </north>
+    <south>
+        <state>Pigtown</state>
+        <state>New Oxford</state>
+        <state>Chicago</state>
+    </south>
+</states>

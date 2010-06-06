@@ -1,0 +1,55 @@
+<chapter id="visualization">
+	<title>Visualization</title>
+		<section>
+				<section>
+					<title>Display of TOPS data</title>
+					<para>
+						In a sense, this section brings TOPS full circle, since it started out as a display technology for protein structures. The original images are called TOPS cartoons, and are described in the next section. However, the thinking behind the computation over TOPS structures has meant that a different representation was necesary - that of TOPS diagrams. These are described in the second section.
+					</para>
+					<figure>
+						<title>Cartoon and Diagram for a Greek Key</title>
+						<graphic align="center" srccredit="gmt" fileref="images/cartoon_plus_diagram.png"/>
+					</figure>
+					<para>
+						Finally, a somewhat more speculative representation is that of the three-dimensional TOPS cartoon. This may seem to be basically just like a <application>RasMol</application> cartoon view of a structure, but the whole point of TOPS and its cartoons is <emphasis>simplification</emphasis> of the structure. Hopefully, a 3D view of a structure will be more comprehensible - for the purpose of understanding the topology - than even traditional 'ribbon' views.
+					</para>
+				</section>
+				<section>
+					<title>2D - Cartoons</title>
+					<para>
+						TOPS cartoons are projections onto a plane of a protein structure, with symbols representing secondary structure elements. Helices are represented by circles and strands by triangles. These symbols are connected by lines that connect to the center or to the edge of a symbol, depending on the orientation of the symbols that the line is connecting. So a hairpin (two neighbouring strands of opposite orientation) are shown as an up triangle and a down triangle with their centers connected.
+					</para>
+					<figure>
+						<title>Comparison of RasMol cartoon and TOPS cartoon</title>
+						<graphic align="center" srccredit="rasmol" fileref="images/hairpins.png"/>
+					</figure>
+					<para>
+						The tops layout program generates coordinates for the symbols that are then stored in  TOPS files (and, now, in the Leeds database <xref linkend="database"/>). It also writes the orientation of symbols, and the extra connection points needed to avoid line crossovers. Programs that regenerate the cartoons from this data must, therefore, have at least the (X,Y) coordinates, SSE types, SSE orientations, and the connection points.
+					</para>
+					<para>
+						Much of the cartoon drawing code in Java originated with David Westhead. As a cartoon editor, the applications have a lot of extra functionality such as user-defined labels and colors, deletion and repositioning of symbols, and redrawing of connections. There are also some layout aids, such as aligning symbols by their centers and alignment from additional data. Only the raw display functions of this code has really been used in the servlet, and the experimental applet also only uses a subset of the mehthods (although it adds some of its own : see <xref linkend="web"/>).
+					</para>
+				</section>
+				<section>
+					<title>2D - Diagrams</title>
+					<para>
+						Considering a TOPS structure as a linear graph requires a quite different presentation of the data. Ina Koch's paper - on using Bron-Kerbosch to find maximal common subgraphs in protein topology graphs - uses a figure where the SSEs in a chain are strung out like beads along a line, with arcs connecting them (see the <ulink url="http://sanaga.tfh-berlin.de/~ptgl/ptgl.html">PTGL</ulink>). We use a quite similar representation, except that the symbols for the elements are the same as those used in the cartoons. A slight modification of this was Juris Viksna's idea to have helices as semicircles, which shows their orientation. 
+					</para>
+					<para>
+						In some of the software designed to show these linear diagrams, colours are used to distinguish the types of edges. There is no standard for this, although red for parallel hydrogen bonds and green for antiparallel bonds seems reasonable. It is possible to use the same colours for helix packing relations, to emphasise the similarity between the pairs of types. However, this may become confusing in a mixed alpha-beta graph.
+					</para>
+				</section>
+				<section>
+					<title>3D - Cartoons and Beyond</title>
+					<para>
+						Currently, this is little more than a pipe dream. A student project at City University has produced a prototype using Java3D that 'inflates' 2D cartoons into a kind of 3D. This is not ideal, since it is not really a true three dimensional representation, but it gives some idea of the problems. One problem, clearly, is relayout - there is little point in using the coordinates necessary for a flat cartoon when structures are invariably not flat. Of course, the 2D cartoon is essential for simple views of a topology, but to use a 3D view, it really has to be fully 3D.
+					</para>
+					<para>
+						There are some prototype classes that start off with a topology, and attempt to do '3D layout' by fitting SSEs of equal length into a series of sheets. This is quite limited in that it can only handle certain architectures (sandwich-like stacks), however it is a start towards a fully 3D viewer. The essential feature that other structure viewers seem to lack is the ability to handle architecture and topology. That is, the 'heirarchy' of protein structure ends at secondary structure elements. It seems worthwhile to expand this capability to higher levels of the hierarchy.
+					</para>
+					<para>
+						However, there is a problem with this grand vision - TOPS itself does not handle architecture comprehensively. This is not true for barrels and sandwiches; it is true for propellors and solenoids. It would be unfair to criticize 2D layout for its handling of inherantly 3D structures (like solenoids) since there is no way to reasonably project these architectures onto a plane. However, it would be possible to produce <emphasis>simplified</emphasis> heirarchically organised models in a 3D viewer that would be much richer than normal views. To do this, it would be necessary to extract more information from the structure in the first place, such as the relative orientation of sheets, or to have a set of architecture templates to draw on.
+					</para>
+				</section>
+	</section>
+</chapter>

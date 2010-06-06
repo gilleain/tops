@@ -1,0 +1,105 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="tops.css">
+		<title> TOPS PROJECT : GLASGOW </title>
+	</head>
+	<body>
+		<!------------------------------------------- HEADER ---------------------------------------------->
+		<p>
+		<table class=header align="center">
+			<tr>
+				<td><a href="http://www.brc.dcs.gla.ac.uk"><b id="brc-link">Bioinformatics Research Centre</b></a></td>
+				<td></td>
+				<td><h1><u><a href="/tops/index.html">TOPS Services At Glasgow University</a></u></h1></td>
+				<td></td>
+				<td><a href="http://www.gla.ac.uk"><img src="http://www.gla.ac.uk/gg200/unicrest.gif" width="120" height="50"/></a></td>
+			</tr>
+		</table>
+		</p>
+		<!------------------------------------------- HEADER ---------------------------------------------->
+	<h2>Invent Your Own Structures!</h2>
+	<p>
+		Instead of <a href="/tops/compare.html">submitting a pdb coordinate file</a> for comparision, you can, if you wish, specify the topology
+		using only the abstract 'string' notation described <a href="help.html">here</a>. Basically, a string is in three parts : a name, a vertex
+		list, and an edge list. 
+	</p>
+	<p>
+		These parts are separated by a single space, and each vertex is from the set V = {N, C, E, e, H, h} - representing 
+		the terminii, the strands, and the helices. Strands and helices can be up or down, and the vertex string must start with an 'N' and end 
+		with a 'C'. The edge list is an ordered sequence of number pairs separated by a colon (':'), and terminated by a letter from the edge type
+		set E = {'A', 'P', 'R', 'L', 'Z', 'X'} which are <b>A</b>ntiparallel hydrogen bond, <b>P</b>arallel hydrogen bond, <b>R</b>ight handed 
+		chirality, <b>L</b>eft handed chirality, and two mixed types : <b>Z</b> and <b>X</b>.
+	</p> 
+	<!-- FORM -->
+	<table class="form" align="center">
+	<form action="http://localhost:8080/tops/pattern/simple" method="POST">
+	<tr>
+		<td><b>TOPS String : Name</b></td>
+		<td><input type="text" name="target-name" size="10" value="GreekKey"></td>
+	<tr>
+		<td><b>TOPS String : SSEs</b></td>
+		<td><input type="text" name="target-body" size="15" value="NEeEeEC"></td>
+	</tr>
+	<tr>
+		<td><b>TOPS String : Edges</b></td>
+		<td><input type="text" name="target-tail" size="15" value="1:4A2:3A2:5A3:4A"></td>
+	</tr>
+	<tr><td><b>number of results to return</b></td><td>
+		<input type="radio" name="topnum" value="10" checked>10</input><br/>
+		<input type="radio" name="topnum" value="100">100</input><br/>
+		<input type="radio" name="topnum" value="1000">1000</input><br/>
+		<!-- WEIRDED OUT! -->
+		<!-- er... COMMENTED OUT! -->
+		<!--<input type="radio" name="topnum" value="all">all</input>-->
+	</td></tr>
+	<tr><td><b>page size - results per 'page'</b></td><td>
+		<input type="radio" name="pagesize" value="10" checked>10</input><br/>
+		<input type="radio" name="pagesize" value="100">100</input><br/>
+	</td></tr>
+	<tr><td><b>class and subclasses</b></td>
+		<td>
+			<b>CATH 2.4</b><br>
+			<input type="radio" name="subclasses" value="cath,crep,arep,trep" checked>CATH treps</input><br/>
+			<input type="radio" name="subclasses" value="cath,crep,arep,trep,hrep">CATH hreps</input><br/>
+			<input type="radio" name="subclasses" value="cath,crep,arep,trep,hrep,nrep">CATH nreps</input><br/>
+			<input type="radio" name="subclasses" value="cath,all">CATH all</input><br/>
+		</td>
+		<td>
+			<b>SCOP 1.6</b><br>
+			<input type="radio" name="subclasses" value="scop,class,fold">SCOP folds</input><br/>
+			<input type="radio" name="subclasses" value="scop,class,fold,superfamily">SCOP superfamilies</input><br/>
+			<input type="radio" name="subclasses" value="scop,class,fold,superfamily,family">SCOP families</input><br/>
+			<input type="radio" name="subclasses" value="scop,all">SCOP all</input><br/>
+		</td>
+	</td></tr>
+	<tr>
+		<td>SUBMIT :</td>
+		<td><input type="submit" name="targetService" value="advanced-compare"></input></td>
+		<td><input type="submit" name="targetService" value="advanced-match"></input></td>
+	</tr>
+	</form>
+	</table>
+	<!-- FORM -->
+	<p>
+		Mixed types (<b>Z</b> and <b>X</b>) are for parallel hydrogen bonds (<b>P</b> edges) that also have a chirality relationship
+		between them. The best example of these are beta-alpha-beta units ('NEhEC 1:3Z' or 'NEhEC 1:3X') which can be left or right handed.
+		Although it would be possible to have antiparallel edges with chiralities in this notation, it doesn't make structural sense since
+		the different chiral types are indistinguishable for antiparallel edges.
+	</p>
+	<!---- FOOTER ---->
+	<hr>
+	<p align="center">
+		<table>
+			<tr>
+				<td> <img src="epsrc_logo.gif" width="80" height="50"/> </td>
+				<td>
+					<small>Page maintained by : <a href="http://www.dcs.gla.ac.uk/~maclean">Gilleain Torrance</a>.</small><br>
+					<small>Mail to : tops@dcs.gla.ac.uk</small>
+				</td>
+				<td> <img src="bbsrc_logo.gif" width="100" height="50"/> </td>
+			</tr>
+		</table>
+	</p>
+	<!---- FOOTER ---->
+	</body>
+</html>

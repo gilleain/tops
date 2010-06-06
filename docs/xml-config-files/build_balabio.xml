@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tops" default="compile" basedir="/home/maclean/tops">
+
+	<property name="catalina.home" value="/home/maclean/tomcat"/>
+	<property name="app.path" value="/tops"/>
+	<property name="manager.username" value="manager"/>
+	<property name="manager.password" value="a1b2c3d4"/>
+	<property name="manager.url" value="http://balabio.dcs.gla.ac.uk:8180/manager"/>
+	<property name="servlet.jar" location="${catalina.home}/common/lib/servlet.jar"/>
+	<property name="dist.dir" location="/home/maclean/cartoon"/>
+
+	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask"/>
+
+	<path id="shared.lib">
+		<fileset dir="${catalina.home}/shared/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<path id="webapp.lib">
+		<fileset dir="${basedir}/web/WEB-INF/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+
+	<target name="compile">
+		<javac srcdir="src" destdir="web/WEB-INF/classes" excludes="old/*" debug="on">
+			<classpath>
+				<path refid="shared.lib"/>
+				<path refid="webapp.lib"/>
+				<pathelement path="${servlet.jar}"/>
+				<pathelement path="/home/maclean"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="dist">
+		<copy todir="${dist.dir}/WEB-INF" file="web/WEB-INF/web.xml"/>
+		<copy todir="${dist.dir}/WEB-INF/classes" file="web/WEB-INF/classes/pja.pjaf"/>
+		<copy todir="${dist.dir}/WEB-INF/classes" file="web/WEB-INF/classes/TopsDrawer.class"/>
+		<copy todir="${dist.dir}/WEB-INF/classes" file="web/WEB-INF/classes/TopsFileFilter.class"/>
+		<copy todir="${dist.dir}/WEB-INF/classes" file="web/WEB-INF/classes/TopsFileManager.class"/>
+		<copy todir="${dist.dir}/WEB-INF/classes" file="web/WEB-INF/classes/FindFilesServlet.class"/>
+		<copy todir="${dist.dir}/WEB-INF/classes" file="web/WEB-INF/classes/CartoonServlet.class"/>
+		<copy todir="${dist.dir}/WEB-INF/lib" file="web/WEB-INF/lib/gif.jar"/>
+		<copy todir="${dist.dir}/WEB-INF/lib" file="web/WEB-INF/lib/pja.jar"/>
+		<copy todir="${dist.dir}/WEB-INF/lib" file="web/WEB-INF/lib/dw_tops.jar"/>
+		<copy todir="${dist.dir}/WEB-INF/lib" file="web/WEB-INF/lib/tien_light.jar"/>
+	</target>
+
+	<target name="test">
+		<setproxy proxyhost="wwwcache.dcs.gla.ac.uk" proxyport="8080"/>
+		<telnet userid="maclean" password="eip=-1" server="sibu.dcs.gla.ac.uk">
+			<read string="hello$"/>
+			<write>ls</write>
+			<read string="$"/>
+		</telnet>
+	</target>
+
+	<target name="reload" depends="compile" description="Reload app on servlet container">
+	<reload url="${manager.url}" username="${manager.username}" password="${manager.password}" path="${app.path}"/>
+	</target>
+</project>

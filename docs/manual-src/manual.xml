@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBk XML V4.2//EN" "../docbook-dtds/docbookx.dtd"
+[
+<!ENTITY introduction		SYSTEM "introduction.xml">
+<!ENTITY engine					SYSTEM "engine.xml">
+<!ENTITY database				SYSTEM "database.xml">
+<!ENTITY web						SYSTEM "web.xml">
+<!ENTITY visualization	SYSTEM "visualization.xml">
+<!ENTITY integration		SYSTEM "integration.xml">
+<!ENTITY codebuilding		SYSTEM "codebuilding.xml">
+<!ENTITY publishing			SYSTEM "publishing.xml">
+]
+>
+<book>
+	<bookinfo>
+		<title>Tops System User Manual</title>
+	</bookinfo>
+	
+	&introduction;
+	&engine;
+	&database;
+	&web;
+	&visualization;
+	&integration;
+	&codebuilding;
+	&publishing;
+	
+</book>

@@ -1,0 +1,53 @@
+<HTML>
+<head>
+<title>TOPS Cartoon Browser</title>
+</head>
+<BODY bgproperties="fixed" BGCOLOR="white">
+<h3>Browse 2D Cartoons</h3>
+Supply a 4 character protein ID (e.g. '2bop' or '1nfk') as this is required. However, the chain and the domain may be left blank if you like. Of all four filetypes, only GIF will be shown directly in most browsers. Those with the an SVG plugin (or native support...) will see the SVG content displayed while most users will be prompted to download the file.
+<p>
+<hr>
+<p>
+<form method="GET" action="http://localhost:8080/tops/find">
+  <table align="center">
+	<tr>
+		<td><B>4 character protein id</B></td>
+		<td><INPUT TYPE="text" SIZE="4" MAXLENGTH="4" NAME="pcode"></td>
+	</tr>
+	<tr>
+		<td><B>chain character</B></td>
+		<td><INPUT TYPE="text" SIZE="4" MAXLENGTH="1" NAME="chain"></td>
+	</tr>
+	<tr>
+		<td><B>domain character</B></td>
+		<td><INPUT TYPE="text" SIZE="4" MAXLENGTH="1" NAME="domid"></td>
+	</tr>
+	<tr>
+		<td><B>group</B></td>
+		<td>
+			<input type="radio" name="classf" value="scratch">Atlas<BR>
+			<input type="radio" name="classf" value="cath" checked>CATH 2.4<BR>
+		</td>
+	</tr>
+	<tr>
+		<td><B>filetype</B></td>
+		<td>
+			<input type="radio" name="filetype" value="gif" checked>GIF<BR>
+			<input type="radio" name="filetype" value="svg">SVG<BR>
+			<input type="radio" name="filetype" value="tops">TOPS<BR>
+			<input type="radio" name="filetype" value="ps">PS<BR>
+		</td>
+	</tr>
+<!--
+	<tr>
+		<td><b>download?</b></td>
+		<td><input type="checkbox" name="download"></input></td>
+	</tr>
+-->
+	<tr>
+		<td><INPUT TYPE="submit" VALUE="Submit request"></td>
+	</tr>
+  </table>
+</form>
+</BODY>
+</HTML>

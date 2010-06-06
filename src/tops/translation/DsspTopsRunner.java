@@ -1,0 +1,77 @@
+package tops.translation;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+
+
+/**
+ * @author maclean
+ *
+ */
+public class DsspTopsRunner {
+    
+    private RunDssp dssp;
+    private RunTops tops;
+    private Tops2String tops2String;
+    
+    public DsspTopsRunner(String scratchDirectory) {
+        this.dssp = new RunDssp("./dssp", scratchDirectory, scratchDirectory, "./");
+        this.tops = new RunTops("./tops", scratchDirectory, scratchDirectory, "./");
+        this.tops2String = new Tops2String(scratchDirectory);
+    }
+    
+    public String[] convert(String pdbFilename, String fourLetterCode) throws IOException {
+       
+        String dsspFilename = fourLetterCode + ".dssp";
+        String topsFilename = fourLetterCode + ".tops";
+        this.dssp.convert(pdbFilename, dsspFilename);
+        this.tops.convert(fourLetterCode, "", topsFilename, "");
+        return this.tops2String.convert(topsFilename, "", "CATH");
+    }
+    
+    public void convertAndPrint(String pdbFilename) throws IOException {
+        String fourLetterCode = "";
+        if (pdbFilename.substring(0, 3).equals("pdb")) {
+            fourLetterCode = pdbFilename.substring(3, 7);
+        } else {
+            fourLetterCode = pdbFilename.substring(0, 4);
+        }
+        String[] topsStrings = this.convert(pdbFilename, fourLetterCode);
+        for (int j = 0; j < topsStrings.length; j++) {
+            // XXX topsStrings have a space in front!
+            System.out.println(topsStrings[j]); 
+        }
+    }
+    
+    public static void main(String[] args) {
+        String path = args[0];
+        String scratchDirectory = args[1];
+        DsspTopsRunner runner = new DsspTopsRunner(scratchDirectory);
+        
+        File pathFile = new File(path);
+        if (pathFile.isDirectory()) {
+            String[] files = pathFile.list(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".pdb");
+                }
+            });
+            for (int i = 0; i < files.length; i++) {
+                try {
+                    runner.convertAndPrint(files[i]);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        } else if (pathFile.isFile()) {
+            try {
+                runner.convertAndPrint(pathFile.getName());
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        } else {
+            System.out.println("Path is not a file or directory " + path);
+        }
+    }
+
+}

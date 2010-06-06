@@ -1,0 +1,23 @@
+<appendix id="codebuilding">
+	<title>Generation of Classfiles from Java Source</title>
+	<section>
+		<section>
+				<title>Essential Software</title>
+				<para>
+				The 'makefile' for this project is actually an XML file for use with <application>ant</application> or an IDE that is ant-compatible. <application>ant</application> is freely available from the apache free software foundation <ulink url="http://ant.apache.org">apache.org</ulink>
+				</para>
+				<para>
+				Depending on the package, some parts of the system may require outside libraries. Each chapter describes the dependancies for the package it describes. Notably, the tops.view.tops3D package (see : <xref linkend="visualization"/>) needs the Java3D extension, and the necessary jar files with the J3D classes should be in the classpath.
+				</para>
+		</section>
+		<section>
+				<title>Running ant on the Buildfile</title>
+				<para>
+				To get a list of possible targets, run <command>ant</command> with just the <parameter class="command">-projecthelp</parameter> flag. This should print out the targets and a short description string for each. Note that only targets with a <varname>description</varname> attribute will be listed. The chapter for a particular package gives the target name needed to build that package at the end of the chapter.
+				</para>
+				<para>
+				Once <application>ant</application> is properly set up (with the environment variables <envar>ANT_HOME</envar> and <envar>JAVA_HOME</envar> set correctly), it should be possible to simply type : <command>ant</command> <userinput>target</userinput> where "target" is one of the names produced by the listing.
+				</para>
+		</section>
+	</section>
+</appendix>

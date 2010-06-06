@@ -1,0 +1,805 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="help" name="tops">
+
+	<property file="build.properties"/>
+
+	<property name="lib" value="${home}/code//lib"/>
+	<property name="jar.dir" value="${basedir}/jars"/>
+	<property name="docbook.dir" value="${home}/code/java/docbook-xsl"/>
+	<property name="manual.out" value="${basedir}/docs/manual"/>
+	<property name="manual.src" value="${basedir}/docs/manual-src"/>
+	<property name="dist.parent.dir" value="${basedir}/distribution"/>
+	<property name="production.server" value="balabio"/>
+	<property name="test.server" value="akun.dcs.gla.ac.uk"/>
+	<property name="dist.dir" value="${dist.parent.dir}/dist"/>
+	<property name="tops.site.dir" value="/var/www/html/tops"/>
+	<property name="tomcat.dir" value="${home}/tomcat"/>
+	<property name="test.dir" value="web"/>
+	<property name="j3dlib" value="${home}/code/java/j2re1.4.2/lib/ext"/>
+	<property name="thirdpartylib.dir" value="${basedir}/thirdpartylibs"/>
+<!--	<property name="mysqljar" value="/Users/maclean/languages/java/tomcat/common/lib/mysql-connector-java-3.1.8-bin.jar"/>-->
+	<property name="mysqljar" value="${thirdpartylib.dir}/mysql.jar"/>
+	<property name="pjatoolsjar" value="${thirdpartylib.dir}/pjatools.jar"/>
+	<property name="pjajar" value="${thirdpartylib.dir}/pja.jar"/>
+	<property name="itextjar" value="${thirdpartylib.dir}/iText.jar"/>
+	<property name="utilsjar" value="${lib}/utils/utils.jar"/>
+	<property name="oreillyjar" value="${thirdpartylib.dir}/cos.jar"/>
+	<property name="coltjar" value="${thirdpartylib.dir}/colt.jar"/>
+	<property name="vecmathjar" value="${thirdpartylib.dir}/vecmath.jar"/>
+
+    <!-- TEMPORARY REF TO JRAT PROFILING TOOL-->
+    <property name="jratjar" value="/Users/maclean/languages/java/profilers/jrat-0.71b/dist/shiftone-jrat.jar"/>
+    <!-- TEMPORARY REF TO JRAT PROFILING TOOL-->
+
+	<property name="alljars" value="${servletjar}:${pjatoolsjar}:${pjajar}:${itextjar}:${utilsjar}:${vecmathjar}:${oreillyjar}:${coltjar}"/>
+
+	<!-- ANT TASKDEFS -->
+	<!-- 
+	<taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
+	<taskdef name="install"   classname="org.apache.catalina.ant.InstallTask"/>
+	<taskdef name="list"      classname="org.apache.catalina.ant.ListTask"/>
+	<taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
+	<taskdef name="remove"    classname="org.apache.catalina.ant.RemoveTask"/>
+	<taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
+	<taskdef name="roles"     classname="org.apache.catalina.ant.RolesTask"/>
+	<taskdef name="start"     classname="org.apache.catalina.ant.StartTask"/>
+	<taskdef name="stop"      classname="org.apache.catalina.ant.StopTask"/>
+	<taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+    ANT TASKDEFS -->
+	<!-- /ANT TASKDEFS -->
+
+	<!-- MANAGEMENT TARGETS -->
+	<target depends="db, display, drg, engine, webengine" description="distribute the web stuff to a test server" name="web-test">
+		<mkdir dir="${test.dir}"/>
+		<copy file="bin/dssp" todir="${test.dir}"/>
+		<copy file="bin/tops" todir="${test.dir}"/>
+		<copy file="data/tops.def" todir="${test.dir}"/>
+		<mkdir dir="${test.dir}/images"/>
+		<copy todir="${test.dir}/images">
+			<fileset dir="${basedir}/docs/pictures"/>
+		</copy>
+		<mkdir dir="${test.dir}/accesslogs"/>
+		<mkdir dir="${test.dir}/filelogs"/>
+		<mkdir dir="${test.dir}/scratch"/>
+		<mkdir dir="${test.dir}/WEB-INF"/>
+		<copy file="docs/xml-config-files/web-test.xml" tofile="${test.dir}/WEB-INF/web.xml"/>
+		<copy file="${thirdpartylib.dir}/pja.pjaf" todir="${test.dir}/WEB-INF"/>
+		<mkdir dir="${test.dir}/WEB-INF/classes"/>
+		<mkdir dir="${test.dir}/WEB-INF/lib"/>
+		<copy file="${jar.dir}/db.jar" todir="${test.dir}/WEB-INF/lib"/>
+		<copy file="${jar.dir}/display.jar" todir="${test.dir}/WEB-INF/lib"/>
+		<copy file="${jar.dir}/drg.jar" todir="${test.dir}/WEB-INF/lib"/>
+		<copy file="${jar.dir}/engine.jar" todir="${test.dir}/WEB-INF/lib"/>
+        <copy file="${jar.dir}/inserts.jar" todir="${test.dir}/WEB-INF/lib"/>
+		<copy file="${jar.dir}/translation.jar" todir="${test.dir}/WEB-INF/lib"/>
+		<copy file="${jar.dir}/webengine.jar" todir="${test.dir}/WEB-INF/lib"/>
+		<copy todir="${test.dir}/WEB-INF/lib">
+			<fileset dir="${thirdpartylib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+	</target>
+
+    <target name="check-version">
+        <fail unless="update.version" message="Set the update.version property like -Dupdate.version=2.4"/>
+    </target>
+
+    <target name="setup-string-db-update">
+        <fail unless="classification" message="Set the classification property like -Dclassification=CATH"/>
+
+        <!-- I *think* this says "set the property reset.db to false if it hasn't been set to anything..." -->
+        <condition property="reset.db" value="false">
+            <not>
+                <isset property="${reset.db}"/>
+            </not>
+        </condition>
+        <!-- Similar to above -->
+        <condition property="update.log.level" value="ALL">
+            <not>
+                <isset property="${update.log.level}"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="update-convert-cath" description="call the convert-update target with the cath url" depends="check-version">
+        <java classname="tops.db.update.CATHConverter" classpath="${jar.dir}/db-update.jar" fork="true">
+            <arg value="${update.version}"/>
+            <arg value="${update.cath.url}"/>
+
+            <arg value="${update.scratch.dir}"/>
+            <arg value="${topsfile.dir}/cath"/>
+
+            <arg value="${pdbfile.dir}"/>
+            <arg value="${pdb.url}"/>
+            <arg value="${pdb.has.structure}"/>
+
+            <arg value="${dssp.executable}"/>
+            <arg value="${tops.executable}"/>
+
+            <arg value="${home}"/>
+        </java>
+    </target>
+
+    <target name="update-convert-scop" description="call the convert-update target with the scop url" depends="check-version">
+        <java classname="tops.db.update.SCOPConverter" classpath="${jar.dir}/db-update.jar" fork="true">
+            <arg value="${update.version}"/>
+            <arg value="${update.scop.url}"/>
+
+            <arg value="${update.scratch.dir}"/>
+            <arg value="${topsfile.dir}/scop"/>
+
+            <arg value="${pdbfile.dir}"/>
+            <arg value="${pdb.url}"/>
+            <arg value="${pdb.has.structure}"/>
+
+            <arg value="${dssp.executable}"/>
+            <arg value="${tops.executable}"/>
+        </java>
+    </target>
+
+    <target name="update-string-db" description="put a file of strings into the string db, along with rep info" depends="setup-string-db-update">
+        <java classname="tops.db.update.DBUpdater" classpath="${jratjar}:${mysqljar}:${jar.dir}/db-update.jar" fork="true">
+            <jvmarg value="-Xmx700m"/>
+            <jvmarg value="-Djrat.factory=${jrat.factory}"/>
+
+            <arg value="${classification}"/>
+
+            <arg value="${stringdb.name}"/>
+            <arg value="${stringdb.username}"/>
+            <arg value="${stringdb.url}"/>
+            <arg value="${stringdb.password}"/>
+
+            <arg value="${update.scratch.dir}"/>
+            <arg value="${string.file.name}"/>
+
+            <arg value="${classif.dir}"/>
+            <arg value="${classif.file.name}"/>
+
+            <arg value="${reset.db}"/>
+            <arg value="${update.log.level}"/>
+        </java>
+    </target>
+
+<!--
+            <arg value="${stringdb.url}"/>
+            <arg value="${stringdb.username}"/>
+            <arg value="${stringdb.password}"/>
+
+            <arg value="${cartoondb.url}"/>
+            <arg value="${cartoondb.username}"/>
+            <arg value="${cartoondb.password}"/>
+-->
+
+    <target name="remote-ant" description="run an ant task on remote.build.server through gateway.server">
+        <sshexec host="${gateway.server}" username="maclean" password="${pass}" command="rsh ${remote.build.server} ant -buildfile tops/build.xml ${remote.target}"/>
+    </target>
+
+    <target name="gla-src-rsync" description="synchronise the source tree with ${gateway.server}">
+        <exec executable="rsync">
+                <arg line="rsync -e ssh -Cauvz --size-only --exclude=*.swp src/ ${gateway.server}:${work.tops.dir}/src" />
+        </exec>
+    </target>
+
+    <target name="gla-src-rsync-test" description="check to see what files would change if gla-src-rsync was run">
+        <exec executable="rsync">
+                <arg line="rsync -e ssh -Cauvzn --size-only --exclude=*.swp src/ ${gateway.server}:${work.tops.dir}/src" />
+        </exec>
+    </target>
+
+    <target name="leeds-src-rsync" description="synchronise the source tree with ${leeds.server}">
+        <exec executable="rsync">
+                <arg line="rsync -e ssh -Cauvz --size-only --exclude=*.swp src/ tops@${leeds.server}:${leeds.tops.dir}/src" />
+        </exec>
+    </target>
+
+    <target name="leeds-src-rsync-test" description="check to see what files would change if leeds-src-rsync was run">
+        <exec executable="rsync">
+                <arg line="rsync -e ssh -Cauvzn --size-only --exclude=*.swp src/ tops@${leeds.server}:${leeds.tops.dir}/src" />
+        </exec>
+    </target>
+
+	<target name="reload-test" description="Reloads the Web Application on the test server">
+		<echo message="Reloading ${app.name} on test server ..."/>
+		<reload url="${test.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${app.name}"/>
+	</target>
+
+	<target name="reload-production" description="Reloads the Web Application on the production server">
+		<echo message="Reloading ${app.name} on production server..."/>
+		<reload url="${production.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${app.name}"/>
+	</target>
+
+	<target name="start-test" description="Start the Web Application on the test server">
+		<echo message="Starting the Web Application on the test server..."/>
+		<start url="${test.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${app.name}"/>
+	</target>
+
+	<target name="start-production" description="Start the Web Application on the production server">
+		<echo message="Starting the Web Application on the production server..."/>
+		<start url="${production.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${app.name}"/>
+	</target>
+
+	<target name="stop-test" description="Stop the Web Application on the test server">
+		<echo message="Stopping the Web Application on the test server..."/>
+		<stop url="${test.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${app.name}"/>
+	</target>
+
+	<target name="stop-production" description="Stop the Web Application on the production server">
+		<echo message="Stoping the Web Application on the production server..."/>
+		<stop url="${production.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${app.name}"/>
+	</target>
+	<!-- /MANAGEMENT TARGETS -->
+
+	<!-- COMPILATION TARGETS -->
+	<target description="the editor applet" name="applet-editor">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/web/display/SimpleEditorApplet.java"/>
+			<include name="tops/web/display/TopsDrawCanvas.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/editor.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/web/display/SimpleEditorApplet.class"/>
+				<include name="tops/web/display/TopsDrawCanvas.class"/>
+			</fileset>
+			<fileset dir="classes">
+				<include name="tops.dw.dw_utils/*.class"/>
+				<include name="tops.dw.protein/*.class"/>
+				<include name="tops.dw.editor/LabelInput.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target description="the viewer applet" name="applet-viewer">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/web/display/DiagramApplet.java"/>
+			<include name="tops/view/tops2D/diagram/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/viewer.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/web/display/DiagramApplet.class"/>
+				<include name="tops/view/tops2D/diagram/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target description="the database interface beans" name="beans">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/beans/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/tops-beans.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/beans/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="build all the classes" depends="setup,db,display,drg,engine,helix,inserts,juris,translation,webengine" name="build">
+	</target>
+
+	<target description="the database connectivity classes" name="db">
+		<javac classpath="${alljars}" debug="true" destdir="classes" srcdir="src">
+			<include name="tops/db/*.java"/>
+			<include name="tops/db/generation/*.java"/>
+			<include name="tops/db/update/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/db.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/db/*.class"/>
+                <include name="tops/db/generation/*.class"/>
+                <include name="tops/db/update/*.class"/>
+				<include name="tops/engine/TParser.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="the database update classes" name="db-update">
+		<javac classpath="${alljars}" debug="true" destdir="classes" srcdir="src">
+			<include name="tops/db/*.java"/>
+			<include name="tops/db/update/*.java"/>
+			<include name="tops/model/classification/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/db-update.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/db/*.class"/>
+                <include name="tops/db/update/*.class"/>
+                <include name="tops/model/classification/*.class"/>
+				<include name="tops/engine/TParser.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="create the database tables" name="db-create-structure">
+		<available classname="${db.driver}" property="db.driver.present"/>
+		<sql 
+			driver="${db.driver}" 
+			url="${db.url}" 
+			userid="${db.username}" 
+			password="${db.password}"
+			src="${db.structure.file}"
+		/>
+	</target>
+
+	<target description="dump the database tables" name="db-dump-structure">
+		<available classname="${db.driver}" property="db.driver.present"/>
+	</target>
+
+	<target description="dump the database tables" name="db-dump" if="db.driver.present">
+		<sql 
+			driver="${db.driver}" 
+			url="${db.url}" 
+			userid="${db.username}" 
+			password="${db.password}" 
+			print="yes">
+			Show tables;
+		</sql>
+	</target>
+
+	<!-- ALTER THIS 
+	<target description="build the dw classes" name="dw">
+		<subant antfile="build.xml" buildpath="dw" target="compile"/>
+		<move file="dw/dw_tops.jar" todir="jars"/> 
+	</target>
+	-->
+    <target description="compile the dw classes" name="dw">
+        <javac debug="true" destdir="classes" srcdir="src">
+            <include name="tops/dw/app/*.java"/>
+            <include name="tops/dw/cgi/*.java"/>
+            <include name="tops/dw/dw_utils/*.java"/>
+            <include name="tops/dw/editor/*.java"/>
+            <include name="tops/dw/gmt_utils/*.java"/>
+            <include name="tops/dw/protein/*.java"/>
+        </javac>
+        <jar destfile="${jar.dir}/dw.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.dw.editor.TopsEditor"/>
+			</manifest>
+            <fileset dir="classes">
+                <include name="tops/dw/app/*.class"/>
+                <include name="tops/dw/cgi/*.class"/>
+                <include name="tops/dw/dw_utils/*.class"/>
+                <include name="tops/dw/editor/*.class"/>
+                <include name="tops/dw/gmt_utils/*.class"/>
+                <include name="tops/dw/protein/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+
+	<target name="crossvalidate">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/engine/crossvalidate/*.java"/>
+			<include name="tops/model/*.java"/>
+			<include name="tops/engine/drg/*.java"/>
+			<include name="tops/engine/inserts/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/crossvalidate.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.engine.crossvalidate.CrossValidator"/>
+			</manifest>
+			<fileset dir="classes">
+				<include name="tops/engine/TopsStringFormatException.class"/>
+				<include name="tops/engine/Edge.class"/>
+				<include name="tops/engine/Vertex.class"/>
+				<include name="tops/engine/TParser.class"/>
+				<include name="tops/engine/crossvalidate/*.class"/>
+				<include name="tops/model/TopsParser.class"/>
+				<include name="tops/model/Level.class"/>
+				<include name="tops/model/LevelIterator.class"/>
+				<include name="tops/model/Rep.class"/>
+				<include name="tops/model/RepSet.class"/>
+				<include name="tops/engine/drg/*.class"/>
+				<include name="tops/engine/inserts/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="debug">
+		<javac destdir="debug" srcdir="src/debug"/>
+		<jar destfile="tops_debug.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.Explorer"/>
+			</manifest>
+			<fileset dir="debug">
+				<include name="tops/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target description="compile the web cartoon and diagram drawing" name="display">
+		<javac classpath="${servletjar}:${pjatoolsjar}:${pjajar}:${itextjar}" debug="true" destdir="classes" srcdir="src">
+				<include name="tops/web/display/*.java"/>
+				<include name="tops/view/tops2D/cartoon/*.java"/>
+				<include name="tops/view/tops2D/cartoon/builder/*.java"/>
+				<include name="tops/view/tops2D/display/*.java"/>
+		</javac>
+        <jar destfile="${jar.dir}/display.jar" update="true">
+            <fileset dir="classes">
+                <include name="tops/web/display/*.class"/>
+                <include name="tops/view/tops2D/cartoon/*.class"/>
+                <include name="tops/view/tops2D/cartoon/builder/*.class"/>
+                <include name="tops/view/tops2D/diagram/*.class"/>
+            </fileset>
+		</jar>
+	</target>
+
+	<target depends="display" description="do display, then scp to production" name="display-production">
+		<exec executable="scp">
+			<arg line="${jar.dir}/display.jar ${production.server}:~/tops/WEB-INF/lib"/>
+		</exec>
+		<antcall target="reload-production"/>
+	</target>
+
+	<target depends="display" description="do display, then move to test" name="display-test">
+		<copy todir="${test.dir}/WEB-INF/lib" file="${jar.dir}/display.jar"/>
+	</target>
+
+	<target description="generate javadoc documentation" name="docs">
+		<javadoc classpath="classes:${alljars}" destdir="docs/javadocs" excludepackagenames="tops.view.tops3D" packagenames="tops.*" private="true" sourcepath="src">
+		</javadoc>
+	</target>
+
+	<target description="create a standalone distribution" depends="drg,tiny,translation" name="dist">
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${dist.dir}/bin"/>
+		<copy file="${dist.parent.dir}/README" todir="${dist.dir}"/>
+		<copy todir="${dist.dir}/bin">
+			<fileset dir="bin">
+				<include name="*.sh"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${dist.dir}/jars"/>
+		<copy file="${jar.dir}/drg.jar" todir="${dist.dir}/jars"/>
+		<copy file="${jar.dir}/tiny.jar" todir="${dist.dir}/jars"/>
+		<copy file="${jar.dir}/translation.jar" todir="${dist.dir}/jars"/>
+		<!-- DON'T INCLUDE MANUAL!
+		<mkdir dir="${dist.dir}/docs"/>
+		<mkdir dir="${dist.dir}/docs/manual"/>
+		<mkdir dir="${dist.dir}/docs/javadocs"/>
+		<copy todir="${dist.dir}/docs/manual">
+			<fileset dir="docs/manual"/>
+		</copy>
+		<copy todir="${dist.dir}/docs/javadocs">
+			<fileset dir="docs/javadocs"/>
+		</copy>
+		-->
+	</target>
+
+	<target description="create a zipfile distribution" depends="dist" name="dist-zip">
+		<zip destfile="${dist.parent.dir}/tops.zip" basedir="${dist.dir}"/>
+	</target>
+
+	<target description="create a tarred bzip2 distribution" depends="dist" name="dist-bzip2">
+		<tar tarfile="${dist.parent.dir}/tops.tar" basedir="${dist.dir}"/>
+		<bzip2 src="${dist.parent.dir}/tops.tar" destfile="${dist.parent.dir}/tops.tar.bz2"/>
+		<delete file="${dist.parent.dir}/tops.tar"/>
+	</target>
+
+	<target description="create all distributions, copy to website" depends="dist-bzip2, dist-zip" name="dist-all">
+		<exec executable="scp">
+			<arg line="${dist.parent.dir}/README ${dist.parent.dir}/tops.zip ${dist.parent.dir}/tops.tar.bz2 ${jar.dir}/drg.jar ${jar.dir}/display.jar ${jar.dir}/2D.jar ${jar.dir}/translation.jar ${production.server}:${tops.site.dir}/lib"/>
+		</exec>
+	</target>
+
+	<target description="pattern discovery using drg&apos;s heuristic" name="drg">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/engine/*.java"/>
+			<include name="tops/engine/drg/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/drg.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.engine.drg.Explorer"/>
+			</manifest>
+			<fileset dir="classes">
+				<include name="tops/engine/*.class"/>
+				<include name="tops/engine/drg/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="the basic classes" name="engine">
+		<javac debug="true" destdir="classes" srcdir="src">
+			
+		    <include name="tops/engine/*.java"/>
+        </javac>
+		<jar destfile="${jar.dir}/engine.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/engine/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+		
+	
+	
+	<target description="matcher and explorer modified to handle HPP" name="helix">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/engine/*.java"/>
+			<include name="tops/engine/helix/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/helix.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.engine.helix.Explorer"/>
+			</manifest>
+			<fileset dir="classes">
+				<include name="tops/engine/*.class"/>
+				<include name="tops/engine/helix/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="show some help information" name="help">
+		<echo message="To list the possible targets type 'ant -projecthelp'"/>
+		<echo message="Then run one with 'ant &#91;targetname&#93;'"/>
+	</target>
+	
+	<target description="branch of engine code with inserts" name="inserts">
+        
+        <javac debug="true" destdir="classes" srcdir="src">
+            <include name="tops/engine/*.java"/>
+            <include name="tops/engine/inserts/*.java"/>
+        </javac>
+        
+        <jar destfile="${jar.dir}/inserts.jar">
+            <manifest>
+              <attribute name="Main-Class" value="tops.engine.inserts.Matcher"/>
+            </manifest>
+            <fileset dir="classes">
+                <include name="tops/engine/*.class"/>
+                <include name="tops/engine/inserts/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+	
+	<target description="juris&apos;s pattern discovery" name="juris">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/engine/*.java"/>
+			<include name="tops/engine/juris/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/juris.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.engine.juris.Finder"/>
+			</manifest>
+			<fileset dir="classes">
+				<include name="tops/engine/*.class"/>
+			    <include name="tops/engine/juris/*.class"/>
+            </fileset>
+		</jar>
+	</target>
+
+	<target description="generate the user manual" name="manual">
+		<echo message="deleting old manual"/>
+		<delete>
+			<fileset dir="${manual.out}" includes="*"/>
+		</delete>
+		<echo message="Generating user manual"/>
+		<java classname="com.icl.saxon.StyleSheet" classpath="${lib}/saxon/saxon.jar" dir="${manual.out}" fork="true">
+			<arg value="${manual.src}/manual.xml"/>
+			<arg value="${docbook.dir}/html/chunk.xsl"/>
+		</java>
+	</target>
+
+	<target name="model">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/model/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/model.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/model/*.class"/>
+				<include name="tops/engine/TopsStringFormatException.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="classification">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/model/classification/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/classification.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/model/classification/*.class"/>
+				<include name="tops/engine/TopsStringFormatException.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target description="setup the necessary directories" name="setup">
+		<mkdir dir="classes"/>
+		<mkdir dir="jars"/>
+	</target>
+	
+	
+	<target description="the multi-viewer application" name="topsviewer" depends="drg">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/view/tops2D/app/*.java"/>
+			<include name="tops/view/tops2D/diagram/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/2D.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.view.tops2D.app.TOPSViewer"/>
+			</manifest>
+			<fileset dir="classes">
+				<include name="tops/view/tops2D/app/*.class"/>
+				<include name="tops/view/tops2D/diagram/*.class"/>
+				<include name="tops/engine/*.class"/>
+				<include name="tops/engine/drg/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="the tiny viewer" name="tiny">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/view/tops2D/app/Diagrammer.java"/>
+			<include name="tops/view/tops2D/app/TinyViewer.java"/>
+			<include name="tops/view/tops2D/app/TParser.java"/>
+			<include name="tops/view/tops2D/app/LinearViewPanel.java"/>
+			<include name="tops/view/tops2D/diagram/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/tiny.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.view.tops2D.app.TinyViewer"/>
+			</manifest>
+			<fileset dir="classes">
+                <include name="tops/view/tops2D/app/Diagrammer.class"/>
+				<include name="tops/view/tops2D/app/TinyViewer.class"/>
+				<include name="tops/view/tops2D/app/TParser.class"/>
+				<include name="tops/view/tops2D/app/LinearViewPanel.class"/>
+				<include name="tops/view/tops2D/diagram/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="the batch cartoon converter" name="cartoonist">
+		<javac classpath="${alljars}" debug="true" destdir="classes" srcdir="src">
+			<include name="tops/view/tops2D/app/Cartoonist.java"/>
+			<include name="tops/view/tops2D/cartoon/*.java"/>
+			<include name="tops/view/tops2D/cartoon/builder/*.java"/>
+			<include name="tops/dw/protein/*.java"/>
+			<include name="tops/dw/dw_utils/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/cartoonist.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.view.tops2D.app.Cartoonist"/>
+			</manifest>
+			<fileset dir="classes">
+                <include name="tops/view/tops2D/app/Cartoonist.class"/>
+                <include name="tops/view/tops2D/cartoon/*.class"/>
+                <include name="tops/view/tops2D/cartoon/builder/*.class"/>
+                <include name="tops/dw/protein/*.class"/>
+                <include name="tops/dw/dw_utils/*.class"/>
+			</fileset>
+            <fileset dir="${thirdpartylib.dir}">
+                <include name="pja.pjaf"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target description="pdb to dssp translation" name="translation">
+		<javac debug="true" classpath="${vecmathjar}:${coltjar}" destdir="classes" srcdir="src">
+            <include name="tops/translation/DsspTopsRunner.java"/>
+            <include name="tops/translation/RunDssp.java"/>
+            <include name="tops/translation/RunTops.java"/>
+            <include name="tops/translation/Executer.java"/>
+            <include name="tops/translation/Tops2String.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/translation.jar" update="true">
+			<manifest>
+				<!--<attribute name="Main-Class" value="tops.translation.Tops2String"/>-->
+				<attribute name="Main-Class" value="tops.translation.DsspTopsRunner"/>
+			</manifest>
+			<fileset dir="classes">
+				<!--<include name="tops/translation/*.class"/>-->
+				<include name="tops/translation/DsspTopsRunner.class"/>
+				<include name="tops/translation/DsspTopsRunner$1.class"/>
+				<include name="tops/translation/RunDssp.class"/>
+				<include name="tops/translation/RunTops.class"/>
+				<include name="tops/translation/Executer.class"/>
+				<include name="tops/translation/Tops2String.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="tops3D">
+		<javac classpath="${vecmathjar}" debug="true" destdir="classes" srcdir="src">
+			<include name="tops/view/tops3D/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/3D.jar" update="true">
+			<manifest>
+				<attribute name="Main-Class" value="tops.view.tops3D.TOPS3DFrame"/>
+			</manifest>
+			<fileset dir="classes">
+				<include name="tops/view/tops3D/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target depends="web-test" description="move the topsfile archives to the test web directory" name="topsfiles-test">
+		<mkdir dir="${test.dir}/topsfiles"/>
+		<copy file="data/topsfiles/cath_${cath.version}.topsfiles.tar.gz" todir="${test.dir}/topsfiles"/>
+		<gunzip src="${test.dir}/topsfiles/cath_${cath.version}.topsfiles.tar.gz"/>
+		<untar src="${test.dir}/topsfiles/cath_${cath.version}.topsfiles.tar" dest="${test.dir}/topsfiles"/>
+		<delete file="${test.dir}/topsfiles/cath_${cath.version}.topsfiles.tar"/>
+		<copy file="data/topsfiles/scop_${scop.version}.topsfiles.tar.gz" todir="${test.dir}/topsfiles"/>
+		<gunzip src="${test.dir}/topsfiles/scop_${scop.version}.topsfiles.tar.gz"/>
+		<untar src="${test.dir}/topsfiles/scop_${scop.version}.topsfiles.tar" dest="${test.dir}/topsfiles"/>
+		<delete file="${test.dir}/topsfiles/scop_${scop.version}.topsfiles.tar"/>
+	</target>
+
+	<!-- NOT YET DONE! : need to find a way to unpack these over secure connection!
+	<target description="move the topsfile archives to the production web directory" name="topsfiles-production">
+		<copy file="data/topsfiles/cath_${cath.version}.topsfiles.tar.gz" todir="${test.dir}/topsfiles"/>
+		<gunzip src="${test.dir}/topsfiles/cath_${cath.version}.topsfiles.tar.gz"/>
+		<untar src="${test.dir}/topsfiles/cath_${cath.version}.topsfiles.tar" dest="${test.dir}/topsfiles"/>
+		<delete file="${test.dir}/topsfiles/cath_${cath.version}.topsfiles.tar"/>
+		<copy file="data/topsfiles/scop_${scop.version}.topsfiles.tar.gz" todir="${test.dir}/topsfiles"/>
+		<gunzip src="${test.dir}/topsfiles/scop_${scop.version}.topsfiles.tar.gz"/>
+		<untar src="${test.dir}/topsfiles/scop_${scop.version}.topsfiles.tar" dest="${test.dir}/topsfiles"/>
+		<delete file="${test.dir}/topsfiles/scop_${scop.version}.topsfiles.tar"/>
+	</target>
+	-->
+
+
+	<target description="servlets for interfacing with pattern" name="webengine">
+		<javac classpath="${servletjar}:${utilsjar}:${oreillyjar}:${jar.dir}/translation.jar" 
+			debug="true" destdir="classes" srcdir="src">
+			<include name="tops/web/engine/*.java"/>
+			<include name="tops/translation/*.java"/>
+			<include name="tops/model/classification/CATHLevel.java"/>
+			<include name="tops/model/classification/SCOPLevel.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/webengine.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/web/engine/*.class"/>
+				<include name="tops/translation/*.class"/>
+                <include name="tops/model/classification/CATHLevel.class"/>
+                <include name="tops/model/classification/SCOPLevel.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target depends="webengine" description="PRODUCE servlets for interfacing with pattern" name="webengine-production">
+		<exec executable="scp">
+			<arg line="${jar.dir}/webengine.jar ${production.server}:~/tops/WEB-INF/lib"/>
+		</exec>
+		<antcall target="reload-production"/>
+	</target>
+
+	<target depends="webengine" description="TEST servlets for interfacing with pattern" name="webengine-test">
+		<copy todir="${test.dir}/WEB-INF/lib" file="${jar.dir}/webengine.jar"/>
+	</target>
+
+	<target description="the XML input/output machinery" name="xml">
+		<javac debug="true" destdir="classes" srcdir="src">
+			<include name="tops/xml/*.java"/>
+		</javac>
+		<jar destfile="${jar.dir}/xml.jar" update="true">
+			<fileset dir="classes">
+				<include name="tops/xml/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+    <target name="designer-build" description="compile source files to classes">
+        <javac debug="true" destdir="classes" srcdir="src">
+            <include name="tops/drawing/*.java"/>
+        </javac>
+    </target>
+   
+    <target name="designer-package" description="package the classfiles into a jar">
+
+        <mkdir dir="classes/cartooneditor/images"/>
+        <mkdir dir="classes/cartooneditor/templates"/>
+        <copy todir="classes/cartooneditor/images">
+            <fileset dir="data" includes="*.gif"/>
+        </copy>
+        <copy todir="classes/cartooneditor/templates">
+            <fileset dir="data" includes="*.tops"/>
+        </copy>
+        <jar destfile="designer.jar" update="false">
+            <manifest>
+                <attribute name="Main-Class" value="tops.drawing.app.TopsEditor"/>
+            </manifest>
+            <fileset dir="classes/"/>
+        </jar>
+    </target>
+
+
+	<!-- /COMPILATION TARGETS -->
+    
+</project>

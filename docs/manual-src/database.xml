@@ -1,0 +1,37 @@
+<chapter id="database">
+	<title>Data and Databases</title>
+	<section>
+		<section>
+		<title>TOPS Data in General</title>
+		 <para>
+				Originally, the results of cartoon layout were stored as flat files - called here 'TOPS files'. These contained the start and end positions of SSEs, and the hydrogen bonds calculated by dssp. They also held the coordinates of the symbols in the cartoons and the chirality relationships calculated by the tops program. Other information necessary for cartoon layout, such as fixed structures, form the rest of the data.
+ 		 </para>
+		 <para>
+		 		For matching and discovery calculations, these TOPS files were converted to prolog files. These have been further reduced to a very simple 'string' format which preserves only the name of the domain, its vertex types and orientations, and the relations (hydrogen bonds and chiralities). These are currently stored as files, with a line per domain. This makes for quite large (35,000 line) files but it is a much more compact format than a similar number of TOPS files.
+		 </para>
+		</section>
+		<section>
+			<title>Tops Leeds Database</title>
+			<para>
+					The relational database held at Leeds University is the main data store for the TOPS data. This superceedes the old TOPS files, but also contains a lot of new data on ligands and helix packing pairs (see <xref linkend="engine"/>). It has data for the whole of the protein databank (<ulink url="http://www.wwpdb.org/">PDB</ulink>) and for two classifications of domains : <ulink url="http://www.biochem.ucl.ac.uk/bsm/cath_new/index.html">CATH</ulink> and <ulink url="http://scop.mrc-lmb.cam.ac.uk/scop/">SCOP</ulink>.
+			</para>
+			<para>
+					The basic organization of the leeds database is to have key <database class="table">Secondary_Structure_Element</database> table that represents the SSEs in a <database class="table">Chain</database> of a <database class="table">Protein</database>. The different domain definitions on top of that are stored in an <database class="table">SSE_DOM</database> table - so that the same SSE can be in different domains under different classification schemes (different domain chops). The various relations over SSEs are tables off the main SSE table. 
+			</para>
+		</section>
+		<section>
+			<title>Database Connectivity</title>
+			<para>
+					There is some interface to the TOPS database from the leeds website (<ulink url="http://www.tops.leeds.ac.uk">here</ulink>), but the major programmatic interface is either through directly connecting to the MySQL server (assuming you have the password!) or by using the java classes in the database package. These classes are designed to get out all the information necessary either to recreate a TOPS file (for backwards compatability), or to generate a TOPS 'string'
+			</para>
+			<para>
+					None of the basic engine components currently connect to the database directly, since this would not really make sense. The data does not change often enough to require such 'online' retrieval. However, the web engine components are provided with string data from a rudimentary TOPS strings database. This is partly for convenience - file management across a web server and a file server can be tiresome. It is for efficiency - many of the TOPS strings that result from conversion of the data are redundant; that is, they are identical to some other string already in the database.
+			</para>
+		</section>
+		<section>
+			<title>Data Translation</title>
+			<para>
+			</para>
+		</section>
+		</section>
+</chapter>

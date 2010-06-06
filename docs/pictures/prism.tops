@@ -1,0 +1,400 @@
+##
+## TOPS: protein topology information file
+##
+## Protein code prism
+## Number of domains 1
+##
+
+DOMAIN_NUMBER 0 prism  3 301 497
+
+SecondaryStructureType N
+Direction U
+Label N
+Colour 255 255 255
+Next 2
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue -9999
+SeqFinishResidue -9999
+PDBStartResidue -9999
+PDBFinishResidue -9999
+SymbolNumber 0
+Chain  
+Chirality 0
+CartoonX 89
+CartoonY -193
+AxesStartPoint -9999.0 -9999.0 -9999.0
+AxesFinishPoint -9999.0 -9999.0 -9999.0
+SymbolRadius 20
+AxisLength -9999.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner 16
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 14
+SeqStartResidue 241
+SeqFinishResidue 243
+PDBStartResidue 302
+PDBFinishResidue 304
+SymbolNumber 1
+Chain 0
+Chirality -1
+CartoonX 169
+CartoonY -192
+AxesStartPoint 33.12174 39.722393 50.57485
+AxesFinishPoint 30.021738 36.222393 45.57485
+SymbolRadius 20
+AxisLength 6.845437
+NConnectionPoints 2
+ConnectionTo 153 -240 209 -295
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner 16
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 14
+SeqStartResidue 241
+SeqFinishResidue 243
+PDBStartResidue 302
+PDBFinishResidue 304
+SymbolNumber 2
+Chain 0
+Chirality -1
+CartoonX 244
+CartoonY -277
+AxesStartPoint 33.12174 39.722393 50.57485
+AxesFinishPoint 30.021738 36.222393 45.57485
+SymbolRadius 20
+AxisLength 6.845437
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed 4
+FixedType UNKNOWN
+BridgePartner 4 7
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 6 14 16 5 9
+SeqStartResidue 274
+SeqFinishResidue 286
+PDBStartResidue 335
+PDBFinishResidue 347
+SymbolNumber 3
+Chain 0
+Chirality 0
+CartoonX 358
+CartoonY -219
+AxesStartPoint 38.53406 31.742214 58.50686
+AxesFinishPoint 18.063496 6.833376 43.408802
+SymbolRadius 20
+AxisLength 35.601204
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next -1
+Fixed 5
+FixedType UNKNOWN
+BridgePartner 3 5 6
+BridgePartnerSide L R R
+BridgePartnerType A A A
+Neighbour 7 9 16 8 14
+SeqStartResidue 295
+SeqFinishResidue 307
+PDBStartResidue 356
+PDBFinishResidue 368
+SymbolNumber 4
+Chain 0
+Chirality 0
+CartoonX 339
+CartoonY -254
+AxesStartPoint 15.998162 7.910801 34.366962
+AxesFinishPoint 32.77996 26.963728 61.283863
+SymbolRadius 20
+AxisLength 37.002193
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner 4
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 3 16
+SeqStartResidue 320
+SeqFinishResidue 321
+PDBStartResidue 381
+PDBFinishResidue 382
+SymbolNumber 5
+Chain 0
+Chirality 0
+CartoonX 317
+CartoonY -287
+AxesStartPoint 20.2 20.7 55.7
+AxesFinishPoint 19.5 22.2 52.2
+SymbolRadius 20
+AxisLength 0.0
+NConnectionPoints 2
+ConnectionTo 368 -287 402 -216
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next 11
+Fixed 3
+FixedType UNKNOWN
+BridgePartner 3
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 4
+SeqStartResidue 329
+SeqFinishResidue 332
+PDBStartResidue 390
+PDBFinishResidue 393
+SymbolNumber 6
+Chain 0
+Chirality 0
+CartoonX 382
+CartoonY -186
+AxesStartPoint 25.900131 9.65427 50.173004
+AxesFinishPoint 34.240746 15.289566 51.52552
+SymbolRadius 20
+AxisLength 10.156363
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed 9
+FixedType SHEET
+BridgePartner 9 11
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 12 16 4 14
+SeqStartResidue 337
+SeqFinishResidue 350
+PDBStartResidue 398
+PDBFinishResidue 411
+SymbolNumber 7
+Chain 0
+Chirality 0
+CartoonX 291
+CartoonY -125
+AxesStartPoint 43.572025 26.463453 47.084084
+AxesFinishPoint 13.324165 13.285298 27.638977
+SymbolRadius 20
+AxisLength 38.297638
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next -1
+Fixed 10
+FixedType SHEET
+BridgePartner 8 10
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 11 4 16 3 12
+SeqStartResidue 353
+SeqFinishResidue 367
+PDBStartResidue 414
+PDBFinishResidue 428
+SymbolNumber 8
+Chain 0
+Chirality 0
+CartoonX 244
+CartoonY -125
+AxesStartPoint 4.389376 15.548229 30.446207
+AxesFinishPoint 45.923607 21.009827 45.600418
+SymbolRadius 20
+AxisLength 44.54853
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType SHEET
+BridgePartner 9
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour
+SeqStartResidue 372
+SeqFinishResidue 379
+PDBStartResidue 433
+PDBFinishResidue 440
+SymbolNumber 9
+Chain 0
+Chirality 0
+CartoonX 201
+CartoonY -126
+AxesStartPoint 53.11121 22.391556 45.753555
+AxesFinishPoint 31.511114 13.453886 42.33141
+SymbolRadius 20
+AxisLength 23.625349
+NConnectionPoints 2
+ConnectionTo 227 -83 324 -85
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next 12
+Fixed 8
+FixedType SHEET
+BridgePartner 8
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 9 12
+SeqStartResidue 386
+SeqFinishResidue 390
+PDBStartResidue 447
+PDBFinishResidue 451
+SymbolNumber 10
+Chain 0
+Chirality 0
+CartoonX 340
+CartoonY -126
+AxesStartPoint 26.987234 13.180794 30.148556
+AxesFinishPoint 29.042444 24.641647 32.997135
+SymbolRadius 20
+AxisLength 11.987054
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner 16
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 1 3 4 12 8
+SeqStartResidue 410
+SeqFinishResidue 419
+PDBStartResidue 471
+PDBFinishResidue 480
+SymbolNumber 11
+Chain 0
+Chirality 0
+CartoonX 221
+CartoonY -254
+AxesStartPoint 42.352245 33.370373 44.921276
+AxesFinishPoint 18.993233 23.17062 49.383297
+SymbolRadius 20
+AxisLength 25.8764
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next -1
+Fixed 1
+FixedType UNKNOWN
+BridgePartner 14 1
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 4 3 8 9 6 2 12
+SeqStartResidue 426
+SeqFinishResidue 434
+PDBStartResidue 487
+PDBFinishResidue 495
+SymbolNumber 12
+Chain 0
+Chirality 0
+CartoonX 195
+CartoonY -222
+AxesStartPoint 14.334744 19.204475 41.303272
+AxesFinishPoint 35.611862 34.696228 47.79266
+SymbolRadius 20
+AxisLength 27.107605
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType C
+Direction U
+Label C
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue -9999
+SeqFinishResidue -9999
+PDBStartResidue -9999
+PDBFinishResidue -9999
+SymbolNumber 13
+Chain  
+Chirality 0
+CartoonX 114
+CartoonY -222
+AxesStartPoint -9999.0 -9999.0 -9999.0
+AxesFinishPoint -9999.0 -9999.0 -9999.0
+SymbolRadius 20
+AxisLength -9999.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0

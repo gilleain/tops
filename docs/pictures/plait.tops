@@ -1,0 +1,232 @@
+##
+## TOPS: protein topology information file
+##
+## Protein code 2bopA
+## Number of domains 1
+##
+
+DOMAIN_NUMBER 0 2bopA0 1 326 410
+
+SecondaryStructureType N
+Direction U
+Label N1
+Colour 255 255 255
+Next 2
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue -9999
+SeqFinishResidue -9999
+PDBStartResidue -9999
+PDBFinishResidue -9999
+SymbolNumber 0
+Chain  
+Chirality 0
+CartoonX 275
+CartoonY -260
+AxesStartPoint -9999.0 -9999.0 -9999.0
+AxesFinishPoint -9999.0 -9999.0 -9999.0
+SymbolRadius 20
+AxisLength -9999.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed 6
+FixedType SHEET
+BridgePartner 6 8
+BridgePartnerSide L R
+BridgePartnerType A A
+Neighbour 4 7 5
+SeqStartResidue 1
+SeqFinishResidue 7
+PDBStartResidue 327
+PDBFinishResidue 333
+SymbolNumber 1
+Chain A
+Chirality 1
+CartoonX 274
+CartoonY -211
+AxesStartPoint 100.93524 74.7807 20.461023
+AxesFinishPoint 102.00168 59.29059 32.12946
+SymbolRadius 20
+AxisLength 19.422493
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType H
+Direction D
+Label
+Colour 255 255 255
+Next 3
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour 6
+SeqStartResidue 9
+SeqFinishResidue 22
+PDBStartResidue 335
+PDBFinishResidue 348
+SymbolNumber 2
+Chain A
+Chirality 0
+CartoonX 215
+CartoonY -152
+AxesStartPoint 106.871956 51.562923 33.68111
+AxesFinishPoint 99.2211 53.922802 15.874664
+SymbolRadius 20
+AxisLength 19.523682
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction U
+Label
+Colour 255 255 255
+Next -1
+Fixed 4
+FixedType SHEET
+BridgePartner 6
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 1
+SeqStartResidue 34
+SeqFinishResidue 37
+PDBStartResidue 360
+PDBFinishResidue 363
+SymbolNumber 5
+Chain A
+Chirality 0
+CartoonX 173
+CartoonY -210
+AxesStartPoint 110.59977 58.164223 26.871231
+AxesFinishPoint 113.22788 63.341743 35.802807
+SymbolRadius 20
+AxisLength 10.653016
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next -1
+Fixed 5
+FixedType SHEET
+BridgePartner 5 1 4
+BridgePartnerSide R L R
+BridgePartnerType A A A
+Neighbour 8 2
+SeqStartResidue 44
+SeqFinishResidue 54
+PDBStartResidue 370
+PDBFinishResidue 380
+SymbolNumber 6
+Chain A
+Chirality 1
+CartoonX 225
+CartoonY -210
+AxesStartPoint 114.81208 57.854736 42.268574
+AxesFinishPoint 100.88835 65.23619 20.368189
+SymbolRadius 20
+AxisLength 26.98116
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType H
+Direction U
+Label
+Colour 255 255 255
+Next 8
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour 3 1 4 8
+SeqStartResidue 57
+SeqFinishResidue 66
+PDBStartResidue 383
+PDBFinishResidue 392
+SymbolNumber 7
+Chain A
+Chirality 0
+CartoonX 280
+CartoonY -152
+AxesStartPoint 94.05771 73.34276 17.481516
+AxesFinishPoint 89.84245 61.14913 22.9544
+SymbolRadius 20
+AxisLength 14.014469
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction D
+Label
+Colour 255 255 255
+Next 9
+Fixed 1
+FixedType SHEET
+BridgePartner 1
+BridgePartnerSide L
+BridgePartnerType A
+Neighbour 6 7
+SeqStartResidue 74
+SeqFinishResidue 79
+PDBStartResidue 400
+PDBFinishResidue 405
+SymbolNumber 8
+Chain A
+Chirality 0
+CartoonX 331
+CartoonY -203
+AxesStartPoint 97.712685 57.186066 34.504784
+AxesFinishPoint 98.64254 72.65705 27.646204
+SymbolRadius 20
+AxisLength 16.948633
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType C
+Direction U
+Label C2
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue -9999
+SeqFinishResidue -9999
+PDBStartResidue -9999
+PDBFinishResidue -9999
+SymbolNumber 9
+Chain  
+Chirality 0
+CartoonX 331
+CartoonY -260
+AxesStartPoint -9999.0 -9999.0 -9999.0
+AxesFinishPoint -9999.0 -9999.0 -9999.0
+SymbolRadius 20
+AxisLength -9999.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0

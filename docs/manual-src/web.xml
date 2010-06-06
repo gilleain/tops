@@ -1,0 +1,35 @@
+<chapter id="web">
+		<title>Web Sites and Services</title>
+		<section>
+				<section>
+						<title>Web Services</title>
+						<para>
+							There are a variety of web 'services' (if that is the right term) available from the two web sites. The main <ulink url="http://www.tops.leeds.ac.uk">Leeds</ulink> site provides users with the means to look up the cartoons for particular proteins, and to submit PDB files for processing into a cartoon. There are also links to some of the services on the <ulink url="http://balabio.dcs.gla.ac.uk/tops">Glasgow</ulink> site, such as matching and comparison.
+						</para>
+						<para>
+							The services at Glasgow are backed by the same basic engine components described in <xref linkend="engine"/>. However, there are a few different ways to supply the data as input to the backend. Matching and comparison can be done using either a PDB file (which is converted to a TOPS string) or by providing the string itself. There is also an interface to the matching engine that uses a library of predefined patterns (Rosmann Folds, TIM barrels, and so forth). These are stored in a database table, and can be added to or removed without affecting the system.
+						</para>
+				</section>
+				<section>
+						<title>Servlet Web Engine Components</title>
+						<para>
+							The servlets that connect the HTML forms of the interface to the basic engine components of the backend do a variety of roles. There is the conversion of PDB files to dssp files, TOPS files, and finally strings - carried out by the <classname>PipelineServlet</classname> and some accessory classes. There are database queries to make to get the data to compute over, done in those servlets that also call the engine components.
+						</para>
+						<para>
+							Many of these servlets output logging data, for debugging purposes and for simply tracking usage of each service. Since many services go through the central <classname>PipelineServlet</classname>, it is convenient to record here which servlet the data is being passed on to; in fact, one of the parameters passed by some forms and servlets is a <varname>targetService</varname> string that is used to determine where the data is sent.
+						</para>
+				</section>
+				<section>
+						<title>Applet and Servlet Web Display Components</title>
+						<para>
+							There are two forms of graphical results used on the web site : cartoons and diagrams. These two types of display are discussed in <xref linkend="visualization"/> in more detail, but there are some differences for the web display. The cartoon drawing capabilities of the <classname>CartoonServlet</classname> allow production of the output as any of : GIF image, Portable Document Format (PDF), PostScript (PS), or Scalable Vector Graphics (SVG). Much of the code for this was from David Westhead's editor application for modifying existing cartoons.
+						</para>
+						<para>
+							There is also the beginnings of an applet that also uses some of the editor components with the intention that it could become the front end to submitting user-defined structures instead of laboriously typing out a TOPS string. To do this correctly, however, it requires the ability to add hydrogen bonding and chiralities to the linked list of SSEs and to then export this data as a string.
+						</para>
+						<para>
+							Although it is not much used, an applet is available for display of TOPS strings as diagrams - that is, as linear graphs. It uses parameters in the applet tag to get the data; a <varname>head</varname> parameter gives the name of the structure, a <varname>body</varname> parameter gives the vertex string, and a <varname>tail</varname> parameter gives the edge string. This code has now been transplanted into a servlet, which takes the same parameters, but returns a GIF image.
+						</para>
+				</section>
+		</section>
+</chapter>

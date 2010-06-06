@@ -1,0 +1,56 @@
+<chapter id="engine">
+	<title>Computational Engine</title>
+		<section>
+				<section>
+						<title>Graphs and Patterns : Some Definitions</title>
+						<para>
+						Throughout this section, some terms will be used : graphs, subgraphs, patterns, matching, and so on. <emphasis>Graphs</emphasis> are mathematical objects and computer science data structures composed of <emphasis>edges</emphasis> and <emphasis>vertices</emphasis>. TOPS graphs are composed of edges that represent hydrogen bonds, chiralities, and helix packing relations. The vertices in such a graph are regular elements of secondary structure - namely, helices and strands.
+						</para>
+						<para>
+						Patterns are also graphs, and may well be identical to the graphs of real structures. However, they may also be derived from two or more structures - in which case a pattern is the <emphasis>maximal common subgraph</emphasis> of two <emphasis>instance</emphasis> (or <emphasis>target</emphasis>) graphs. Also, patterns  include the idea of inserts (see below). In fact, even patterns seemingly without inserts can be considered to allow inserts of any size between each vertex.
+						</para>
+				</section>
+				<section>
+						<title>Juris Viksna's Matching Algorithm</title>
+						<para>
+						The subgraph isomorphism algorithm used for TOPS graphs was developed by Juris Viksna. It is well suited to the kinds of graphs that the tops system uses; they generally have roughly equal numbers of vertices and edges, they are not fully connected, and they can be considered as a 'linear' graph.
+						</para>
+						<para>
+						The algorithm exploits this linearity of the TOPS graphs. It first finds the places in the target where edges from the pattern <emphasis>could</emphasis> match; and then it moves along the matches until a continuous, connected component of the pattern is found in the target.
+						</para>
+				</section>
+				<section>
+						<title>David Gilbert's Pattern Discovery Heuristic</title>
+						<para>
+						This is an alternative to an exhaustive pattern discovery approach - which is  guaranteed to find the solution. However, the heuristic is much faster; especially so for longer graphs (that is, larger proteins). The downside is that it may miss the best pattern (the largest possible subgraph) because it does not try all possible solutions.
+						</para>
+						<para>
+						The basic principle of pattern discovery is the same for either method : generate a series of graphs (or 'patterns') and match each one to the target graph using the subgraph isomorphism code. This can be thought of as a search through a tree of possible graphs - a tree of structures - that is constrained by matching. A particular branch of the tree is not searched if the graph that represents the root of that tree did not match.
+						</para>
+						</section>
+				<section>
+						<title>Inserts in Patterns</title>
+						<para>
+						A major improvement to the TOPS matching and pattern discovery system as it stands is the inclusion of inserts in patterns. This was possible in the previous <application>prolog</application> version of the system, but not with the improved, faster matching algorithm. An <emphasis>insert</emphasis> is a constraint imposed on a pair of neighbouring vertices in a pattern. This constraint may be as simple as the maximum number of 'inserted' vertices allowed between the endpoints in a match to a target.
+						</para>
+						<para>
+						Inserts in patterns serve two purposes : making the pattern more specific by restricting the targets to which it will match, and enriching the relationship amongst patterns. Since a pattern can be considered as an instance, patterns can be matched to other patterns to get tree-like relationships.
+						</para>
+				</section>
+				<section>
+						<title>Helix Packing Pairs</title>
+						<para>
+						A completely new source of data for TOPS is relations amongst helices. This data comes from a <application>C</application> program written by a masters student. It is held in the Leeds database (see <xref linkend="database"/>) as several tables with quite a large amount of data. For any particular helix packing pair (HPP), only the identity of the helices involved in the pair and the relative orientation of the pair is relevant.
+						</para>
+						<para>
+						In theory, these new edges are not very different from the other edge types. Hydrogen bonds between each of a pair of strands are almost identical to a HPP between helices. This is only true if the relations are constrained to parallel and antiparallel - which is slightly unrealistic for helices. In any case, even this data is enough to improve the patterns for all-alpha proteins.
+						</para>
+				</section>
+				<section>
+						<title>Running Engine Programs</title>
+						<para>
+						
+						</para>
+				</section>
+		</section>
+</chapter>

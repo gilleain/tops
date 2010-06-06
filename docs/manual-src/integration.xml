@@ -1,0 +1,27 @@
+<chapter id="integration">
+	<title>Integration</title>
+		<section>
+				<section>
+					<title>Data Exchange Formats : TOPS strings</title>
+					<para>
+						One of the benefits of using the compressed TOPS string format is that it makes glueing the various components of the system together very easy. Applets can be initialized with string parameters instead of having to load from files, whole databases of structures can be kept in a single file, and the results of a computation are easily readable on the command line. 
+					</para>
+					<para>
+						Unfortunately, this is not the most flexible of formats, and it is difficult to change. Some of the software in the current TOPS system could benefit from using classification strings to allow the user to distinguish 'good' matches from 'bad' matches. This has been somewhat arbitrarily tacked onto the end of the string format to produce a four part string
+						: "name vertices edges classification".
+					</para>
+					<para>
+						Some attempt has been made to abstract away some of the detail of this parsing by creating a <classname>TParser</classname> class to handle the splitting up of the string into parts and the further splitting of parts into bits. This task is quite irritating for the edge strings, as they were formulated without due attention to the ease of parsing. It is possible that some kind of XML may be more suitable - although tighter integration with the databases would also help.
+					</para>
+				</section>
+				<section>
+					<title>Connections between Web Components and the Engine</title>
+					<para>
+						
+					</para>
+				</section>
+				<section>
+					<title>Visualization of Results from Web Services</title>
+				</section>
+	</section>
+</chapter>

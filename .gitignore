@@ -1,0 +1,8 @@
+docs/javadocs
+data
+thirdpartylibs
+web/WEB-INF/lib/
+.DS_Store
+classes
+jars
+designer.jar
