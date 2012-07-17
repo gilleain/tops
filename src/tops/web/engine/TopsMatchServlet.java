@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import tops.engine.TopsStringFormatException;
 import tops.engine.drg.Matcher;
 
-public class TopsMatchServlet extends javax.servlet.http.HttpServlet {
+public class TopsMatchServlet extends HttpServlet {
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)

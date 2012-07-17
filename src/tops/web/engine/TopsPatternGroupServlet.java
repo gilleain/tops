@@ -1,16 +1,19 @@
 package tops.web.engine;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-import java.sql.SQLException;
-import java.sql.ResultSet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 //import tops.engine.drg.Explorer;
 
-public class TopsPatternGroupServlet extends javax.servlet.http.HttpServlet {
+public class TopsPatternGroupServlet extends HttpServlet {
 
     public String getPattern(String pattern_id) {
         String query = "SELECT * FROM TOPS_pattern WHERE pattern_id = "

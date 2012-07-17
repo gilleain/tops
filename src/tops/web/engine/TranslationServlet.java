@@ -2,21 +2,19 @@ package tops.web.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.servlet.ServletException;
-
-import com.oreilly.servlet.MultipartRequest; //accessory class from writer of oreilly 'java servlet programming' book
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import tops.translation.PDBFileConverter;
+
+import com.oreilly.servlet.MultipartRequest;
 
 public class TranslationServlet extends HttpServlet {
 
