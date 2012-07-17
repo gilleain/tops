@@ -8,7 +8,8 @@
 	<classpathentry kind="lib" path="thirdpartylibs/pjatools.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/vecmath.jar"/>
 	<classpathentry kind="lib" path="thirdpartylibs/colt.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/vecmath.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/servlet.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Applications/eclipse/plugins/javax.servlet_2.4.0.v200806031604.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
