@@ -1,0 +1,1 @@
+A set of java servlets along with a java backend for matching protein secondary structural element (SSE) patterns to 3D protein structure instances. The underlying model is the TOPS (Topology Of Protein Structures) which is a Eulerian graph of SSEs connected by edges representing either hydrogen bond ladders or chirality relationships.
