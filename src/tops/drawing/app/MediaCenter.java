@@ -10,10 +10,10 @@ import java.util.HashMap;
 public class MediaCenter {
 
     private static MediaCenter reference;
-    private static HashMap images;
+    private static HashMap<String, Image> images;
 
     private MediaCenter() {
-        MediaCenter.images = new HashMap();
+        MediaCenter.images = new HashMap<String, Image>();
         for (int i = 0; i < buttonImageNames.length; i++) {
             URL imageURL = this.getClass().getResource("images/" + MediaCenter.buttonImageNames[i] + ".gif");
             if (imageURL == null) {

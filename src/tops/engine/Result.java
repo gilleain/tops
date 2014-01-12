@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 //accessory class to store result lines so that they can be sorted by compression more easily
 
-public class Result implements Comparable, Serializable {
+public class Result implements Comparable<Result>, Serializable {
 
     private String id;
 
@@ -57,9 +57,8 @@ public class Result implements Comparable, Serializable {
         this.classification = classification;
     }
 
-    public int compareTo(Object other) {
-        Result otherResult = (Result) other;
-        float otherCompression = otherResult.getCompression();
+    public int compareTo(Result other) {
+        float otherCompression = other.getCompression();
         return Float.compare(otherCompression, this.compression); // reverse
                                                                     // sort
     }

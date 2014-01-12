@@ -2,7 +2,6 @@ package tops.drawing.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
 
 
@@ -12,10 +11,10 @@ import java.util.Iterator;
  */
 public class TSE {
     
-    private ArrayList elements;
+    private ArrayList<SSE> elements;
     
     public TSE() {
-        this.elements = new ArrayList();
+        this.elements = new ArrayList<SSE>();
     }
     
     public TSE(SSE initial) {
@@ -103,9 +102,7 @@ public class TSE {
     }
 
     public boolean contains(int sseNumber) {
-        Iterator itr = this.elements.iterator();
-        while (itr.hasNext()) {
-            SSE strand = (SSE) itr.next();
+        for (SSE strand : this.elements) {
             if (strand.isNumber(sseNumber)) {
                 return true;
             }
@@ -117,11 +114,11 @@ public class TSE {
         return this.contains(a.getSSENumber()) && this.contains(b.getSSENumber());
     }
     
-    public ArrayList getSSEs() {
+    public ArrayList<SSE> getSSEs() {
         return this.elements;
     }
     
-    public ArrayList getElements() {
+    public ArrayList<SSE> getElements() {
         return this.elements;
     }
     

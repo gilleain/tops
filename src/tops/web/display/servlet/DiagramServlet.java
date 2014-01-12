@@ -36,7 +36,7 @@ public class DiagramServlet extends HttpServlet {
         System.setProperty("awt.toolkit", "com.eteks.awt.PJAToolkit");
 
         try {
-            Class c = DiagramDrawer.class;
+            Class<DiagramDrawer> c = DiagramDrawer.class;
             com.eteks.awt.PJAGraphicsManager.getDefaultGraphicsManager()
                     .loadFont(
                             c.getClassLoader().getResourceAsStream("pja.pjaf"));

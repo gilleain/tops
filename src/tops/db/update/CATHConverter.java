@@ -9,10 +9,10 @@ public class CATHConverter extends ClassificationConverter {
     }
 
     @Override
-    public HashMap parseDomainList(ArrayList lines) {
-        HashMap data = new HashMap();
+    public HashMap<String, String> parseDomainList(ArrayList<String> lines) {
+        HashMap<String, String> data = new HashMap<String, String>();
         for (int i = 0; i < lines.size(); i++) {
-            String line = (String) lines.get(i);
+            String line = lines.get(i);
             if (line.substring(0, 1).equals("#")) {
                 continue;
             } else {
@@ -74,29 +74,24 @@ public class CATHConverter extends ClassificationConverter {
                             domainBoundaryFileURL, domainBoundaryFilename);
 
             // Step 2 : Parse the file, and store a list of domain names.
-            ArrayList lines = converter.readListFile(listFilePath);
-            HashMap domainClassificationMap = converter.parseDomainList(lines);
+            ArrayList<String> lines = converter.readListFile(listFilePath);
+            HashMap<String, String> domainClassificationMap = converter.parseDomainList(lines);
 
             // Step 3 : Convert domain names to chain names and diff with the
             // existing chain files in the tops directory.
-            ArrayList chains = converter
-                    .getChainsFromDomains(domainClassificationMap);
-            ArrayList existingChainNames = converter
-                    .getExistingChainNames(topsFileDirectory);
-            ArrayList newChainNames = converter.determineNewChains(chains,
-                    existingChainNames);
+            ArrayList<String> chains = converter.getChainsFromDomains(domainClassificationMap);
+            ArrayList<String> existingChainNames = converter.getExistingChainNames(topsFileDirectory);
+            ArrayList<String> newChainNames = converter.determineNewChains(chains,existingChainNames);
 
             // Step 4 : Get PDB-IDs and check that we have the PDB files,
             // downloading the missing ones.
-            ArrayList newPDBIDList = converter
-                    .getPDBIDsFromChains(newChainNames);
-            ArrayList missingPDBIDs = converter.getPDBFilesToDownload(
-                    newPDBIDList, pdbFileDirectory, pdbDirectoryHasStructure);
+            ArrayList<String> newPDBIDList = converter.getPDBIDsFromChains(newChainNames);
+            ArrayList<String> missingPDBIDs = converter.getPDBFilesToDownload(newPDBIDList, pdbFileDirectory, pdbDirectoryHasStructure);
             converter.downloadMissingPDBFiles(missingPDBIDs, pdbURL,
                     scratchDirectory);
 
             // Step 5 : Convert the PDB files to DSSP and TOPS/String files.
-            ArrayList stringList = converter.convertFiles(newChainNames,
+            ArrayList<String> stringList = converter.convertFiles(newChainNames,
                     missingPDBIDs, currentDirectory, domainBoundaryFilePath,
                     pdbFileDirectory, pdbDirectoryHasStructure,
                     scratchDirectory, dsspExecutable, topsExecutable);

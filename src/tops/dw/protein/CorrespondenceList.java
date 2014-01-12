@@ -1,6 +1,7 @@
 package tops.dw.protein;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author maclean
@@ -10,12 +11,12 @@ import java.util.ArrayList;
  */
 public class CorrespondenceList {
 	
-	private ArrayList names;
-	private ArrayList correspondences;
+	private List<String> names;
+	private List<int[]> correspondences;
 	
 	public CorrespondenceList() {
-		this.names = new ArrayList();
-		this.correspondences = new ArrayList();
+		this.names = new ArrayList<String>();
+		this.correspondences = new ArrayList<int[]>();
 	}
 	
 	/**

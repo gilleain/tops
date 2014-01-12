@@ -11,10 +11,10 @@ import java.util.ArrayList;
  */
 public class LayerGroup implements LayerElement {
     
-    private ArrayList elements;
+    private ArrayList<LayerElement> elements;
     
     public LayerGroup() {
-        this.elements = new ArrayList();
+        this.elements = new ArrayList<LayerElement>();
     }
     
     public boolean equals(LayerElement other) {
@@ -40,7 +40,7 @@ public class LayerGroup implements LayerElement {
     public void layout(int centerX, int centerY, GeometricParameters p) {
         int xPos = centerX;
         for (int i = 0; i < this.elements.size(); i++) {
-            LayerElement element = (LayerElement) this.elements.get(i);
+            LayerElement element = this.elements.get(i);
             element.layout(xPos, centerY, p);
             //System.out.println("Laying out " + strand + " at " + xPos);
             xPos += p.separation;
@@ -49,7 +49,7 @@ public class LayerGroup implements LayerElement {
     
     public void draw(Graphics2D g) {
         for (int i = 0; i < this.elements.size(); i++) {
-            LayerElement element = (LayerElement) this.elements.get(i);
+            LayerElement element = this.elements.get(i);
             element.draw(g);
         }
     }

@@ -16,9 +16,9 @@ public class PairwiseFinder {
 
     private BufferedReader buffy;
 
-    private Map instMap;
+    private Map<String, String> instMap;
 
-    private List pairList;
+    private List<String[]> pairList;
 
     private Constrainer c;
 
@@ -36,8 +36,8 @@ public class PairwiseFinder {
 
     public PairwiseFinder(int lowerindex, int upperindex, String instFi) {
         this.maxpat = "";
-        this.pairList = new ArrayList();
-        this.instMap = new HashMap(3000);
+        this.pairList = new ArrayList<String[]>();
+        this.instMap = new HashMap<String, String>(3000);
 
         try {
             this.inFile = new FileReader(instFi);
@@ -48,7 +48,7 @@ public class PairwiseFinder {
         this.buffy = new BufferedReader(this.inFile);
 
         // use a map for the strings (more efficient lookup?)
-        ArrayList tmpList = new ArrayList();
+        ArrayList<String> tmpList = new ArrayList<String>();
         TParser tp = new TParser();
         try {
             while ((this.instr = this.buffy.readLine()) != null) {

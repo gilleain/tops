@@ -90,7 +90,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
 
     private Rectangle selectBox;
 
-    private ArrayList selectBoxList;
+    private ArrayList<SecStrucElement> selectBoxList;
 
     private int minimumSeparation = 10;;
 
@@ -146,7 +146,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
 
 //        SizeDisplay = true;
 
-        this.selectBoxList = new ArrayList();
+        this.selectBoxList = new ArrayList<SecStrucElement>();
     }
 
     /**
@@ -516,15 +516,15 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         this.repaint();
     }
 
-    public void flipMultiple(ArrayList list) {
-        Iterator itr = list.iterator();
+    public void flipMultiple(ArrayList<SecStrucElement> list) {
+        Iterator<SecStrucElement> itr = list.iterator();
         while (itr.hasNext()) {
             SecStrucElement s = (SecStrucElement) itr.next();
             this.flip(s);
         }
     }
 
-    public void linearLayout(ArrayList list, int minX, int maxX) {
+    public void linearLayout(ArrayList<SecStrucElement> list, int minX, int maxX) {
         int numberOfSymbols = list.size();
         if (numberOfSymbols < 2)
             return;
@@ -533,7 +533,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         // SORT
         // now, find the average X-coordinate of the list
         int sumY = 0;
-        Iterator itr = list.iterator();
+        Iterator<SecStrucElement> itr = list.iterator();
         SecStrucElement s;
         while (itr.hasNext()) {
             s = (SecStrucElement) itr.next();
@@ -557,7 +557,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         this.CenterDiagram();
     }
 
-    public void circularLayout(ArrayList list, Rectangle bounds) {
+    public void circularLayout(ArrayList<SecStrucElement> list, Rectangle bounds) {
         int numberOfSymbols = list.size();
         if (numberOfSymbols < 3)
             return; // be ruth-less
@@ -568,7 +568,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         int sumY = 0;
 
         SecStrucElement s;
-        Iterator itr = list.iterator();
+        Iterator<SecStrucElement> itr = list.iterator();
         while (itr.hasNext()) {
             s = (SecStrucElement) itr.next();
             Point pos = s.GetPosition();
@@ -767,7 +767,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         this.SelectedSymbol = null;
     }
 
-    public synchronized void selectContained(Rectangle r, ArrayList list) {
+    public synchronized void selectContained(Rectangle r, ArrayList<SecStrucElement> list) {
         list.clear();
 
         for (SecStrucElement s = this.RootSecStruc; s != null; s = s.GetTo()) {
@@ -838,8 +838,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         SecStrucElement s;
         Point p;
         int x, y, r;
-        Vector conns;
-        Enumeration en;
+        Vector<?> conns;
+        Enumeration<?> en;
 
         for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
 
@@ -881,8 +881,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
      */
     public synchronized void TranslateDiagram(int x, int y) {
         SecStrucElement s;
-        Vector conns;
-        Enumeration en;
+        Vector<?> conns;
+        Enumeration<?> en;
         Point p;
 
         for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
@@ -932,8 +932,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
 
     /* private method to invert the diagrams Y coordinates */
     private synchronized void InvertY() {
-        Vector conns;
-        Enumeration en;
+        Vector<?> conns;
+        Enumeration<?> en;
         Point p;
         SecStrucElement s;
 
@@ -1323,7 +1323,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         /* the case where there are some intervening connection points */
         else {
 
-            Enumeration ConnectionEnum = s.GetConnectionTo().elements();
+            Enumeration<?> ConnectionEnum = s.GetConnectionTo().elements();
             Point PointTo = (Point) ConnectionEnum.nextElement();
 
             this.JoinPoints(s.GetPosition(), s.Direction, s.Type, FromScreenR,

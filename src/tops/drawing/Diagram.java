@@ -6,7 +6,6 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
@@ -23,9 +22,9 @@ import tops.drawing.symbols.Triangle;
  */
 public class Diagram {
     
-    private ArrayList sseSymbols;
-    private ArrayList arcs;
-    private ArrayList backbone;
+    private ArrayList<SSESymbol> sseSymbols;
+    private ArrayList<Arc> arcs;
+    private ArrayList<Line> backbone;
     
     private boolean isLaidOut;
     
@@ -33,9 +32,9 @@ public class Diagram {
     private int height;
     
     public Diagram() {
-        this.sseSymbols = new ArrayList();
-        this.arcs = new ArrayList();
-        this.backbone = new ArrayList();
+        this.sseSymbols = new ArrayList<SSESymbol>();
+        this.arcs = new ArrayList<Arc>();
+        this.backbone = new ArrayList<Line>();
         
         this.isLaidOut = false;
         
@@ -88,18 +87,18 @@ public class Diagram {
 
         int xpos = centerSeparation;
         for (int i = 0; i < numberOfVertices; ++i) {
-            SSESymbol sse = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sse = this.sseSymbols.get(i);
             sse.setDimensions(xpos, axis, symbolRadius);
             xpos += centerSeparation;
         }
         
         for (int j = 0; j < this.arcs.size(); j++) {
-            Arc arc = (Arc) this.arcs.get(j);
+            Arc arc = this.arcs.get(j);
             arc.recreateShape();
         }
         
         for (int k = 0; k < this.backbone.size(); k++) {
-            Line line = (Line) this.backbone.get(k);
+            Line line = this.backbone.get(k);
             line.recreateShape();
         }
         
@@ -152,8 +151,8 @@ public class Diagram {
                 int l = Integer.parseInt(edgeStr.substring(0, Cpos));
                 int r = Integer.parseInt(edgeStr.substring(Cpos + 1, edgeStr.length()));
                 
-                SSESymbol left = (SSESymbol) this.sseSymbols.get(l);
-                SSESymbol right = (SSESymbol) this.sseSymbols.get(r);
+                SSESymbol left = this.sseSymbols.get(l);
+                SSESymbol right = this.sseSymbols.get(r);
                 
                 switch (ch) {
                     case 'A':
@@ -200,7 +199,7 @@ public class Diagram {
             String pair = st.nextToken();
             int dash = pair.indexOf("-");
             Integer vertexToHighlight = Integer.valueOf(pair.substring(dash + 1));
-            SSESymbol vertex = (SSESymbol) this.sseSymbols.get(vertexToHighlight.intValue());
+            SSESymbol vertex = this.sseSymbols.get(vertexToHighlight.intValue());
             vertex.setSelectionState(true);
         }
     }
@@ -208,9 +207,9 @@ public class Diagram {
     /**
      * @param symbolNumbers an ArrayList of Integers
      */
-    public void flipSSEList(ArrayList symbolNumbers) {
+    public void flipSSEList(ArrayList<Integer> symbolNumbers) {
         for (int i = 0; i < symbolNumbers.size(); i++) {
-            int s = ((Integer) symbolNumbers.get(i)).intValue();
+            int s = symbolNumbers.get(i);
             this.flipSSE(s);
         }
     }
@@ -224,15 +223,15 @@ public class Diagram {
 
     public void flip() {
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             sseSymbol.flip();
         }
     }
     
-    public ArrayList getSelectedSymbolNumbers() {
-        ArrayList selectedNumbers = new ArrayList();
+    public ArrayList<Integer> getSelectedSymbolNumbers() {
+        ArrayList<Integer> selectedNumbers = new ArrayList<Integer>();
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             if (sseSymbol.isSelected()) {
                 selectedNumbers.add(sseSymbol.getSymbolNumber());
             }
@@ -240,10 +239,10 @@ public class Diagram {
         return selectedNumbers;
     }
     
-    public ArrayList getSelectedSymbols() {
-        ArrayList selectedSymbols = new ArrayList();
+    public ArrayList<SSESymbol> getSelectedSymbols() {
+        ArrayList<SSESymbol> selectedSymbols = new ArrayList<SSESymbol>();
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             if (sseSymbol.isSelected()) {
                 selectedSymbols.add(sseSymbol);
             }
@@ -253,7 +252,7 @@ public class Diagram {
     
     public SSESymbol getSymbolWithNumber(int symbolNumber) {
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             if (sseSymbol.hasSymbolNumber(symbolNumber)) {
                 return sseSymbol;
             }
@@ -263,7 +262,7 @@ public class Diagram {
     
     public SSESymbol getSSESymbolAt(int x, int y) {
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             if (sseSymbol.containsPoint(x, y)) {
                 return sseSymbol;
             }
@@ -281,7 +280,7 @@ public class Diagram {
     public SSESymbol toggleSelectSymbolAt(int x, int y) {
         SSESymbol selected = null;
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             if (sseSymbol.containsPoint(x, y)) {
                 if (sseSymbol.isSelected()) {
                     sseSymbol.setSelectionState(false);
@@ -321,7 +320,7 @@ public class Diagram {
     public SSESymbol toggleHighlightSymbolAt(int x, int y) {
         SSESymbol highlighted = null;
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             if (sseSymbol.containsPoint(x, y)) {
                 sseSymbol.setHighlightState(true);
                 highlighted = sseSymbol;
@@ -350,7 +349,7 @@ public class Diagram {
     public Line toggleHighlightConnectionAt(int x, int y) {
         Line highlighted = null;
         for (int i = 0; i < this.backbone.size(); i++) {
-            Line line = (Line) this.backbone.get(i);
+            Line line = this.backbone.get(i);
             if (line.containsPoint(x, y)) {
                 line.setHighlightState(true);
                 highlighted = line;
@@ -363,7 +362,7 @@ public class Diagram {
     
     public Line getHighlightedConnection() {
         for (int i = 0; i < this.backbone.size(); i++) {
-            Line line = (Line) this.backbone.get(i);
+            Line line = this.backbone.get(i);
             if (line.isHighlighted()) {
                 return line;
             }
@@ -373,7 +372,7 @@ public class Diagram {
     
     public boolean hasSelectedSymbols() {
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             if (sseSymbol.isSelected()) {
                 return true;
             }
@@ -383,7 +382,7 @@ public class Diagram {
     
     public void unselectAll() {
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
             sseSymbol.setSelectionState(false);
         }
     }
@@ -419,8 +418,8 @@ public class Diagram {
         int indexOfSSEToRemove = this.sseSymbols.indexOf(sseToRemove);
         
         // get the left incoming backbone segment and connect it to the next sse after the one to be deleted
-        Line insertionPoint = (Line) this.backbone.get(indexOfSSEToRemove - 1);
-        insertionPoint.setEndSSESymbol((SSESymbol) this.sseSymbols.get(indexOfSSEToRemove + 1));
+        Line insertionPoint = this.backbone.get(indexOfSSEToRemove - 1);
+        insertionPoint.setEndSSESymbol(this.sseSymbols.get(indexOfSSEToRemove + 1));
         
         this.renumberFrom(indexOfSSEToRemove + 1, -1);
         
@@ -434,9 +433,9 @@ public class Diagram {
         return insertionPoint;
     }
     
-    public void addEdges(ArrayList edgesToAdd) {
+    public void addEdges(ArrayList<Arc> edgesToAdd) {
         this.arcs.addAll(edgesToAdd);
-        Collections.sort(this.arcs);
+//        Collections.sort(this.arcs);	 TODO : implement sorting of arcs!
     }
     
     public void addArc(Arc arc) {
@@ -444,11 +443,9 @@ public class Diagram {
     }
     
     
-    public ArrayList getArcsFrom(SSESymbol sseSymbol) {
-        Iterator arcIterator = this.arcs.iterator();
-        ArrayList arcsFromSSE = new ArrayList();
-        while (arcIterator.hasNext()) {
-            Arc arc = (Arc) arcIterator.next();
+    public ArrayList<Arc> getArcsFrom(SSESymbol sseSymbol) {
+        ArrayList<Arc> arcsFromSSE = new ArrayList<Arc>();
+        for (Arc arc : this.arcs) {
             if (arc.contains(sseSymbol)) {
                 arcsFromSSE.add(arc);
             }
@@ -467,7 +464,7 @@ public class Diagram {
      */
     public void renumberFrom(int number, int diff) {
         for (int i = number; i < this.sseSymbols.size(); i++) {
-            SSESymbol nextSSE = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol nextSSE = this.sseSymbols.get(i);
             int newNumber = i + diff;
             System.out.println("renumbering " + nextSSE.toString() + " to " + newNumber);
             nextSSE.setSymbolNumber(newNumber);
@@ -491,18 +488,18 @@ public class Diagram {
         g2.fillRect(0, 0, this.width, this.height);
         
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol s = (SSESymbol) this.sseSymbols.get(i);
+            SSESymbol s = this.sseSymbols.get(i);
 //            System.out.println("drawing " + s + " at " + s.getCenter());
             s.draw(g2);
         }
         
         for (int b = 0; b < this.backbone.size(); b++) {
-            Line line =  (Line) this.backbone.get(b);
+            Line line =  this.backbone.get(b);
             line.draw(g2);
         }
         
         for (int j = 0; j < this.arcs.size(); j++) {
-            Arc arc = (Arc) this.arcs.get(j);
+            Arc arc = this.arcs.get(j);
             arc.draw(g2);
         }
     }
@@ -527,18 +524,18 @@ public class Diagram {
         Shape[] shapes = new Shape[numberOfObjects];
         Color[] colors = new Color[numberOfObjects];
         int index = 0;
-        Iterator sseItr = this.sseSymbols.iterator();
+        Iterator<SSESymbol> sseItr = this.sseSymbols.iterator();
 
         while (sseItr.hasNext()) {
-            SSESymbol sse = (SSESymbol) (sseItr.next());
+            SSESymbol sse = (sseItr.next());
             shapes[index] = sse.getShape();
             colors[index] = sse.getColor();
             index++;
         }
 
-        Iterator j = this.arcs.iterator();
+        Iterator<Arc> j = this.arcs.iterator();
         while (j.hasNext()) {
-            Arc arc = (Arc) (j.next());
+            Arc arc = (j.next());
             shapes[index] = arc.getShape();
             colors[index] = arc.getColor();
             index++;

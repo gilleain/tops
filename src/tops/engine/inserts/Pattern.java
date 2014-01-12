@@ -2,7 +2,7 @@ package tops.engine.inserts;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,11 +25,11 @@ public class Pattern {
 
     private Edge currentChiralEdge;
 
-    private ArrayList vertices;
+    private List<Vertex> vertices;
 
-    private ArrayList edges;
+    private List<Edge> edges;
 
-    private ArrayList insertList;
+    private List<Insert> insertList;
 
     private static Logger logger = Logger
             .getLogger("tops.engine.inserts.Pattern");
@@ -38,9 +38,9 @@ public class Pattern {
 
     public Pattern() {
         this.head = new String("pattern:");
-        this.vertices = new ArrayList();
-        this.edges = new ArrayList();
-        this.insertList = new ArrayList();
+        this.vertices = new ArrayList<Vertex>();
+        this.edges = new ArrayList<Edge>();
+        this.insertList = new ArrayList<Insert>();
         this.outsertC = "";
         this.outsertN = "";
         this.compression = 1.0f;
@@ -113,8 +113,8 @@ public class Pattern {
         int rangeMaximum = 0;
         int left = e.getLeft();
         int right = e.getRight();
-        ArrayList subSequence = this.getSubSequence(left, right);
-        Iterator itr = subSequence.iterator();
+        ArrayList<Object> subSequence = this.getSubSequence(left, right);
+        Iterator<Object> itr = subSequence.iterator();
         while (itr.hasNext()) {
             Object o = itr.next();
             if (o instanceof Vertex) {
@@ -135,7 +135,7 @@ public class Pattern {
     }
 
     public void setInserts(String[] insertStrings) {
-        this.insertList = new ArrayList();
+        this.insertList = new ArrayList<Insert>();
         for (int i = 0; i < insertStrings.length; i++) {
             String insertString = insertStrings[i];
             Insert insert = this.determineInsertType(insertString);
@@ -194,7 +194,7 @@ public class Pattern {
     public void convertDisconnectedVerticesToInserts() {
         Pattern.logger.info("converting Disconnected Vertices To Inserts");
 
-        this.insertList = new ArrayList();
+        this.insertList = new ArrayList<Insert>();
 
         int lastVertexPosition = 0;
         EdgeVertexIterator connectedVertices = this.getEdgeVertexIterator();
@@ -322,11 +322,11 @@ public class Pattern {
         }
     }
 
-    public void addEdges(ArrayList newEdges) {
+    public void addEdges(ArrayList<Edge> newEdges) {
         this.edges.addAll(newEdges);
     }
 
-    public void addVertices(ArrayList newVertices) {
+    public void addVertices(ArrayList<Vertex> newVertices) {
         this.vertices.addAll(newVertices);
     }
 
@@ -355,7 +355,7 @@ public class Pattern {
 
     public int minimumInsertSize() {
         int sum = 0;
-        Iterator itr = this.insertList.iterator();
+        Iterator<Insert> itr = this.insertList.iterator();
         while (itr.hasNext()) {
             Insert i = (Insert) itr.next();
             sum += i.getMinSize();
@@ -485,9 +485,9 @@ public class Pattern {
 
     /* ****************** INSERTS!! ****************** */
 
-    public ArrayList getSubSequence(int leftPos, int rightPos) {
+    public ArrayList<Object> getSubSequence(int leftPos, int rightPos) {
 
-        ArrayList subSequence = new ArrayList();
+        ArrayList<Object> subSequence = new ArrayList<Object>();
         int start = leftPos + 1;
         int end = rightPos - 1;
 
@@ -546,7 +546,7 @@ public class Pattern {
     // get an array of strings of the unattached vertices
     // 'd' is an EXAMPLE, not a pattern
     public String[] getInsertStringArr(Pattern d, boolean flip) { 
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {

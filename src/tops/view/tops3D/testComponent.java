@@ -8,9 +8,9 @@ import java.util.StringTokenizer;
 
 public class testComponent {
 
-    private static ArrayList sheetReOrder(String hbonds) {
-        ArrayList newOrder = new ArrayList();
-        HashMap edgeMap = new HashMap();
+    private static ArrayList<String> sheetReOrder(String hbonds) {
+        ArrayList<String> newOrder = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> edgeMap = new HashMap<String, ArrayList<String>>();
         StringTokenizer tokenizer = new StringTokenizer(hbonds, "."); // split
                                                                         // on
                                                                         // dots
@@ -24,12 +24,12 @@ public class testComponent {
             testComponent.mapVertex(right, left, edgeMap);
         }
         // now, go through the vertices to find the endpoints (edgestrands)
-        Set keys = edgeMap.keySet();
-        Iterator i = keys.iterator();
-        ArrayList edgeStrands = new ArrayList();
+        Set<String> keys = edgeMap.keySet();
+        Iterator<String> i = keys.iterator();
+        ArrayList<String> edgeStrands = new ArrayList<String>();
         while (i.hasNext()) {
             String vertex = (String) i.next();
-            ArrayList connections = (ArrayList) edgeMap.get(vertex);
+            ArrayList<?> connections = (ArrayList<?>) edgeMap.get(vertex);
             if (connections.size() < 2)
                 edgeStrands.add(vertex);
         }
@@ -50,7 +50,7 @@ public class testComponent {
         String lastVertex = currentVertex;
         String nextVertex = new String();
         while (k < keys.size()) {
-            ArrayList conn = (ArrayList) edgeMap.get(currentVertex);
+            ArrayList<?> conn = (ArrayList<?>) edgeMap.get(currentVertex);
             for (int c = 0; c < conn.size(); c++) {
                 String v = (String) conn.get(c);
                 if (!v.equals(lastVertex))
@@ -64,11 +64,11 @@ public class testComponent {
         return newOrder;
     }
 
-    private static void mapVertex(String one, String two, HashMap edgeMap) {
+    private static void mapVertex(String one, String two, HashMap<String, ArrayList<String>> edgeMap) {
         // System.out.println("mapping : " + one + " and " + two);
-        ArrayList o = (ArrayList) edgeMap.get(one);
+        ArrayList<String> o = (ArrayList<String>) edgeMap.get(one);
         if (o == null)
-            o = new ArrayList();
+            o = new ArrayList<String>();
         o.add(two);
         edgeMap.put(one, o);
         // System.out.println("edgemap now " + edgeMap);
@@ -78,7 +78,7 @@ public class testComponent {
         String vertices = args[0];
         String edges = args[1];
 
-        ArrayList newOrder = testComponent.sheetReOrder(edges);
+        ArrayList<String> newOrder = testComponent.sheetReOrder(edges);
 
         Structure s = new Structure("Sheet");
         for (int i = 0; i < vertices.length(); i++) {

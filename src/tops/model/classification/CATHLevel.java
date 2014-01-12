@@ -1,8 +1,8 @@
 package tops.model.classification;
 
-import java.util.ArrayList;
-
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CATHLevel {
 
@@ -48,7 +48,7 @@ public class CATHLevel {
     private String repName;
 
     /** A list of children - either sublevels or domainids */
-    private ArrayList children;
+    private List<Object> children;	// TODO : FIXME - use design pattern for trees!
 
     /**
      * Create a new level.
@@ -65,7 +65,7 @@ public class CATHLevel {
         this.name = name;
         this.code = code;
         this.repName = repName;
-        this.children = new ArrayList();
+        this.children = new ArrayList<Object>();
 
         // determine the name of the next level : -1 indicates the leaves
         this.childLevelName = -1;
@@ -180,7 +180,7 @@ public class CATHLevel {
      *            the list of ints we are assembling.
      */
 
-    public void getReps(CATHNumber cathNumber, ArrayList repInts) {
+    public void getReps(CATHNumber cathNumber, ArrayList<Integer> repInts) {
         // add a rep to the list if necessary
         if (this.name != CATHLevel.ROOT
                 && this.repName.equals(cathNumber.getDomainID())) {

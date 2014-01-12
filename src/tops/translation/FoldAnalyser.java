@@ -1,11 +1,12 @@
 package tops.translation;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
@@ -23,7 +24,7 @@ public class FoldAnalyser {
     }
 
     public Protein analyse(Protein protein) throws PropertyError {
-        Iterator chains = protein.chainIterator();
+        Iterator<Chain> chains = protein.chainIterator();
 
         while (chains.hasNext()) {
             Chain chain = (Chain) chains.next();
@@ -45,7 +46,7 @@ public class FoldAnalyser {
         // for each strand, examine all strands in front (so we don't do the
         // same comparison twice)
         // each examination is a simple centroid-centroid distance
-        ListIterator firstSegments = chain.backboneSegmentListIterator();
+        ListIterator<?> firstSegments = chain.backboneSegmentListIterator();
 
         while (firstSegments.hasNext()) {
             // get the first segment, reject if not a strand
@@ -56,7 +57,7 @@ public class FoldAnalyser {
             }
 
             // get the segments after the current one
-            ListIterator secondSegments = chain
+            ListIterator<?> secondSegments = chain
                     .backboneSegmentListIterator(firstSegment);
             while (secondSegments.hasNext()) {
                 BackboneSegment secondSegment = (BackboneSegment) secondSegments
@@ -90,7 +91,7 @@ public class FoldAnalyser {
         // basically, run through the residues, checking the list of hbonds to
         // find residues that might be in the other strand
         int numberOfHBonds = 0;
-        Iterator strandResidues = strand.residueIterator();
+        Iterator<?> strandResidues = strand.residueIterator();
         while (strandResidues.hasNext()) {
             Residue nextResidue = (Residue) strandResidues.next();
             if (otherStrand.bondedTo(nextResidue)) {
@@ -194,7 +195,7 @@ public class FoldAnalyser {
         if (sheetCount == 1) {
             // get the sheet, and assign the orientations internally, based on
             // relative orientations
-            Iterator sheets = chain.sheetIterator();
+            Iterator<?> sheets = chain.sheetIterator();
             Sheet sheet = (Sheet) sheets.next();
 
             // System.out.println("Assigning using a single sheet");
@@ -205,7 +206,7 @@ public class FoldAnalyser {
             // " + sheetAxis.getAxisVector());
 
             // assign the helices to orientations dependant on the sheet
-            ListIterator segments = chain.backboneSegmentListIterator();
+            ListIterator<?> segments = chain.backboneSegmentListIterator();
             while (segments.hasNext()) {
                 BackboneSegment segment = (BackboneSegment) segments.next();
                 if ((segment instanceof Strand)
@@ -216,7 +217,7 @@ public class FoldAnalyser {
                 }
             }
         } else if (sheetCount > 1) {
-            Iterator sheets = chain.sheetIterator();
+            Iterator<?> sheets = chain.sheetIterator();
             while (sheets.hasNext()) {
                 Sheet sheet = (Sheet) sheets.next();
                 sheet.assignOrientationsToStrands();
@@ -228,10 +229,10 @@ public class FoldAnalyser {
     // strands not more than 5 sses away
     public void determineChiralities(Chain chain) {
         if (chain.numberOfSheets() > 0) {
-            Iterator sheets = chain.sheetIterator();
+            Iterator<?> sheets = chain.sheetIterator();
             while (sheets.hasNext()) {
                 Sheet sheet = (Sheet) sheets.next();
-                Iterator sheetIterator = sheet.iterator();
+                Iterator<?> sheetIterator = sheet.iterator();
                 BackboneSegment strand = (BackboneSegment) sheetIterator.next();
 
                 while (sheetIterator.hasNext()) {
@@ -260,7 +261,7 @@ public class FoldAnalyser {
 
                         // get the sses we will use for the chirality
                         // calculation
-                        ListIterator inBetweeners;
+                        ListIterator<?> inBetweeners;
                         if (isCorrectOrder) {
                             inBetweeners = chain.backboneSegmentListIterator(
                                     strand, partner);
@@ -270,7 +271,7 @@ public class FoldAnalyser {
                         }
 
                         // find the average center of these sses
-                        ArrayList centroids = new ArrayList();
+                        ArrayList<Point3d> centroids = new ArrayList<Point3d>();
                         while (inBetweeners.hasNext()) {
                             BackboneSegment segment = (BackboneSegment) inBetweeners
                                     .next();
@@ -314,17 +315,17 @@ public class FoldAnalyser {
 
             System.out.println(protein);
 
-            HashMap cathChainDomainMap = CATHDomainFileParser
-                    .parseUpToParticularID(args[1], protein.getID());
-            HashMap chainDomainStringMap = protein
-                    .toTopsDomainStrings(cathChainDomainMap);
+            HashMap<String, List<Domain>> cathChainDomainMap = 
+            		CATHDomainFileParser.parseUpToParticularID(args[1], protein.getID());
+            HashMap<String, HashMap<String, String>> chainDomainStringMap = 
+            		protein.toTopsDomainStrings(cathChainDomainMap);
 
-            Iterator itr = chainDomainStringMap.keySet().iterator();
+            Iterator<?> itr = chainDomainStringMap.keySet().iterator();
             while (itr.hasNext()) {
                 String chainID = (String) itr.next();
-                HashMap domainStrings = (HashMap) chainDomainStringMap
+                HashMap<?, ?> domainStrings = (HashMap<?, ?>) chainDomainStringMap
                         .get(chainID);
-                Iterator itr2 = domainStrings.keySet().iterator();
+                Iterator<?> itr2 = domainStrings.keySet().iterator();
                 while (itr2.hasNext()) {
                     String domainString = (String) domainStrings
                             .get(itr2.next());

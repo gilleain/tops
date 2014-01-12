@@ -3,16 +3,17 @@ package tops.translation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class Protein {
 
     private String id;
 
-    private ArrayList chains;
+    private List<Chain> chains;
 
     public Protein() {
         this.id = "";
-        this.chains = new ArrayList();
+        this.chains = new ArrayList<Chain>();
     }
 
     public Protein(String id) {
@@ -28,7 +29,7 @@ public class Protein {
         this.chains.add(chain);
     }
 
-    public Iterator chainIterator() {
+    public Iterator<Chain> chainIterator() {
         return this.chains.iterator();
     }
 
@@ -38,12 +39,14 @@ public class Protein {
      * this.chains.get(i)); } }
      */
 
-    public HashMap toTopsDomainStrings(HashMap chainDomainMap) {
-        HashMap chainDomainStringMap = new HashMap();
+    public HashMap<String, HashMap<String, String>> toTopsDomainStrings(
+    		HashMap<String, List<Domain>> chainDomainMap) {
+        HashMap<String, HashMap<String, String>> chainDomainStringMap = 
+        		new HashMap<String, HashMap<String, String>>();
         for (int i = 0; i < this.chains.size(); i++) {
             Chain chain = (Chain) this.chains.get(i);
-            chainDomainStringMap.put(chain.getCathCompatibleLabel(), chain
-                    .toTopsDomainStrings(chainDomainMap));
+            chainDomainStringMap.put(
+            		chain.getCathCompatibleLabel(), chain.toTopsDomainStrings(chainDomainMap));
         }
         return chainDomainStringMap;
     }

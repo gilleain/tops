@@ -34,7 +34,7 @@ public class ClassicMatchServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
-        HashMap pattern_map = new HashMap();
+        HashMap<String, String> pattern_map = new HashMap<String, String>();
 
         if (generateForm == null) {
             pattern_map = this.generateForm(out); // do a query to get the data
@@ -44,7 +44,7 @@ public class ClassicMatchServlet extends HttpServlet {
                                                                 // in the
                                                                 // session
         } else {
-            pattern_map = (HashMap) session.getAttribute("pattern_map"); // get
+            pattern_map = (HashMap<String, String>) session.getAttribute("pattern_map"); // get
                                                                             // the
                                                                             // pattern
                                                                             // definitions
@@ -69,13 +69,13 @@ public class ClassicMatchServlet extends HttpServlet {
 
     // this method gets the data from the database, prints out some of it and
     // returns the rest.
-    public HashMap generateForm(PrintWriter out) {
+    public HashMap<String, String> generateForm(PrintWriter out) {
         String query = "SELECT pattern_id, pattern_vertices, pattern_edges, note, picfile FROM TOPS_classic_pattern";
 
-        ArrayList ids = new ArrayList();
-        ArrayList names = new ArrayList();
-        ArrayList pics = new ArrayList();
-        HashMap pattern_map = new HashMap();
+        ArrayList<String> ids = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<String> pics = new ArrayList<String>();
+        HashMap<String, String> pattern_map = new HashMap<String, String>();
 
         try {
             Connection connection = DataSourceWrapper.getConnection();

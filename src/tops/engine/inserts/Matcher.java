@@ -1,8 +1,10 @@
 package tops.engine.inserts;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +17,7 @@ public class Matcher {
 
     private Pattern[] diagrams;
 
-    private Stack PVS, TVS;
+    private Stack<Integer> PVS, TVS;
 
     private static Logger logger = 
     						Logger.getLogger("tops.engine.inserts.Matcher");
@@ -40,7 +42,7 @@ public class Matcher {
 
     public String[] run(String[] p, String d) {
         Pattern diagram = new Pattern(d);
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
         for (int i = 0; i < p.length; i++) {
             String result = this.matchOne(new Pattern(p[i]), diagram);
             if (!result.equals("")) {
@@ -101,7 +103,7 @@ public class Matcher {
 
     // return a Result array rather than a String array
     public Result[] runResults(Pattern p) {
-        ArrayList results = new java.util.ArrayList();
+        List<Result> results = new ArrayList<Result>();
         for (int i = 0; i < this.diagrams.length; ++i) {
             Result result = new Result();
             result.setID(this.diagrams[i].getName());
@@ -136,7 +138,7 @@ public class Matcher {
     }
 
     public String[] run(Pattern p) {
-        ArrayList results = new java.util.ArrayList();
+        List<String> results = new ArrayList<String>();
         for (int i = 0; i < this.diagrams.length; ++i) {
             Matcher.logger.info("matching diagram : " + i);
             String result = new String(this.diagrams[i].toString());
@@ -458,8 +460,8 @@ public class Matcher {
         int pvert = current.left.getPos();
         int tvert = (current.getCurrentMatch()).left.getPos();
 
-        this.PVS = new Stack();
-        this.TVS = new Stack();
+        this.PVS = new Stack<Integer>();
+        this.TVS = new Stack<Integer>();
         this.PVS.push(new Integer(pvert));
         this.TVS.push(new Integer(tvert));
 
@@ -545,7 +547,7 @@ public class Matcher {
     }
 
     public static void main(String[] args) {
-        ArrayList l = new ArrayList();
+        ArrayList<String> l = new ArrayList<String>();
         String line;
 
         if (args.length == 0) {
@@ -564,13 +566,12 @@ public class Matcher {
         }
 
         try {
-            java.io.BufferedReader bu = 
-            	new java.io.BufferedReader(
-            			new java.io.FileReader(filename));
+            BufferedReader bu = new BufferedReader(new FileReader(filename));
             
             while ((line = bu.readLine()) != null) {
                 l.add(line);
             }
+            bu.close();
         } catch (Exception e) {
             System.out.println(e);
         }

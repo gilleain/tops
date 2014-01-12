@@ -1,7 +1,7 @@
 package tops.model.classification;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fairly trivial interface to allow polymorphic use of classification trees
@@ -17,7 +17,7 @@ public interface ClassificationTree {
      * Given a domainID string, return a list of levels at which this domain is
      * a rep
      */
-    public ArrayList getReps(String domainID);
+    public List<Integer> getReps(String domainID);
 
     /**
      * Given a domainID string, return a the highest level at which this domain

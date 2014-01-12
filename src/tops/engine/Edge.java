@@ -2,7 +2,7 @@ package tops.engine;
 
 import java.util.ArrayList;
 
-public class Edge implements Comparable {
+public class Edge implements Comparable<Edge> {
 
     public Vertex left, right; // BAD IDEA!
 
@@ -10,7 +10,7 @@ public class Edge implements Comparable {
 
     public int p, S1, S2, E1, E2, mp;
 
-    private ArrayList matchList;
+    private ArrayList<Edge> matchList;
 
     public boolean moved;
 
@@ -24,7 +24,7 @@ public class Edge implements Comparable {
         this.type = t;
         this.p = 0;
         this.S1 = this.S2 = this.E1 = this.E2 = 0;
-        this.matchList = new ArrayList();
+        this.matchList = new ArrayList<Edge>();
         this.mp = 0;
         this.moved = false;
         this.rangeMinimum = -1; // -1 indicates 'infinite' bounds.
@@ -191,7 +191,7 @@ public class Edge implements Comparable {
     }
 
     public void reset() {
-        this.matchList = new ArrayList();
+        this.matchList = new ArrayList<Edge>();
         this.mp = 0;
     }
 
@@ -200,11 +200,11 @@ public class Edge implements Comparable {
                 || (this.right.getPos() == dat.right.getPos());
     }
 
-    public int compareTo(Object other) {
+    public int compareTo(Edge other) {
         if (this.equals(other)) {
             return 0;
         } else {
-            if ((other instanceof Edge) && (this.greaterThan((Edge) other))) {
+            if (this.greaterThan(other)) {
                 return 1;
             } else
                 return -1;

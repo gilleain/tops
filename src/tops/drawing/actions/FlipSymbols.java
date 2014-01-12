@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import tops.drawing.Diagram;
 
 public class FlipSymbols implements Action {
-    private ArrayList symbolNumbers;
+    private ArrayList<Integer> symbolNumbers;
     private Diagram diagram;
     
-    public FlipSymbols(ArrayList symbolNumbers, Diagram diagram) {
+    public FlipSymbols(ArrayList<Integer> symbolNumbers, Diagram diagram) {
         this.symbolNumbers = symbolNumbers;
         this.diagram = diagram;
     }

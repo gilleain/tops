@@ -16,7 +16,7 @@ import cern.jet.math.Functions;
 
 public class Geometer {
 
-    public static Plane leastSquarePlane(ArrayList points) {
+    public static Plane leastSquarePlane(ArrayList<Point3d> points) {
         Axis a = Geometer.leastSquareAxis(points);
         // System.out.println("Axis : " + a + " for " + points.size() + "
         // points");
@@ -70,9 +70,9 @@ public class Geometer {
         }
     }
 
-    public static Point3d averagePoints(Collection points) {
+    public static Point3d averagePoints(Collection<?> points) {
         Point3d averagePoint = new Point3d();
-        Iterator itr = points.iterator();
+        Iterator<?> itr = points.iterator();
         while (itr.hasNext()) {
             Point3d nextPoint = (Point3d) itr.next();
             averagePoint.add(nextPoint);
@@ -81,7 +81,7 @@ public class Geometer {
         return averagePoint;
     }
 
-    public static Axis leastSquareAxis(ArrayList points) {
+    public static Axis leastSquareAxis(ArrayList<?> points) {
         int numberOfPoints = points.size();
         // System.out.println("Running leastSquareAxis on " + numberOfPoints + "
         // points");

@@ -19,7 +19,7 @@ public class SCOPTree implements ClassificationTree {
     private SCOPLevel root;
 
     /** A map of domainIDs to SCOPNumbers */
-    private HashMap domainSCOPNumberMap;
+    private HashMap<String, SCOPNumber> domainSCOPNumberMap;
 
     /**
      * Create the scop tree with a single root level.
@@ -27,7 +27,7 @@ public class SCOPTree implements ClassificationTree {
 
     public SCOPTree() {
         this.root = new SCOPLevel(SCOPLevel.ROOT, 0, null);
-        this.domainSCOPNumberMap = new HashMap();
+        this.domainSCOPNumberMap = new HashMap<String, SCOPNumber>();
     }
 
     /**
@@ -136,7 +136,7 @@ public class SCOPTree implements ClassificationTree {
      * @return a list of ints - one for each level that this domain is a rep of.
      */
 
-    public ArrayList getReps(String domainID) {
+    public ArrayList<Integer> getReps(String domainID) {
         SCOPNumber scopNumber = (SCOPNumber) this.domainSCOPNumberMap
                 .get(domainID);
         return this.getReps(scopNumber);
@@ -152,8 +152,8 @@ public class SCOPTree implements ClassificationTree {
      * @return a list of ints - one for each level that this domain is a rep of.
      */
 
-    public ArrayList getReps(SCOPNumber scopNumber) {
-        ArrayList repInts = new ArrayList();
+    public ArrayList<Integer> getReps(SCOPNumber scopNumber) {
+        ArrayList<Integer> repInts = new ArrayList<Integer>();
         this.root.getReps(scopNumber, repInts);
         return repInts;
     }
@@ -169,10 +169,10 @@ public class SCOPTree implements ClassificationTree {
         out.println("SCOP Tree:");
         this.root.printToStream(out);
 
-        Iterator domainIterator = this.domainSCOPNumberMap.keySet().iterator();
+        Iterator<String> domainIterator = this.domainSCOPNumberMap.keySet().iterator();
         while (domainIterator.hasNext()) {
             String domainID = (String) domainIterator.next();
-            ArrayList repList = this.getReps(domainID);
+            ArrayList<Integer> repList = this.getReps(domainID);
             out.println(domainID + " " + repList);
         }
     }
@@ -190,8 +190,7 @@ public class SCOPTree implements ClassificationTree {
      */
 
     public static SCOPTree fromFile(File filepath) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(
-                filepath));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(filepath));
 
         String line;
         Pattern linePattern = Pattern
@@ -216,6 +215,7 @@ public class SCOPTree implements ClassificationTree {
                 tree.addSCOPNumber(scopNumber);
             }
         }
+        bufferedReader.close();
 
         return tree;
     }

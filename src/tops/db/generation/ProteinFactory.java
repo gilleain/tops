@@ -1,12 +1,10 @@
 package tops.db.generation;
 
 import java.awt.Color;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.HashMap;
-import java.util.Iterator;
+
 import tops.dw.protein.CATHcode;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
@@ -22,10 +20,8 @@ public class ProteinFactory extends TopsFactory {
         p.Name = chainName;
 
         // fill the SSE linked list with data
-        HashMap domainRoots = this.getDomains(source, chainName);
-        Iterator i = domainRoots.keySet().iterator();
-        while (i.hasNext()) {
-            String dom_id = (String) i.next();
+        HashMap<String, SecStrucElement> domainRoots = this.getDomains(source, chainName);
+        for (String dom_id : domainRoots.keySet()) {
             System.err.println("adding domain : " + dom_id);
             SecStrucElement rootSSE = (SecStrucElement) domainRoots.get(dom_id);
             rootSSE = this.getRelations(chainName, rootSSE);
@@ -48,7 +44,7 @@ public class ProteinFactory extends TopsFactory {
         return rootSSE;
     }
 
-    private HashMap getDomains(String source, String chainName) {
+    private HashMap<String, SecStrucElement> getDomains(String source, String chainName) {
         String SSE_query = "SELECT SSE.*, SSE_DOM.* from Secondary_Structure_Element as SSE, SSE_DOM";
         SSE_query += " WHERE SSE_DOM.Source = '"
                 + source
@@ -56,7 +52,7 @@ public class ProteinFactory extends TopsFactory {
         SSE_query += " AND Type != 'U' AND SSE.Chain_ID='" + chainName
                 + "' ORDER BY DOM_ID;";
 
-        HashMap domainMap = new HashMap();
+        HashMap<String, SecStrucElement> domainMap = new HashMap<String, SecStrucElement>();
 
         ResultSet results = this.doQuery(SSE_query);
         SecStrucElement lastSSE = null;

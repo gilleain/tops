@@ -1,6 +1,6 @@
 package tops.engine;
 
-public class Vertex implements Comparable {
+public class Vertex implements Comparable<Vertex> {
 
     private int p;
 
@@ -27,8 +27,8 @@ public class Vertex implements Comparable {
     	this.Vindex = other.Vindex;
     }
 
-    public int compareTo(Object o) {
-        int otherPosition = ((Vertex) o).getPos();
+    public int compareTo(Vertex o) {
+        int otherPosition = o.getPos();
         return (new Integer(this.p)).compareTo(new Integer(otherPosition));
     }
 

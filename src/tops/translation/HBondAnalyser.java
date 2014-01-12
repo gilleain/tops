@@ -65,7 +65,7 @@ public class HBondAnalyser {
     }
 
     public void analyse(Protein protein) throws PropertyError {
-        Iterator chains = protein.chainIterator();
+        Iterator<Chain> chains = protein.chainIterator();
 
         while (chains.hasNext()) {
             Chain chain = (Chain) chains.next();
@@ -92,7 +92,7 @@ public class HBondAnalyser {
         }
 
         int index = -1;
-        Iterator residues = chain.residueIterator();
+        Iterator<Residue> residues = chain.residueIterator();
 
         while (residues.hasNext()) {
             Residue first = (Residue) residues.next();
@@ -126,7 +126,7 @@ public class HBondAnalyser {
 
             // now, compare the first residue to the residues further on in the
             // chain
-            Iterator itr = chain.residueIterator(nextPosition);
+            Iterator<?> itr = chain.residueIterator(nextPosition);
             while (itr.hasNext()) {
                 int secondPosition = ((Residue) itr.next()).getAbsoluteNumber();
 
@@ -200,7 +200,7 @@ public class HBondAnalyser {
 
             // now, use these hbond assignments to determine the residue's
             // environment
-            ArrayList tags = this.convertBondsToTags(first);
+            ArrayList<String> tags = this.convertBondsToTags(first);
             // System.out.println(first.toFullString() + " " + tags);
 
             this.updateSSEEndpoints(index, tags, chain);
@@ -215,11 +215,11 @@ public class HBondAnalyser {
         chain.addTerminii();
     }
 
-    public ArrayList convertBondsToTags(Residue residue) {
-        ArrayList nTerminalHBonds = residue.getNTerminalHBonds();
-        ArrayList cTerminalHBonds = residue.getCTerminalHBonds();
+    public ArrayList<String> convertBondsToTags(Residue residue) {
+        ArrayList<?> nTerminalHBonds = residue.getNTerminalHBonds();
+        ArrayList<?> cTerminalHBonds = residue.getCTerminalHBonds();
 
-        ArrayList tags = new ArrayList();
+        ArrayList<String> tags = new ArrayList<String>();
 
         for (int i = 0; i < nTerminalHBonds.size(); i++) {
             int n = ((HBond) nTerminalHBonds.get(i)).getResidueSeparation();
@@ -303,7 +303,7 @@ public class HBondAnalyser {
         return null;
     }
 
-    public void updateSSEEndpoints(int index, ArrayList tags, Chain chain) {
+    public void updateSSEEndpoints(int index, ArrayList<String> tags, Chain chain) {
         if (tags.contains("Start of a 310 helix")) {
 
             // not seen any three ten bond before

@@ -6,9 +6,9 @@ import java.util.Iterator;
 
 import javax.vecmath.Point3d;
 
-public class Residue implements Comparable {
+public class Residue implements Comparable<Object> {
 
-    private HashMap atoms;
+    private HashMap<String, Point3d> atoms;
 
     private int absoluteNumber;
 
@@ -20,15 +20,15 @@ public class Residue implements Comparable {
 
     private String environment;
 
-    private ArrayList hBonds;
+    private ArrayList<HBond> hBonds;
 
     private double phi;
 
     private double psi;
 
     public Residue() {
-        this.atoms = new HashMap();
-        this.hBonds = new ArrayList();
+        this.atoms = new HashMap<String, Point3d>();
+        this.hBonds = new ArrayList<HBond>();
         this.phi = 0;
         this.psi = 0;
         this.type = "None";
@@ -92,12 +92,12 @@ public class Residue implements Comparable {
         this.hBonds.add(hbond);
     }
 
-    public Iterator getHBondIterator() {
+    public Iterator<HBond> getHBondIterator() {
         return this.hBonds.iterator();
     }
 
-    public ArrayList getNTerminalHBonds() {
-        ArrayList nTerminalHBonds = new ArrayList();
+    public ArrayList<HBond> getNTerminalHBonds() {
+        ArrayList<HBond> nTerminalHBonds = new ArrayList<HBond>();
         for (int i = 0; i < this.hBonds.size(); i++) {
             HBond hBond = (HBond) this.hBonds.get(i);
             if (hBond.residueIsDonor(this)) {
@@ -108,8 +108,8 @@ public class Residue implements Comparable {
         return nTerminalHBonds;
     }
 
-    public ArrayList getCTerminalHBonds() {
-        ArrayList cTerminalHBonds = new ArrayList();
+    public ArrayList<HBond> getCTerminalHBonds() {
+        ArrayList<HBond> cTerminalHBonds = new ArrayList<HBond>();
         for (int i = 0; i < this.hBonds.size(); i++) {
             HBond hBond = (HBond) this.hBonds.get(i);
             if (hBond.residueIsAcceptor(this)) {
@@ -218,7 +218,7 @@ public class Residue implements Comparable {
 
     public String hBondString() {
         StringBuffer strbuf = new StringBuffer();
-        Iterator itr = this.hBonds.iterator();
+        Iterator<HBond> itr = this.hBonds.iterator();
         while (itr.hasNext()) {
             HBond hbond = (HBond) itr.next();
             strbuf.append(hbond).append(" ");

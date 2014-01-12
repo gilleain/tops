@@ -1,6 +1,6 @@
 package tops.translation;
 
-public class HBond implements Comparable {
+public class HBond implements Comparable<HBond> {
 
     private Residue donor;
 
@@ -22,8 +22,7 @@ public class HBond implements Comparable {
     }
 
     // sort by donor, then acceptor (well, why not, eh?)
-    public int compareTo(Object o) {
-        HBond other = (HBond) o;
+    public int compareTo(HBond other) {
         int c = Integer.valueOf(this.donor.getAbsoluteNumber()).compareTo(
                 Integer.valueOf(other.donor.getAbsoluteNumber()));
         if (c == 0) {

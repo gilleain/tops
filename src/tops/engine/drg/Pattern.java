@@ -14,9 +14,9 @@ public class Pattern {
 
     private String classification;
 
-    private ArrayList vertices;
+    private ArrayList<Vertex> vertices;
 
-    private ArrayList edges;
+    private ArrayList<Edge> edges;
     
     private int[] inserts;
     
@@ -34,12 +34,12 @@ public class Pattern {
 
     private Edge currentChiralEdge;
     
-    private ArrayList currentSheet;
+    private ArrayList<Vertex> currentSheet;
 
     public Pattern() {
         this.head = new String("pattern:");
-        this.vertices = new ArrayList();
-        this.edges = new ArrayList();
+        this.vertices = new ArrayList<Vertex>();
+        this.edges = new ArrayList<Edge>();
         this.outsertC = "";
         this.lastEdgeVertex = -1;
         this.outsertN = "";
@@ -47,7 +47,7 @@ public class Pattern {
         
         this.lhv = null;	//XXX
         this.rhv = null;	//XXX
-        this.currentSheet = new ArrayList();
+        this.currentSheet = new ArrayList<Vertex>();
     }
 
     public Pattern(String s) throws TopsStringFormatException {
@@ -62,8 +62,7 @@ public class Pattern {
     public Pattern(Pattern p) {
     	this();
     	for (int i = 0; i < p.vsize(); i++) {
-    		this.vertices.add(
-    				new Vertex((Vertex) p.vertices.get(i)));
+    		this.vertices.add(new Vertex((Vertex) p.vertices.get(i)));
     	}
     	
     	for (int i = 0; i < p.esize(); i++) {
@@ -146,7 +145,7 @@ public class Pattern {
     }
     
     private boolean edgeBetween(int i, int j) {
-    	  Iterator itr = this.edges.iterator();
+    	  Iterator<Edge> itr = this.edges.iterator();
           while (itr.hasNext()) {
               Edge e = (Edge) itr.next();
               if (e.getLeft() == i && e.getRight() == j) {
@@ -328,11 +327,11 @@ public class Pattern {
         }
     }
 
-    public void addEdges(ArrayList newEdges) {
+    public void addEdges(ArrayList<Edge> newEdges) {
         this.edges.addAll(newEdges);
     }
 
-    public void addVertices(ArrayList newVertices) {
+    public void addVertices(ArrayList<Vertex> newVertices) {
         this.vertices.addAll(newVertices);
     }
 
@@ -455,7 +454,7 @@ public class Pattern {
     // get an array of strings of the unattached vertices
     // 'd' is an EXAMPLE, not a pattern
     public String[] getInsertStringArr(Pattern d, boolean flip) { 
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {

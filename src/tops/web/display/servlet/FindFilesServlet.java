@@ -21,7 +21,7 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
-            Enumeration e = config.getInitParameterNames();
+            Enumeration<?> e = config.getInitParameterNames();
             this.tfm = new TopsFileManager();
             while (e.hasMoreElements()) {
                 String nextClass = (String) e.nextElement();
@@ -128,7 +128,7 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
 
     private void displayDomains(Protein p, String pi, String c,
             String filetype, String path, HttpServletResponse response) {
-        Vector domainNames = p.GetDomainDefs();
+        Vector<?> domainNames = p.GetDomainDefs();
         response.setContentType("text/html");
         PrintWriter pout = null;
         try {
@@ -139,7 +139,7 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
 
         pout.println("<html><head><title>Domains for : " + pi + " Chain " + c
                 + "</title></head><body><table align=\"center\">");
-        Enumeration e = domainNames.elements();
+        Enumeration<?> e = domainNames.elements();
         while (e.hasMoreElements()) {
             DomainDefinition dd = (DomainDefinition) e.nextElement();
             String name = dd.toString();

@@ -1,9 +1,8 @@
 package tops.model;
 
 import java.util.ArrayList;
-
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TopsParser {
 
@@ -112,7 +111,7 @@ public class TopsParser {
 
     public static Edge[] parseEdgeString(String edgeString) {
         Matcher m = TopsParser.edgeP.matcher(edgeString);
-        ArrayList edges = new ArrayList();
+        ArrayList<Edge> edges = new ArrayList<Edge>();
         while (m.find()) {
             // start i at 1, because group(0) is the whole match!
             edges.add(new Edge(m.group(1), m.group(2), m.group(3)));

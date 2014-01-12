@@ -9,17 +9,17 @@ import tops.engine.Vertex;
 
 public class Sheet {
 
-    private ArrayList vertices; // a reference to the underlying list of vertices
+    private ArrayList<Vertex> vertices; // a reference to the underlying list of vertices
 
-    private Stack edges; // a stack to enable mistakes to be popped off
+    private Stack<Edge> edges; // a stack to enable mistakes to be popped off
 
     private int lastInsertedVertex; // last vertex insertion point in the List 
 
     private Vertex rhv, lhv;
 
-    public Sheet(Vertex l, Vertex r, char type, ArrayList v) {
+    public Sheet(Vertex l, Vertex r, char type, ArrayList<Vertex> v) {
         this.vertices = v;
-        this.edges = new Stack();
+        this.edges = new Stack<Edge>();
         this.lastInsertedVertex = 0;
         this.lhv = l;
         this.rhv = r;
@@ -43,8 +43,8 @@ public class Sheet {
         return this.rhv.getPos();
     }
 
-    public ArrayList getEdges() {
-        return new ArrayList(this.edges);
+    public ArrayList<Edge> getEdges() {
+        return new ArrayList<Edge>(this.edges);
     }
 
     public boolean canExtend(int i, char typ) {
@@ -65,7 +65,7 @@ public class Sheet {
 
     // why doesn't the edges Stack use its 'contains' method right?
     private boolean edgesContains(Edge edge) {
-        Iterator itr = this.edges.iterator();
+        Iterator<Edge> itr = this.edges.iterator();
         while (itr.hasNext()) {
             Edge e = (Edge) itr.next();
             if (e.equals(edge)) {
@@ -148,7 +148,7 @@ public class Sheet {
     }
 
     public static void main(String[] args) {
-        ArrayList v = new ArrayList();
+        ArrayList<Vertex> v = new ArrayList<Vertex>();
         v.add(new Vertex('N', 0));
         v.add(new Vertex('C', 1));
         

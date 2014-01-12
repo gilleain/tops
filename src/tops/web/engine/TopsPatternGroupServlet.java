@@ -47,7 +47,7 @@ public class TopsPatternGroupServlet extends HttpServlet {
         try {
             ResultSet rs = DataSourceWrapper.executeQuery(query + pattern_id
                     + ";");
-            ArrayList in = new ArrayList();
+            ArrayList<String> in = new ArrayList<String>();
             while (rs.next()) {
                 String nextInstance = new String();
                 nextInstance += rs.getString("instance_id") + " ";

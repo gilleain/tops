@@ -12,9 +12,9 @@ public class DomainDefinition {
 
     CATHcode CathCode = new CATHcode("1xxx00");
 
-    Vector SequenceFragments = new Vector();
+    Vector<IntegerInterval> SequenceFragments = new Vector<IntegerInterval>();
 
-    Vector FragmentIndices = new Vector();
+    Vector<Integer> FragmentIndices = new Vector<Integer>();
 
     /* START constructors */
     public DomainDefinition(CATHcode c) {
@@ -38,11 +38,11 @@ public class DomainDefinition {
         this.FragmentIndices.addElement(new Integer(StartIndex));
     }
 
-    public Enumeration getSequenceFragments() {
+    public Enumeration<IntegerInterval> getSequenceFragments() {
         return this.SequenceFragments.elements();
     }
 
-    public Enumeration getFragmentIndices() {
+    public Enumeration<Integer> getFragmentIndices() {
         return this.FragmentIndices.elements();
     }
 

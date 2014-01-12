@@ -36,11 +36,11 @@ public class TableSorter extends TableMap {
 
     private int indexes[];
 
-    private Vector sortingColumns = new Vector();
+    private Vector<Integer> sortingColumns = new Vector<Integer>();
 
     private boolean ascending = true;
 
-    private int compares;
+//    private int compares;
 
     public TableSorter() {
         this.indexes = new int[0]; // for consistency
@@ -57,7 +57,7 @@ public class TableSorter extends TableMap {
     }
 
     public int compareRowsByColumn(int row1, int row2, int column) {
-        Class type = this.model.getColumnClass(column);
+        Class<?> type = this.model.getColumnClass(column);
         TableModel data = this.model;
 
         // Check for nulls.
@@ -151,7 +151,7 @@ public class TableSorter extends TableMap {
     }
 
     public int compare(int row1, int row2) {
-        this.compares++;
+//        this.compares++;
         for (int level = 0; level < this.sortingColumns.size(); level++) {
             Integer column = (Integer) this.sortingColumns.elementAt(level);
             int result = this.compareRowsByColumn(row1, row2, column.intValue());
@@ -192,7 +192,7 @@ public class TableSorter extends TableMap {
     public void sort(Object sender) {
         this.checkModel();
 
-        this.compares = 0;
+//        this.compares = 0;
         // n2sort();
         // qsort(0, indexes.length-1);
         this.shuttlesort(this.indexes.clone(), this.indexes, 0, this.indexes.length);

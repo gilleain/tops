@@ -1,6 +1,11 @@
 package tops.engine.juris;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 class Finder {
 
@@ -8,7 +13,7 @@ class Finder {
 
     private BufferedReader buffy;
 
-    private java.util.List instances;
+    private List<String> instances;
 
     private Constrainer c;
 
@@ -25,7 +30,7 @@ class Finder {
             this.debugging = true;
 //        totalMatchNum = goodMatchNum = 0;
         this.maxpat = "";
-        this.instances = new java.util.ArrayList();
+        this.instances = new ArrayList<String>();
 
         try {
             this.inFile = new FileReader(fi);

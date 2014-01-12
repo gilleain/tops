@@ -31,7 +31,7 @@ public class ProteinServlet extends HttpServlet {
 
     static {
         try {
-            Class c = DiagramDrawer.class;
+            Class<DiagramDrawer> c = DiagramDrawer.class;
             com.eteks.awt.PJAGraphicsManager.getDefaultGraphicsManager()
                     .loadFont(
                             c.getClassLoader().getResourceAsStream("pja.pjaf"));

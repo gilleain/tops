@@ -12,13 +12,13 @@ import java.util.StringTokenizer;
 
 public class Graph {
 
-    private ArrayList sses;
-    private ArrayList edges;
+    private ArrayList<SSE> sses;
+    private ArrayList<Edge> edges;
     private boolean isLaidOut;
 
     public Graph() {
-        this.sses = new ArrayList();
-        this.edges = new ArrayList();
+        this.sses = new ArrayList<SSE>();
+        this.edges = new ArrayList<Edge>();
         this.isLaidOut = false;
     }
     
@@ -186,7 +186,7 @@ public class Graph {
         Shape[] shapes = new Shape[numberOfObjects];
         Color[] colors = new Color[numberOfObjects];
         int index = 0;
-        Iterator sseItr = this.sses.iterator();
+        Iterator<SSE> sseItr = this.sses.iterator();
 
         while (sseItr.hasNext()) {
             SSE sse = (SSE) (sseItr.next());
@@ -195,7 +195,7 @@ public class Graph {
             index++;
         }
 
-        Iterator j = this.edges.iterator();
+        Iterator<Edge> j = this.edges.iterator();
         while (j.hasNext()) {
             Edge edge = (Edge) (j.next());
             shapes[index] = edge.getShape(axis);

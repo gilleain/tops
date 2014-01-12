@@ -3,19 +3,19 @@ package tops.translation;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class PDBReader {
 
     public static Protein read(String filename) throws IOException {
-        ArrayList atomRecords;
+        List<String> atomRecords;
         String pdbID = "Unknown";
 
         BufferedReader bufferer = new BufferedReader(new FileReader(filename));
         String line;
-        atomRecords = new ArrayList();
+        atomRecords = new ArrayList<String>();
         while ((line = bufferer.readLine()) != null) {
             if (line.length() > 4) {
                 String token = line.substring(0, 4);
@@ -30,7 +30,7 @@ public class PDBReader {
 
         Protein protein = new Protein(pdbID);
 
-        Iterator itr = atomRecords.iterator();
+        Iterator<String> itr = atomRecords.iterator();
         Chain currentChain = null;
 
         while (itr.hasNext()) {

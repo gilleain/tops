@@ -15,7 +15,7 @@ import java.util.zip.ZipEntry;
 
 public class TopsFileManager {
 
-    private HashMap paths;
+    private HashMap<String, String> paths;
 
     private String pathToZip;
 
@@ -23,7 +23,7 @@ public class TopsFileManager {
 
     public TopsFileManager() {
         this.pathToZip = ".";
-        this.paths = new HashMap();
+        this.paths = new HashMap<String, String>();
     }
 
     public TopsFileManager(String path) {

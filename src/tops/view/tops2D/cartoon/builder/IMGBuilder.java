@@ -35,7 +35,7 @@ public class IMGBuilder implements CartoonBuilder {
 
     static {
         try {
-            Class c = IMGBuilder.class;
+            Class<IMGBuilder> c = IMGBuilder.class;
             com.eteks.awt.PJAGraphicsManager.getDefaultGraphicsManager()
                     .loadFont(
                             c.getClassLoader().getResourceAsStream("pja.pjaf"));

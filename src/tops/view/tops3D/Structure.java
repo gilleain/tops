@@ -38,7 +38,7 @@ public class Structure extends ProteinComponent {
     public String toString() {
         StringBuffer sb = new StringBuffer(this.typeLabel + " Z-plane : [" + this.order
                 + "]\n");
-        Iterator i = this.subComponents.iterator();
+        Iterator<ProteinComponent> i = this.subComponents.iterator();
         int k = 0;
         while (i.hasNext()) {
             ProteinComponent pc = (ProteinComponent) i.next();

@@ -51,7 +51,7 @@ public class Tops2String {
         BufferedReader bufferedReader = 
             new BufferedReader(new FileReader(new File(this.topsDirectoryPath, tops_file_name)));
         String line = new String();
-        HashMap domains = new HashMap();
+        HashMap<String, HashMap<String, HashMap<Integer, String>>> domains = new HashMap<String, HashMap<String, HashMap<Integer, String>>>();
         String current_domain = new String();
         int current_pos = 0;
 
@@ -97,15 +97,16 @@ public class Tops2String {
                 current_pos++;
             }
         }
+        bufferedReader.close();
 
         return this.getData(domains, replacement_pdbid, classificationScheme);
     }
 
-    private String[] getData(HashMap domains, String replacement_pdbid, String scheme) {
+    private String[] getData(HashMap<String, HashMap<String, HashMap<Integer, String>>> domains, String replacement_pdbid, String scheme) {
         // now, go through the map, getting the data
-        Set keys = domains.keySet();
+        Set<String> keys = domains.keySet();
         String[] domain_strings = new String[keys.size()];
-        Iterator itr = keys.iterator();
+        Iterator<String> itr = keys.iterator();
 
         // for stepping through the domain_strings array
         int k = 0;
@@ -154,26 +155,26 @@ public class Tops2String {
             }
 
             // convert the data
-            HashMap domain_map = (HashMap) domains.get(domain_id);
+            HashMap<?, ?> domain_map = (HashMap<?, ?>) domains.get(domain_id);
 
             StringBuffer topsString = new StringBuffer();
-            HashMap bonds = new HashMap();
+            HashMap<Integer, HashMap<Integer, String>> bonds = new HashMap<Integer, HashMap<Integer, String>>();
             boolean lookingForChiralPartner = false;
             String last_chiral_flag = new String();
             char last_symbol = 'N';
             Integer lastVertex = new Integer(0);
 
-            HashMap sse_type_map = (HashMap) domain_map.get("SSE_TYPE");
+            HashMap<?, ?> sse_type_map = (HashMap<?, ?>) domain_map.get("SSE_TYPE");
             // System.err.println(sse_type_map);
-            HashMap directions_map = (HashMap) domain_map.get("DIRECTIONS");
+            HashMap<?, ?> directions_map = (HashMap<?, ?>) domain_map.get("DIRECTIONS");
             // System.err.println(directions_map);
-            HashMap bridge_parts_map = (HashMap) domain_map.get("BRIDGEPARTS");
+            HashMap<?, ?> bridge_parts_map = (HashMap<?, ?>) domain_map.get("BRIDGEPARTS");
             // System.err.println(bridge_parts_map);
-            HashMap bridge_types_map = (HashMap) domain_map.get("BRIDGETYPES");
+            HashMap<?, ?> bridge_types_map = (HashMap<?, ?>) domain_map.get("BRIDGETYPES");
             // System.err.println(bridge_types_map);
 //            HashMap symbolnums_map = (HashMap) domain_map.get("SYMBOLNUMS");
             // System.err.println(symbolnums_map);
-            HashMap chirals_map = (HashMap) domain_map.get("CHIRALS");
+            HashMap<?, ?> chirals_map = (HashMap<?, ?>) domain_map.get("CHIRALS");
             // System.err.println(chirals_map);
 
             topsString.append(name).append(' ');
@@ -187,9 +188,9 @@ public class Tops2String {
                         .toLowerCase(type_as_char) : type_as_char;
                 topsString.append(symbol);
 
-                HashMap partner_type = (HashMap) bonds.get(currentVertex);
+                HashMap<Integer, String> partner_type = (HashMap<Integer, String>) bonds.get(currentVertex);
                 if (partner_type == null)
-                    partner_type = new HashMap();
+                    partner_type = new HashMap<Integer, String>();
 
                 if (bridge_parts_map != null) {
                     String bridge_parts_string = (String) bridge_parts_map.get(currentVertex);
@@ -215,9 +216,9 @@ public class Tops2String {
 
                 if ((lookingForChiralPartner) && (last_symbol == symbol)) {
                     String chiral_type = (last_chiral_flag.equals("-1")) ? "L" : "R";
-                    HashMap partners = (HashMap) bonds.get(lastVertex);
+                    HashMap<Integer, String> partners = (HashMap<Integer, String>) bonds.get(lastVertex);
                     if (partners == null)
-                        partners = new HashMap();
+                        partners = new HashMap<Integer, String>();
                     
                     //if it has an edge, it must be 'P'
                     if (partners.containsKey(currentVertex)) { 
@@ -251,14 +252,14 @@ public class Tops2String {
             // now, turn the bond map-map into an edge string
 
             // System.err.println(bonds);
-            TreeSet leftHandEnds = new TreeSet(bonds.keySet());
-            Iterator lefts = leftHandEnds.iterator();
+            TreeSet<Integer> leftHandEnds = new TreeSet<Integer>(bonds.keySet());
+            Iterator<Integer> lefts = leftHandEnds.iterator();
             while (lefts.hasNext()) {
                 Integer leftHandEnd = (Integer) lefts.next();
-                HashMap otherEnds = (HashMap) bonds.get(leftHandEnd);
+                HashMap<?, ?> otherEnds = (HashMap<?, ?>) bonds.get(leftHandEnd);
 
-                TreeSet rightHandEnds = new TreeSet(otherEnds.keySet());
-                Iterator rights = rightHandEnds.iterator();
+                TreeSet<?> rightHandEnds = new TreeSet<Object>(otherEnds.keySet());
+                Iterator<?> rights = rightHandEnds.iterator();
                 while (rights.hasNext()) {
                     Integer rightHandEnd = (Integer) rights.next();
                     // only accept edges i:j where i < j
@@ -276,18 +277,18 @@ public class Tops2String {
         return domain_strings;
     }
 
-    public void storeData(HashMap map, String domain, int pos, String key, String value) {
+    public void storeData(HashMap<String, HashMap<String, HashMap<Integer, String>>> map, String domain, int pos, String key, String value) {
         // first, get the values map for a particular domain (create if !exists)
-        HashMap domainMap = (HashMap) map.get(domain);
+        HashMap<String, HashMap<Integer, String>> domainMap = (HashMap<String, HashMap<Integer, String>>) map.get(domain);
         if (domainMap == null) {
-            domainMap = new HashMap();
+            domainMap = new HashMap<String, HashMap<Integer, String>>();
             map.put(domain, domainMap);
         }
 
         // now get the map of values for the key we want
-        HashMap subMap = (HashMap) domainMap.get(key);
+        HashMap<Integer, String> subMap = (HashMap<Integer, String>) domainMap.get(key);
         if (subMap == null) {
-            subMap = new HashMap();
+            subMap = new HashMap<Integer, String>();
             domainMap.put(key, subMap);
         }
 

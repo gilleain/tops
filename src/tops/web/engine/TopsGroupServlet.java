@@ -32,7 +32,7 @@ public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query + " ('" + nameList
                     + "');");
-            ArrayList in = new ArrayList();
+            ArrayList<String> in = new ArrayList<String>();
             while (rs.next()) {
                 String nextInstance = new String();
                 nextInstance += rs.getString("dom_id") + " ";
@@ -69,7 +69,7 @@ public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
         if (names == null) {
             instances = (String[]) request.getAttribute("results");
         } else {
-            ArrayList instanceList = new ArrayList();
+            ArrayList<String> instanceList = new ArrayList<String>();
             StringTokenizer st = new StringTokenizer(names, ".");
             while (st.hasMoreElements()) {
                 String n = (String) st.nextElement();

@@ -68,7 +68,7 @@ public class TParser {
     public String[] getEdges() {
         String tail = this.getEdgeString();
         Matcher m = this.edgeP.matcher(tail);
-        ArrayList bits = new ArrayList();
+        ArrayList<String> bits = new ArrayList<String>();
         while (m.find()) {
             // start i at 1, because group(0) is the whole match!
             for (int i = 1; i <= m.groupCount(); i++) {

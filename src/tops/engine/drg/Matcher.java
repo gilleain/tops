@@ -18,12 +18,12 @@ public class Matcher {
 
     private Pattern[] diagrams;
 
-    private Stack PVS;
-    private Stack TVS;
+    private Stack<Integer> PVS;
+    private Stack<Integer> TVS;
 
     public Matcher() {
-    	this.PVS = new Stack();
-        this.TVS = new Stack();
+    	this.PVS = new Stack<Integer>();
+        this.TVS = new Stack<Integer>();
     }
 
     public Matcher(Pattern[] diag) {
@@ -54,7 +54,7 @@ public class Matcher {
     public String[] run(String[] patterns, String d)
             throws TopsStringFormatException {
         Pattern diagram = new Pattern(d);
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
         for (int i = 0; i < patterns.length; i++) {
             String result = this.match(new Pattern(patterns[i]), diagram);
             if (!result.equals(""))
@@ -66,7 +66,7 @@ public class Matcher {
     // synthesise insert ranges from the matches of the pattern to the set of
     // targets
     public String matchAndGetInserts(Pattern pattern) {
-        ArrayList ranges = new ArrayList();
+        ArrayList<int[]> ranges = new ArrayList<int[]>();
         Pattern p = pattern;
         try {
             p = new Pattern(pattern.toString()); // !!ARRRGH!
@@ -225,7 +225,7 @@ public class Matcher {
 
     // return a Result array rather than a String array
     public Result[] runResults(Pattern p) {
-        List results = new java.util.ArrayList();
+        List<Result> results = new ArrayList<Result>();
         for (int i = 0; i < this.diagrams.length; ++i) {
             Result result = new Result();
             result.setID(this.diagrams[i].getName());
@@ -275,6 +275,7 @@ public class Matcher {
             		System.out.println(result);
             	}
             }
+            bu.close();
         } catch (IOException e) {
             System.out.println(e);
         } catch (TopsStringFormatException tsfe) {
@@ -284,7 +285,7 @@ public class Matcher {
     }
 
     public String[] run(Pattern p) {
-        List results = new ArrayList();
+        List<String> results = new ArrayList<String>();
         for (int i = 0; i < this.diagrams.length; ++i) {
             String result = new String(this.diagrams[i].toString());
             boolean matchfound = false;

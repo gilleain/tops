@@ -77,7 +77,7 @@ public class TParser {
     // ALTERNATIVE 1.3 method
     public String[] getEdges() {
         String tail = this.getEdgeString();
-        ArrayList bytes = new ArrayList();
+        ArrayList<String> bytes = new ArrayList<String>();
         char[] bits = tail.toCharArray();
         StringBuffer numstr = new StringBuffer();
         for (int i = 0; i < bits.length; i++) {

@@ -37,7 +37,7 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
 
     private static LinearViewPanel[] panes;
 
-    private int numberGraphs = 0;
+//    private int numberGraphs = 0;
 
     private JButton showButton, matchButton, compareButton;
 
@@ -47,7 +47,7 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
 
     private JTextField patternField;
 
-    private Map vertexMap, edgeMap, highlightMap, classMap;
+    private Map<String, String> vertexMap, edgeMap, highlightMap, classMap;
 
     private static int numPanes;
 
@@ -158,14 +158,14 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
     }
 
     public void loadFile(String fileName) {
-        this.vertexMap = new HashMap();
-        this.edgeMap = new HashMap();
-        this.highlightMap = new HashMap();
-        this.classMap = new HashMap();
+        this.vertexMap = new HashMap<String, String>();
+        this.edgeMap = new HashMap<String, String>();
+        this.highlightMap = new HashMap<String, String>();
+        this.classMap = new HashMap<String, String>();
 
         try {
             FileReader inFile;
-            ArrayList names = new ArrayList();
+            ArrayList<String> names = new ArrayList<String>();
             inFile = new FileReader(fileName);
             BufferedReader buffy = new BufferedReader(inFile);
             String line, head, vstr, estr, classification;
@@ -186,11 +186,12 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
                     // what if classification is null?
                     this.classMap.put(head, classification); 
                     
-                    this.numberGraphs++;
+//                    this.numberGraphs++;
                 }
             }
+            buffy.close();
 
-            Vector nameVector = new Vector();
+            Vector<String> nameVector = new Vector<String>();
             nameVector.addAll(names);
 
             this.tableModel.addColumn("names", nameVector);
@@ -204,12 +205,12 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
     }
 
     public String[] getInstances() {
-        ArrayList instances = new ArrayList();
-        Vector dataVector = this.tableModel.getDataVector();
+        ArrayList<String> instances = new ArrayList<String>();
+        Vector<?> dataVector = this.tableModel.getDataVector();
         int nameColumnIndex = 0;
 
         for (int i = 0; i < dataVector.size(); i++) {
-            String name = (String) ((Vector) dataVector.elementAt(i))
+            String name = (String) ((Vector<?>) dataVector.elementAt(i))
                     .elementAt(nameColumnIndex);
             StringBuffer instance = new StringBuffer(name);
             instance.append(" ");
@@ -305,7 +306,7 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
         if (!lsm.isSelectionEmpty()) {
             int first = lsm.getMinSelectionIndex();
             int last = lsm.getMaxSelectionIndex();
-            ArrayList selection = new ArrayList();
+            ArrayList<Integer> selection = new ArrayList<Integer>();
             for (int i = first; i <= last; i++) {
                 if (lsm.isSelectedIndex(i)) {
                     // System.err.println("selected : " + i);

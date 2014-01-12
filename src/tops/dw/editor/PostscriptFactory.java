@@ -12,10 +12,10 @@ public final class PostscriptFactory {
 
     public static int A4Height = 841;
 
-    public static Vector makeEPSHeader(Vector ps, int bbx1, int bby1, int bbx2,
+    public static Vector<String> makeEPSHeader(Vector<String> ps, int bbx1, int bby1, int bbx2,
             int bby2) {
         if (ps == null) {
-            ps = new Vector();
+            ps = new Vector<String>();
         }
 
         ps.addElement("%!PS-Adobe-3.0 EPSF-3.0");
@@ -30,9 +30,9 @@ public final class PostscriptFactory {
 
     }
 
-    public static Vector makePSHeader(Vector ps, int npages, int page_order) {
+    public static Vector<String> makePSHeader(Vector<String> ps, int npages, int page_order) {
         if (ps == null) {
-            ps = new Vector();
+            ps = new Vector<String>();
         }
 
         ps.addElement("%!PS-Adobe-3.0");
@@ -47,12 +47,12 @@ public final class PostscriptFactory {
 
     }
 
-    public static Vector addBoundingBox(Vector ps, int bbx1, int bby1,
-            int bbx2, int bby2) {
+    public static Vector<String> addBoundingBox(
+    		Vector<String> ps, int bbx1, int bby1, int bbx2, int bby2) {
         if (ps == null)
             return null;
 
-        Enumeration en = ps.elements();
+        Enumeration<String> en = ps.elements();
 
         String s;
         int i = 0;
@@ -67,11 +67,9 @@ public final class PostscriptFactory {
         }
 
         if (found) {
-            ps.setElementAt("%%BoundingBox: " + bbx1 + " " + bby1 + " " + bbx2
-                    + " " + bby2, i);
+            ps.setElementAt("%%BoundingBox: " + bbx1 + " " + bby1 + " " + bbx2 + " " + bby2, i);
         } else {
-            ps.insertElementAt("%%BoundingBox: " + bbx1 + " " + bby1 + " "
-                    + bbx2 + " " + bby2, 1);
+            ps.insertElementAt("%%BoundingBox: " + bbx1 + " " + bby1 + " " + bbx2 + " " + bby2, 1);
         }
 
         return ps;
@@ -102,12 +100,12 @@ public final class PostscriptFactory {
         return sb.toString();
     }
 
-    public static Vector makeUpTriangle(int x, int y, int r, Color c, Vector ps) {
+    public static Vector<String> makeUpTriangle(int x, int y, int r, Color c, Vector<String> ps) {
         int dx, dy;
-        Vector postscript;
+        Vector<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector();
+            postscript = new Vector<String>();
         } else {
             postscript = ps;
         }
@@ -140,14 +138,14 @@ public final class PostscriptFactory {
         return postscript;
     }
 
-    public static Vector makeDownTriangle(int x, int y, int r, Color c,
-            Vector ps) {
+    public static Vector<String> makeDownTriangle(int x, int y, int r, Color c,
+            Vector<String> ps) {
         int dx, dy;
 
-        Vector postscript;
+        Vector<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector();
+            postscript = new Vector<String>();
         } else {
             postscript = ps;
         }
@@ -180,11 +178,11 @@ public final class PostscriptFactory {
         return postscript;
     }
 
-    public static Vector makeCircle(int x, int y, int r, Color c, Vector ps) {
-        Vector postscript;
+    public static Vector<String> makeCircle(int x, int y, int r, Color c, Vector<String> ps) {
+        Vector<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector();
+            postscript = new Vector<String>();
         } else {
             postscript = ps;
         }
@@ -218,12 +216,12 @@ public final class PostscriptFactory {
 
     }
 
-    public static Vector makeText(String font, int font_size, int x, int y,
-            String text, Vector ps) {
-        Vector postscript;
+    public static Vector<String> makeText(String font, int font_size, int x, int y,
+            String text, Vector<String> ps) {
+        Vector<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector();
+            postscript = new Vector<String>();
         } else {
             postscript = ps;
         }
@@ -376,7 +374,7 @@ public final class PostscriptFactory {
     // a method to make a PS array from a set of EPS files
     private static int border = 36;
 
-    public static Vector PSArrayA4(Vector titles, Vector EPSfiles, int margin,
+    public static Vector<String> PSArrayA4(Vector<?> titles, Vector<?> EPSfiles, int margin,
             float scle) throws PSException {
         if (EPSfiles == null || EPSfiles.isEmpty())
             throw new PSException("Nothing to draw!");
@@ -385,17 +383,17 @@ public final class PostscriptFactory {
 
         float invscle = 1.0f / scle;
 
-        Vector PS = new Vector();
+        Vector<String> PS = new Vector<String>();
 
         int nfiles = EPSfiles.size();
 
         // determine largest X and Y sizes
         int xs, ys, maxx = 0, maxy = 0;
         int bb[];
-        Enumeration enf = EPSfiles.elements();
-        Vector eps;
+        Enumeration<?> enf = EPSfiles.elements();
+        Vector<?> eps;
         while (enf.hasMoreElements()) {
-            eps = (Vector) enf.nextElement();
+            eps = (Vector<?>) enf.nextElement();
             bb = PostscriptFactory.getBoundingBox(eps);
             xs = bb[2] - bb[0];
             ys = bb[3] - bb[1];
@@ -421,7 +419,7 @@ public final class PostscriptFactory {
         PS = PostscriptFactory.makePSHeader(PS, npages, 1);
 
         // construct the array
-        Enumeration ent = titles.elements();
+        Enumeration<?> ent = titles.elements();
         enf = EPSfiles.elements();
         int nf = 0, ix, iy = -1, np = 0;
         int lowleft[] = new int[2];
@@ -447,7 +445,7 @@ public final class PostscriptFactory {
             PS.addElement(PostscriptFactory.translate(lowleft[0], lowleft[1]));
 
             // get bounding box
-            eps = (Vector) enf.nextElement();
+            eps = (Vector<?>) enf.nextElement();
             bb = PostscriptFactory.getBoundingBox(eps);
 
             // add title
@@ -490,9 +488,9 @@ public final class PostscriptFactory {
 
     }
 
-    private static void appendEPS(Vector PS, Vector EPS) {
+    private static void appendEPS(Vector<String> PS, Vector<?> EPS) {
         String line;
-        Enumeration en = EPS.elements();
+        Enumeration<?> en = EPS.elements();
         while (en.hasMoreElements()) {
             line = (String) en.nextElement();
             if (!line.startsWith("%") && !line.startsWith("showpage")) {
@@ -508,7 +506,7 @@ public final class PostscriptFactory {
         return md;
     }
 
-    private static int[] getBoundingBox(Vector eps) throws PSException {
+    private static int[] getBoundingBox(Vector<?> eps) throws PSException {
         String line, tok;
         StringTokenizer st;
         int b, i;
@@ -517,7 +515,7 @@ public final class PostscriptFactory {
             bb[i] = 0;
 
         if (eps != null) {
-            Enumeration e = eps.elements();
+            Enumeration<?> e = eps.elements();
             while (e.hasMoreElements()) {
                 line = (String) e.nextElement();
                 if (line.startsWith("%%BoundingBox:")) {

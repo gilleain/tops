@@ -25,16 +25,16 @@ import tops.drawing.model.Topology;
  */
 public class LayerDiagram {
     
-    private ArrayList connectionLines;
-    private ArrayList layers;
+    private ArrayList<ConnectionLine> connectionLines;
+    private ArrayList<Layer> layers;
 //    private TerminalBox nTerminus;
 //    private TerminalBox cTerminus;
     
     private GeometricParameters p;
     
     public LayerDiagram() {
-        this.layers = new ArrayList();
-        this.connectionLines = new ArrayList();
+        this.layers = new ArrayList<Layer>();
+        this.connectionLines = new ArrayList<ConnectionLine>();
         this.p = new GeometricParameters();
     }
     
@@ -50,13 +50,13 @@ public class LayerDiagram {
     public void createFromModel(Topology model) {
        
         // convert the sheets into layers and set the z-order
-        ArrayList tses = model.getTSES();
-        HashMap sseToElementMap = new HashMap();
+        ArrayList<TSE> tses = model.getTSES();
+        HashMap<Integer, LayerElement> sseToElementMap = new HashMap<Integer, LayerElement>();
         int zOrder = 0;
         for (int i = 0; i < tses.size(); i++) {
             Layer layer = new Layer(zOrder);
             TSE tse = (TSE) tses.get(i);
-            ArrayList elements = tse.getElements();
+            ArrayList<SSE> elements = tse.getElements();
             for (int j = 0; j < elements.size(); j++) {
                 SSE sse = (SSE) elements.get(j);
                 LayerElement element;
@@ -78,7 +78,7 @@ public class LayerDiagram {
 
         
         // make the connection lines
-        ArrayList connections = model.getConnections();
+        ArrayList<Connection> connections = model.getConnections();
         for (int i = 0; i < connections.size(); i++) {
             Connection connection = (Connection) connections.get(i);
             SSE first = connection.getFirst();

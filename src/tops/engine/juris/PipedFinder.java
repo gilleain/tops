@@ -1,12 +1,16 @@
 package tops.engine.juris;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 class PipedFinder {
 
     private BufferedReader buffy;
 
-    private java.util.List instances;
+    private List<String> instances;
 
     private Constrainer c;
 
@@ -16,7 +20,7 @@ class PipedFinder {
 
     public PipedFinder(String name) {
         this.maxpat = "";
-        this.instances = new java.util.ArrayList();
+        this.instances = new ArrayList<String>();
         this.buffy = new BufferedReader(new InputStreamReader(System.in));
 
         try {

@@ -1,7 +1,11 @@
 package tops.model.classification;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class Level {
 
@@ -29,14 +33,14 @@ public class Level {
 
     private String fullCode;
 
-    private ArrayList subLevels;
+    private List<Level> subLevels;
 
     private RepSet repSet;
 
     public Level() {
         this.depth = Level.ROOT;
         this.levelCode = "UNKNOWN";
-        this.subLevels = new ArrayList();
+        this.subLevels = new ArrayList<Level>();
         this.repSet = new RepSet();
     }
 
@@ -167,23 +171,23 @@ public class Level {
     }
 
     public static Level fromFile(String filename, int cathLevelConstant,
-            String levelName) throws java.io.IOException {
+            String levelName) throws IOException {
         String line;
         Level level = new Level(cathLevelConstant, levelName, levelName);
-        java.io.BufferedReader bufferedReader = new java.io.BufferedReader(
-                new java.io.FileReader(filename));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
         while ((line = bufferedReader.readLine()) != null) {
             Rep rep = new Rep(levelName, line);
             level.addRep(rep);
         }
+        bufferedReader.close();
         return level;
     }
 
-    public ArrayList getSubLevels() {
+    public List<Level> getSubLevels() {
         return this.subLevels;
     }
 
-    public Iterator getSubLevelIterator(int subLevelDepth) {
+    public Iterator<Level> getSubLevelIterator(int subLevelDepth) {
         return new LevelIterator(this.depth, subLevelDepth, this.subLevels);
     }
 

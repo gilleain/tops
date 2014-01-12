@@ -1,26 +1,27 @@
 package tops.model.classification;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.List;
 
 import tops.engine.TopsStringFormatException;
-
 import tops.engine.drg.Comparer;
 import tops.engine.drg.Utilities;
-//import tops.engine.drg.Pattern;
-
 import tops.engine.inserts.Matcher;
 import tops.engine.inserts.Pattern;
+//import tops.engine.drg.Pattern;
 
 public class RepSet {
 
-    private ArrayList reps;
+    private List<Rep> reps;
 
     private BitSet repBitSet;
 
     public RepSet() {
-        this.reps = new ArrayList();
+        this.reps = new ArrayList<Rep>();
         this.repBitSet = new BitSet();
     }
 
@@ -184,12 +185,12 @@ public class RepSet {
         String line;
         RepSet repSet = new RepSet();
         try {
-            java.io.BufferedReader bufferedReader = new java.io.BufferedReader(
-                    new java.io.FileReader(filename));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
             while ((line = bufferedReader.readLine()) != null) {
                 Rep rep = new Rep(levelName, line);
                 repSet.addRep(rep);
             }
+            bufferedReader.close();
         } catch (Exception e) {
             System.out.println(e);
         }

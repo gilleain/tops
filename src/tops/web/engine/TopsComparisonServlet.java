@@ -85,7 +85,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
     public void displayPage(int page, int pageSize, Result[] results,
             PrintWriter out, String targetName, String target,
-            HashMap idToNameMap, String targetService, String classification) {
+            HashMap<Integer, ArrayList<String>> idToNameMap, String targetService, String classification) {
         out
                 .println("<html><head><meta http-equiv=\"Pragma\" content=\"no-cache\">");
         if (targetService.equals("compare")
@@ -232,7 +232,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
         for (int i = startIndex; i < endIndex; i++) {
             Integer id = new Integer(results[i].getID());
-            ArrayList nameList = (ArrayList) idToNameMap.get(id);
+            ArrayList<?> nameList = (ArrayList<?>) idToNameMap.get(id);
             String data = results[i].getData();
 //            String insertString = null; // TODO sort this all out!
             String matchString = null;
@@ -300,14 +300,14 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         out.println("</tbody></table></p>");
     }
 
-    private void mapList(HashMap map, Integer key, String value) {
-        ArrayList list;
+    private void mapList(HashMap<Integer, ArrayList<String>> map, Integer key, String value) {
+        ArrayList<String> list;
 
         if (map.containsKey(key)) {
-            list = (ArrayList) map.get(key);
+            list = (ArrayList<String>) map.get(key);
             list.add(value); // ADD VALUE! :)
         } else {
-            list = new ArrayList(); // make a new list, starting with the
+            list = new ArrayList<String>(); // make a new list, starting with the
                                     // current key
             list.add(value); // look lively!
         }
@@ -348,7 +348,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         String[] subclasses; // parsed from a 'sub' string from input
         String targetName = "NONAME"; // get the target from request and parse
                                         // to get head
-        HashMap idToNameMap = null;
+        HashMap<Integer, ArrayList<String>> idToNameMap = null;
 
         if (newSubmission == null) {
             if (results == null) { // the results have been removed from the
@@ -362,7 +362,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             pageSizeS = (String) session.getAttribute("pagesize");
             targetName = (String) session.getAttribute("targetName");
             target = (String) session.getAttribute("target");
-            idToNameMap = (HashMap) session.getAttribute("idToNameMap");
+            idToNameMap = (HashMap<Integer, ArrayList<String>>) session.getAttribute("idToNameMap");
             subclasses = (String[]) session.getAttribute("subclasses");
 
             if (pageS != null)
@@ -444,7 +444,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 Connection connection = DataSourceWrapper.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery(query_a);
-                ArrayList in = new ArrayList();
+                ArrayList<String> in = new ArrayList<String>();
                 while (rs.next()) {
                     String nextInstance = new String();
                     nextInstance += rs.getString("group_id") + " ";
@@ -459,7 +459,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 // now concatenate the names together into a csv list, put lists
                 // into a map
                 ResultSet rs2 = statement.executeQuery(query_b);
-                idToNameMap = new HashMap();
+                idToNameMap = new HashMap<Integer, ArrayList<String>>();
                 // idToClassMap = new HashMap();
 
                 while (rs2.next()) {

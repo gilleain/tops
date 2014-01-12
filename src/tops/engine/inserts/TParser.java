@@ -17,9 +17,9 @@ public class TParser {
 
     private String current;
 
-    private static List strings;
+    private static List<String> strings;
 
-    private Iterator stringsIterator;
+    private Iterator<String> stringsIterator;
 
     // Pattern edgeP = Pattern.compile("(\\d+):(\\d+)(\\w)"); //the regex
     private Pattern insertP = Pattern.compile("\\[(.*?)\\]");
@@ -31,7 +31,7 @@ public class TParser {
             .getLogger("tops.engine.inserts.TParser");
 
     public TParser() {
-        TParser.strings = new ArrayList();
+        TParser.strings = new ArrayList<String>();
         this.stringsIterator = TParser.strings.iterator();
         TParser.logger.setLevel(Level.OFF);
         TParser.logger.setUseParentHandlers(false);
@@ -140,7 +140,7 @@ public class TParser {
     // public char[] getVerticesAlone() {
 
     public String[] getInserts() {
-        ArrayList l = new ArrayList();
+        ArrayList<String> l = new ArrayList<String>();
         this.m.reset(this.getVertexString());
         while (this.m.find()) {
             String insert = this.m.group(1);
@@ -171,7 +171,7 @@ public class TParser {
     // ALTERNATIVE 1.3 method
     public String[] getEdges() {
         String tail = this.getEdgeString();
-        ArrayList bytes = new ArrayList();
+        ArrayList<String> bytes = new ArrayList<String>();
         char[] bits = tail.toCharArray();
         StringBuffer numstr = new StringBuffer();
         for (int i = 0; i < bits.length; i++) {

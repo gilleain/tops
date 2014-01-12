@@ -52,7 +52,7 @@ public class TopsMatchServlet extends HttpServlet {
 
         try {
             ResultSet rs = DataSourceWrapper.executeQuery(query);
-            ArrayList p = new ArrayList();
+            ArrayList<String> p = new ArrayList<String>();
             while (rs.next()) {
                 String nextPattern = new String();
                 nextPattern += rs.getString("pattern_id") + " ";

@@ -42,17 +42,17 @@ public class SecStrucElement {
 
     private int SymbolRadius;
 
-    private Vector ConnectionTo;
+    private Vector<Point> ConnectionTo;
 
     private String FixedType;
 
-    private Vector BridgePartner;
+    private Vector<Integer> BridgePartner;
 
-    private Vector BridgePartnerSide;
+    private Vector<String> BridgePartnerSide;
 
-    private Vector BridgePartnerType;
+    private Vector<String> BridgePartnerType;
 
-    private Vector Neighbour;
+    private Vector<Integer> Neighbour;
 
     private int SeqStartResidue, SeqFinishResidue;
 
@@ -74,15 +74,15 @@ public class SecStrucElement {
     
     private boolean start_new_connection = true;
     
-    private ArrayList annotations;	// TODO : put this in the SSE container class
+    private ArrayList<Annotation> annotations;	// TODO : put this in the SSE container class
 
     public SecStrucElement() {
         this.Position = new Point(0, 0);
-        this.ConnectionTo = new Vector();
-        this.BridgePartner = new Vector();
-        this.BridgePartnerSide = new Vector();
-        this.BridgePartnerType = new Vector();
-        this.Neighbour = new Vector();
+        this.ConnectionTo = new Vector<Point>();
+        this.BridgePartner = new Vector<Integer>();
+        this.BridgePartnerSide = new Vector<String>();
+        this.BridgePartnerType = new Vector<String>();
+        this.Neighbour = new Vector<Integer>();
         this.Colour = null;
         
         int fs, i;
@@ -92,7 +92,7 @@ public class SecStrucElement {
         this.Font12 = new Font("TimesRoman", Font.PLAIN, 12);
         this.currentFont = null; 
 
-        this.annotations = new ArrayList();
+        this.annotations = new ArrayList<Annotation>();
     }
     
     /**
@@ -180,7 +180,7 @@ public class SecStrucElement {
     	System.out.println("adding annotation " + annotation);
     }
     
-    public void getEPS(int w, int h, Vector EPS) {
+    public void getEPS(int w, int h, Vector<String> EPS) {
 
         // draw secondary structures
         this.SecStrucsEPS(EPS, w, h);
@@ -223,7 +223,7 @@ public class SecStrucElement {
 
         for (s = this; s != null; s = s.GetTo()) {
             if (!(s.GetConnectionTo().isEmpty())) {
-                Enumeration ConnectionEnum = s.GetConnectionTo().elements();
+                Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
                 Point PointTo;
                 while (ConnectionEnum.hasMoreElements()) {
                     PointTo = (Point) ConnectionEnum.nextElement();
@@ -247,7 +247,7 @@ public class SecStrucElement {
 
     
 
-    private void ConnectionsEPS(Vector EPS, int w, int h) {
+    private void ConnectionsEPS(Vector<String> EPS, int w, int h) {
         SecStrucElement s;
         for (s = this; (s != null) && (s.GetTo() != null); s = s.GetTo()) {
             this.start_new_connection = true;
@@ -256,7 +256,7 @@ public class SecStrucElement {
         }
     }
 
-    private void SecStrucsEPS(Vector EPS, int w, int h) {
+    private void SecStrucsEPS(Vector<String> EPS, int w, int h) {
 
         if (EPS == null)
             return;
@@ -273,19 +273,16 @@ public class SecStrucElement {
             c = s.getColour();
 
             if (s.Type.equals("H")) {
-                EPS = PostscriptFactory.makeCircle(pos.x, h - pos.y, rad, c,
-                        EPS);
+                EPS = PostscriptFactory.makeCircle(pos.x, h - pos.y, rad, c, EPS);
             } else if (s.Type.equals("E")) {
                 if (s.Direction.equals("U")) {
-                    EPS = PostscriptFactory.makeUpTriangle(pos.x, h - pos.y,
-                            rad, c, EPS);
+                    EPS = PostscriptFactory.makeUpTriangle(pos.x, h - pos.y, rad, c, EPS);
                 } else {
-                    EPS = PostscriptFactory.makeDownTriangle(pos.x, h - pos.y,
-                            rad, c, EPS);
+                    EPS = PostscriptFactory.makeDownTriangle(pos.x, h - pos.y, rad, c, EPS);
                 }
             } else if (s.Type.equals("C") || s.Type.equals("N")) {
-                EPS = PostscriptFactory.makeText("Times-Roman", (3 * rad) / 4,
-                        pos.x, h - pos.y, s.Label, EPS);
+                EPS = PostscriptFactory.makeText(
+                		"Times-Roman", (3 * rad) / 4, pos.x, h - pos.y, s.Label, EPS);
             }
         }
 
@@ -471,7 +468,7 @@ public class SecStrucElement {
         /* the case where there are some intervening connection points */
         else {
 
-            Enumeration ConnectionEnum = s.GetConnectionTo().elements();
+            Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
             Point PointTo = (Point) ConnectionEnum.nextElement();
 
             this.JoinPoints(s.GetPosition(), s.Direction, s.Type, FromScreenR,
@@ -541,7 +538,8 @@ public class SecStrucElement {
             Graphics gc = (Graphics) GraphicsOutput;
             gc.drawLine(From.x, From.y, To.x, To.y);
         } else if (GraphicsOutput instanceof Vector) {
-            Vector ps = (Vector) GraphicsOutput;
+            @SuppressWarnings("unchecked")
+			Vector<String> ps = (Vector<String>) GraphicsOutput;
             if (this.start_new_connection) {
                 ps.addElement(PostscriptFactory.makeMove(From.x, 0 - From.y));	//FIXME
                 this.start_new_connection = false;
@@ -693,8 +691,8 @@ public class SecStrucElement {
     }
     
     public void InvertY() {
-        Vector conns;
-        Enumeration en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
         Point p;
         SecStrucElement s;
 
@@ -718,8 +716,8 @@ public class SecStrucElement {
         SecStrucElement s;
         Point p;
         int x, y, r;
-        Vector conns;
-        Enumeration en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
 
         for (s = this; s != null; s = s.GetTo()) {
 
@@ -759,8 +757,8 @@ public class SecStrucElement {
      */
     public synchronized void TranslateDiagram(int x, int y) {
         SecStrucElement s;
-        Vector conns;
-        Enumeration en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
         Point p;
 
         for (s = this; s != null; s = s.GetTo()) {
@@ -790,41 +788,41 @@ public class SecStrucElement {
 
     public void AddBridgePartner(int bp) {
         if (this.BridgePartner == null)
-            this.BridgePartner = new Vector();
+            this.BridgePartner = new Vector<Integer>();
         this.BridgePartner.addElement(new Integer(bp));
     }
 
     public void AddBridgePartnerSide(String side) {
         if (this.BridgePartnerSide == null)
-            this.BridgePartnerSide = new Vector();
+            this.BridgePartnerSide = new Vector<String>();
         this.BridgePartnerSide.addElement(side);
     }
 
     public void AddBridgePartnerType(String type) {
         if (this.BridgePartnerType == null)
-            this.BridgePartnerType = new Vector();
+            this.BridgePartnerType = new Vector<String>();
         this.BridgePartnerType.addElement(type);
     }
 
-    public Vector GetBridgePartner() {
+    public Vector<Integer> GetBridgePartner() {
         return this.BridgePartner;
     }
 
-    public Vector GetBridgePartnerSide() {
+    public Vector<String> GetBridgePartnerSide() {
         return this.BridgePartnerSide;
     }
 
-    public Vector GetBridgePartnerType() {
+    public Vector<String> GetBridgePartnerType() {
         return this.BridgePartnerType;
     }
 
     public void AddNeighbour(int nb) {
         if (this.Neighbour == null)
-            this.Neighbour = new Vector();
+            this.Neighbour = new Vector<Integer>();
         this.Neighbour.addElement(new Integer(nb));
     }
 
-    public Vector GetNeighbour() {
+    public Vector<Integer> GetNeighbour() {
         return this.Neighbour;
     }
 
@@ -992,7 +990,7 @@ public class SecStrucElement {
         Point p = new Point(x, y);
 
         if (this.ConnectionTo == null)
-            this.ConnectionTo = new Vector();
+            this.ConnectionTo = new Vector<Point>();
 
         this.ConnectionTo.addElement(p);
 
@@ -1001,19 +999,19 @@ public class SecStrucElement {
     public void AddConnectionTo(Point p) {
         if (p != null) {
             if (this.ConnectionTo == null)
-                this.ConnectionTo = new Vector();
+                this.ConnectionTo = new Vector<Point>();
             this.ConnectionTo.addElement(p);
         }
     }
 
-    public Vector GetConnectionTo() {
+    public Vector<Point> GetConnectionTo() {
         if (this.ConnectionTo == null)
-            this.ConnectionTo = new Vector();
+            this.ConnectionTo = new Vector<Point>();
         return this.ConnectionTo;
     }
 
     public void ClearConnectionTo() {
-        this.ConnectionTo = new Vector();
+        this.ConnectionTo = new Vector<Point>();
     }
 
     public void SetFixed(SecStrucElement s) {
@@ -1206,7 +1204,7 @@ public class SecStrucElement {
         SecStrucElement s;
         Point p;
         int y;
-        Enumeration en;
+        Enumeration<Point> en;
 
         for (s = this.GetRoot(); s != null; s = s.GetTo()) {
             p = s.GetPosition();
@@ -1228,7 +1226,7 @@ public class SecStrucElement {
         SecStrucElement s;
         Point p;
         int x;
-        Enumeration en;
+        Enumeration<Point> en;
 
         for (s = this.GetRoot(); s != null; s = s.GetTo()) {
             p = s.GetPosition();
@@ -1330,7 +1328,7 @@ public class SecStrucElement {
 
         ps.print("BridgePartner");
         if (this.BridgePartner != null) {
-            Enumeration en = this.BridgePartner.elements();
+            Enumeration<Integer> en = this.BridgePartner.elements();
             while (en.hasMoreElements()) {
                 ps.print(" ");
                 ps.print(((Integer) en.nextElement()).intValue());
@@ -1340,7 +1338,7 @@ public class SecStrucElement {
 
         ps.print("BridgePartnerSide");
         if (this.BridgePartnerSide != null) {
-            Enumeration en = this.BridgePartnerSide.elements();
+            Enumeration<String> en = this.BridgePartnerSide.elements();
             while (en.hasMoreElements()) {
                 ps.print(" ");
                 ps.print((String) en.nextElement());
@@ -1350,7 +1348,7 @@ public class SecStrucElement {
 
         ps.print("BridgePartnerType");
         if (this.BridgePartnerType != null) {
-            Enumeration en = this.BridgePartnerType.elements();
+            Enumeration<String> en = this.BridgePartnerType.elements();
             while (en.hasMoreElements()) {
                 ps.print(" ");
                 ps.print((String) en.nextElement());
@@ -1360,7 +1358,7 @@ public class SecStrucElement {
 
         ps.print("Neighbour");
         if (this.Neighbour != null) {
-            Enumeration en = this.Neighbour.elements();
+            Enumeration<Integer> en = this.Neighbour.elements();
             while (en.hasMoreElements()) {
                 ps.print(" ");
                 ps.print(((Integer) en.nextElement()).intValue());
@@ -1394,10 +1392,10 @@ public class SecStrucElement {
 
         ps.println("AxisLength " + this.AxisLength);
 
-        Vector ct = this.GetConnectionTo();
+        Vector<Point> ct = this.GetConnectionTo();
         ps.println("NConnectionPoints " + ct.size());
         ps.print("ConnectionTo");
-        Enumeration en = ct.elements();
+        Enumeration<Point> en = ct.elements();
         Point cp;
         while (en.hasMoreElements()) {
             cp = (Point) en.nextElement();

@@ -114,8 +114,8 @@ public class CartoonDrawer {
     }
 
     private void invertY(SecStrucElement root) {
-        Vector conns;
-        Enumeration en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
         Point p;
         SecStrucElement s;
 
@@ -138,8 +138,8 @@ public class CartoonDrawer {
         Point p;
         //int x, y;
         int r;
-        Vector conns;
-        Enumeration en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
 
         for (s = root; s != null; s = s.GetTo()) {
 
@@ -177,8 +177,8 @@ public class CartoonDrawer {
     private void translateDiagram(SecStrucElement root, int x, int y) {
         System.err.println("translating by " + x + " " + y);
         SecStrucElement s;
-        Vector conns;
-        Enumeration en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
         Point p;
 
         for (s = root; s != null; s = s.GetTo()) {
@@ -221,7 +221,7 @@ public class CartoonDrawer {
             if (rad > rmax) rmax = rad;
 
             if (!(s.GetConnectionTo().isEmpty())) {
-                Enumeration ConnectionEnum = s.GetConnectionTo().elements();
+                Enumeration<?> ConnectionEnum = s.GetConnectionTo().elements();
                 Point PointTo;
                 while (ConnectionEnum.hasMoreElements()) {
                     PointTo = (Point) ConnectionEnum.nextElement();
@@ -352,7 +352,7 @@ public class CartoonDrawer {
             this.joinPoints(pointTo, pointFrom);
         } else {
 
-            Enumeration connectionEnum = from.GetConnectionTo().elements();
+            Enumeration<?> connectionEnum = from.GetConnectionTo().elements();
             Point connectionPointTo = (Point) connectionEnum.nextElement();
 
             this.joinPoints(pointFrom, connectionPointTo);

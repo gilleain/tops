@@ -1,6 +1,7 @@
 package tops.engine.juris;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import tops.engine.Edge;
 import tops.engine.Vertex;
@@ -19,9 +20,9 @@ class Pattern {
     Edge current;
 
     // java.util.List sheets = new ArrayList();
-    java.util.List vertices = new ArrayList();
+    List<Vertex> vertices = new ArrayList<Vertex>();
 
-    java.util.List edges = new ArrayList();
+    List<Edge> edges = new ArrayList<Edge>();
 
     String classification;
 
@@ -122,7 +123,7 @@ class Pattern {
 
     // get an array of strings of the unattached vertices
     String[] getInsertStringArr(Pattern d) {
-        java.util.List results = new ArrayList();
+        List<String> results = new ArrayList<String>();
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {

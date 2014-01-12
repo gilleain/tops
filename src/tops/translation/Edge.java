@@ -1,6 +1,6 @@
 package tops.translation;
 
-public class Edge implements Comparable {
+public class Edge implements Comparable<Edge> {
 
     private BackboneSegment first;
 
@@ -14,10 +14,10 @@ public class Edge implements Comparable {
         this.type = type;
     }
 
-    public int compareTo(Object other) {
-        int firstCompare = this.first.compareTo(((Edge) other).first);
+    public int compareTo(Edge other) {
+        int firstCompare = this.first.compareTo(other.first);
         if (firstCompare == 0) {
-            return this.second.compareTo(((Edge) other).second);
+            return this.second.compareTo(other.second);
         } else {
             return firstCompare;
         }

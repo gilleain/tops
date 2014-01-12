@@ -12,12 +12,12 @@ public abstract class ProteinComponent {
 
     protected String typeLabel; // 'strand', 'sheet', 'barrel' etc
 
-    protected ArrayList subComponents;
+    protected ArrayList<ProteinComponent> subComponents;
 
     protected int order; // 'order' is a generic positioning index
 
     public ProteinComponent(String typeLabel) {
-        this.subComponents = new ArrayList();
+        this.subComponents = new ArrayList<ProteinComponent>();
         this.typeLabel = typeLabel;
         this.order = 0;
     }

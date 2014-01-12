@@ -1,5 +1,8 @@
 package tops.engine.juris;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class Grower {
 
     public int num_h, num_H, num_e, num_E, vsize, esize, old_esize, old_vsize,
@@ -9,7 +12,7 @@ class Grower {
 
     private String[] edgeStrings;
 
-    private java.util.List edgeArrays;
+    private List<int[]> edgeArrays;
 
     private int[] caster;
 
@@ -23,7 +26,7 @@ class Grower {
         this.lHE = 0;
 
         this.pattern = new StringBuffer("NC ");
-        this.edgeArrays = new java.util.ArrayList();
+        this.edgeArrays = new ArrayList<int[]>();
         this.edgeArrays.add(new int[12]); // dummy edge
     }
 
@@ -50,7 +53,7 @@ class Grower {
     
         this.pattern = new StringBuffer(p);
     
-        this.edgeArrays = new java.util.ArrayList();
+        this.edgeArrays = new ArrayList<int[]>();
         for (int i = 0; i < this.vsize + 1; ++i) {
             this.edgeArrays.add(this.calculate(i));
         }

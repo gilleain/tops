@@ -1,5 +1,7 @@
 package tops.engine.juris;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import tops.engine.Edge;
@@ -14,7 +16,7 @@ class Matcher {
 
     int[][] matches;
 
-    Stack PVS, TVS;
+    Stack<Integer> PVS, TVS;
 
     Matcher(String[] diag) {
         this.diagrams = new Pattern[diag.length];
@@ -34,7 +36,7 @@ class Matcher {
     }
 
     String[] run() {
-        java.util.List results = new java.util.ArrayList(this.diagrams.length);
+        List<String> results = new ArrayList<String>(this.diagrams.length);
         boolean noInserts = false; // this was making the final match results
                                     // different from expected
         String tmp;
@@ -433,8 +435,8 @@ class Matcher {
         int pvert = current.left.getPos();
         int tvert = (current.getCurrentMatch()).left.getPos();
 
-        this.PVS = new Stack();
-        this.TVS = new Stack();
+        this.PVS = new Stack<Integer>();
+        this.TVS = new Stack<Integer>();
         this.PVS.push(new Integer(pvert));
         this.TVS.push(new Integer(tvert));
 

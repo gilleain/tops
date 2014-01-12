@@ -48,12 +48,12 @@ public class PipelineServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HashMap filenames = this.uploadPDBFiles(request);
+        HashMap<String, String> filenames = this.uploadPDBFiles(request);
 
         if (filenames.size() > 0) {
 
             String[] results = new String[filenames.size()];
-            Iterator filenameIterator = filenames.keySet().iterator();
+            Iterator<String> filenameIterator = filenames.keySet().iterator();
             int i = 0;
 
             while (filenameIterator.hasNext()) {
@@ -155,14 +155,14 @@ public class PipelineServlet extends HttpServlet {
         return (int) (Math.random() * 9) + 1;
     }
 
-    public HashMap uploadPDBFiles(HttpServletRequest request) {
-        HashMap filenames = new HashMap();
+    public HashMap<String, String> uploadPDBFiles(HttpServletRequest request) {
+        HashMap<String, String> filenames = new HashMap<String, String>();
 
         try {
             // save to scratch directory, 5MB limit
             MultipartRequest multi = new MultipartRequest(request,
                     this.path_to_scratch, 5 * 1024 * 1024);
-            Enumeration files = multi.getFileNames();
+            Enumeration<?> files = multi.getFileNames();
 
             while (files.hasMoreElements()) {
                 String name = (String) files.nextElement();

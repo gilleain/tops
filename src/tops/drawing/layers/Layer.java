@@ -11,10 +11,10 @@ import java.util.ArrayList;
 public class Layer {
     
     private int zOrder; // 0 (front) to N (back) for N+1 layers
-    private ArrayList layerElements;
+    private ArrayList<LayerElement> layerElements;
     
     public Layer(int zOrder) {
-        this.layerElements = new ArrayList();
+        this.layerElements = new ArrayList<LayerElement>();
         this.zOrder = zOrder;
     }
     

@@ -1,16 +1,17 @@
 package tops.db.generation;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
@@ -22,10 +23,9 @@ import tops.beans.Helix_Packing_Pair;
 import tops.beans.Hydrogen_Bond;
 import tops.beans.SSE_DOM;
 import tops.beans.Secondary_Structure_Element;
-
 import tops.engine.Edge;
-import tops.engine.Vertex;
 import tops.engine.PlainFormatter;
+import tops.engine.Vertex;
 
 /**
  * Creates string format TOPS graphs from a database query.
@@ -51,15 +51,11 @@ public class StringFactory extends TopsFactory {
      *            a TreeMap of vertices and types
      * @return the index of the chiral partner
      */
-    public int findOtherEnd(int left, TreeMap vertices) {
-        String type = (String) vertices.get(new Integer(left));
-        SortedMap range = vertices.subMap(new Integer(left + 1), new Integer(
-                left + 10));
-        Set keys = range.keySet();
-        Iterator itr = keys.iterator();
-        while (itr.hasNext()) {
-            Integer i = (Integer) itr.next();
-            String otherType = (String) range.get(i);
+    public int findOtherEnd(int left, TreeMap<Integer, String> vertices) {
+        String type = vertices.get(left);
+        SortedMap<Integer, String> range = vertices.subMap(left + 1, left + 10);
+        for(Integer i : range.keySet()) {
+            String otherType = range.get(i);
             if (type.equals(otherType)) {
                 return i.intValue();
             }
@@ -80,28 +76,28 @@ public class StringFactory extends TopsFactory {
      * @param id
      *            a domain id
      */
-    public void mapNumbers(TreeMap numMap, HashMap domMap, int number, String id) {
+    public void mapNumbers(TreeMap<Integer, Integer> numMap, HashMap<String, TreeMap<Integer, String>> domMap, int number, String id) {
         if (numMap.isEmpty()) {
-            numMap.put(new Integer(number), new Integer(1));
+            numMap.put(number, 1);
         } else {
-            Integer lastEndNumber = (Integer) numMap.lastKey();
+            Integer lastEndNumber = numMap.lastKey();
             String lastId = this.getDomain(lastEndNumber, domMap);
             if (id.equals(lastId)) {
                 // if the domains are the same
-                Integer mappedLast = (Integer) numMap.get(lastEndNumber);
+                Integer mappedLast = numMap.get(lastEndNumber);
                 int lastVal = mappedLast.intValue();
                 int mappedNew = lastVal + 1;
-                numMap.put(new Integer(number), new Integer(mappedNew));
+                numMap.put(number, mappedNew);
             } else {
                 // crossing domain boundary
                 lastEndNumber = this.getLastEndNumber(id, number, domMap);
-                if (lastEndNumber.equals(new Integer(-1))) {
+                if (lastEndNumber.equals(-1)) {
                     // first SSE in domain
-                    numMap.put(new Integer(number), new Integer(1));
+                    numMap.put(number, 1);
                 } else {
-                    Integer mappedLast = (Integer) numMap.get(lastEndNumber);
+                    Integer mappedLast = numMap.get(lastEndNumber);
                     int mappedNew = mappedLast.intValue() + 1;
-                    numMap.put(new Integer(number), new Integer(mappedNew));
+                    numMap.put(number, mappedNew);
                 }
             }
         }
@@ -116,9 +112,9 @@ public class StringFactory extends TopsFactory {
      *            a list of Secondary_Structure_Elements
      * @return the String type of the SSE
      */
-    public String lookupType(int num, ArrayList list) {
+    public String lookupType(int num, ArrayList<Secondary_Structure_Element> list) {
         for (int i = 0; i < list.size(); i++) {
-            Secondary_Structure_Element s = (Secondary_Structure_Element) list
+            Secondary_Structure_Element s = list
                     .get(i);
             int n = s.getSSE_No();
             if (num == n) {
@@ -137,13 +133,10 @@ public class StringFactory extends TopsFactory {
      *            an Integer-String map
      * @return the domain String
      */
-    public String getDomain(Integer number, HashMap map) {
+    public String getDomain(Integer number, HashMap<String, TreeMap<Integer, String>> map) {
         // System.err.println("getting domain for number : " + number);
-        Set keys = map.keySet();
-        Iterator itr = keys.iterator();
-        while (itr.hasNext()) {
-            String dom = (String) itr.next();
-            TreeMap vertices = (TreeMap) map.get(dom);
+        for (String dom : map.keySet()) {
+            TreeMap<Integer, String> vertices = map.get(dom);
             if (vertices.containsKey(number)) {
                 return dom;
             }
@@ -164,15 +157,15 @@ public class StringFactory extends TopsFactory {
      *            Integer-String map
      * @return the vertex index
      */
-    public Integer getLastEndNumber(String domid, int num, HashMap map) {
-        TreeMap vertices = (TreeMap) map.get(domid);
-        SortedMap heads = vertices.headMap(new Integer(num));
+    public Integer getLastEndNumber(String domid, int num, HashMap<String, TreeMap<Integer, String>> map) {
+        TreeMap<Integer, String> vertices = map.get(domid);
+        SortedMap<Integer, String> heads = vertices.headMap(num);
         if (heads.isEmpty()) {
             return new Integer(-1);
         }
         // nothing smaller than num!
         else {
-            return (Integer) heads.lastKey();
+            return heads.lastKey();
         }
     }
 
@@ -185,11 +178,11 @@ public class StringFactory extends TopsFactory {
      *            list of HPP_Class objects
      * @return a String representing the direction
      */
-    public String convertClassToType(int classid, ArrayList types) {
+    public String convertClassToType(int classid, ArrayList<HPP_Class> types) {
         classid /= 10;
         // !!ARRGH!
         for (int i = 0; i < types.size(); i++) {
-            HPP_Class hpc = (HPP_Class) types.get(i);
+            HPP_Class hpc = types.get(i);
             int cl = hpc.getClass_ID();
             if (classid == cl) {
                 return hpc.getRelOrientation();
@@ -224,7 +217,7 @@ public class StringFactory extends TopsFactory {
     public String[] getChains(String source, String pdbid) {
         String Chain_Q = "SELECT Chain_ID FROM Chain WHERE PDB_ID = '" + pdbid
                 + "'";
-        ArrayList chains = new ArrayList();
+        ArrayList<Chain> chains = new ArrayList<Chain>();
         // get the chains for this tops.dw.protein
         ResultSet cr = this.doQuery(Chain_Q);
         try {
@@ -239,7 +232,7 @@ public class StringFactory extends TopsFactory {
 
         String[] chain_ids = new String[chains.size()];
         for (int i = 0; i < chains.size(); i++) {
-            Chain nextChain = (Chain) chains.get(i);
+            Chain nextChain = chains.get(i);
             StringFactory.logger
                     .log(Level.INFO, "getting chain : "
                             + nextChain.getChain_ID());
@@ -260,15 +253,15 @@ public class StringFactory extends TopsFactory {
      */
     public String[] getDomains(String source, String[] chains) {
 
-        ArrayList hbonds;
-        ArrayList hpacks;
-        ArrayList chirals;
-        ArrayList sses;
-        ArrayList ssedoms;
+        ArrayList<Hydrogen_Bond> hbonds;
+        ArrayList<Helix_Packing_Pair> hpacks;
+        ArrayList<Chiral_Connection> chirals;
+        ArrayList<Secondary_Structure_Element> sses;
+        ArrayList<SSE_DOM> ssedoms;
 
-        HashMap domMap = new HashMap();
-        HashMap bondMap = new HashMap();
-        TreeMap numMap = new TreeMap();
+        HashMap<String, TreeMap<Integer, String>> domMap = new HashMap<String, TreeMap<Integer, String>>();
+        HashMap<String, ArrayList<Edge>> bondMap = new HashMap<String, ArrayList<Edge>>();
+        TreeMap<Integer, Integer> numMap = new TreeMap<Integer, Integer>();
         // mappings of the database numbering to domain numbering WHY TreeMap? -
         // because it is ordered!
 
@@ -285,7 +278,7 @@ public class StringFactory extends TopsFactory {
         String Chiral_QStub = "SELECT SSE_No,Hand FROM Chiral_Connection WHERE Chain_ID = '";
 
         // get the HPP data (this might never change!)
-        ArrayList hppdata = new ArrayList();
+        ArrayList<HPP_Class> hppdata = new ArrayList<HPP_Class>();
         ResultSet hppr = this.doQuery(HPP_Q);
         try {
             while (hppr.next()) {
@@ -300,11 +293,11 @@ public class StringFactory extends TopsFactory {
 
         // step through the chains, getting data for each
         for (int i = 0; i < chains.length; i++) {
-            hbonds = new ArrayList();
-            hpacks = new ArrayList();
-            chirals = new ArrayList();
-            sses = new ArrayList();
-            ssedoms = new ArrayList();
+            hbonds = new ArrayList<Hydrogen_Bond>();
+            hpacks = new ArrayList<Helix_Packing_Pair>();
+            chirals = new ArrayList<Chiral_Connection>();
+            sses = new ArrayList<Secondary_Structure_Element>();
+            ssedoms = new ArrayList<SSE_DOM>();
 
             String cid = chains[i];
 
@@ -363,7 +356,7 @@ public class StringFactory extends TopsFactory {
 
             // map the sses to a particular domain for this chain
             for (int j = 0; j < ssedoms.size(); j++) {
-                SSE_DOM ssd = (SSE_DOM) ssedoms.get(j);
+                SSE_DOM ssd = ssedoms.get(j);
                 String id = ssd.getDOM_ID();
                 int number = ssd.getSSE_No();
 
@@ -375,11 +368,11 @@ public class StringFactory extends TopsFactory {
                     if ((direction != null) && (direction.equals("D"))) {
                         type = type.toLowerCase();
                     }
-                    TreeMap sseMap;
+                    TreeMap<Integer, String> sseMap;
                     if (domMap.containsKey(id)) {
-                        sseMap = (TreeMap) domMap.get(id);
+                        sseMap = domMap.get(id);
                     } else {
-                        sseMap = new TreeMap();
+                        sseMap = new TreeMap<Integer, String>();
                         domMap.put(id, sseMap);
                     }
                     // System.err.println("putting number " + number + " into
@@ -392,11 +385,11 @@ public class StringFactory extends TopsFactory {
             // do the same for the hydrogen bonds, throwing away those that
             // cross domains
             for (int k = 0; k < hbonds.size(); k++) {
-                Hydrogen_Bond hb = (Hydrogen_Bond) hbonds.get(k);
+                Hydrogen_Bond hb = hbonds.get(k);
                 int left = hb.getSSE_No();
-                Integer mapped_left = (Integer) numMap.get(new Integer(left));
+                Integer mapped_left = numMap.get(new Integer(left));
                 int right = hb.getSSE_NoC();
-                Integer mapped_right = (Integer) numMap.get(new Integer(right));
+                Integer mapped_right = numMap.get(new Integer(right));
                 String type = hb.getType();
                 String id_left = this.getDomain(new Integer(left), domMap);
                 String id_right = this.getDomain(new Integer(right), domMap);
@@ -406,11 +399,11 @@ public class StringFactory extends TopsFactory {
                             + type);
                 } else {
                     if (id_left.equals(id_right)) {
-                        ArrayList blist;
+                        ArrayList<Edge> blist;
                         if (bondMap.containsKey(id_left)) {
-                            blist = (ArrayList) bondMap.get(id_left);
+                            blist = bondMap.get(id_left);
                         } else {
-                            blist = new ArrayList();
+                            blist = new ArrayList<Edge>();
                             bondMap.put(id_left, blist);
                         }
                         // blist.add(new String(mapped_left + ":" + mapped_right
@@ -426,11 +419,11 @@ public class StringFactory extends TopsFactory {
             }
             // and for helix-packing
             for (int l = 0; l < hpacks.size(); l++) {
-                Helix_Packing_Pair hpp = (Helix_Packing_Pair) hpacks.get(l);
+                Helix_Packing_Pair hpp = hpacks.get(l);
                 int left = hpp.getSSE_No();
-                Integer mapped_left = (Integer) numMap.get(new Integer(left));
+                Integer mapped_left = numMap.get(new Integer(left));
                 int right = hpp.getSSE_NoC();
-                Integer mapped_right = (Integer) numMap.get(new Integer(right));
+                Integer mapped_right = numMap.get(new Integer(right));
                 int classid = hpp.getClass_ID();
                 String type = this.convertClassToType(classid, hppdata);
                 String id_left = this.getDomain(new Integer(left), domMap);
@@ -441,11 +434,11 @@ public class StringFactory extends TopsFactory {
                             + type);
                 } else {
                     if (id_left.equals(id_right)) {
-                        ArrayList blist;
+                        ArrayList<Edge> blist;
                         if (bondMap.containsKey(id_left)) {
-                            blist = (ArrayList) bondMap.get(id_left);
+                            blist = bondMap.get(id_left);
                         } else {
-                            blist = new ArrayList();
+                            blist = new ArrayList<Edge>();
                             bondMap.put(id_left, blist);
                         }
                         // blist.add(new String(mapped_left + ":" + mapped_right
@@ -462,22 +455,22 @@ public class StringFactory extends TopsFactory {
 
             // and for chiralities
             for (int m = 0; m < chirals.size(); m++) {
-                Chiral_Connection cc = (Chiral_Connection) chirals.get(m);
+                Chiral_Connection cc = chirals.get(m);
                 String type = cc.getHand();
 
                 int left = cc.getSSE_No();
                 String leftDom = this.getDomain(new Integer(left), domMap);
-                Integer mapped_left = (Integer) numMap.get(new Integer(left));
+                Integer mapped_left = numMap.get(new Integer(left));
 
-                int right = this.findOtherEnd(left, (TreeMap) domMap.get(leftDom));
-                Integer mapped_right = (Integer) numMap.get(new Integer(right));
+                int right = this.findOtherEnd(left, domMap.get(leftDom));
+                Integer mapped_right = numMap.get(new Integer(right));
 
-                ArrayList blist;
+                ArrayList<Edge> blist;
 
                 if (bondMap.containsKey(leftDom)) {
-                    blist = (ArrayList) bondMap.get(leftDom);
+                    blist = bondMap.get(leftDom);
                 } else {
-                    blist = new ArrayList();
+                    blist = new ArrayList<Edge>();
                     bondMap.put(leftDom, blist);
                 }
                 // blist.add(new String(mapped_left + ":" + mapped_right +
@@ -490,7 +483,7 @@ public class StringFactory extends TopsFactory {
                     Edge e = new Edge(v1, v2, chiral_type);
                     // try to find any hbonds in the same position
                     for (int j = 0; j < blist.size(); j++) {
-                        Edge hbond = (Edge) blist.get(j);
+                        Edge hbond = blist.get(j);
                         if (hbond.equals(e)) {
                             StringFactory.logger.log(Level.INFO, "mixed type!");
                             char hbond_type = hbond.getType();
@@ -510,31 +503,27 @@ public class StringFactory extends TopsFactory {
                     blist.add(e);
                 }
             }
-            sses = new ArrayList();
-            ssedoms = new ArrayList();
-            hbonds = new ArrayList();
-            hpacks = new ArrayList();
-            chirals = new ArrayList();
+            sses = new ArrayList<Secondary_Structure_Element>();
+            ssedoms = new ArrayList<SSE_DOM>();
+            hbonds = new ArrayList<Hydrogen_Bond>();
+            hpacks = new ArrayList<Helix_Packing_Pair>();
+            chirals = new ArrayList<Chiral_Connection>();
         }
 
         // go through the domains, getting the bits and pieces
-        Set domains = domMap.keySet();
-        Iterator itr = domains.iterator();
+        Set<String> domains = domMap.keySet();
+        Iterator<String> itr = domains.iterator();
         String[] domainStrings = new String[domains.size()];
         int d = 0;
         while (itr.hasNext()) {
             StringBuffer buffer = new StringBuffer();
 
-            String domid = (String) itr.next();
+            String domid = itr.next();
             // System.err.println("got domain : " + domid);
             buffer.append(domid).append(" ").append("N");
 
-            TreeMap sseMap = (TreeMap) domMap.get(domid);
-            Set numbers = sseMap.keySet();
-            Iterator itr2 = numbers.iterator();
-
-            while (itr2.hasNext()) {
-                Integer sse_num = (Integer) itr2.next();
+            TreeMap<Integer, String> sseMap = domMap.get(domid);
+            for (Integer sse_num : sseMap.keySet()) {
 //                Integer m_sse_num = (Integer) numMap.get(sse_num);
                 String type = (String) sseMap.get(sse_num);
                 // System.err.print(m_sse_num + "-" + type + ",");
@@ -543,12 +532,11 @@ public class StringFactory extends TopsFactory {
 
             buffer.append("C ");
 
-            ArrayList bonds = (ArrayList) bondMap.get(domid);
+            ArrayList<Edge> bonds = bondMap.get(domid);
             if (bonds != null) {
-                Collections.sort(bonds);
-                Iterator itr3 = bonds.iterator();
-                while (itr3.hasNext()) {
-                    buffer.append(itr3.next());
+//                Collections.sort(bonds);	// TODO !
+                for (Edge bond : bonds) {
+                    buffer.append(bond);
                 }
             }
             domainStrings[d++] = buffer.toString();
@@ -573,7 +561,7 @@ public class StringFactory extends TopsFactory {
         String GROUP_Q = "SELECT Domain.DOM_ID, Code FROM Domain, Reps WHERE Domain.DOM_ID = Reps.DOM_ID AND Reps.Source = '";
         GROUP_Q += source + "' AND Rep = '" + rep + "' AND Code LIKE '" + code
                 + "%';";
-        HashMap dom_ids = new HashMap();
+        HashMap<String, String> dom_ids = new HashMap<String, String>();
         ResultSet group = this.doQuery(GROUP_Q);
         try {
             while (group.next()) {
@@ -585,13 +573,13 @@ public class StringFactory extends TopsFactory {
             System.err.println(squeel);
         }
 
-        ArrayList domains = new ArrayList();
-        Iterator itr = dom_ids.keySet().iterator();
+        ArrayList<String> domains = new ArrayList<String>();
+        Iterator<String> itr = dom_ids.keySet().iterator();
         while (itr.hasNext()) {
-            String dom_id = (String) itr.next();
+            String dom_id = itr.next();
             String domain = this.getDomain(source, dom_id);
             if (domain != null && !domain.equals("")) {
-                String classification = (String) dom_ids.get(dom_id);
+                String classification = dom_ids.get(dom_id);
                 domains.add(domain + " " + classification);
             }
         }
@@ -694,21 +682,31 @@ public class StringFactory extends TopsFactory {
             // names from file
             String filename = args[2];
             System.err.println("reading file " + filename);
-            try {
-                java.io.BufferedReader reader = new java.io.BufferedReader(
-                        new java.io.FileReader(args[2]));
-                String line;
-                ArrayList resultList = new ArrayList();
-                while ((line = reader.readLine()) != null) {
-                    String domain = stringFactory.getDomain(source, line);
-                    if (domain != null && !domain.equals("")) {
-                        resultList.add(domain);
-                    }
-                }
-                results = (String[]) resultList.toArray(new String[0]);
-            } catch (java.io.IOException ioe) {
-                System.err.println(ioe);
-            }
+            BufferedReader reader;
+			try {
+				reader = new BufferedReader(new FileReader(args[2]));
+	            try {
+	                String line;
+	                ArrayList<String> resultList = new ArrayList<String>();
+	                while ((line = reader.readLine()) != null) {
+	                    String domain = stringFactory.getDomain(source, line);
+	                    if (domain != null && !domain.equals("")) {
+	                        resultList.add(domain);
+	                    }
+	                }
+	                results = resultList.toArray(new String[0]);
+	            } catch (java.io.IOException ioe) {
+	                System.err.println(ioe);
+	            } finally {
+	            	try {
+						reader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	            }
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 
         } else {
             System.exit(0);

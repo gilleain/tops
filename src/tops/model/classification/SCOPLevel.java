@@ -1,8 +1,8 @@
 package tops.model.classification;
 
-import java.util.ArrayList;
-
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SCOPLevel {
 
@@ -47,7 +47,7 @@ public class SCOPLevel {
     private String repName;
 
     /** A list of children - either sublevels or domainids */
-    private ArrayList children;
+    private List<Object> children;
 
     /**
      * Create a new level.
@@ -64,7 +64,7 @@ public class SCOPLevel {
         this.name = name;
         this.sunid = sunid;
         this.repName = repName;
-        this.children = new ArrayList();
+        this.children = new ArrayList<Object>();
 
         // determine the name of the next level : -1 indicates the leaves
         this.childLevelName = -1;
@@ -180,7 +180,7 @@ public class SCOPLevel {
      *            assembling.
      */
 
-    public void getReps(SCOPNumber scopNumber, ArrayList repInts) {
+    public void getReps(SCOPNumber scopNumber, ArrayList<Integer> repInts) {
         // add a rep to the list if necessary
         if (this.name != SCOPLevel.ROOT
                 && this.repName.equals(scopNumber.getDomainID())) {

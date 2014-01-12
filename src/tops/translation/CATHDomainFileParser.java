@@ -3,11 +3,10 @@ package tops.translation;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.HashMap;
-
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,8 +18,8 @@ public class CATHDomainFileParser {
     private static Pattern segmentPattern = Pattern
             .compile("[\\d\\w]\\s+(\\d+)\\s\\-\\s[\\w\\d]\\s+(\\d+)\\s\\-");
 
-    public static HashMap parseWholeFile(String filename) throws IOException {
-        HashMap pdbChainDomainMap = new HashMap();
+    public static HashMap<String, HashMap<String, List<Domain>>> parseWholeFile(String filename) throws IOException {
+        HashMap<String, HashMap<String, List<Domain>>> pdbChainDomainMap = new HashMap<String, HashMap<String, List<Domain>>>();
 
         String line;
         BufferedReader bufferer = new BufferedReader(new FileReader(filename));
@@ -31,25 +30,26 @@ public class CATHDomainFileParser {
             // analyze the line
             String pdbid = line.substring(0, 4);
             String chain = line.substring(4, 5);
-            ArrayList domains = CATHDomainFileParser.parseLine(line);
+            List<Domain> domains = CATHDomainFileParser.parseLine(line);
 
             // store the result
             if (pdbChainDomainMap.containsKey(pdbid)) {
-                HashMap chainDomainMap = (HashMap) pdbChainDomainMap.get(pdbid);
+                HashMap<String, List<Domain>> chainDomainMap = pdbChainDomainMap.get(pdbid);
                 chainDomainMap.put(chain, domains);
             } else {
-                HashMap chainDomainMap = new HashMap();
+                HashMap<String, List<Domain>> chainDomainMap = new HashMap<String, List<Domain>>();
                 chainDomainMap.put(chain, domains);
                 pdbChainDomainMap.put(pdbid, chainDomainMap);
             }
         }
+        bufferer.close();
 
         return pdbChainDomainMap;
     }
 
-    public static HashMap parseUpToParticularID(String filename, String pdbid)
+    public static HashMap<String, List<Domain>> parseUpToParticularID(String filename, String pdbid)
             throws IOException {
-        HashMap chainDomainMap = new HashMap();
+        HashMap<String, List<Domain>> chainDomainMap = new HashMap<String, List<Domain>>();
 
         String line;
         BufferedReader bufferer = new BufferedReader(new FileReader(filename));
@@ -60,19 +60,20 @@ public class CATHDomainFileParser {
             }
             // analyze the line
             String chain = line.substring(4, 5);
-            ArrayList domains = CATHDomainFileParser.parseLine(line);
+            List<Domain> domains = CATHDomainFileParser.parseLine(line);
 
             // store the result
             chainDomainMap.put(chain, domains);
             // System.err.println("Storing " + domains.size() + " domains for "
             // + pdbid + chain);
         }
+        bufferer.close();
 
         return chainDomainMap;
     }
 
-    public static ArrayList parseLine(String line) {
-        ArrayList domains = new ArrayList();
+    public static List<Domain> parseLine(String line) {
+        List<Domain> domains = new ArrayList<Domain>();
 
         Matcher domainMatcher = CATHDomainFileParser.domainPattern.matcher(line.substring(14));
         int domainID = 1;
@@ -97,17 +98,17 @@ public class CATHDomainFileParser {
 
     public static void main(String[] args) {
         try {
-            HashMap pdbChainDomainMap = CATHDomainFileParser
-                    .parseWholeFile(args[0]);
-            Iterator pdbidItr = pdbChainDomainMap.keySet().iterator();
+            HashMap<String, HashMap<String, List<Domain>>> pdbChainDomainMap = 
+            		CATHDomainFileParser.parseWholeFile(args[0]);
+            Iterator<String> pdbidItr = pdbChainDomainMap.keySet().iterator();
             while (pdbidItr.hasNext()) {
                 String pdbID = (String) pdbidItr.next();
-                HashMap chainDomainMap = (HashMap) pdbChainDomainMap.get(pdbID);
-                Iterator chainItr = chainDomainMap.keySet().iterator();
+                HashMap<?, ?> chainDomainMap = (HashMap<?, ?>) pdbChainDomainMap.get(pdbID);
+                Iterator<?> chainItr = chainDomainMap.keySet().iterator();
                 while (chainItr.hasNext()) {
                     String chainID = (String) chainItr.next();
-                    ArrayList domains = (ArrayList) chainDomainMap.get(chainID);
-                    Iterator domainItr = domains.iterator();
+                    ArrayList<?> domains = (ArrayList<?>) chainDomainMap.get(chainID);
+                    Iterator<?> domainItr = domains.iterator();
                     while (domainItr.hasNext()) {
                         Domain domain = (Domain) domainItr.next();
                         System.out.println(pdbID + chainID + " " + domain);

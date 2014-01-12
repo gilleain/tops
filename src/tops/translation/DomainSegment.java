@@ -2,6 +2,7 @@ package tops.translation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class DomainSegment {
 
@@ -18,10 +19,10 @@ public class DomainSegment {
         return backboneSegment.containedInPDBNumberRange(this.start, this.end);
     }
 
-    public ArrayList filter(ArrayList backboneSegments) {
-        ArrayList subList = new ArrayList();
+    public List<BackboneSegment> filter(List<BackboneSegment> backboneSegments) {
+        List<BackboneSegment> subList = new ArrayList<BackboneSegment>();
 
-        Iterator itr = backboneSegments.iterator();
+        Iterator<BackboneSegment> itr = backboneSegments.iterator();
         while (itr.hasNext()) {
             BackboneSegment backboneSegment = (BackboneSegment) itr.next();
             if (this.contains(backboneSegment)) {

@@ -2,17 +2,17 @@ package tops.view.tops2D.app;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.FileOutputStream;
-
 import java.util.Vector;
 
-//import tops.dw.protein.DomainDefinition;
+import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.view.tops2D.cartoon.CartoonDrawer;
+//import tops.dw.protein.DomainDefinition;
 
 
 /**
@@ -38,8 +38,8 @@ public class Cartoonist {
         
         try {
             Protein protein = new Protein(new File(topsFilepath));
-            Vector dd = protein.GetDomainDefs();
-            Vector ll = protein.GetLinkedLists();
+            Vector<DomainDefinition> dd = protein.GetDomainDefs();
+            Vector<SecStrucElement> ll = protein.GetLinkedLists();
 
             if (outputType.equalsIgnoreCase("pdf") || outputType.equalsIgnoreCase("img")) {
                 FileOutputStream fos = new FileOutputStream(outputFilepath);

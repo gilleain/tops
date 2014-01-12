@@ -72,7 +72,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     private boolean highlightFlag = false;
     
     private TopsEditor parentPanel;
-    private Stack undoStack;       
+    private Stack<UndoEvent> undoStack;       
     private Cartoon cartoon;
     private double scale_factor;
     private Dimension initialCanvasSize = new Dimension(400, 400);
@@ -84,7 +84,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
 
         this.cartoon = new Cartoon();
         
-        undoStack = new Stack();
+        undoStack = new Stack<UndoEvent>();
         dragging = false;
 
         this.addMouseListener(this);
@@ -119,7 +119,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
 
     public void performHorizontalAlignment(Point p) {
         this.saveState();
-        ArrayList selected = cartoon.getSelectedSSESymbols();
+        ArrayList<SSESymbol> selected = cartoon.getSelectedSSESymbols();
 
         for (int i = 0; i < selected.size(); i++) {
             SSESymbol curFig = (SSESymbol) selected.get(i);
@@ -140,7 +140,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     public void performVerticalAlignment(Point p) {
         this.saveState();
         // want the 'N' to start from where p is.
-        ArrayList selected = this.cartoon.getSelectedSSESymbols();
+        ArrayList<SSESymbol> selected = this.cartoon.getSelectedSSESymbols();
 
         for (int i = 0; i < selected.size(); i++) {
             SSESymbol curFig = (SSESymbol) selected.get(i);

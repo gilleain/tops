@@ -8,7 +8,7 @@ public class ProteinChoice extends Dialog implements ActionListener {
 
     private static int WIDTH = 250, HEIGHT = 300;
 
-    private Vector proteins = null;
+    private Vector<Protein> proteins = null;
 
     private Protein RetProt = null;
 
@@ -18,7 +18,7 @@ public class ProteinChoice extends Dialog implements ActionListener {
 
     private CheckboxGroup cbg = null;
 
-    public ProteinChoice(Frame f, String Message, Vector prots) {
+    public ProteinChoice(Frame f, String Message, Vector<Protein> prots) {
         super(f, "ProteinChoice", true);
 
         this.proteins = prots;
@@ -34,7 +34,7 @@ public class ProteinChoice extends Dialog implements ActionListener {
         pan.setLayout(new GridLayout(0, 1));
 
         if (this.proteins != null) {
-            Enumeration en = this.proteins.elements();
+            Enumeration<Protein> en = this.proteins.elements();
             Protein p;
             String nm;
             this.cbg = new CheckboxGroup();
@@ -90,7 +90,7 @@ public class ProteinChoice extends Dialog implements ActionListener {
             Checkbox cb = this.cbg.getSelectedCheckbox();
             if (cb != null) {
                 String nm = cb.getLabel();
-                Enumeration en = this.proteins.elements();
+                Enumeration<Protein> en = this.proteins.elements();
                 Protein p;
                 while (en.hasMoreElements()) {
                     p = (Protein) en.nextElement();

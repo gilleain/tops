@@ -21,7 +21,7 @@ public class Architect {
 
     public void buildStrandSheet(String vertices, String hbonds, String chirals) {
         int numVertices = vertices.length() - 2;
-        ArrayList newOrder = this.sheetReOrder(hbonds);
+        ArrayList<String> newOrder = this.sheetReOrder(hbonds);
         System.out.println(newOrder);
 
         // String type = null;
@@ -37,7 +37,7 @@ public class Architect {
                                             // this works
             this.framework.addSSE(pos, c);
         }
-        HashMap chiralMap = this.makeChiralMap(chirals);
+        HashMap<Integer, Object[]> chiralMap = this.makeChiralMap(chirals);
         int f = 0; // first SSE
         int s = 1; // second SSE
         int chirality; // er...chirality
@@ -63,8 +63,8 @@ public class Architect {
         }
     }
 
-    private HashMap makeChiralMap(String chirals) {
-        HashMap chiralMap = new HashMap();
+    private HashMap<Integer, Object[]> makeChiralMap(String chirals) {
+        HashMap<Integer, Object[]> chiralMap = new HashMap<Integer, Object[]>();
         StringTokenizer tokenizer = new StringTokenizer(chirals, ".");
         while (tokenizer.hasMoreTokens()) {
             String t = tokenizer.nextToken();
@@ -80,9 +80,9 @@ public class Architect {
         return chiralMap;
     }
 
-    private ArrayList sheetReOrder(String hbonds) {
-        ArrayList newOrder = new ArrayList();
-        HashMap edgeMap = new HashMap();
+    private ArrayList<String> sheetReOrder(String hbonds) {
+        ArrayList<String> newOrder = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> edgeMap = new HashMap<String, ArrayList<String>>();
         StringTokenizer tokenizer = new StringTokenizer(hbonds, "."); // split
                                                                         // on
                                                                         // dots
@@ -96,12 +96,12 @@ public class Architect {
             this.mapVertex(right, left, edgeMap);
         }
         // now, go through the vertices to find the endpoints (edgestrands)
-        Set keys = edgeMap.keySet();
-        Iterator i = keys.iterator();
-        ArrayList edgeStrands = new ArrayList();
+        Set<String> keys = edgeMap.keySet();
+        Iterator<String> i = keys.iterator();
+        ArrayList<String> edgeStrands = new ArrayList<String>();
         while (i.hasNext()) {
             String vertex = (String) i.next();
-            ArrayList connections = (ArrayList) edgeMap.get(vertex);
+            ArrayList<?> connections = (ArrayList<?>) edgeMap.get(vertex);
             if (connections.size() < 2)
                 edgeStrands.add(vertex);
         }
@@ -122,7 +122,7 @@ public class Architect {
         String lastVertex = currentVertex;
         String nextVertex = new String();
         while (k < keys.size()) {
-            ArrayList conn = (ArrayList) edgeMap.get(currentVertex);
+            ArrayList<?> conn = (ArrayList<?>) edgeMap.get(currentVertex);
             for (int c = 0; c < conn.size(); c++) {
                 String v = (String) conn.get(c);
                 if (!v.equals(lastVertex))
@@ -136,11 +136,11 @@ public class Architect {
         return newOrder;
     }
 
-    private void mapVertex(String one, String two, HashMap edgeMap) {
+    private void mapVertex(String one, String two, HashMap<String, ArrayList<String>> edgeMap) {
         // System.out.println("mapping : " + one + " and " + two);
-        ArrayList o = (ArrayList) edgeMap.get(one);
+        ArrayList<String> o = (ArrayList<String>) edgeMap.get(one);
         if (o == null)
-            o = new ArrayList();
+            o = new ArrayList<String>();
         o.add(two);
         edgeMap.put(one, o);
         // System.out.println("edgemap now " + edgeMap);

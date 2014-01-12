@@ -12,7 +12,7 @@ import tops.view.tops2D.cartoon.CartoonBuilder;
 
 public class PSBuilder implements CartoonBuilder {
 
-    private Vector eps; // the product that this builder will return
+    private Vector<String> eps; // the product that this builder will return
 
 //    private Rectangle bBox; // the bounds of the cartoon
 
@@ -21,7 +21,7 @@ public class PSBuilder implements CartoonBuilder {
     private int h; // convenience variable
 
     public PSBuilder(Rectangle bBox, PrintWriter out) {
-        this.eps = new Vector();
+        this.eps = new Vector<String>();
         this.eps = PostscriptFactory.makeEPSHeader(this.eps, 0, 0, bBox.width, bBox.height);
 //        this.bBox = bBox;
         this.out = out;

@@ -28,9 +28,9 @@ public class Pattern {
 
     Edge currentChiralEdge;
 
-    java.util.List vertices = new ArrayList();
+    List<Vertex> vertices = new ArrayList<Vertex>();
 
-    java.util.List edges = new ArrayList();
+    List<Edge> edges = new ArrayList<Edge>();
 
     public Pattern() {
         this.head = new String("pattern");
@@ -168,11 +168,11 @@ public class Pattern {
         }
     }
 
-    void addEdges(List newEdges) {
+    void addEdges(List<Edge> newEdges) {
         this.edges.addAll(newEdges);
     }
 
-    void addVertices(List newVertices) {
+    void addVertices(List<Vertex> newVertices) {
         this.vertices.addAll(newVertices);
     }
 
@@ -282,7 +282,7 @@ public class Pattern {
     String[] getInsertStringArr(Pattern d, boolean flip) { // 'd' is an
                                                             // EXAMPLE, not a
                                                             // pattern
-        java.util.List results = new ArrayList();
+        List<String> results = new ArrayList<String>();
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {

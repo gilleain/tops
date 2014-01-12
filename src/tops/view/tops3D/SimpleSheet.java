@@ -11,11 +11,11 @@ import javax.media.j3d.TransformGroup;
 
 public class SimpleSheet {
 
-    private ArrayList sses;
+    private ArrayList<SSE> sses;
 
-    private ArrayList connections;
+    private ArrayList<SimpleConnector> connections;
 
-    private HashMap sseMap;
+    private HashMap<Integer, Integer> sseMap;
 
     private Point3d zShift; // the shift along the z-axis
 
@@ -32,9 +32,9 @@ public class SimpleSheet {
                                 // standard)
 
     public SimpleSheet() {
-        this.sses = new ArrayList();
-        this.connections = new ArrayList();
-        this.sseMap = new HashMap();
+        this.sses = new ArrayList<SSE>();
+        this.connections = new ArrayList<SimpleConnector>();
+        this.sseMap = new HashMap<Integer, Integer>();
         this.zShift = new Point3d();
         this.currentFixture = new Point3d();
         // orientation = new String();
@@ -114,14 +114,14 @@ public class SimpleSheet {
 
     public TransformGroup getTransformGroup(Appearance app) {
         TransformGroup sheetTransform = new TransformGroup();
-        Iterator i = this.sses.iterator();
+        Iterator<SSE> i = this.sses.iterator();
         while (i.hasNext()) {
             SSE s = (SSE) i.next();
             TransformGroup sseTransform = s.getTransformGroup(app);
             sheetTransform.addChild(sseTransform);
         }
 
-        Iterator j = this.connections.iterator();
+        Iterator<SimpleConnector> j = this.connections.iterator();
         while (j.hasNext()) {
             SimpleConnector sc = (SimpleConnector) j.next();
             TransformGroup connectorTransform = sc.getTransformGroup(app);
@@ -153,7 +153,7 @@ public class SimpleSheet {
 
     // checks that the SSE sse does not overlap with any of the others (so far)
     private void checkOverlap(SSE sse) throws SSEOverlapException {
-        Iterator i = this.sses.iterator();
+        Iterator<SSE> i = this.sses.iterator();
         while (i.hasNext()) {
             SSE nextSSE = (SSE) i.next();
             if (sse.clashesWith(nextSSE))
@@ -165,12 +165,12 @@ public class SimpleSheet {
     @Override
     public String toString() {
         StringBuffer stringified = new StringBuffer("sheet\n");
-        Iterator i = this.sses.iterator();
+        Iterator<SSE> i = this.sses.iterator();
         while (i.hasNext()) {
             SSE nextSSE = (SSE) i.next();
             stringified.append("SSE : ").append(nextSSE.toString());
         }
-        Iterator j = this.connections.iterator();
+        Iterator<SimpleConnector> j = this.connections.iterator();
         while (j.hasNext()) {
             SimpleConnector nextCon = (SimpleConnector) j.next();
             stringified.append(nextCon.toString()).append(",");

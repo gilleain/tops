@@ -10,16 +10,16 @@ import java.util.ArrayList;
  */
 public class Topology {
     
-    private ArrayList sses;
-    private ArrayList connections;
-    private ArrayList tses;
-    private ArrayList chiralities;
+    private ArrayList<SSE> sses;
+    private ArrayList<Connection> connections;
+    private ArrayList<TSE> tses;
+    private ArrayList<Chirality> chiralities;
     
     public Topology() {
-        this.sses = new ArrayList();
-        this.connections = new ArrayList();
-        this.tses = new ArrayList();
-        this.chiralities = new ArrayList();
+        this.sses = new ArrayList<SSE>();
+        this.connections = new ArrayList<Connection>();
+        this.tses = new ArrayList<TSE>();
+        this.chiralities = new ArrayList<Chirality>();
     }
     
     public Topology(String topsString) {
@@ -57,8 +57,8 @@ public class Topology {
         
         // create the logical connections between sses
         for (int i = 0; i < this.sses.size() - 1; i++) {
-            SSE sseA = (SSE) this.sses.get(i);
-            SSE sseB = (SSE) this.sses.get(i + 1);
+            SSE sseA = this.sses.get(i);
+            SSE sseB = this.sses.get(i + 1);
             this.connections.add(new Connection(sseA, sseB));
         }
         
@@ -92,22 +92,22 @@ public class Topology {
                     // TODO : barrels
                 }
             } else if (t == 'R' || t == 'L') {
-                SSE leftSSE = (SSE) sses.get(l);
-                SSE rightSSE = (SSE) sses.get(r);
+                SSE leftSSE = sses.get(l);
+                SSE rightSSE = sses.get(r);
                 
                 // XXX : we are assuming that the chiral is between n and n+2!!
                 assert l + 1 == r;
                 int mid = (l + r) / 2;
-                SSE middleSSE = (SSE) sses.get(mid);
+                SSE middleSSE = sses.get(mid);
                 this.chiralities.add(new Chirality(leftSSE, middleSSE, rightSSE, t));
             }
         }
         
         // determine any chiralities that are missing
         for (int i = 0; i < this.sses.size() - 2; i++) {
-            SSE a = (SSE) this.sses.get(i);
-            SSE b = (SSE) this.sses.get(i + 1);
-            SSE c = (SSE) this.sses.get(i + 2);
+            SSE a = this.sses.get(i);
+            SSE b = this.sses.get(i + 1);
+            SSE c = this.sses.get(i + 2);
             
             if (a.isParallelTo(c)) {
                 if (!this.chiralityExistsBetween(a, c)) {
@@ -118,7 +118,7 @@ public class Topology {
         
         // 'layout' the TSEs according to the chirality info
         for (int i = 0; i < this.chiralities.size(); i++) {
-            Chirality chirality = (Chirality) this.chiralities.get(i);
+            Chirality chirality = this.chiralities.get(i);
             SSE middleSSE = chirality.getSecond();
             if (middleSSE instanceof Helix) {
                 SSE first = chirality.getFirst();
@@ -141,7 +141,7 @@ public class Topology {
                         TSE helixSheet = new TSE(middleSSE);
                         this.tses.add(0, helixSheet);
                     } else {
-                        TSE helixSheet = (TSE) this.tses.get(newIndex);
+                        TSE helixSheet = this.tses.get(newIndex);
                         helixSheet.add(middleSSE);
                     }
                 }
@@ -149,15 +149,15 @@ public class Topology {
         }
     }
     
-    public ArrayList getSSES() {
+    public ArrayList<SSE> getSSES() {
         return this.sses;
     }
     
-    public ArrayList getTSES() {
+    public ArrayList<TSE> getTSES() {
         return this.tses;
     }
     
-    public ArrayList getConnections() {
+    public ArrayList<Connection> getConnections() {
         return this.connections;
     }
     
@@ -203,7 +203,7 @@ public class Topology {
     
     private TSE findTSE(SSE first, SSE second) {
         for (int i = 0; i < this.tses.size(); i++) {
-            TSE tse = (TSE) this.tses.get(i);
+            TSE tse = this.tses.get(i);
             if (tse.contains(first, second)) {
                 return tse;
             }
@@ -213,7 +213,7 @@ public class Topology {
 
     public boolean inSameTSE(SSE first, SSE second) {
         for (int i = 0; i < this.tses.size(); i++) {
-            TSE tse = (TSE) this.tses.get(i);
+            TSE tse = this.tses.get(i);
             if (tse.contains(first, second)) {
                 return true;
             }
@@ -223,7 +223,7 @@ public class Topology {
     
     private TSE findTSE(int number) {
         for (int i = 0; i < this.tses.size(); i++) {
-            TSE tse = (TSE) this.tses.get(i);
+            TSE tse = this.tses.get(i);
             if (tse.contains(number)) {
                 return tse;
             }
@@ -233,7 +233,7 @@ public class Topology {
     
     private boolean chiralityExistsBetween(SSE l, SSE r) {
         for (int i = 0; i < this.chiralities.size(); i++) {
-            Chirality chirality = (Chirality) this.chiralities.get(i);
+            Chirality chirality = this.chiralities.get(i);
             if (chirality.hasSSES(l, r)) {
                 return true;
             }

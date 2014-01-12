@@ -11,12 +11,12 @@ import java.util.ArrayList;
  */
 public class ConnectionLine {
     
-    private ArrayList segments;
+    private ArrayList<Line2D> segments;
     private LayerElement first;
     private LayerElement second;
     
     public ConnectionLine(LayerElement first, LayerElement second) {
-        this.segments = new ArrayList();
+        this.segments = new ArrayList<Line2D>();
         this.first = first;
         this.second = second;
     }
@@ -64,16 +64,14 @@ public class ConnectionLine {
             } else if (second instanceof HelixBox) {
                 
             } else if (second instanceof TerminalBox) {
-                int cTerminalBoxY = second.getCTerminalPoint().y;
+//                int cTerminalBoxY = second.getCTerminalPoint().y;	
                 
                 if (first.isUp()) {
-                    cTerminalBoxY -= p.connectionLength;
-                    this.addSegment(second.getCTerminalPoint(),
-                            first.getCTerminalPoint());
+//                    cTerminalBoxY -= p.connectionLength;
+                    this.addSegment(second.getCTerminalPoint(), first.getCTerminalPoint());
                 } else {
-                    cTerminalBoxY += p.connectionLength;
-                    this.addSegment(second.getNTerminalPoint(), 
-                            first.getCTerminalPoint());
+//                    cTerminalBoxY += p.connectionLength;
+                    this.addSegment(second.getNTerminalPoint(), first.getCTerminalPoint());
                 }
             }
             
@@ -90,16 +88,14 @@ public class ConnectionLine {
         } else if (first instanceof TerminalBox) {
             
             if (second instanceof Arrow || second instanceof HelixBox) {
-                int nTerminalBoxY = first.getNTerminalPoint().y;
+//                int nTerminalBoxY = first.getNTerminalPoint().y;
                  
                 if (second.isUp()) {
-                    nTerminalBoxY += p.connectionLength;
-                    this.addSegment(second.getNTerminalPoint(),
-                            first.getNTerminalPoint());
+//                    nTerminalBoxY += p.connectionLength;
+                    this.addSegment(second.getNTerminalPoint(), first.getNTerminalPoint());
                 } else {
-                    nTerminalBoxY -= p.connectionLength;
-                    this.addSegment(second.getCTerminalPoint(),
-                            first.getNTerminalPoint());
+//                    nTerminalBoxY -= p.connectionLength;
+                    this.addSegment(second.getCTerminalPoint(), first.getNTerminalPoint());
                 }
             } else if (second instanceof TerminalBox) {
                 

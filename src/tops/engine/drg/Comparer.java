@@ -89,7 +89,7 @@ public class Comparer {
 
     public Result[] compare(String probe, String[] examples) throws TopsStringFormatException {
         //String[] results = new String[examples.length];
-        ArrayList results = new ArrayList(examples.length);
+        ArrayList<Result> results = new ArrayList<Result>(examples.length);
         Pattern[] pair = new Pattern[2];
         pair[0] = new Pattern(probe);
         System.out.println("for probe : \t" + probe);
@@ -320,7 +320,7 @@ public class Comparer {
             System.exit(0);
         }
         String mode = new String();     //this is the second flag, depending on whether file is specified or not
-        ArrayList examples = new ArrayList();   //shared between the argument modes
+        ArrayList<String> examples = new ArrayList<String>();   //shared between the argument modes
 
         if (args[0].equals("-f")) {     //READ FROM A FILE
             String line;
@@ -330,6 +330,7 @@ public class Comparer {
                 while ((line = buff.readLine()) != null) {
                     examples.add(line);
                 }
+                buff.close();
             } catch (IOException ioe) { System.out.println(ioe); }
             mode = args[2];
         } else if (args[0].equals("-s")) { //USE A STRING

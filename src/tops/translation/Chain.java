@@ -2,9 +2,10 @@ package tops.translation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import javax.vecmath.Point3d;
 
@@ -16,24 +17,24 @@ public class Chain {
 
 //    private Point3d center;
 
-    private ArrayList residues;
+    private List<Residue> residues;
 
-    private ArrayList hbonds;
+    private List<HBond> hbonds;
 
-    private ArrayList sheets;
+    private List<Sheet> sheets;
 
-    private ArrayList backboneSegments;
+    private List<BackboneSegment> backboneSegments;
 
-    private ArrayList chiralities;
+    private List<Edge> chiralities;
 
 //    private ArrayList domains;
 
     public Chain() {
-        this.residues = new ArrayList();
-        this.hbonds = new ArrayList();
-        this.sheets = new ArrayList();
-        this.backboneSegments = new ArrayList();
-        this.chiralities = new ArrayList();
+        this.residues = new ArrayList<Residue>();
+        this.hbonds = new ArrayList<HBond>();
+        this.sheets = new ArrayList<Sheet>();
+        this.backboneSegments = new ArrayList<BackboneSegment>();
+        this.chiralities = new ArrayList<Edge>();
 //        this.domains = new ArrayList();
 //        this.center = null;
     }
@@ -58,8 +59,8 @@ public class Chain {
     }
 
     public void createHelix(int helixStartIndex, int helixEndIndex) {
-        BackboneSegment helix = new Helix(this
-                .getResidueByAbsoluteNumbering(helixStartIndex));
+        BackboneSegment helix = new Helix(
+        		this.getResidueByAbsoluteNumbering(helixStartIndex));
         for (int i = helixStartIndex + 1; i < helixEndIndex + 1; i++) {
             helix.expandBy(this.getResidueByAbsoluteNumbering(i));
         }
@@ -131,7 +132,7 @@ public class Chain {
     }
 
     public boolean hasResidueByPDBNumbering(int pdbResidueNumber) {
-        Iterator itr = this.residues.iterator();
+        Iterator<Residue> itr = this.residues.iterator();
         while (itr.hasNext()) {
             Residue residue = (Residue) itr.next();
             if (residue.getPDBNumber() == pdbResidueNumber) {
@@ -142,7 +143,7 @@ public class Chain {
     }
 
     public Residue getResidueByPDBNumbering(int pdbResidueNumber) {
-        Iterator itr = this.residues.iterator();
+        Iterator<Residue> itr = this.residues.iterator();
         while (itr.hasNext()) {
             Residue residue = (Residue) itr.next();
             if (residue.getPDBNumber() == pdbResidueNumber) {
@@ -176,15 +177,15 @@ public class Chain {
         }
     }
 
-    public Iterator residueIterator() {
+    public Iterator<Residue> residueIterator() {
         return this.residues.iterator();
     }
 
-    public Iterator residueIterator(int i) {
+    public Iterator<Residue> residueIterator(int i) {
         return this.residues.subList(i, this.residues.size() - 1).iterator();
     }
 
-    public Iterator hbondIterator() {
+	public Iterator<HBond> hbondIterator() {
         Collections.sort(this.hbonds);
         return this.hbonds.iterator();
     }
@@ -209,7 +210,7 @@ public class Chain {
     }
 
     public Sheet getSheetContaining(BackboneSegment strand) {
-        Iterator sheetIterator = this.sheets.iterator();
+        Iterator<Sheet> sheetIterator = this.sheets.iterator();
         while (sheetIterator.hasNext()) {
             Sheet sheet = (Sheet) sheetIterator.next();
             if (sheet.contains(strand)) {
@@ -219,7 +220,7 @@ public class Chain {
         return null;
     }
 
-    public Iterator sheetIterator() {
+    public Iterator<Sheet> sheetIterator() {
         return this.sheets.iterator();
     }
 
@@ -233,8 +234,8 @@ public class Chain {
     }
 
     public Axis getAxis() {
-        Iterator backboneSegmentIterator = this.backboneSegments.iterator();
-        ArrayList centroids = new ArrayList();
+        Iterator<BackboneSegment> backboneSegmentIterator = this.backboneSegments.iterator();
+        ArrayList<Point3d> centroids = new ArrayList<Point3d>();
         while (backboneSegmentIterator.hasNext()) {
             BackboneSegment nextBackboneSegment = (BackboneSegment) backboneSegmentIterator
                     .next();
@@ -284,21 +285,21 @@ public class Chain {
         this.backboneSegments.add(backboneSegment);
     }
 
-    public ListIterator backboneSegmentListIterator() {
+    public ListIterator<BackboneSegment> backboneSegmentListIterator() {
         return this.backboneSegments.listIterator();
     }
 
-    public ListIterator backboneSegmentListIterator(int i) {
+    public ListIterator<BackboneSegment> backboneSegmentListIterator(int i) {
         return this.backboneSegments.listIterator(i);
     }
 
-    public ListIterator backboneSegmentListIterator(
+    public ListIterator<BackboneSegment> backboneSegmentListIterator(
             BackboneSegment backboneSegment) {
         return this.backboneSegments.listIterator(this.backboneSegments
                 .indexOf(backboneSegment));
     }
 
-    public ListIterator backboneSegmentListIterator(
+    public ListIterator<BackboneSegment> backboneSegmentListIterator(
             BackboneSegment startSegment, BackboneSegment endSegment) {
         return this.backboneSegments.subList(
                 this.backboneSegments.indexOf(startSegment) + 1,
@@ -313,7 +314,7 @@ public class Chain {
     }
 
     public void calculateTorsions() {
-        Iterator residueIterator = this.residueIterator();
+        Iterator<Residue> residueIterator = this.residueIterator();
         Residue previousResidue = null;
         Residue thisResidue = null;
 
@@ -354,7 +355,7 @@ public class Chain {
         Axis chainAxis = this.getAxis();
         // System.out.println("Chain axis = " + chainAxis);
 
-        Iterator backboneSegmentIterator = this.backboneSegments.iterator();
+        Iterator<BackboneSegment> backboneSegmentIterator = this.backboneSegments.iterator();
         while (backboneSegmentIterator.hasNext()) {
             BackboneSegment nextSegment = (BackboneSegment) backboneSegmentIterator
                     .next();
@@ -365,7 +366,7 @@ public class Chain {
     public String toPymolScript() {
         StringBuffer script = new StringBuffer();
 
-        Iterator backboneSegmentIterator = this.backboneSegments.iterator();
+        Iterator<BackboneSegment> backboneSegmentIterator = this.backboneSegments.iterator();
         int segmentNumber = 1;
         while (backboneSegmentIterator.hasNext()) {
             BackboneSegment bs = (BackboneSegment) backboneSegmentIterator
@@ -397,21 +398,21 @@ public class Chain {
         return script.toString();
     }
 
-    public HashMap toTopsDomainStrings(HashMap chainDomainMap) {
+    public HashMap<String, String> toTopsDomainStrings(HashMap<?, ?> chainDomainMap) {
         if (!chainDomainMap.isEmpty()
                 && chainDomainMap.containsKey(this.getCathCompatibleLabel())) {
-            ArrayList domains = (ArrayList) chainDomainMap.get(this
+            ArrayList<?> domains = (ArrayList<?>) chainDomainMap.get(this
                     .getCathCompatibleLabel());
             return this.toTopsDomainStrings(domains);
         } else {
-            HashMap h = new HashMap();
+            HashMap<String, String> h = new HashMap<String, String>();
             h.put("0", this.toTopsString(new Domain(0)));
             return h;
         }
     }
 
-    public HashMap toTopsDomainStrings(ArrayList domains) {
-        HashMap domainStrings = new HashMap(domains.size());
+    public HashMap<String, String> toTopsDomainStrings(ArrayList<?> domains) {
+        HashMap<String, String> domainStrings = new HashMap<String, String>(domains.size());
 
         for (int i = 0; i < domains.size(); i++) {
             Domain d = (Domain) domains.get(i);
@@ -422,18 +423,18 @@ public class Chain {
         return domainStrings;
     }
 
-    public String toTopsString(Domain domain) {
+	public String toTopsString(Domain domain) {
         // name
         StringBuffer s = new StringBuffer();
         s.append(this.getCathCompatibleLabel() + domain.getNumber() + " ");
 
         // vertexstring
-        Iterator backboneSegmentIterator;
+        Iterator<BackboneSegment> backboneSegmentIterator;
         if (domain.isEmpty()) {
             backboneSegmentIterator = this.backboneSegments.iterator();
         } else {
-            ArrayList segmentsFilteredByDomain = domain
-                    .filter(this.backboneSegments);
+            List<BackboneSegment> segmentsFilteredByDomain = 
+            		domain.filter(this.backboneSegments);
             segmentsFilteredByDomain.add(0, new Terminus("N Terminus", 'N'));
             segmentsFilteredByDomain.add(new Terminus("C Terminus", 'C'));
             backboneSegmentIterator = segmentsFilteredByDomain.iterator();
@@ -455,8 +456,8 @@ public class Chain {
         s.append(" ");
 
         // edgestring
-        Iterator sheetIterator = this.sheets.iterator();
-        ArrayList edges = new ArrayList();
+        Iterator<Sheet> sheetIterator = this.sheets.iterator();
+        List<Edge> edges = new ArrayList<Edge>();
         while (sheetIterator.hasNext()) {
             Sheet sheet = (Sheet) sheetIterator.next();
             edges.addAll(sheet.toTopsEdges(domain));
@@ -465,8 +466,8 @@ public class Chain {
         Collections.sort(edges);
 
         // merge the chirals with the hbonds
-        Iterator chiralIterator = this.chiralities.iterator();
-        Iterator edgeIterator;
+        Iterator<Edge> chiralIterator = this.chiralities.iterator();
+        Iterator<?> edgeIterator;
         while (chiralIterator.hasNext()) {
             Edge chiral = (Edge) chiralIterator.next();
             edgeIterator = edges.iterator();
@@ -495,27 +496,27 @@ public class Chain {
                 + this.firstResidue().getPDBNumber() + " to "
                 + this.lastResidue().getPDBNumber() + "\n");
 
-        Iterator itr = this.residues.iterator();
+        Iterator<Residue> itr = this.residues.iterator();
         while (itr.hasNext()) {
             Residue r = (Residue) itr.next();
             s.append(r.toFullString());
             s.append("\n");
         }
 
-        Iterator hbondItr = this.hbonds.iterator();
+        Iterator<HBond> hbondItr = this.hbonds.iterator();
         while (hbondItr.hasNext()) {
             HBond nextBond = (HBond) hbondItr.next();
             s.append(nextBond + "\n");
         }
 
-        Iterator backboneSegmentIterator = this.backboneSegments.iterator();
+        Iterator<BackboneSegment> backboneSegmentIterator = this.backboneSegments.iterator();
         while (backboneSegmentIterator.hasNext()) {
             BackboneSegment nextBackboneSegment = (BackboneSegment) backboneSegmentIterator
                     .next();
             s.append(nextBackboneSegment.toFullString() + "\n");
         }
 
-        Iterator sheetIterator = this.sheets.iterator();
+        Iterator<Sheet> sheetIterator = this.sheets.iterator();
         while (sheetIterator.hasNext()) {
             Sheet sheet = (Sheet) sheetIterator.next();
             s.append(sheet + "\n");

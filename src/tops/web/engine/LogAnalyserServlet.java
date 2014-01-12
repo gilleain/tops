@@ -103,6 +103,7 @@ public class LogAnalyserServlet extends HttpServlet {
             }
             this.addRecordToTable(earliestTimeString, lastTimeString, lastIP,
                     table);
+            bufferedReader.close();
         } catch (IOException ioe) {
             out.write(ioe.toString());
             return;

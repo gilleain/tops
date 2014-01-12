@@ -35,12 +35,12 @@ public class TranslationServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HashMap filenames = this.uploadPDBFiles(request);
-        ArrayList results = new ArrayList();
+        HashMap<String, String> filenames = this.uploadPDBFiles(request);
+        ArrayList<String> results = new ArrayList<String>();
 
         if (filenames.size() > 0) {
 
-            Iterator filenameIterator = filenames.keySet().iterator();
+            Iterator<String> filenameIterator = filenames.keySet().iterator();
             while (filenameIterator.hasNext()) {
                 String file_name = (String) filenameIterator.next();
                 String file_type = (String) filenames.get(file_name);
@@ -132,14 +132,14 @@ public class TranslationServlet extends HttpServlet {
         return (int) (Math.random() * 9) + 1;
     }
 
-    public HashMap uploadPDBFiles(HttpServletRequest request) {
-        HashMap filenames = new HashMap();
+    public HashMap<String, String> uploadPDBFiles(HttpServletRequest request) {
+        HashMap<String, String> filenames = new HashMap<String, String>();
 
         try {
             // save to scratch directory, 5MB limit
             MultipartRequest multi = new MultipartRequest(request,
                     this.path_to_scratch, 5 * 1024 * 1024);
-            Enumeration files = multi.getFileNames();
+            Enumeration<?> files = multi.getFileNames();
 
             while (files.hasMoreElements()) {
                 String name = (String) files.nextElement();

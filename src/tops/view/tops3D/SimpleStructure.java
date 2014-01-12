@@ -19,17 +19,17 @@ import javax.vecmath.Point3d;
 
 public class SimpleStructure {
 
-    private ArrayList sheets;
+    private ArrayList<SimpleSheet> sheets;
 
-    private ArrayList connections; // these are connections /between/ sheets
+    private ArrayList<SimpleConnector> connections; // these are connections /between/ sheets
 
     private SimpleSheet currentSheet;
 
     private Point3d sheetSeparation;
 
     public SimpleStructure() {
-        this.sheets = new ArrayList();
-        this.connections = new ArrayList();
+        this.sheets = new ArrayList<SimpleSheet>();
+        this.connections = new ArrayList<SimpleConnector>();
         this.sheetSeparation = new Point3d(0.0, 0.0, 1.5);
     }
 
@@ -155,14 +155,14 @@ public class SimpleStructure {
          * scaleToFit.addChild(tmp);
          */
 
-        Iterator i = this.sheets.iterator();
+        Iterator<SimpleSheet> i = this.sheets.iterator();
         while (i.hasNext()) {
             SimpleSheet s = (SimpleSheet) i.next();
             TransformGroup tg = s.getTransformGroup(wireApp);
             scaleToFit.addChild(tg);
         }
 
-        Iterator j = this.connections.iterator();
+        Iterator<SimpleConnector> j = this.connections.iterator();
         while (j.hasNext()) {
             SimpleConnector sc = (SimpleConnector) j.next();
             TransformGroup connectorTransform = sc.getTransformGroup(wireApp);
@@ -190,13 +190,13 @@ public class SimpleStructure {
     public String toString() {
         StringBuffer stringify = new StringBuffer();
         stringify.append("Center : ").append(this.getCenter()).append("\n");
-        Iterator i = this.sheets.iterator();
+        Iterator<SimpleSheet> i = this.sheets.iterator();
         while (i.hasNext()) {
             SimpleSheet nextSheet = (SimpleSheet) i.next();
             stringify.append(nextSheet.toString()).append("\n");
         }
 
-        Iterator j = this.connections.iterator();
+        Iterator<SimpleConnector> j = this.connections.iterator();
         while (j.hasNext()) {
             SimpleConnector nextCon = (SimpleConnector) j.next();
             stringify.append(nextCon.toString()).append("\n");

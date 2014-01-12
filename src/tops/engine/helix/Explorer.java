@@ -17,9 +17,9 @@ import tops.engine.Vertex;
 
 public class Explorer {
 
-    private List vertices;
+    private List<Vertex> vertices;
 
-    private Stack sheets;
+    private Stack<Sheet> sheets;
 
     private Sheet currentSheet;
 
@@ -59,8 +59,8 @@ public class Explorer {
             .getLogger("tops.engine.helix.Explorer");
 
     public Explorer() {
-        this.sheets = new Stack();
-        this.vertices = new ArrayList();
+        this.sheets = new Stack<Sheet>();
+        this.vertices = new ArrayList<Vertex>();
         this.vertices.add(new Vertex('N', 0));
         this.vertices.add(new Vertex('C', 1));
         this.currentSheet = null;
@@ -89,14 +89,14 @@ public class Explorer {
     }
 
     public void clear() {
-        this.sheets = new Stack();
-        this.vertices = new ArrayList();
+        this.sheets = new Stack<Sheet>();
+        this.vertices = new ArrayList<Vertex>();
         this.vertices.add(new Vertex('N', 0));
         this.vertices.add(new Vertex('C', 1));
         this.currentSheet = null;
     }
 
-    public void allVsAll(ArrayList pairList, HashMap instMap, boolean verbose)
+    public void allVsAll(ArrayList<String[]> pairList, HashMap<String, String> instMap, boolean verbose)
             throws TopsStringFormatException {
         // the domain names we are comparing are (pairKey, pairValue).
         String pair1, pair2;
@@ -170,7 +170,7 @@ public class Explorer {
     public Result[] compare(String[] examples, String probe, boolean logging)
             throws TopsStringFormatException {
         // String[] results = new String[examples.length];
-        ArrayList results = new ArrayList(examples.length);
+        ArrayList<Result> results = new ArrayList<Result>(examples.length);
         Pattern[] pair = new Pattern[2];
         pair[0] = new Pattern(probe);
         System.out.println("for probe : \t" + probe);
@@ -731,11 +731,9 @@ public class Explorer {
 
     public Pattern getPattern() {
         Pattern pToReturn = new Pattern();
-        Iterator itr = this.sheets.iterator();
 
         pToReturn.addVertices(this.vertices);
-        while (itr.hasNext()) {
-            Sheet s = (Sheet) itr.next();
+        for (Sheet s : this.sheets) {
             pToReturn.addEdges(s.getEdges());
         }
         pToReturn.sortEdges();
@@ -750,7 +748,7 @@ public class Explorer {
         }
         String mode = new String(); // this is the second flag, depending on
                                     // whether file is specified or not
-        ArrayList examples = new ArrayList(); // shared between the argument
+        ArrayList<String> examples = new ArrayList<String>(); // shared between the argument
                                                 // modes
 
         boolean matcherLogging = false;
@@ -760,11 +758,11 @@ public class Explorer {
             String line;
             String filename = args[1];
             try {
-                BufferedReader buff = new BufferedReader(new FileReader(
-                        filename));
+                BufferedReader buff = new BufferedReader(new FileReader(filename));
                 while ((line = buff.readLine()) != null) {
                     examples.add(line);
                 }
+                buff.close();
             } catch (IOException ioe) {
                 System.out.println(ioe);
             }
@@ -827,14 +825,14 @@ public class Explorer {
                     System.out.println(results[i]);
                 }
             } else if (mode.equals("-a")) { // ALL AGAINST ALL OF A FILE
-                ArrayList pairList = new ArrayList();
-                HashMap instMap = new HashMap(3000);
+                ArrayList<String[]> pairList = new ArrayList<String[]>();
+                HashMap<String, String> instMap = new HashMap<String, String>(3000);
 
                 // use a map for the strings (more efficient lookup?)
-                ArrayList tmpList = new ArrayList();
+                ArrayList<String> tmpList = new ArrayList<String>();
                 TParser tp = new TParser();
 
-                Iterator itr = examples.iterator();
+                Iterator<String> itr = examples.iterator();
                 while (itr.hasNext()) {
                     String nextLine = (String) itr.next();
                     tp.load(nextLine);
@@ -880,15 +878,14 @@ public class Explorer {
                 ex.compare((String[]) examples.toArray(new String[0]), first,
                         matcherLogging);
             } else if (mode.equals("-v")) {
-                ArrayList pairList = new ArrayList();
-                HashMap instMap = new HashMap(3000);
+                ArrayList<String[]> pairList = new ArrayList<String[]>();
+                HashMap<String, String> instMap = new HashMap<String, String>(3000);
                 String pairFilename = args[3];
                 String verboseFlag = args[4];
                 String line;
 
                 try {
-                    BufferedReader buff = new BufferedReader(new FileReader(
-                            pairFilename));
+                    BufferedReader buff = new BufferedReader(new FileReader(pairFilename));
                     while ((line = buff.readLine()) != null) {
                         int tab = line.indexOf("\t");
                         String first = line.substring(0, tab);
@@ -898,13 +895,14 @@ public class Explorer {
                         String[] miniContainer = { first, second };
                         pairList.add(miniContainer);
                     }
+                    buff.close();
                 } catch (IOException ioe) {
                     System.out.println(ioe);
                 }
 
                 // use a map for the strings (more efficient lookup?)
                 TParser tp = new TParser();
-                Iterator itr = examples.iterator();
+                Iterator<String> itr = examples.iterator();
                 while (itr.hasNext()) {
                     String nextLine = (String) itr.next();
                     tp.load(nextLine);

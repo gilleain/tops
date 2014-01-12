@@ -3,6 +3,7 @@ package tops.translation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -11,13 +12,13 @@ public class Sheet {
 
     private int number;
 
-    private ArrayList strands;
+    private List<BackboneSegment> strands;
 
     private Axis axis;
 
     public Sheet(int number) {
         this.number = number;
-        this.strands = new ArrayList();
+        this.strands = new ArrayList<BackboneSegment>();
         this.axis = null;
     }
 
@@ -44,8 +45,8 @@ public class Sheet {
     }
 
     public Point3d calculateCentroid() {
-        ArrayList centers = new ArrayList();
-        Iterator iterator = this.strands.iterator();
+        ArrayList<Point3d> centers = new ArrayList<Point3d>();
+        Iterator<BackboneSegment> iterator = this.strands.iterator();
         while (iterator.hasNext()) {
             BackboneSegment strand = (BackboneSegment) iterator.next();
             centers.add(strand.getAxis().getCentroid());
@@ -84,7 +85,7 @@ public class Sheet {
         }
     }
 
-    public Iterator iterator() {
+    public Iterator<BackboneSegment> iterator() {
         return this.strands.iterator();
     }
 
@@ -200,8 +201,8 @@ public class Sheet {
         }
     }
 
-    public ArrayList toTopsEdges(Domain domain) {
-        ArrayList edges = new ArrayList();
+    public List<Edge> toTopsEdges(Domain domain) {
+        List<Edge> edges = new ArrayList<Edge>();
         for (int i = 0; i < this.size() - 1; i++) {
             BackboneSegment strand = (BackboneSegment) this.strands.get(i);
             if (!domain.isEmpty() && !domain.contains(strand)) {
@@ -228,7 +229,7 @@ public class Sheet {
         StringBuffer returnValue = new StringBuffer();
         returnValue.append("Sheet (" + this.number + ") [");
 
-        Iterator iterator = this.strands.iterator();
+        Iterator<BackboneSegment> iterator = this.strands.iterator();
         returnValue.append(iterator.next());
         while (iterator.hasNext()) {
             BackboneSegment strand = (BackboneSegment) iterator.next();

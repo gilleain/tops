@@ -22,7 +22,7 @@ public class FigureDrawer {
 
 //    private ArrayList sheets;
 
-    private ArrayList currentSheet;
+    private ArrayList<Integer> currentSheet;
 
     public FigureDrawer(int width, int height) {
 //        this.width = width;
@@ -31,7 +31,7 @@ public class FigureDrawer {
     }
 
     public void startNewSheet() {
-        this.currentSheet = new ArrayList();
+        this.currentSheet = new ArrayList<Integer>();
     }
 
     public void addStrand(int orientation, int sheetOrder) {

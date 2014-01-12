@@ -9,13 +9,13 @@ public class Protein {
 
     public String Name;
 
-    private Vector TopsLinkedLists;
+    private Vector<SecStrucElement> TopsLinkedLists;
 
-    private Vector DomainDefs;
+    private Vector<DomainDefinition> DomainDefs;
 
     public Protein() {
-        this.DomainDefs = new Vector();
-        this.TopsLinkedLists = new Vector();
+        this.DomainDefs = new Vector<DomainDefinition>();
+        this.TopsLinkedLists = new Vector<SecStrucElement>();
         this.Name = "Unknown";
     }
     
@@ -60,8 +60,8 @@ public class Protein {
     public void AddTopsLinkedList(SecStrucElement s, DomainDefinition d) {
 
         if (this.TopsLinkedLists == null) {
-            this.TopsLinkedLists = new Vector();
-            this.DomainDefs = new Vector();
+            this.TopsLinkedLists = new Vector<SecStrucElement>();
+            this.DomainDefs = new Vector<DomainDefinition>();
         }
         this.TopsLinkedLists.addElement(s);
         this.DomainDefs.addElement(d);
@@ -72,7 +72,7 @@ public class Protein {
 
         int i;
         int ind = -1;
-        Enumeration e = this.DomainDefs.elements();
+        Enumeration<DomainDefinition> e = this.DomainDefs.elements();
         CATHcode CompareCathCode;
 
         for (i = 0; e.hasMoreElements(); i++) {
@@ -97,7 +97,7 @@ public class Protein {
     	return null;
     }
 
-    public Vector GetLinkedLists() {
+    public Vector<SecStrucElement> GetLinkedLists() {
         return this.TopsLinkedLists;
     }
 
@@ -105,7 +105,7 @@ public class Protein {
         return this.DomainDefs.size();
     }
 
-    public Vector GetDomainDefs() {
+    public Vector<DomainDefinition> GetDomainDefs() {
         return this.DomainDefs;
     }
     
@@ -129,16 +129,16 @@ public class Protein {
 
         if ((this.DomainDefs != null) && (this.TopsLinkedLists != null)) {
 
-            Enumeration ddefs = this.DomainDefs.elements();
-            Enumeration lls = this.TopsLinkedLists.elements();
+            Enumeration<DomainDefinition> ddefs = this.DomainDefs.elements();
+            Enumeration<SecStrucElement> lls = this.TopsLinkedLists.elements();
 
             int i;
             for (i = 0; ddefs.hasMoreElements(); i++) {
 
                 DomainDefinition dd = (DomainDefinition) ddefs.nextElement();
                 pw.print("DOMAIN_NUMBER " + i + " " + dd.CathCode);
-                Enumeration sfs = dd.getSequenceFragments();
-                Enumeration fis = dd.getFragmentIndices();
+                Enumeration<?> sfs = dd.getSequenceFragments();
+                Enumeration<?> fis = dd.getFragmentIndices();
                 while (sfs.hasMoreElements()) {
                     int fi = ((Integer) fis.nextElement()).intValue();
                     IntegerInterval sf = (IntegerInterval) sfs.nextElement();
@@ -497,7 +497,7 @@ public class Protein {
 
         }
 
-        Enumeration lls = this.GetLinkedLists().elements();
+        Enumeration<SecStrucElement> lls = this.GetLinkedLists().elements();
         while (lls.hasMoreElements()) {
             SecStrucElement ll = (SecStrucElement) lls.nextElement();
             this.FixedFromFixedIndex(ll);

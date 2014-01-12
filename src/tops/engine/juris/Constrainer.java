@@ -1,5 +1,7 @@
 package tops.engine.juris;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -147,7 +149,7 @@ public class Constrainer {
     }
 
     private int findMaxOutdex(char type) {
-        ArrayList fragments = new ArrayList();
+        ArrayList<String> fragments = new ArrayList<String>();
         int max = 0;
         for (int i = 0; i < this.estrs.length; ++i) {
             int last = 0;
@@ -173,7 +175,7 @@ public class Constrainer {
             String node = temp.substring(0, temp.indexOf(':'));
 
             int c = 0;
-            Iterator itr = fragments.iterator();
+            Iterator<String> itr = fragments.iterator();
             while (itr.hasNext()) {
                 String edge = (String) (itr.next());
                 String current = edge.substring(0, edge.indexOf(':'));
@@ -195,7 +197,7 @@ public class Constrainer {
     }
 
     private int findMaxIndex(char type) {
-        ArrayList fragments = new ArrayList();
+        ArrayList<String> fragments = new ArrayList<String>();
         int max = 0;
         
         for (int i = 0; i < this.estrs.length; ++i) {
@@ -216,7 +218,7 @@ public class Constrainer {
             } 
             
             int currmax = 0;
-            Iterator itr = fragments.iterator();
+            Iterator<String> itr = fragments.iterator();
             while (itr.hasNext()) { 
                 String t = (String) (itr.next());
                 String node = t.substring(t.indexOf(':'), t.length() - 1);
@@ -302,14 +304,14 @@ public class Constrainer {
     public static void main(String[] args) {
         java.io.File file = new java.io.File(args[0]);
         try {
-            ArrayList instances = new ArrayList();
-            java.io.BufferedReader buffy = new java.io.BufferedReader(
-                    new java.io.FileReader(file));
+            ArrayList<String> instances = new ArrayList<String>();
+            BufferedReader buffy = new BufferedReader(new FileReader(file));
 
             String instr;
             while ((instr = buffy.readLine()) != null) {
                 instances.add(instr);
             }
+            buffy.close();
 
             String[] inst = (String[]) instances.toArray(new String[0]);
             Constrainer graphConstraints = new Constrainer(inst);

@@ -42,7 +42,7 @@ public class ClassificationServlet extends HttpServlet {
 
     private static final String cartoonSize = "100x100";
 
-    public HashMap getInstances(String classificationSchemeName,
+    public HashMap<String, String> getInstances(String classificationSchemeName,
             String classificationStub, int repLevel) {
 
         String query = "SELECT dom_id, vertex_string, edge_string, class FROM TOPS_instance_nr JOIN TOPS_nr ";
@@ -70,7 +70,7 @@ public class ClassificationServlet extends HttpServlet {
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query + " '"
                     + classificationStub + ".%' ORDER BY class;");
-            HashMap in = new HashMap();
+            HashMap<String, String> in = new HashMap<String, String>();
             while (rs.next()) {
                 String nextInstance = new String();
                 nextInstance += rs.getString("dom_id") + " ";
@@ -157,7 +157,7 @@ public class ClassificationServlet extends HttpServlet {
 
         // get the TOPSStrings the database, along with their classifications as
         // the keys to a map
-        HashMap instances = this.getInstances(classificationSchemeName,
+        HashMap<String, String> instances = this.getInstances(classificationSchemeName,
                 classificationStub, subLevelIndex);
         if (instances == null || instances.size() == 0) {
             this.warning("no reps for this level!", response);
@@ -208,7 +208,7 @@ public class ClassificationServlet extends HttpServlet {
         out
                 .println("<p><b>Diagrams of the representative examples for each sublevel of this group : </b></p><table class=\"results\">");
 
-        Iterator itr = instances.keySet().iterator();
+        Iterator<String> itr = instances.keySet().iterator();
         TParser parser = new TParser();
 
         while (itr.hasNext()) {

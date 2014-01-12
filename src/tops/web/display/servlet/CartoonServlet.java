@@ -2,6 +2,7 @@ package tops.web.display.servlet;
 
 import java.io.*;
 import java.util.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -225,7 +226,7 @@ public class CartoonServlet extends HttpServlet {
 
         Protein p = new Protein(f);
 
-        Vector doms = p.GetLinkedLists();
+        Vector<SecStrucElement> doms = p.GetLinkedLists();
         // Vector labs = p.GetDomainDefs();
         int domainIndex = p.GetDomainIndex(new CATHcode(domid));
         if (domainIndex == -1) {

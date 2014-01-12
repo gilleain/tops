@@ -21,9 +21,9 @@ public class CompressedFileHandler {
 
     private String outputDirectory;
 
-    private HashMap mimeTypes;
+    private HashMap<String, String> mimeTypes;
 
-    private HashMap fileExtensions;
+    private HashMap<String, String> fileExtensions;
 
     public static String UNKNOWN = "UNKNOWN";
 
@@ -35,13 +35,13 @@ public class CompressedFileHandler {
         this.inputDirectory = inputDirectory;
         this.outputDirectory = outputDirectory;
 
-        this.mimeTypes = new HashMap();
+        this.mimeTypes = new HashMap<String, String>();
         this.mimeTypes.put("application/x-gzip", CompressedFileHandler.GZIP);
         this.mimeTypes.put("multipart/x-gzip", CompressedFileHandler.GZIP);
         this.mimeTypes.put("multipart/x-zip", CompressedFileHandler.ZIP);
         this.mimeTypes.put("application/zip", CompressedFileHandler.ZIP);
 
-        this.fileExtensions = new HashMap();
+        this.fileExtensions = new HashMap<String, String>();
         this.fileExtensions.put(".gz", CompressedFileHandler.GZIP);
         this.fileExtensions.put(".GZ", CompressedFileHandler.GZIP);
         this.fileExtensions.put(".zip", CompressedFileHandler.ZIP);
@@ -120,7 +120,7 @@ public class CompressedFileHandler {
 
     public String unzip(String fileName) throws IOException {
         ZipFile zipFile = new ZipFile(this.inputDirectory + fileName);
-        Enumeration entries = zipFile.entries();
+        Enumeration<?> entries = zipFile.entries();
         try {
             ZipEntry zipEntry = (ZipEntry) entries.nextElement();
             // Be mean, disallow multi-entry zipfiles!

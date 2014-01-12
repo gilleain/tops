@@ -46,8 +46,8 @@ public class DBUpdater {
      * @return an ArrayList of Strings
      */
 
-    public static ArrayList readStringFile(String scratchDirectory,
-            String filename) throws FatalException {
+    public static ArrayList<String> readStringFile(
+    		String scratchDirectory, String filename) throws FatalException {
         File file;
 
         try {
@@ -61,7 +61,7 @@ public class DBUpdater {
 
         String line;
         BufferedReader in;
-        ArrayList stringList = new ArrayList();
+        ArrayList<String> stringList = new ArrayList<String>();
 
         try {
             in = new BufferedReader(new FileReader(file));
@@ -110,7 +110,7 @@ public class DBUpdater {
      *            basically)
      */
 
-    public static void updateDB(DBManager dbManager, ArrayList topsStrings,
+    public static void updateDB(DBManager dbManager, ArrayList<String> topsStrings,
             ClassificationTree tree, String scheme) throws FatalException {
 
         // let the user know what database we are using. Would be nice if it
@@ -137,7 +137,7 @@ public class DBUpdater {
         }
 
         TParser parser = new TParser();
-        Iterator itr = topsStrings.iterator();
+        Iterator<String> itr = topsStrings.iterator();
 
         // chop each string up into it's component parts,
         // query the body and tail together to get the group
@@ -298,8 +298,7 @@ public class DBUpdater {
             }
 
             // read in the data from files
-            ArrayList topsStrings = DBUpdater.readStringFile(scratchDir,
-                    stringFileName);
+            ArrayList<String> topsStrings = DBUpdater.readStringFile(scratchDir, stringFileName);
             ClassificationTree tree;
             if (classification.equals("CATH")) {
                 tree = CATHTree.fromFile(new File(classifDir, classifFileName));

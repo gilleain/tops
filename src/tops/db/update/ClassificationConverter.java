@@ -109,11 +109,11 @@ public abstract class ClassificationConverter {
         return file.toString();
     }
 
-    public abstract HashMap parseDomainList(ArrayList lines);
+    public abstract HashMap<String, String> parseDomainList(ArrayList<String> lines);
 
-    public ArrayList readListFile(String filepath) throws FatalException {
+    public ArrayList<String> readListFile(String filepath) throws FatalException {
         // make a list of lines
-        ArrayList lines = new ArrayList();
+        ArrayList<String> lines = new ArrayList<String>();
         BufferedReader in = null;
 
         try {
@@ -126,12 +126,18 @@ public abstract class ClassificationConverter {
             this.log(ioe);
             throw new FatalException("IO problem with the file at path : "
                     + filepath);
+        } finally {
+        	try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
         }
 
         return lines;
     }
 
-    public ArrayList getExistingChainNames(String topsDirectoryName)
+    public ArrayList<String> getExistingChainNames(String topsDirectoryName)
             throws FatalException {
         this.log("Getting existing chain names from tops file directory "
                 + topsDirectoryName);
@@ -145,7 +151,7 @@ public abstract class ClassificationConverter {
                 }
             });
             // cut off the ".tops" from the names, to leave only the chain ids
-            ArrayList existingChainNames = new ArrayList();
+            ArrayList<String> existingChainNames = new ArrayList<String>();
             for (int i = 0; i < fileList.length; i++) {
                 existingChainNames.add(fileList[i].substring(0, 5));
             }
@@ -159,10 +165,10 @@ public abstract class ClassificationConverter {
     }
 
     // get chains from a map of domain-classifications
-    public ArrayList getChainsFromDomains(HashMap domainClassificationMap) {
+    public ArrayList<String> getChainsFromDomains(HashMap<String, String> domainClassificationMap) {
         this.log("Converting the domain names to chains");
-        ArrayList chains = new ArrayList();
-        Iterator iterator = domainClassificationMap.keySet().iterator();
+        ArrayList<String> chains = new ArrayList<String>();
+        Iterator<String> iterator = domainClassificationMap.keySet().iterator();
         int domainCount = 0;
         while (iterator.hasNext()) {
             String domainName = (String) iterator.next();
@@ -182,9 +188,9 @@ public abstract class ClassificationConverter {
         return chains;
     }
 
-    public ArrayList getPDBIDsFromChains(ArrayList chainNames) {
+    public ArrayList<String> getPDBIDsFromChains(ArrayList<String> chainNames) {
         this.log("Converting chain names to pdbids");
-        ArrayList pdbIDs = new ArrayList();
+        ArrayList<String> pdbIDs = new ArrayList<String>();
         for (int i = 0; i < chainNames.size(); i++) {
             String chainName = (String) chainNames.get(i);
             String pdbID = chainName.substring(0, 4);
@@ -201,11 +207,11 @@ public abstract class ClassificationConverter {
 
     // filter the list of domains by removing those we already have tops files
     // for.
-    public ArrayList determineNewChains(ArrayList chainNames,
-            ArrayList existingChainNames) {
+    public ArrayList<String> determineNewChains(
+    		ArrayList<String> chainNames, ArrayList<String> existingChainNames) {
         this.log("Checking " + chainNames.size()
                 + " chain names against existing chain names");
-        ArrayList newChainNames = new ArrayList();
+        ArrayList<String> newChainNames = new ArrayList<String>();
         for (int i = 0; i < chainNames.size(); i++) {
             String chainName = (String) chainNames.get(i);
             if (existingChainNames.contains(chainName)) {
@@ -218,10 +224,10 @@ public abstract class ClassificationConverter {
         return newChainNames;
     }
 
-    public ArrayList getPDBFilesToDownload(ArrayList newPDBIDList,
+    public ArrayList<String> getPDBFilesToDownload(ArrayList<String> newPDBIDList,
             String pdbFileDirectory, boolean pdbDirectoryHasStructure) {
         this.log("Checking PDB files in directory " + pdbFileDirectory);
-        ArrayList missingPDBFiles = new ArrayList();
+        ArrayList<String> missingPDBFiles = new ArrayList<String>();
         for (int i = 0; i < newPDBIDList.size(); i++) {
             String pdbID = (String) newPDBIDList.get(i);
             String chainDirectory = pdbID.substring(1, 3);
@@ -265,11 +271,10 @@ public abstract class ClassificationConverter {
     }
 
     // get PDB files from the RCSB on the web
-    public void downloadMissingPDBFiles(ArrayList missingPDBIDs, String pdbURL,
+    public void downloadMissingPDBFiles(ArrayList<String> missingPDBIDs, String pdbURL,
             String scratchDirectory) {
         this.log("Downloading missing pdb files");
-        String pdbDownloadPath = this.subDirectory(scratchDirectory,
-                "pdb_downloads");
+        String pdbDownloadPath = this.subDirectory(scratchDirectory, "pdb_downloads");
 
         int successfulDownloads = 0;
         for (int i = 0; i < missingPDBIDs.size(); i++) {
@@ -298,8 +303,8 @@ public abstract class ClassificationConverter {
     }
 
     // call the translation machinery
-    public ArrayList convertFiles(ArrayList newChainNames,
-            ArrayList missingPDBIDs, String currentDirectory,
+    public ArrayList<String> convertFiles(ArrayList<String> newChainNames,
+            ArrayList<String> missingPDBIDs, String currentDirectory,
             String domainFilePath, String pdbFileDirectory,
             boolean pdbDirectoryHasStructure, String scratchDirectory,
             String dsspExecutable, String topsExecutable) {
@@ -320,7 +325,7 @@ public abstract class ClassificationConverter {
                 topsScratchPath, currentDirectory);
         Tops2String t2s = new Tops2String(topsScratchPath);
 
-        ArrayList stringList = new ArrayList();
+        ArrayList<String> stringList = new ArrayList<String>();
 //        boolean isCompressed = false;
         for (int i = 0; i < newChainNames.size(); i++) {
             String chainName = (String) newChainNames.get(i);
@@ -381,8 +386,8 @@ public abstract class ClassificationConverter {
         return stringList;
     }
 
-    public void writeStringFile(String scratchDirectory, ArrayList stringList,
-            HashMap domainClassificationMap) {
+    public void writeStringFile(String scratchDirectory, ArrayList<String> stringList,
+            HashMap<String, String> domainClassificationMap) {
         this.log("Writing strings to " + scratchDirectory);
         try {
             File file = new File(scratchDirectory, "newstrings.str");

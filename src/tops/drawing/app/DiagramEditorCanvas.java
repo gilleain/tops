@@ -29,8 +29,8 @@ import tops.drawing.symbols.Triangle;
 
 public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseMotionListener {
     private Diagram diagram;
-    private Stack undoStack;
-    private Stack redoStack;
+    private Stack<Action> undoStack;
+    private Stack<Action> redoStack;
     private DiagramEditorToolbar diagramEditorToolbar;
 //    private Rectangle2D selectionBox; TODO
 
@@ -57,8 +57,8 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
         this.setSize(width, height);
         
         //set up the undo/redo stacks
-        this.undoStack = new Stack();
-        this.redoStack = new Stack();
+        this.undoStack = new Stack<Action>();
+        this.redoStack = new Stack<Action>();
         
         //initialise a blank diagram
         this.diagram = new Diagram();
@@ -201,7 +201,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
      * @param y the click y.
      */
     private void bondingSelect(int x, int y) {
-        ArrayList selectedSymbols = this.diagram.getSelectedSymbols();
+        ArrayList<SSESymbol> selectedSymbols = this.diagram.getSelectedSymbols();
         SSESymbol selected = this.diagram.selectSymbolAt(x, y);
         if (selectedSymbols.size() != 0 && selected != null) {
             if (selectedSymbols.size() > 1) {
@@ -260,7 +260,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
 
     private void delete(int x, int y) {
         SSESymbol selected = this.diagram.selectSymbolAt(x, y);
-        ArrayList selectedSymbols = new ArrayList();
+        ArrayList<SSESymbol> selectedSymbols = new ArrayList<SSESymbol>();
         selectedSymbols.add(selected);
         this.doAction(new DeleteSymbols(selectedSymbols, this.diagram));
     }
@@ -268,7 +268,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
     private void flip(int x, int y) {
         SSESymbol selected = this.diagram.selectSymbolAt(x, y);
         if (selected != null ) {
-            ArrayList selectedSymbols = new ArrayList();
+            ArrayList<Integer> selectedSymbols = new ArrayList<Integer>();
             selectedSymbols.add(selected.getSymbolNumber());
             this.doAction(new FlipSymbols(selectedSymbols, this.diagram));
             this.diagram.unselectAll();
@@ -387,7 +387,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
     }
 
     public void flipSelected() {
-        ArrayList selectedSymbolNumbers = this.diagram.getSelectedSymbolNumbers();
+        ArrayList<Integer> selectedSymbolNumbers = this.diagram.getSelectedSymbolNumbers();
         this.doAction(new FlipSymbols(selectedSymbolNumbers, this.diagram));
     }
     
