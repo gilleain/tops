@@ -230,6 +230,10 @@
 	<!-- /MANAGEMENT TARGETS -->
 
 	<!-- COMPILATION TARGETS -->
+    <presetdef name="javac">
+        <javac includeantruntime="false" />
+    </presetdef>
+
 	<target description="the editor applet" name="applet-editor">
 		<javac debug="true" destdir="classes" srcdir="src">
 			<include name="tops/web/display/SimpleEditorApplet.java"/>
@@ -237,13 +241,13 @@
 		</javac>
 		<jar destfile="${jar.dir}/editor.jar" update="true">
 			<fileset dir="classes">
-				<include name="tops/web/display/SimpleEditorApplet.class"/>
-				<include name="tops/web/display/TopsDrawCanvas.class"/>
+				<include name="tops/web/display/applet/SimpleEditorApplet.class"/>
+				<include name="tops/web/display/applet/TopsDrawCanvas.class"/>
 			</fileset>
 			<fileset dir="classes">
-				<include name="tops.dw.dw_utils/*.class"/>
-				<include name="tops.dw.protein/*.class"/>
-				<include name="tops.dw.editor/LabelInput.class"/>
+				<include name="tops/dw/*.class"/>
+				<include name="tops/dw/protein/*.class"/>
+				<include name="tops/dw/editor/LabelInput.class"/>
 			</fileset>
 		</jar>
 	</target>
