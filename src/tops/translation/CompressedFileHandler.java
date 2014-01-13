@@ -120,9 +120,9 @@ public class CompressedFileHandler {
 
     public String unzip(String fileName) throws IOException {
         ZipFile zipFile = new ZipFile(this.inputDirectory + fileName);
-        Enumeration<?> entries = zipFile.entries();
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
         try {
-            ZipEntry zipEntry = (ZipEntry) entries.nextElement();
+            ZipEntry zipEntry = entries.nextElement();
             // Be mean, disallow multi-entry zipfiles!
             if (entries.hasMoreElements()) {
                 throw new IOException("More than one entry in zipfile!");

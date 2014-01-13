@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 
@@ -27,7 +28,7 @@ public class BatchAnnotater {
 	        int b = 20;
 			
 			Protein p = new Protein(inFile);
-			Vector names = p.GetDomainDefs();
+			Vector<DomainDefinition> names = p.GetDomainDefs();
 			for (int i = 0; i < p.NumberDomains(); i++) {
 				SecStrucElement domain = p.getDomain(i);
 				domain.fitToRectangle(0, 0, w, h, b);

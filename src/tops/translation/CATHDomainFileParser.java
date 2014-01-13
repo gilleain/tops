@@ -103,14 +103,11 @@ public class CATHDomainFileParser {
             Iterator<String> pdbidItr = pdbChainDomainMap.keySet().iterator();
             while (pdbidItr.hasNext()) {
                 String pdbID = (String) pdbidItr.next();
-                HashMap<?, ?> chainDomainMap = (HashMap<?, ?>) pdbChainDomainMap.get(pdbID);
-                Iterator<?> chainItr = chainDomainMap.keySet().iterator();
+                HashMap<String, List<Domain>> chainDomainMap = pdbChainDomainMap.get(pdbID);
+                Iterator<String> chainItr = chainDomainMap.keySet().iterator();
                 while (chainItr.hasNext()) {
                     String chainID = (String) chainItr.next();
-                    ArrayList<?> domains = (ArrayList<?>) chainDomainMap.get(chainID);
-                    Iterator<?> domainItr = domains.iterator();
-                    while (domainItr.hasNext()) {
-                        Domain domain = (Domain) domainItr.next();
+                    for (Domain domain : chainDomainMap.get(chainID)) {
                         System.out.println(pdbID + chainID + " " + domain);
                     }
                 }

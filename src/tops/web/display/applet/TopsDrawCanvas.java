@@ -13,8 +13,7 @@ import tops.dw.protein.*;
  * @author David Westhead
  * @version 1.00, 27 Mar 1997
  */
-public class TopsDrawCanvas extends Canvas implements MouseListener,
-        MouseMotionListener {
+public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotionListener {
 
     /* START class variables */
 
@@ -564,16 +563,16 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
 
         // SORT?
 
-        int sumX = 0;
-        int sumY = 0;
+//        int sumX = 0;
+//        int sumY = 0;
 
         SecStrucElement s;
         Iterator<SecStrucElement> itr = list.iterator();
         while (itr.hasNext()) {
             s = (SecStrucElement) itr.next();
-            Point pos = s.GetPosition();
-            sumX += pos.x;
-            sumY += pos.y;
+//            Point pos = s.GetPosition();
+//            sumX += pos.x;
+//            sumY += pos.y;
         }
 
 //        int averageX = (int) (sumX / numberOfSymbols);
@@ -838,8 +837,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         SecStrucElement s;
         Point p;
         int x, y, r;
-        Vector<?> conns;
-        Enumeration<?> en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
 
         for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
 
@@ -857,7 +856,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
             if ((conns = s.GetConnectionTo()) != null) {
                 en = conns.elements();
                 while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
+                    p = en.nextElement();
                     x = p.x;
                     y = p.y;
                     x = Math.round(scale * x);
@@ -881,8 +880,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
      */
     public synchronized void TranslateDiagram(int x, int y) {
         SecStrucElement s;
-        Vector<?> conns;
-        Enumeration<?> en;
+        Vector<Point> conns;
+        Enumeration<Point> en;
         Point p;
 
         for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
@@ -932,8 +931,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
 
     /* private method to invert the diagrams Y coordinates */
     private synchronized void InvertY() {
-        Vector<?> conns;
-        Enumeration<?> en;
+    	Vector<Point> conns;
+        Enumeration<Point> en;
         Point p;
         SecStrucElement s;
 
@@ -1323,8 +1322,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         /* the case where there are some intervening connection points */
         else {
 
-            Enumeration<?> ConnectionEnum = s.GetConnectionTo().elements();
-            Point PointTo = (Point) ConnectionEnum.nextElement();
+            Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
+            Point PointTo = ConnectionEnum.nextElement();
 
             this.JoinPoints(s.GetPosition(), s.Direction, s.Type, FromScreenR,
                     PointTo, "*", "*", 0, GraphicsOutput);

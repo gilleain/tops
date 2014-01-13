@@ -37,12 +37,12 @@ public class Architect {
                                             // this works
             this.framework.addSSE(pos, c);
         }
-        HashMap<Integer, Object[]> chiralMap = this.makeChiralMap(chirals);
+        HashMap<String, char[]> chiralMap = this.makeChiralMap(chirals);
         int f = 0; // first SSE
         int s = 1; // second SSE
         int chirality; // er...chirality
         while ((f < numVertices - 1) && (s < numVertices)) {
-            Object[] tmp = (Object[]) chiralMap.get(new Integer(f + 1)); // plus
+            char[] tmp = (char[]) chiralMap.get(new Integer(f + 1)); // plus
                                                                             // one!!
                                                                             // (poor
                                                                             // numeration
@@ -63,17 +63,17 @@ public class Architect {
         }
     }
 
-    private HashMap<Integer, Object[]> makeChiralMap(String chirals) {
-        HashMap<Integer, Object[]> chiralMap = new HashMap<Integer, Object[]>();
+    private HashMap<String, char[]> makeChiralMap(String chirals) {
+        HashMap<String, char[]> chiralMap = new HashMap<String, char[]>();
         StringTokenizer tokenizer = new StringTokenizer(chirals, ".");
         while (tokenizer.hasMoreTokens()) {
             String t = tokenizer.nextToken();
             int colon = t.indexOf(':');
-            Integer left = new Integer(t.substring(0, colon));
-            Integer right = new Integer(t.substring(colon + 1, t.length() - 1));
+            String left = t.substring(0, colon);
+            String right = t.substring(colon + 1, t.length() - 1);
             Character type = new Character(t.charAt(t.length() - 1));
-            Object[] tmp = new Object[2]; // gah!
-            tmp[0] = right;
+            char[] tmp = new char[2];
+            tmp[0] = right.charAt(0);
             tmp[1] = type;
             chiralMap.put(left, tmp);
         }
@@ -101,7 +101,7 @@ public class Architect {
         ArrayList<String> edgeStrands = new ArrayList<String>();
         while (i.hasNext()) {
             String vertex = (String) i.next();
-            ArrayList<?> connections = (ArrayList<?>) edgeMap.get(vertex);
+            ArrayList<String> connections = edgeMap.get(vertex);
             if (connections.size() < 2)
                 edgeStrands.add(vertex);
         }
@@ -122,7 +122,7 @@ public class Architect {
         String lastVertex = currentVertex;
         String nextVertex = new String();
         while (k < keys.size()) {
-            ArrayList<?> conn = (ArrayList<?>) edgeMap.get(currentVertex);
+            ArrayList<String> conn = edgeMap.get(currentVertex);
             for (int c = 0; c < conn.size(); c++) {
                 String v = (String) conn.get(c);
                 if (!v.equals(lastVertex))

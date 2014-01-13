@@ -52,10 +52,10 @@ public class UserArrow
 
   // a method to draw as postscript (added to the vector ps)
   // remember that postscript has a different coordinate system to the canvas 
-  public Vector Draw( Vector ps, int canv_height )
+  public Vector<String> Draw( Vector<String> ps, int canv_height )
     {
 
-      if ( ps == null ) ps = new Vector();
+      if ( ps == null ) ps = new Vector<String>();
 
       ps.addElement( PostscriptFactory.newPath() );
       ps.addElement( PostscriptFactory.makeMove( this.start.x, canv_height-this.start.y ) );

@@ -256,12 +256,10 @@ public class Tops2String {
             Iterator<Integer> lefts = leftHandEnds.iterator();
             while (lefts.hasNext()) {
                 Integer leftHandEnd = (Integer) lefts.next();
-                HashMap<?, ?> otherEnds = (HashMap<?, ?>) bonds.get(leftHandEnd);
+                HashMap<Integer, String> otherEnds = bonds.get(leftHandEnd);
 
-                TreeSet<?> rightHandEnds = new TreeSet<Object>(otherEnds.keySet());
-                Iterator<?> rights = rightHandEnds.iterator();
-                while (rights.hasNext()) {
-                    Integer rightHandEnd = (Integer) rights.next();
+                TreeSet<Integer> rightHandEnds = new TreeSet<Integer>(otherEnds.keySet());
+                for (Integer rightHandEnd : rightHandEnds) {
                     // only accept edges i:j where i < j
                     if (leftHandEnd.compareTo(rightHandEnd) < 0) { 
                         String e_type = (String) otherEnds.get(rightHandEnd);

@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,6 +31,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import tops.dw.app.ImagePrinter;
+import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.ProteinChoice;
 import tops.dw.protein.SecStrucElement;
@@ -57,7 +59,7 @@ public class TopsEditor implements ActionListener {
 
     private FileList filelist = null;
 
-    private Vector proteins;
+    private Vector<Protein> proteins;
 
     private boolean appletMode = false;
 
@@ -265,7 +267,7 @@ public class TopsEditor implements ActionListener {
 
         this.f.pack();
         this.f.setVisible(true);
-        this.proteins = new Vector();
+        this.proteins = new Vector<Protein>();
 
         this.colourChoice = new ColourChoice();
         this.colourChoice.setVisible(false);
@@ -279,17 +281,18 @@ public class TopsEditor implements ActionListener {
         this.helpURL = help;
     }
 
-    public void addProtein(Protein p) {
+	public void addProtein(Protein p) {
         this.proteins.addElement(p);
         this.topsDisplay.addDiagrams(p);
         this.domainInfo.addProtein(p);
-        this.colourChoice.addColourChangeListeners(this.topsDisplay.GetDrawCanvases());
+        this.colourChoice.addColourChangeListeners(
+        		(Vector<? extends PropertyChangeListener>)this.topsDisplay.GetDrawCanvases());
 
         this.f.pack();
     }
 
     public void clearDisplay() {
-        this.proteins = new Vector();
+        this.proteins = new Vector<Protein>();
         this.topsDisplay.clear();
         this.domainInfo.Clear();
     }
@@ -472,9 +475,9 @@ public class TopsEditor implements ActionListener {
             }
 
             if (this.topsDisplay != null) {
-                Vector dcs = this.topsDisplay.GetDrawCanvases();
+                Vector<TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
                 if (dcs != null) {
-                    Enumeration dcenum = dcs.elements();
+                    Enumeration<TopsDrawCanvas> dcenum = dcs.elements();
                     TopsDrawCanvas dc;
                     while (dcenum.hasMoreElements()) {
                         dc = (TopsDrawCanvas) dcenum.nextElement();
@@ -496,16 +499,16 @@ public class TopsEditor implements ActionListener {
 
     public void writeEPSFile() {
         if (this.proteins == null)
-            this.proteins = new Vector();
+            this.proteins = new Vector<Protein>();
 
-        Vector strs = new Vector();
-        Vector diags = new Vector();
+        Vector<String> strs = new Vector<String>();
+        Vector<SecStrucElement> diags = new Vector<SecStrucElement>();
 
-        Enumeration prots = this.proteins.elements();
+        Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
             Protein p = (Protein) prots.nextElement();
-            Enumeration doms = p.GetDomainDefs().elements();
-            Enumeration lls = p.GetLinkedLists().elements();
+            Enumeration<DomainDefinition> doms = p.GetDomainDefs().elements();
+            Enumeration<SecStrucElement> lls = p.GetLinkedLists().elements();
             while (doms.hasMoreElements() && lls.hasMoreElements()) {
                 strs.addElement(doms.nextElement().toString());
                 diags.addElement(lls.nextElement());
@@ -523,7 +526,7 @@ public class TopsEditor implements ActionListener {
 
             if (DrawCanvToPrint != null) {
 
-                Vector eps = DrawCanvToPrint.getEPS();
+                Vector<String> eps = DrawCanvToPrint.getEPS();
 
                 if (!this.appletMode) {
                     FileDialog fd = new FileDialog(this.f, "Choose EPS filename",
@@ -546,7 +549,7 @@ public class TopsEditor implements ActionListener {
                         return;
                     }
 
-                    Enumeration en = eps.elements();
+                    Enumeration<String> en = eps.elements();
                     while (en.hasMoreElements()) {
                         pw.println((String) en.nextElement());
                     }
@@ -574,20 +577,18 @@ public class TopsEditor implements ActionListener {
     public void writePSFile() {
 
         // form the postscript
-        Vector dcs = this.topsDisplay.GetDrawCanvases();
-        Vector EPSS = new Vector();
-        Vector titles = new Vector();
-        Enumeration endcs = dcs.elements();
-        int ind = 0;
+        Vector<TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
+        Vector<Vector<String>> EPSS = new Vector<Vector<String>>();
+        Vector<String> titles = new Vector<String>();
+        Enumeration<TopsDrawCanvas> endcs = dcs.elements();
         TopsDrawCanvas tdc;
         while (endcs.hasMoreElements()) {
         	tdc = (TopsDrawCanvas) endcs.nextElement();
         	EPSS.addElement(tdc.getEPS());
         	titles.addElement(tdc.getLabel());
-            ind++;
         }
 
-        Vector PS;
+        Vector<String> PS;
         try {
             PS = PostscriptFactory.PSArrayA4(titles, EPSS, 54, 0.5f);
         } catch (PSException pse) {
@@ -618,7 +619,7 @@ public class TopsEditor implements ActionListener {
                 return;
             }
 
-            Enumeration enps = PS.elements();
+            Enumeration<String> enps = PS.elements();
             while (enps.hasMoreElements()) {
                 pw.println((String) enps.nextElement());
             }
@@ -672,7 +673,7 @@ public class TopsEditor implements ActionListener {
     public void colourAlign(OrientInfo oi) {
     	// colour equivalences
         int i = 0;
-        Enumeration orient_names = oi.getNames();
+        Enumeration<String> orient_names = oi.getNames();
         while (orient_names.hasMoreElements()) {
             String domname = (String) orient_names.nextElement();
             SecStrucElement root = this.getRootSSE(domname);
@@ -735,7 +736,7 @@ public class TopsEditor implements ActionListener {
 
         // everything is oriented w.r.t. a reference - the first domain in the
         // equivalence file
-        Enumeration orient_names = oi.getNames();
+        Enumeration<String> orient_names = oi.getNames();
         String refdomname = (String) orient_names.nextElement();
         SecStrucElement refdomroot = this.getRootSSE(refdomname);
         if (refdomroot == null) {
@@ -773,7 +774,7 @@ public class TopsEditor implements ActionListener {
         if (this.proteins == null)
             return null;
 
-        Enumeration ps = this.proteins.elements();
+        Enumeration<Protein> ps = this.proteins.elements();
 
         while (ps.hasMoreElements()) {
             Protein p = (Protein) ps.nextElement();
@@ -790,16 +791,16 @@ public class TopsEditor implements ActionListener {
     public void print() {
 
         if (this.proteins == null)
-            this.proteins = new Vector();
+            this.proteins = new Vector<Protein>();
 
-        Vector strs = new Vector();
-        Vector diags = new Vector();
+        Vector<String> strs = new Vector<String>();
+        Vector<SecStrucElement> diags = new Vector<SecStrucElement>();
 
-        Enumeration prots = this.proteins.elements();
+        Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
             Protein p = (Protein) prots.nextElement();
-            Enumeration doms = p.GetDomainDefs().elements();
-            Enumeration lls = p.GetLinkedLists().elements();
+            Enumeration<DomainDefinition> doms = p.GetDomainDefs().elements();
+            Enumeration<SecStrucElement> lls = p.GetLinkedLists().elements();
             while (doms.hasMoreElements() && lls.hasMoreElements()) {
                 strs.addElement(doms.nextElement().toString());
                 diags.addElement(lls.nextElement());

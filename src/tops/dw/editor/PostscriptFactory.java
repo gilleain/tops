@@ -374,8 +374,8 @@ public final class PostscriptFactory {
     // a method to make a PS array from a set of EPS files
     private static int border = 36;
 
-    public static Vector<String> PSArrayA4(Vector<?> titles, Vector<?> EPSfiles, int margin,
-            float scle) throws PSException {
+    public static Vector<String> PSArrayA4(
+    		Vector<String> titles, Vector<Vector<String>> EPSfiles, int margin, float scle) throws PSException {
         if (EPSfiles == null || EPSfiles.isEmpty())
             throw new PSException("Nothing to draw!");
         if (scle <= 0.01f)
@@ -390,10 +390,10 @@ public final class PostscriptFactory {
         // determine largest X and Y sizes
         int xs, ys, maxx = 0, maxy = 0;
         int bb[];
-        Enumeration<?> enf = EPSfiles.elements();
-        Vector<?> eps;
+        Enumeration<Vector<String>> enf = EPSfiles.elements();
+        Vector<String> eps;
         while (enf.hasMoreElements()) {
-            eps = (Vector<?>) enf.nextElement();
+            eps = enf.nextElement();
             bb = PostscriptFactory.getBoundingBox(eps);
             xs = bb[2] - bb[0];
             ys = bb[3] - bb[1];
@@ -419,7 +419,7 @@ public final class PostscriptFactory {
         PS = PostscriptFactory.makePSHeader(PS, npages, 1);
 
         // construct the array
-        Enumeration<?> ent = titles.elements();
+        Enumeration<String> ent = titles.elements();
         enf = EPSfiles.elements();
         int nf = 0, ix, iy = -1, np = 0;
         int lowleft[] = new int[2];
@@ -445,12 +445,12 @@ public final class PostscriptFactory {
             PS.addElement(PostscriptFactory.translate(lowleft[0], lowleft[1]));
 
             // get bounding box
-            eps = (Vector<?>) enf.nextElement();
+            eps = enf.nextElement();
             bb = PostscriptFactory.getBoundingBox(eps);
 
             // add title
             if (ent.hasMoreElements())
-                ttl = (String) ent.nextElement();
+                ttl = ent.nextElement();
             else
                 ttl = "NoTitle";
             int ttls = 12;
@@ -488,11 +488,11 @@ public final class PostscriptFactory {
 
     }
 
-    private static void appendEPS(Vector<String> PS, Vector<?> EPS) {
+    private static void appendEPS(Vector<String> PS, Vector<String> EPS) {
         String line;
-        Enumeration<?> en = EPS.elements();
+        Enumeration<String> en = EPS.elements();
         while (en.hasMoreElements()) {
-            line = (String) en.nextElement();
+            line = en.nextElement();
             if (!line.startsWith("%") && !line.startsWith("showpage")) {
                 PS.addElement(line);
             }
@@ -506,7 +506,7 @@ public final class PostscriptFactory {
         return md;
     }
 
-    private static int[] getBoundingBox(Vector<?> eps) throws PSException {
+    private static int[] getBoundingBox(Vector<String> eps) throws PSException {
         String line, tok;
         StringTokenizer st;
         int b, i;
@@ -515,9 +515,9 @@ public final class PostscriptFactory {
             bb[i] = 0;
 
         if (eps != null) {
-            Enumeration<?> e = eps.elements();
+            Enumeration<String> e = eps.elements();
             while (e.hasMoreElements()) {
-                line = (String) e.nextElement();
+                line = e.nextElement();
                 if (line.startsWith("%%BoundingBox:")) {
                     st = new StringTokenizer(line);
                     if (st.countTokens() == 5) {

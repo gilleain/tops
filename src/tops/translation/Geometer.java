@@ -2,16 +2,14 @@ package tops.translation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
-
 import cern.colt.matrix.linalg.EigenvalueDecomposition;
-
 import cern.jet.math.Functions;
 
 public class Geometer {
@@ -70,18 +68,16 @@ public class Geometer {
         }
     }
 
-    public static Point3d averagePoints(Collection<?> points) {
+    public static Point3d averagePoints(Collection<Point3d> points) {
         Point3d averagePoint = new Point3d();
-        Iterator<?> itr = points.iterator();
-        while (itr.hasNext()) {
-            Point3d nextPoint = (Point3d) itr.next();
+        for (Point3d nextPoint : points) {
             averagePoint.add(nextPoint);
         }
         averagePoint.scale(1.0 / points.size());
         return averagePoint;
     }
 
-    public static Axis leastSquareAxis(ArrayList<?> points) {
+    public static Axis leastSquareAxis(ArrayList<Point3d> points) {
         int numberOfPoints = points.size();
         // System.out.println("Running leastSquareAxis on " + numberOfPoints + "
         // points");
@@ -89,17 +85,16 @@ public class Geometer {
             return new Axis();
         } else if (numberOfPoints < 2) {
             // no good solution for a single point
-            return new Axis((Point3d) points.get(0), (Point3d) points.get(0));
+            return new Axis(points.get(0), points.get(0));
         } else if (numberOfPoints == 2) {
             // take the difference of two points
-            return new Axis((Point3d) points.get(1), (Point3d) points.get(0));
+            return new Axis(points.get(1), points.get(0));
         }
 
         // otherwise, make a DoubleMatrix2D
-        DoubleMatrix2D pointMatrix = DoubleFactory2D.dense.make(points.size(),
-                3);
+        DoubleMatrix2D pointMatrix = DoubleFactory2D.dense.make(points.size(), 3);
         for (int i = 0; i < points.size(); i++) {
-            Point3d point = (Point3d) points.get(i);
+            Point3d point = points.get(i);
             pointMatrix.set(i, 0, point.x);
             pointMatrix.set(i, 1, point.y);
             pointMatrix.set(i, 2, point.z);

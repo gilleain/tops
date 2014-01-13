@@ -12,7 +12,7 @@ import tops.dw.protein.TopsLinkedListException;
 
 public class OrientInfo {
 
-    private Vector dom_names = new Vector();
+    private Vector<String> dom_names = new Vector<String>();
 
     private int EquivSSEs[][];
 
@@ -39,7 +39,7 @@ public class OrientInfo {
     	return this.dom_names.isEmpty();
     }
     
-    public Enumeration getNames() {
+    public Enumeration<String> getNames() {
     	return this.dom_names.elements();
     }
     

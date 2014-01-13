@@ -8,7 +8,7 @@ public class StringChoice extends Dialog implements ActionListener {
 
     private static int WIDTH = 250, HEIGHT = 300;
 
-    private Vector Strings = null;
+    private Vector<String> Strings = null;
 
     private String RetString = null;
 
@@ -20,7 +20,7 @@ public class StringChoice extends Dialog implements ActionListener {
 
     private CheckboxGroup cbg = null;
 
-    public StringChoice(Frame f, String Message, Vector strngs) {
+    public StringChoice(Frame f, String Message, Vector<String> strngs) {
         super(f, "StringChoice", true);
 
         this.Strings = strngs;
@@ -36,12 +36,12 @@ public class StringChoice extends Dialog implements ActionListener {
         pan.setLayout(new GridLayout(0, 1));
 
         if (this.Strings != null) {
-            Enumeration en = this.Strings.elements();
+            Enumeration<String> en = this.Strings.elements();
             String str;
             this.cbg = new CheckboxGroup();
             boolean st = true;
             while (en.hasMoreElements()) {
-                str = (String) en.nextElement();
+                str = en.nextElement();
                 Checkbox cb = new Checkbox(str, this.cbg, st);
                 pan.add(cb);
                 st = false;
@@ -93,7 +93,7 @@ public class StringChoice extends Dialog implements ActionListener {
             Checkbox cb = this.cbg.getSelectedCheckbox();
             if (cb != null) {
                 String nm = cb.getLabel();
-                Enumeration en = this.Strings.elements();
+                Enumeration<String> en = this.Strings.elements();
                 String str;
                 i = 0;
                 while (en.hasMoreElements()) {

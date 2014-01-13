@@ -126,9 +126,9 @@ public class HBondAnalyser {
 
             // now, compare the first residue to the residues further on in the
             // chain
-            Iterator<?> itr = chain.residueIterator(nextPosition);
+            Iterator<Residue> itr = chain.residueIterator(nextPosition);
             while (itr.hasNext()) {
-                int secondPosition = ((Residue) itr.next()).getAbsoluteNumber();
+                int secondPosition = (itr.next()).getAbsoluteNumber();
 
                 // we must still check this, since a chain break might move us
                 // to i + 2
@@ -216,13 +216,13 @@ public class HBondAnalyser {
     }
 
     public ArrayList<String> convertBondsToTags(Residue residue) {
-        ArrayList<?> nTerminalHBonds = residue.getNTerminalHBonds();
-        ArrayList<?> cTerminalHBonds = residue.getCTerminalHBonds();
+        ArrayList<HBond> nTerminalHBonds = residue.getNTerminalHBonds();
+        ArrayList<HBond> cTerminalHBonds = residue.getCTerminalHBonds();
 
         ArrayList<String> tags = new ArrayList<String>();
 
         for (int i = 0; i < nTerminalHBonds.size(); i++) {
-            int n = ((HBond) nTerminalHBonds.get(i)).getResidueSeparation();
+            int n = (nTerminalHBonds.get(i)).getResidueSeparation();
             String nTag = this.convertBondsToTag(n, 0);
             if (nTag != null) {
                 tags.add(nTag);
@@ -238,7 +238,7 @@ public class HBondAnalyser {
         }
 
         for (int i = 0; i < nTerminalHBonds.size(); i++) {
-            int n = ((HBond) nTerminalHBonds.get(i)).getResidueSeparation();
+            int n = (nTerminalHBonds.get(i)).getResidueSeparation();
 
             for (int j = 0; j < cTerminalHBonds.size(); j++) {
                 int c = ((HBond) cTerminalHBonds.get(j)).getResidueSeparation();

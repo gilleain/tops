@@ -90,9 +90,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
 
     private Font Font18, Font12;
 
-    private Vector UserLabels = new Vector();
+    private Vector<UserLabel> UserLabels = new Vector<UserLabel>();
 
-    private Vector UserArrows = new Vector();
+    private Vector<UserArrow> UserArrows = new Vector<UserArrow>();
 
     private boolean LabellingActive = false;
 
@@ -346,7 +346,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
                 break;
             case ADD_USER_ARROW:
                 if (this.UserArrows == null)
-                    this.UserArrows = new Vector();
+                    this.UserArrows = new Vector<UserArrow>();
                 UserArrow ua = new UserArrow();
                 this.UserArrows.addElement(ua);
                 this.SelectedArrow = ua;
@@ -483,7 +483,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
                 break;
             case ADD_USER_LABEL:
                 if (this.UserLabels == null)
-                    this.UserLabels = new Vector();
+                    this.UserLabels = new Vector<UserLabel>();
 
                 if (!this.LabellingActive) {
                     this.LabellingActive = true;
@@ -758,7 +758,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         return img;
     }
 
-    public Vector getEPS() {
+    public Vector<String> getEPS() {
 
         if (this.RootSecStruc == null)
             return null;
@@ -766,25 +766,25 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         int w = this.getSize().width;
         int h = this.getSize().height;
 
-        Vector EPS = new Vector();
+        Vector<String> EPS = new Vector<String>();
 
         EPS = PostscriptFactory.makeEPSHeader(EPS, 0, 0, w, h);
         this.RootSecStruc.getEPS(w, h, EPS);
         
         // draw user labels
         if (this.UserLabels != null) {
-            Enumeration labs = this.UserLabels.elements();
+            Enumeration<UserLabel> labs = this.UserLabels.elements();
             while (labs.hasMoreElements()) {
-                UserLabel ul = (UserLabel) labs.nextElement();
+                UserLabel ul = labs.nextElement();
                 EPS = ul.Draw(EPS, h);
             }
         }
 
         // draw user arrows
         if (this.UserArrows != null) {
-            Enumeration arrows = this.UserArrows.elements();
+            Enumeration<UserArrow> arrows = this.UserArrows.elements();
             while (arrows.hasMoreElements()) {
-                UserArrow ua = (UserArrow) arrows.nextElement();
+                UserArrow ua = arrows.nextElement();
                 EPS = ua.Draw(EPS, h);
             }
         }
@@ -813,9 +813,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         int x, y;
         int sw, sh;
         if (this.UserLabels != null) {
-            Enumeration labs = this.UserLabels.elements();
+            Enumeration<UserLabel> labs = this.UserLabels.elements();
             while (labs.hasMoreElements()) {
-                UserLabel ul = (UserLabel) labs.nextElement();
+                UserLabel ul = labs.nextElement();
                 x = ul.getPosition().x;
                 y = h - ul.getPosition().y;
                 sw = ul.getPSWidth();
@@ -832,9 +832,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         }
 
         if (this.UserArrows != null) {
-            Enumeration arrows = this.UserArrows.elements();
+            Enumeration<UserArrow> arrows = this.UserArrows.elements();
             while (arrows.hasMoreElements()) {
-                UserArrow ua = (UserArrow) arrows.nextElement();
+                UserArrow ua = arrows.nextElement();
                 x = ua.start.x;
                 y = h - ua.start.y;
                 if (x > xmax)
@@ -904,17 +904,17 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
             this.DrawInfoString(g);
 
         if (this.UserLabels != null) {
-            Enumeration labs = this.UserLabels.elements();
+            Enumeration<UserLabel> labs = this.UserLabels.elements();
             while (labs.hasMoreElements()) {
-                UserLabel ul = (UserLabel) labs.nextElement();
+                UserLabel ul = labs.nextElement();
                 ul.Draw(g);
             }
         }
 
         if (this.UserArrows != null) {
-            Enumeration arrows = this.UserArrows.elements();
+            Enumeration<UserArrow> arrows = this.UserArrows.elements();
             while (arrows.hasMoreElements()) {
-                UserArrow ua = (UserArrow) arrows.nextElement();
+                UserArrow ua = arrows.nextElement();
                 ua.Draw(g);
             }
         }
@@ -965,13 +965,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         if (this.UserLabels == null)
             return null;
 
-        Enumeration en = this.UserLabels.elements();
+        Enumeration<UserLabel> en = this.UserLabels.elements();
 
         UserLabel ul, nearest = null;
         int dx, dy, d2;
         int d2m = Integer.MAX_VALUE;
         while (en.hasMoreElements()) {
-            ul = (UserLabel) en.nextElement();
+            ul = en.nextElement();
             dx = p.x - ul.getPosition().x;
             dy = p.y - ul.getPosition().y;
             d2 = dx * dx + dy * dy;
@@ -989,13 +989,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener,
         if (this.UserArrows == null)
             return null;
 
-        Enumeration en = this.UserArrows.elements();
+        Enumeration<UserArrow> en = this.UserArrows.elements();
         UserArrow ua, nearest = null;
         int cx, cy, dx, dy, r2, d2, d2min = Integer.MAX_VALUE;
         Point start, end;
 
         while (en.hasMoreElements()) {
-            ua = (UserArrow) en.nextElement();
+            ua = en.nextElement();
             start = ua.getStart();
             end = ua.getEnd();
             cx = (start.x + end.x) / 2;

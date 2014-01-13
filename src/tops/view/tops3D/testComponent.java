@@ -29,7 +29,7 @@ public class testComponent {
         ArrayList<String> edgeStrands = new ArrayList<String>();
         while (i.hasNext()) {
             String vertex = (String) i.next();
-            ArrayList<?> connections = (ArrayList<?>) edgeMap.get(vertex);
+            ArrayList<String> connections = edgeMap.get(vertex);
             if (connections.size() < 2)
                 edgeStrands.add(vertex);
         }
@@ -50,7 +50,7 @@ public class testComponent {
         String lastVertex = currentVertex;
         String nextVertex = new String();
         while (k < keys.size()) {
-            ArrayList<?> conn = (ArrayList<?>) edgeMap.get(currentVertex);
+            ArrayList<String> conn = edgeMap.get(currentVertex);
             for (int c = 0; c < conn.size(); c++) {
                 String v = (String) conn.get(c);
                 if (!v.equals(lastVertex))

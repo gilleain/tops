@@ -15,9 +15,9 @@ import tops.dw.protein.*;
  */
 public class TopsDisplayPanel extends Panel {
 
-    private Vector drawCanvases;
+    private Vector<TopsDrawCanvas> drawCanvases;
 
-    private Vector dcPanels;
+    private Vector<Panel> dcPanels;
 
 
     private Dimension canvasDimension;
@@ -36,8 +36,8 @@ public class TopsDisplayPanel extends Panel {
 //        LastScale = 1.0f;
 
         this.setBackground(Color.white);
-        this.drawCanvases = new Vector();
-        this.dcPanels = new Vector();
+        this.drawCanvases = new Vector<TopsDrawCanvas>();
+        this.dcPanels = new Vector<Panel>();
 
         this.canvasDimension = new Dimension(
         		TopsDrawCanvas.PREF_WIDTH,
@@ -57,11 +57,9 @@ public class TopsDisplayPanel extends Panel {
      * @param Diagrams - a vector of Tops diagrams
      * @param Labels - a vector of labels concurrent with the Tops diagrams
      */
-    public TopsDisplayPanel(Vector Diagrams, Vector Labels) {
-
+    public TopsDisplayPanel(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
         this();
         this.setDiagrams(Diagrams, Labels);
-
     }
 
     /**
@@ -111,8 +109,8 @@ public class TopsDisplayPanel extends Panel {
     public void clear() {
 
         this.removeAll();
-        this.drawCanvases = new Vector();
-        this.dcPanels = new Vector();
+        this.drawCanvases = new Vector<TopsDrawCanvas>();
+        this.dcPanels = new Vector<Panel>();
 
         Dimension ps = this.getPreferredSize();
         this.setSize(ps.width, ps.height);
@@ -125,13 +123,11 @@ public class TopsDisplayPanel extends Panel {
      * this method adds a diagram to the display
      * 
      * @param s - the root secondary structure for the diagram
-     * @param Label - the label for the diagram (the Objects toString() is used)
+     * @param Label - the label for the diagram
      */
-    private void addDiagram(SecStrucElement s, Object Label) {
+    private void addDiagram(SecStrucElement s, DomainDefinition Label) {
         if (s != null) {
-            String lab = "Tops Diagram";
-            if (Label != null)
-                lab = Label.toString();
+        	String lab = (Label == null)? "Tops Diagram" : Label.toString();
             TopsDrawCanvas tdc = new TopsDrawCanvas(s, lab);
             this.drawCanvases.addElement(tdc);
             tdc.setSize(this.canvasDimension);
@@ -150,7 +146,7 @@ public class TopsDisplayPanel extends Panel {
      * @param Labels -
      *            the new set of labels
      */
-    public void setDiagrams(Vector Diagrams, Vector Labels) {
+    public void setDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
         this.clear();
         this.addDiagrams(Diagrams, Labels);
     }
@@ -173,10 +169,9 @@ public class TopsDisplayPanel extends Panel {
      * @param Labels -
      *            the new set of labels
      */
-    public void addDiagrams(Vector Diagrams, Vector Labels) {
+    public void addDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
 
         int i;
-        Object el, lab;
 
         /*
          * this is an unpleasant thing to have to do - would be better to change
@@ -187,14 +182,11 @@ public class TopsDisplayPanel extends Panel {
         }
 
         for (i = 0; i < Diagrams.size(); i++) {
-            el = Diagrams.elementAt(i);
-            if (el instanceof SecStrucElement) {
-                lab = null;
-                if (i < Labels.size())
-                    lab = Labels.elementAt(i);
-                this.addDiagram((SecStrucElement) el, lab);
-            }
-
+            SecStrucElement el = Diagrams.elementAt(i);
+            DomainDefinition lab = null;
+            if (i < Labels.size())
+            	lab = Labels.elementAt(i);
+            this.addDiagram(el, lab);
         }
 
         float MinScale = 1.0F, scale;
@@ -329,7 +321,7 @@ public class TopsDisplayPanel extends Panel {
 
     }
 
-    public Vector getDrawCanvases() {
+    public Vector<TopsDrawCanvas> getDrawCanvases() {
         return this.drawCanvases;
     }
 

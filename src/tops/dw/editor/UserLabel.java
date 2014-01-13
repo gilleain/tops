@@ -82,7 +82,7 @@ public class UserLabel
 
   // a method to draw as postscript (added to the vector ps)
   // remember that postscript has a different coordinate system to the canvas 
-  public Vector Draw( Vector ps, int canv_height )
+  public Vector<String> Draw( Vector<String> ps, int canv_height )
     {
       ps = PostscriptFactory.makeText("Times-Roman",12, this.getPosition().x, canv_height-this.getPosition().y, this.getText(), ps);
       return ps;

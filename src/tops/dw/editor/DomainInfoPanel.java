@@ -14,19 +14,19 @@ import tops.dw.protein.*;
  */
 public class DomainInfoPanel extends Panel {
 
-    private Vector proteins;
+    private Vector<Protein> proteins;
 
     private TopsEditor TopsEd;
 
     public DomainInfoPanel(TopsEditor te) {
         this.TopsEd = te;
-        this.proteins = new Vector();
+        this.proteins = new Vector<Protein>();
         this.setLayout(new GridLayout(0, 4));
         this.setFont(new Font("TimesRoman", Font.BOLD, 12));
     }
 
     public void Clear() {
-        this.proteins = new Vector();
+        this.proteins = new Vector<Protein>();
         this.removeAll();
     }
 
@@ -37,8 +37,8 @@ public class DomainInfoPanel extends Panel {
 
         this.proteins.addElement(p);
 
-        Enumeration DomainDefs = p.GetDomainDefs().elements();
-        Enumeration Diagrams = p.GetLinkedLists().elements();
+        Enumeration<DomainDefinition> DomainDefs = p.GetDomainDefs().elements();
+        Enumeration<SecStrucElement> Diagrams = p.GetLinkedLists().elements();
 
         DomainDefinition dd;
         SecStrucElement ss;
@@ -142,8 +142,8 @@ class DomainInfoCommand implements ActionListener {
                     + " contains the following fragments\n");
             ta.append("\n");
 
-            Enumeration sfrags = this.domain.getSequenceFragments();
-            Enumeration fragis = this.domain.getFragmentIndices();
+            Enumeration<IntegerInterval> sfrags = this.domain.getSequenceFragments();
+            Enumeration<Integer> fragis = this.domain.getFragmentIndices();
 
             int index;
             IntegerInterval interval;

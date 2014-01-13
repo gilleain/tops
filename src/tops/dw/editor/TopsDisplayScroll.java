@@ -62,7 +62,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param Labels -
      *            a vector of labels concurrent with the Tops diagrams
      */
-    public TopsDisplayScroll(Vector Diagrams, Vector Labels) {
+    public TopsDisplayScroll(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
         this();
         this.setDiagrams(Diagrams, Labels);
         this.doLayout();
@@ -118,7 +118,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param Labels -
      *            the new set of labels
      */
-    public void setDiagrams(Vector Diagrams, Vector Labels) {
+    public void setDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
         if (this.DisplayPanel != null)
             this.DisplayPanel.setDiagrams(Diagrams, Labels);
         this.doLayout();
@@ -144,7 +144,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param Labels -
      *            the new set of labels
      */
-    public void addDiagrams(Vector Diagrams, Vector Labels) {
+    public void addDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
         if (this.DisplayPanel != null)
             this.DisplayPanel.addDiagrams(Diagrams, Labels);
         this.doLayout();
@@ -240,7 +240,7 @@ public class TopsDisplayScroll extends ScrollPane {
         return tdc;
     }
 
-    public Vector GetDrawCanvases() {
+    public Vector<TopsDrawCanvas> GetDrawCanvases() {
         if (this.DisplayPanel != null)
             return this.DisplayPanel.getDrawCanvases();
         else

@@ -232,7 +232,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
         for (int i = startIndex; i < endIndex; i++) {
             Integer id = new Integer(results[i].getID());
-            ArrayList<?> nameList = (ArrayList<?>) idToNameMap.get(id);
+            ArrayList<String> nameList = idToNameMap.get(id);
             String data = results[i].getData();
 //            String insertString = null; // TODO sort this all out!
             String matchString = null;

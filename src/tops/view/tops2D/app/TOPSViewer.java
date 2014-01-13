@@ -204,24 +204,24 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
         }
     }
 
-    public String[] getInstances() {
+    @SuppressWarnings("unchecked")
+	public String[] getInstances() {
         ArrayList<String> instances = new ArrayList<String>();
-        Vector<?> dataVector = this.tableModel.getDataVector();
+        Vector<Vector<?>> dataVector = this.tableModel.getDataVector();
         int nameColumnIndex = 0;
 
         for (int i = 0; i < dataVector.size(); i++) {
-            String name = (String) ((Vector<?>) dataVector.elementAt(i))
-                    .elementAt(nameColumnIndex);
+            String name = (String) (dataVector.elementAt(i)).elementAt(nameColumnIndex);
             StringBuffer instance = new StringBuffer(name);
             instance.append(" ");
-            instance.append((String) this.vertexMap.get(name));
+            instance.append(this.vertexMap.get(name));
             instance.append(" ");
-            instance.append((String) this.edgeMap.get(name));
+            instance.append(this.edgeMap.get(name));
             instance.append(" ");
-            instance.append((String) this.classMap.get(name));
+            instance.append(this.classMap.get(name));
             instances.add(instance.toString());
         }
-        return (String[]) instances.toArray(new String[0]);
+        return instances.toArray(new String[0]);
     }
 
     public void showSelected(int[] indices) {
@@ -234,9 +234,9 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
             TOPSViewer.panes[i].setBorder(BorderFactory.createCompoundBorder(BorderFactory
                     .createTitledBorder(name), BorderFactory.createEmptyBorder(
                     10, 10, 10, 10)));
-            String vStr = (String) this.vertexMap.get(name);
-            String eStr = (String) this.edgeMap.get(name);
-            String hStr = (String) this.highlightMap.get(name);
+            String vStr = this.vertexMap.get(name);
+            String eStr = this.edgeMap.get(name);
+            String hStr = this.highlightMap.get(name);
             TOPSViewer.panes[i].renderGraph(vStr, eStr, hStr);
         }
     }
@@ -315,7 +315,7 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
             }
             int[] sel = new int[selection.size()];
             for (int j = 0; j < selection.size(); j++) {
-                sel[j] = ((Integer) selection.get(j)).intValue();
+                sel[j] = selection.get(j).intValue();
             }
             this.showSelected(sel);
         }

@@ -1,9 +1,17 @@
 package tops.view.tops3D;
 
-import java.awt.event.*;
-import java.util.*;
-import javax.media.j3d.*;
-import javax.vecmath.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.util.Enumeration;
+
+import javax.media.j3d.Behavior;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.media.j3d.WakeupCriterion;
+import javax.media.j3d.WakeupOnBehaviorPost;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
 
 public class AWTZoomBehavior extends Behavior implements ActionListener {
 
@@ -28,7 +36,8 @@ public class AWTZoomBehavior extends Behavior implements ActionListener {
         this.wakeupOn(this.criterion);
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public void processStimulus(Enumeration criteria) {
 
         this.trans.setScale(0.9);

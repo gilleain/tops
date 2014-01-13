@@ -34,18 +34,16 @@ public class ColourChoice {
 
     /* END constructors */
 
-    public void addColourChangeListeners(Vector ColourChListeners) {
+    public void addColourChangeListeners(Vector<? extends PropertyChangeListener> vector) {
 
-        if (ColourChListeners == null)
+        if (vector == null)
             return;
 
-        Enumeration enumeration = ColourChListeners.elements();
+        Enumeration<? extends PropertyChangeListener> enumeration = vector.elements();
 
         if (this.ccp != null) {
             while (enumeration.hasMoreElements()) {
-                this.ccp
-                        .addPropertyChangeListener((PropertyChangeListener) enumeration
-                                .nextElement());
+                this.ccp.addPropertyChangeListener(enumeration.nextElement());
             }
         }
 

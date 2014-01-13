@@ -221,7 +221,7 @@ public class CartoonDrawer {
             if (rad > rmax) rmax = rad;
 
             if (!(s.GetConnectionTo().isEmpty())) {
-                Enumeration<?> ConnectionEnum = s.GetConnectionTo().elements();
+                Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
                 Point PointTo;
                 while (ConnectionEnum.hasMoreElements()) {
                     PointTo = (Point) ConnectionEnum.nextElement();
@@ -352,7 +352,7 @@ public class CartoonDrawer {
             this.joinPoints(pointTo, pointFrom);
         } else {
 
-            Enumeration<?> connectionEnum = from.GetConnectionTo().elements();
+            Enumeration<Point> connectionEnum = from.GetConnectionTo().elements();
             Point connectionPointTo = (Point) connectionEnum.nextElement();
 
             this.joinPoints(pointFrom, connectionPointTo);

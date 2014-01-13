@@ -398,11 +398,11 @@ public class Chain {
         return script.toString();
     }
 
-    public HashMap<String, String> toTopsDomainStrings(HashMap<?, ?> chainDomainMap) {
+    public HashMap<String, String> toTopsDomainStrings(
+    		HashMap<String, List<Domain>> chainDomainMap) {
         if (!chainDomainMap.isEmpty()
                 && chainDomainMap.containsKey(this.getCathCompatibleLabel())) {
-            ArrayList<?> domains = (ArrayList<?>) chainDomainMap.get(this
-                    .getCathCompatibleLabel());
+            List<Domain> domains = chainDomainMap.get(this.getCathCompatibleLabel());
             return this.toTopsDomainStrings(domains);
         } else {
             HashMap<String, String> h = new HashMap<String, String>();
@@ -411,11 +411,11 @@ public class Chain {
         }
     }
 
-    public HashMap<String, String> toTopsDomainStrings(ArrayList<?> domains) {
+    public HashMap<String, String> toTopsDomainStrings(List<Domain> domains) {
         HashMap<String, String> domainStrings = new HashMap<String, String>(domains.size());
 
         for (int i = 0; i < domains.size(); i++) {
-            Domain d = (Domain) domains.get(i);
+            Domain d = domains.get(i);
             // System.err.println("Getting tops string for domain " + d);
             domainStrings.put(d.getID(), this.toTopsString(d));
         }
@@ -467,12 +467,12 @@ public class Chain {
 
         // merge the chirals with the hbonds
         Iterator<Edge> chiralIterator = this.chiralities.iterator();
-        Iterator<?> edgeIterator;
+        Iterator<Edge> edgeIterator;
         while (chiralIterator.hasNext()) {
-            Edge chiral = (Edge) chiralIterator.next();
+            Edge chiral = chiralIterator.next();
             edgeIterator = edges.iterator();
             while (edgeIterator.hasNext()) {
-                Edge hbond = (Edge) edgeIterator.next();
+                Edge hbond = edgeIterator.next();
                 if (hbond.equals(chiral)) {
                     hbond.mergeWith(chiral);
                     break;
@@ -482,7 +482,7 @@ public class Chain {
 
         edgeIterator = edges.iterator();
         while (edgeIterator.hasNext()) {
-            Edge edge = (Edge) edgeIterator.next();
+            Edge edge = edgeIterator.next();
             s.append(edge.toString());
         }
 

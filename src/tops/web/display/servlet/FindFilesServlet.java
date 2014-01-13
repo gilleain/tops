@@ -128,7 +128,7 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
 
     private void displayDomains(Protein p, String pi, String c,
             String filetype, String path, HttpServletResponse response) {
-        Vector<?> domainNames = p.GetDomainDefs();
+        Vector<DomainDefinition> domainNames = p.GetDomainDefs();
         response.setContentType("text/html");
         PrintWriter pout = null;
         try {
@@ -139,9 +139,9 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
 
         pout.println("<html><head><title>Domains for : " + pi + " Chain " + c
                 + "</title></head><body><table align=\"center\">");
-        Enumeration<?> e = domainNames.elements();
+        Enumeration<DomainDefinition> e = domainNames.elements();
         while (e.hasMoreElements()) {
-            DomainDefinition dd = (DomainDefinition) e.nextElement();
+            DomainDefinition dd = e.nextElement();
             String name = dd.toString();
             // String url = viewPath + "?path=" + path + "&filename=" + filename
             // + "&domid=" + name; OLD STYLE

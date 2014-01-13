@@ -13,7 +13,7 @@ public class FileList {
 
     /* START instance variables */
 
-    private Vector Files;
+    private Vector<File> Files;
 
     private int Current;
 
@@ -22,7 +22,7 @@ public class FileList {
     /* START constructors */
 
     public FileList() {
-        this.Files = new Vector();
+        this.Files = new Vector<File>();
         this.Current = -1;
     }
 
@@ -45,7 +45,7 @@ public class FileList {
         if (files == null)
             return;
 
-        this.Files = new Vector();
+        this.Files = new Vector<File>();
         if (files.length > 0)
             this.Current = 0;
         else
@@ -67,7 +67,7 @@ public class FileList {
         if (!dir.endsWith(fsep))
             dir = dir + fsep;
 
-        this.Files = new Vector();
+        this.Files = new Vector<File>();
         if (files.length > 0)
             this.Current = 0;
         else
@@ -91,7 +91,7 @@ public class FileList {
 
     public synchronized File getCurrentFile() {
         if (this.Current >= 0)
-            return (File) this.Files.elementAt(this.Current);
+            return this.Files.elementAt(this.Current);
         else
             return null;
     }

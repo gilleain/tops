@@ -137,13 +137,12 @@ public class Protein {
 
                 DomainDefinition dd = (DomainDefinition) ddefs.nextElement();
                 pw.print("DOMAIN_NUMBER " + i + " " + dd.CathCode);
-                Enumeration<?> sfs = dd.getSequenceFragments();
-                Enumeration<?> fis = dd.getFragmentIndices();
+                Enumeration<IntegerInterval> sfs = dd.getSequenceFragments();
+                Enumeration<Integer> fis = dd.getFragmentIndices();
                 while (sfs.hasMoreElements()) {
-                    int fi = ((Integer) fis.nextElement()).intValue();
-                    IntegerInterval sf = (IntegerInterval) sfs.nextElement();
-                    pw.print(" " + fi + " " + sf.getLower() + " "
-                            + sf.getUpper());
+                    int fi = fis.nextElement();
+                    IntegerInterval sf = sfs.nextElement();
+                    pw.print(" " + fi + " " + sf.getLower() + " " + sf.getUpper());
                 }
                 pw.print("\n\n");
 
