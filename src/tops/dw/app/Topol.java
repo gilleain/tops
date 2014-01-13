@@ -22,8 +22,7 @@ import javax.swing.JFrame;
  * @version 3.00 10 Sept. 1997
  */
 
-public class Topol extends Applet implements ActionListener, ImagePrinter,
-        PostscriptPrinter {
+public class Topol extends Applet implements ActionListener, ImagePrinter, PostscriptPrinter {
 
     /* START class variables */
 
@@ -53,7 +52,7 @@ public class Topol extends Applet implements ActionListener, ImagePrinter,
 
     private PDBPanel out;
 
-    private Vector TopsEds;
+    private Vector<TopsEditor> TopsEds;
 
     private boolean InfoFoundState = false;
 
@@ -71,9 +70,9 @@ public class Topol extends Applet implements ActionListener, ImagePrinter,
 
     private Integer CurrentDiagID = new Integer(0);
 
-    private Vector p_desc = null;
+    private Vector<String> p_desc = null;
 
-    private Vector rep_desc = null;
+    private Vector<String> rep_desc = null;
 
     private String rep_code = null;
 
@@ -151,7 +150,7 @@ public class Topol extends Applet implements ActionListener, ImagePrinter,
 
         this.setInfoFoundState(false);
 
-        this.TopsEds = new Vector();
+        this.TopsEds = new Vector<TopsEditor>();
 
         URL DocBase = this.getDocumentBase();
         this.host = DocBase.getHost();
@@ -351,11 +350,9 @@ public class Topol extends Applet implements ActionListener, ImagePrinter,
                     ed.addProtein(p);
                     if (ed != null) {
                         if (this.TopsEds == null)
-                            this.TopsEds = new Vector();
+                            this.TopsEds = new Vector<TopsEditor>();
                         this.TopsEds.addElement(ed);
-                    } else {
-                        this.showStatus("An internal error occurred: unable to display diagram");
-                    }
+                    } 
 
                     this.setInfoFoundState(false);
                 } else {
@@ -385,7 +382,7 @@ public class Topol extends Applet implements ActionListener, ImagePrinter,
 
     }
 
-    public void printPostscript(Vector ps) {
+    public void printPostscript(Vector<String> ps) {
 
         AppletPSPrinter apsp = new AppletPSPrinter(ps, this.host, this.port,
                 this.cgi_prog_path, Topol.cgi_ps_print_prog);
@@ -400,9 +397,7 @@ public class Topol extends Applet implements ActionListener, ImagePrinter,
             this.showStatus("Sorry, unable to print for some reason");
         }
 
-        if (printurl != null) {
-            this.getAppletContext().showDocument(printurl, "_blank");
-        } else {
+        if (printurl == null) {
             System.out.println(apsp.getErrorString());
             this.showStatus("Sorry, unable to print for some reason");
         }
@@ -424,8 +419,8 @@ public class Topol extends Applet implements ActionListener, ImagePrinter,
     private void QueryTOPSDatabase(String pcode, String pchain) {
 
         /* reset the variables determined by the query */
-        this.p_desc = new Vector();
-        this.rep_desc = new Vector();
+        this.p_desc = new Vector<String>();
+        this.rep_desc = new Vector<String>();
         this.rep_code = new String();
         this.chains = new StringBuffer();
         this.found_other_chains = false;

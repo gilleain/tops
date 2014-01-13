@@ -132,14 +132,14 @@ public class PChooser extends Panel {
     }
 
     public void setInfo(String rep_code, String rep_chain, String pcode,
-            Vector p_descrip, Vector rep_descrip) {
+            Vector<String> p_descrip, Vector<String> rep_descrip) {
 
         this.ccode.setText(rep_code);
         this.cchain.setText(rep_chain);
 
         this.pdesc.setText("INFORMATION FOR PROTEIN     " + pcode.toUpperCase()
                 + "\n\n");
-        Enumeration lines = p_descrip.elements();
+        Enumeration<String> lines = p_descrip.elements();
         String line;
         while (lines.hasMoreElements()) {
             line = (String) lines.nextElement();

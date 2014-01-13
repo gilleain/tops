@@ -58,15 +58,15 @@ public class TopsToImage {
         TopsDrawCanvas.PREF_HEIGHT = 280;
         TopsDrawCanvas.PREF_WIDTH = 360;
 
-        Enumeration Diagrams = p.GetLinkedLists().elements();
-        Enumeration Domains = p.GetDomainDefs().elements();
+        Enumeration<SecStrucElement> Diagrams = p.GetLinkedLists().elements();
+        Enumeration<DomainDefinition> Domains = p.GetDomainDefs().elements();
 
         int n = 0;
-        Vector draw_canvs = new Vector();
+        Vector<TopsDrawCanvas> draw_canvs = new Vector<TopsDrawCanvas>();
         float MinScale = 1.0F, scale;
         while (Diagrams.hasMoreElements() && Domains.hasMoreElements()) {
-            SecStrucElement root_sse = (SecStrucElement) Diagrams.nextElement();
-            DomainDefinition DomDef = (DomainDefinition) Domains.nextElement();
+            SecStrucElement root_sse = Diagrams.nextElement();
+            DomainDefinition DomDef = Domains.nextElement();
             TopsDrawCanvas tdc = new TopsDrawCanvas(root_sse, DomDef.toString());
             tdc.setUseBorder(false);
             tdc.setSize(tdc.getPreferredSize());
@@ -78,7 +78,7 @@ public class TopsToImage {
             draw_canvs.addElement(tdc);
         }
 
-        Enumeration canvs = draw_canvs.elements();
+        Enumeration<TopsDrawCanvas> canvs = draw_canvs.elements();
         while (canvs.hasMoreElements()) {
 
             n++;

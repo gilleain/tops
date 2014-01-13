@@ -7,7 +7,7 @@ public class AppletPSPrinter {
 
     /* START instance variables */
 
-    private Vector Postscript = null;
+    private Vector<String> Postscript = null;
 
     private String host = null;
 
@@ -21,12 +21,12 @@ public class AppletPSPrinter {
 
     /* END instance variables */
 
-    public AppletPSPrinter(Vector ps, String Host, int Port, String CGI_path,
+    public AppletPSPrinter(Vector<String> ps, String Host, int Port, String CGI_path,
             String CGI_print_prog) {
         this(ps, Host, Port, CGI_path, CGI_print_prog, null);
     }
 
-    public AppletPSPrinter(Vector ps, String Host, int Port, String CGI_path,
+    public AppletPSPrinter(Vector<String> ps, String Host, int Port, String CGI_path,
             String CGI_print_prog, String URLfilebase) {
         this.Postscript = ps;
         this.host = Host;
@@ -95,7 +95,7 @@ public class AppletPSPrinter {
 
     }
 
-    private String formQuery(Vector ps) {
+    private String formQuery(Vector<String> ps) {
 
         String query = null;
 
@@ -108,7 +108,7 @@ public class AppletPSPrinter {
         sb.append(this.base_url);
         sb.append("\n");
 
-        Enumeration en = ps.elements();
+        Enumeration<String> en = ps.elements();
         while (en.hasMoreElements()) {
             sb.append((String) en.nextElement());
             sb.append("\n");

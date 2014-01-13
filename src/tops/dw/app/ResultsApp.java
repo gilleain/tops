@@ -18,8 +18,7 @@ import java.net.*;
  * @author David Westhead
  * @version 1.00 07 Oct. 1997
  */
-public class ResultsApp extends Applet implements ActionListener,
-        PostscriptPrinter {
+public class ResultsApp extends Applet implements ActionListener, PostscriptPrinter {
 
     /* START class variables */
 
@@ -226,7 +225,7 @@ public class ResultsApp extends Applet implements ActionListener,
 
     }
 
-    public void printPostscript(Vector ps) {
+    public void printPostscript(Vector<String> ps) {
 
         StringBuffer urlbase = new StringBuffer(ResultsApp.TopsFileURLbase);
         urlbase.append(this.magic);
