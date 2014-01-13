@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="thirdpartylibs/cos.jar"/>
 	<classpathentry kind="lib" path="thirdpartylibs/iText.jar"/>
 	<classpathentry kind="lib" path="thirdpartylibs/mysql.jar"/>
 	<classpathentry kind="lib" path="thirdpartylibs/pja.jar"/>
@@ -11,5 +10,7 @@
 	<classpathentry kind="lib" path="thirdpartylibs/vecmath.jar"/>
 	<classpathentry kind="lib" path="thirdpartylibs/servlet.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="thirdpartylibs/commons-fileupload-1.3.jar"/>
+	<classpathentry kind="lib" path="thirdpartylibs/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

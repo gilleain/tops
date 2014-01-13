@@ -1,9 +1,9 @@
 package tops.web.engine;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -12,9 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import tops.translation.PDBFileConverter;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import com.oreilly.servlet.MultipartRequest;
+import tops.translation.PDBFileConverter;
 
 public class TranslationServlet extends HttpServlet {
 
@@ -135,21 +139,28 @@ public class TranslationServlet extends HttpServlet {
     public HashMap<String, String> uploadPDBFiles(HttpServletRequest request) {
         HashMap<String, String> filenames = new HashMap<String, String>();
 
+        File repository = new File(path_to_scratch);
+        
+        // Create a factory for disk-based file items
+        int sizeThreshold = 5 * 1024 * 1024;	// lower limit below which file is in-memory
+        FileItemFactory factory = new DiskFileItemFactory(sizeThreshold, repository);
+
+        // Create a new file upload handler
+        ServletFileUpload upload = new ServletFileUpload(factory);
+
+        // Parse the request
         try {
-            // save to scratch directory, 5MB limit
-            MultipartRequest multi = new MultipartRequest(request,
-                    this.path_to_scratch, 5 * 1024 * 1024);
-            Enumeration<?> files = multi.getFileNames();
-
-            while (files.hasMoreElements()) {
-                String name = (String) files.nextElement();
-                filenames.put(multi.getFilesystemName(name), multi
-                        .getContentType(name));
-            }
-
-        } catch (Exception e) {
-            this.log("upload problem: ", e);
-        }
+			for (FileItem item : upload.parseRequest(request)) {
+				if (!item.isFormField()) {
+					String name = item.getName();
+					String contentType = item.getContentType();
+					filenames.put(name, contentType);
+				}
+			}
+		} catch (FileUploadException e) {
+			e.printStackTrace();
+			log("File upload problem");
+		}
 
         return filenames;
     }

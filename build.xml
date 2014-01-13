@@ -23,15 +23,16 @@
 	<property name="pjajar" value="${thirdpartylib.dir}/pja.jar"/>
 	<property name="itextjar" value="${thirdpartylib.dir}/iText.jar"/>
 	<property name="utilsjar" value="${lib}/utils/utils.jar"/>
-	<property name="oreillyjar" value="${thirdpartylib.dir}/cos.jar"/>
 	<property name="coltjar" value="${thirdpartylib.dir}/colt.jar"/>
 	<property name="vecmathjar" value="${thirdpartylib.dir}/vecmath.jar"/>
+    <property name="commons-io-jar" value="$thirpartylib.dir}/commons-io-2.4.jar"/>
+    <property name="commons-fileupload-jar" value="$thirpartylib.dir}/commons-fileupload-1.3.jar"/>
 
     <!-- TEMPORARY REF TO JRAT PROFILING TOOL-->
     <property name="jratjar" value="/Users/maclean/languages/java/profilers/jrat-0.71b/dist/shiftone-jrat.jar"/>
     <!-- TEMPORARY REF TO JRAT PROFILING TOOL-->
 
-	<property name="alljars" value="${servletjar}:${pjatoolsjar}:${pjajar}:${itextjar}:${utilsjar}:${vecmathjar}:${oreillyjar}:${coltjar}"/>
+	<property name="alljars" value="${servletjar}:${pjatoolsjar}:${pjajar}:${itextjar}:${utilsjar}:${vecmathjar}:${coltjar}:${commons-io-jar}:${commons-fileupload-jar}"/>
 
 	<!-- ANT TASKDEFS -->
 	<!-- 
@@ -740,7 +741,7 @@
 
 
 	<target description="servlets for interfacing with pattern" name="webengine">
-		<javac classpath="${servletjar}:${utilsjar}:${oreillyjar}:${jar.dir}/translation.jar" 
+		<javac classpath="${servletjar}:${utilsjar}:${commons-io-jar}:${commons-fileupload-jar}:${jar.dir}/translation.jar" 
 			debug="true" destdir="classes" srcdir="src">
 			<include name="tops/web/engine/*.java"/>
 			<include name="tops/translation/*.java"/>

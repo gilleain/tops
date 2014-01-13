@@ -319,7 +319,8 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         this.doGet(request, response);
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    @SuppressWarnings("unchecked")
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String pageS = request.getParameter("page");
 

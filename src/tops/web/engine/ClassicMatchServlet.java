@@ -27,7 +27,8 @@ public class ClassicMatchServlet extends HttpServlet {
     private static final String imageDir = "/tops/images/"; // where the pattern
                                                             // images are
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String generateForm = request.getParameter("generate");

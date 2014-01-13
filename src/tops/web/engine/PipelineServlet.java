@@ -1,20 +1,22 @@
 package tops.web.engine;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.servlet.ServletException;
 import javax.servlet.RequestDispatcher;
-
-import com.oreilly.servlet.MultipartRequest; //accessory class from writer of oreilly 'java servlet programming' book
-
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import tops.translation.PDBFileConverter;
 
@@ -158,33 +160,43 @@ public class PipelineServlet extends HttpServlet {
     public HashMap<String, String> uploadPDBFiles(HttpServletRequest request) {
         HashMap<String, String> filenames = new HashMap<String, String>();
 
+        File repository = new File(path_to_scratch);
+        
+        // Create a factory for disk-based file items
+        int sizeThreshold = 5 * 1024 * 1024;	// lower limit below which file is in-memory
+        FileItemFactory factory = new DiskFileItemFactory(sizeThreshold, repository);
+
+        // Create a new file upload handler
+        ServletFileUpload upload = new ServletFileUpload(factory);
+
+        // Parse the request
         try {
-            // save to scratch directory, 5MB limit
-            MultipartRequest multi = new MultipartRequest(request,
-                    this.path_to_scratch, 5 * 1024 * 1024);
-            Enumeration<?> files = multi.getFileNames();
-
-            while (files.hasMoreElements()) {
-                String name = (String) files.nextElement();
-                filenames.put(multi.getFilesystemName(name), multi
-                        .getContentType(name));
-            }
-
-            this.topNumber = multi.getParameter("topnum"); // number of results
-                                                            // to return
-            this.pagesize = multi.getParameter("pagesize"); // page size
-            this.targetService = multi.getParameter("targetService"); // where
-                                                                        // is
-                                                                        // this
-                                                                        // going?
-            this.sub = multi.getParameter("subclasses"); // cath, scop,
-                                                            // nreps,
-                                                            // superfamilies,
-                                                            // etc
-
-        } catch (Exception e) {
-            this.log("upload problem: ", e);
-        }
+			for (FileItem item : upload.parseRequest(request)) {
+				if (item.isFormField()) {
+					String fieldName = item.getFieldName();
+					if (fieldName.equals("topnum")) {
+						 // number of results to return
+						 this.topNumber = item.getString();
+					} else if (fieldName.equals("pagesize")) {
+						// page size
+						this.pagesize = item.getString();
+					} else if (fieldName.equals("targetService")) {
+						// where is this going?
+						this.targetService = item.getString();
+					} else if (fieldName.equals("subclasses")) {
+						// cath, scop, nreps, superfamilies, etc
+						this.sub = item.getString();
+					}
+				} else {
+					String name = item.getName();
+					String contentType = item.getContentType();
+					filenames.put(name, contentType);
+				}
+			}
+		} catch (FileUploadException e) {
+			e.printStackTrace();
+			log("File upload problem");
+		}
 
         return filenames;
     }
