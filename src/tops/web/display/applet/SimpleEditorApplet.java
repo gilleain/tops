@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.swing.JFrame;
+
 public class SimpleEditorApplet extends Applet implements ActionListener,
         ItemListener {
 
@@ -165,5 +167,12 @@ public class SimpleEditorApplet extends Applet implements ActionListener,
                 this.canvas.setEditMode(TopsDrawCanvas.DELETE_SYMBOLS_MODE);
             }
         }
+    }
+    
+    public static void main(String[] args) {
+    	SimpleEditorApplet applet = new SimpleEditorApplet();
+    	JFrame frame = new JFrame();
+    	frame.add(applet);
+    	frame.setVisible(true);
     }
 }

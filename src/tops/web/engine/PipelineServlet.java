@@ -74,12 +74,10 @@ public class PipelineServlet extends HttpServlet {
                                 + " for job : " + four_char_id);
                     }
                 } catch (IOException ioe) {
-                    this.log("tops file io exception! : " + four_char_id + ".tops "
-                            + ioe);
+                    this.log("tops file io exception! : " + four_char_id + ".tops " + ioe);
                 }
                 if (domains == null) {
-                    this.log("domains null, no results for four_char_id : "
-                            + four_char_id);
+                    this.log("domains null, no results for four_char_id : " + four_char_id);
                 } else {
                     results[i++] = domains[0];
                 }

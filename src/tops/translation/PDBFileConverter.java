@@ -46,8 +46,7 @@ public class PDBFileConverter {
         }
 
         FoldAnalyser foldAnalyser = new FoldAnalyser();
-        Protein protein = PDBReader.read(new File(scratch_dir,
-                decompressedFileName).toString());
+        Protein protein = PDBReader.read(new File(scratch_dir, decompressedFileName).toString());
         foldAnalyser.analyse(protein);
 
         String[] chainStrings = protein.toTopsChainStringArray();

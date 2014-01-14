@@ -58,17 +58,14 @@ public class TranslationServlet extends HttpServlet {
                             file_name, file_type, four_char_id,
                             this.path_to_scratch);
                     for (int j = 0; j < domains.length; j++) {
-                        this.log("made domain string : " + domains[j]
-                                + " for job : " + four_char_id);
+                        this.log("made domain string : " + domains[j] + " for job : " + four_char_id);
                     }
                 } catch (IOException ioe) {
-                    this.log("tops file io exception! : " + four_char_id + ".tops "
-                            + ioe);
+                    this.log("tops file io exception! : " + four_char_id + ".tops " + ioe);
                 }
 
                 if (domains == null) {
-                    this.log("domains null, no results for four_char_id : "
-                            + four_char_id);
+                    this.log("domains null, no results for four_char_id : " + four_char_id);
                 } else {
                     for (int i = 0; i < domains.length; i++) {
                         results.add(domains[i]);
@@ -95,8 +92,7 @@ public class TranslationServlet extends HttpServlet {
         for (int j = 0; j < results.size(); j++) {
             String domainString = (String) results.get(j);
             xmlBuffer.append("<structure>");
-            xmlBuffer.append("<domainString>").append(domainString).append(
-                    "</domainString>");
+            xmlBuffer.append("<domainString>").append(domainString).append("</domainString>");
             xmlBuffer.append("</structure>");
         }
         this.sendResponse(response, xmlBuffer);
