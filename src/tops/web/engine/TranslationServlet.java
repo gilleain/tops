@@ -19,10 +19,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import tops.translation.PDBFileConverter;
+import tops.translation.PDBToTopsConverter;
 
 public class TranslationServlet extends HttpServlet {
 
-    private PDBFileConverter pdbFileConverter;
+    private PDBToTopsConverter pdbFileConverter;
 
     private String path_to_scratch;
 
@@ -46,17 +47,15 @@ public class TranslationServlet extends HttpServlet {
 
             Iterator<String> filenameIterator = filenames.keySet().iterator();
             while (filenameIterator.hasNext()) {
-                String file_name = (String) filenameIterator.next();
-                String file_type = (String) filenames.get(file_name);
+                String file_name = filenameIterator.next();
+                String file_type = filenames.get(file_name);
                 String four_char_id = this.randomName();
                 this.log("submitted file : " + file_name + " type : " + file_type
                         + " four_char_id : " + four_char_id);
 
                 String[] domains = null;
                 try {
-                    domains = this.pdbFileConverter.convertFileToTopsStrings(
-                            file_name, file_type, four_char_id,
-                            this.path_to_scratch);
+                    domains = this.pdbFileConverter.convert(file_name, file_type, four_char_id);
                     for (int j = 0; j < domains.length; j++) {
                         this.log("made domain string : " + domains[j] + " for job : " + four_char_id);
                     }

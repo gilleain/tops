@@ -9,19 +9,31 @@ import java.io.IOException;
  * @author maclean
  *
  */
-public class DsspTopsRunner {
+public class DsspTopsRunner implements PDBToTopsConverter {
     
     private RunDssp dssp;
+    
     private RunTops tops;
+    
     private Tops2String tops2String;
+    
+    private CompressedFileHandler compressedFileHandler;
     
     public DsspTopsRunner(String scratchDirectory) {
         this.dssp = new RunDssp("./dssp", scratchDirectory, scratchDirectory, "./");
         this.tops = new RunTops("./tops", scratchDirectory, scratchDirectory, "./");
         this.tops2String = new Tops2String(scratchDirectory);
+        this.compressedFileHandler = new CompressedFileHandler(scratchDirectory);
     }
     
-    public String[] convert(String pdbFilename, String fourLetterCode) throws IOException {
+    public String[] convert(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
+    	String decompressedFileName = 
+    			this.compressedFileHandler.attemptDecompressionOfFile(pdbFilename, fileType);
+        
+        // if the compressedFileHandler has successfully decompressed the file, it will have a new name
+        if (!decompressedFileName.equals("")) {
+            pdbFilename = decompressedFileName;
+        }
        
         String dsspFilename = fourLetterCode + ".dssp";
         String topsFilename = fourLetterCode + ".tops";
@@ -37,7 +49,7 @@ public class DsspTopsRunner {
         } else {
             fourLetterCode = pdbFilename.substring(0, 4);
         }
-        String[] topsStrings = this.convert(pdbFilename, fourLetterCode);
+        String[] topsStrings = this.convert(pdbFilename, "", fourLetterCode);
         for (int j = 0; j < topsStrings.length; j++) {
             // XXX topsStrings have a space in front!
             System.out.println(topsStrings[j]); 
