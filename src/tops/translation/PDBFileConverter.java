@@ -8,8 +8,7 @@ public class PDBFileConverter {
     private CompressedFileHandler compressedFileHandler;
 
     public PDBFileConverter(String pathToScratch) {
-        this.compressedFileHandler = 
-            new CompressedFileHandler(pathToScratch, pathToScratch);
+        this.compressedFileHandler = new CompressedFileHandler(pathToScratch);
     }
     
     public String getNameFromFilename(String fileName) {

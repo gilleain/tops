@@ -30,6 +30,10 @@ public class CompressedFileHandler {
     public static String GZIP = "GZIP";
 
     public static String ZIP = "ZIP";
+    
+    public CompressedFileHandler(String directory) {
+    	this(directory, directory);
+    }
 
     public CompressedFileHandler(String inputDirectory, String outputDirectory) {
         this.inputDirectory = inputDirectory;
