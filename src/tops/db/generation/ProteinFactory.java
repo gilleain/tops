@@ -17,7 +17,7 @@ public class ProteinFactory extends TopsFactory {
 
     public Protein getProtein(String source, String chainName) {
         Protein p = new Protein();
-        p.Name = chainName;
+        p.setName(chainName);
 
         // fill the SSE linked list with data
         HashMap<String, SecStrucElement> domainRoots = this.getDomains(source, chainName);

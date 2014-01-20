@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class Protein {
 
-    public String Name;
+    private String Name;
 
     private Vector<SecStrucElement> TopsLinkedLists;
 
@@ -55,6 +55,14 @@ public class Protein {
             TopsFileFormatException {
         this(InStream);
         this.Name = name;
+    }
+    
+    public String getName() {
+    	return this.Name;
+    }
+    
+    public void setName(String name) {
+    	this.Name = name;
     }
 
     public void AddTopsLinkedList(SecStrucElement s, DomainDefinition d) {

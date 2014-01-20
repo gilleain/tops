@@ -41,7 +41,7 @@ public class ProteinChoice extends Dialog implements ActionListener {
             boolean st = true;
             while (en.hasMoreElements()) {
                 p = (Protein) en.nextElement();
-                nm = p.Name;
+                nm = p.getName();
                 Checkbox cb = new Checkbox(nm, this.cbg, st);
                 pan.add(cb);
                 st = false;
@@ -94,7 +94,7 @@ public class ProteinChoice extends Dialog implements ActionListener {
                 Protein p;
                 while (en.hasMoreElements()) {
                     p = (Protein) en.nextElement();
-                    if (nm.equals(p.Name))
+                    if (nm.equals(p.getName()))
                         return p;
                 }
             }
