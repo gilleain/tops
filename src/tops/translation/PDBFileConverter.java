@@ -3,7 +3,7 @@ package tops.translation;
 import java.io.File;
 import java.io.IOException;
 
-public class PDBFileConverter implements PDBToTopsConverter {
+public class PDBFileConverter implements PDBToGraph, PDBToCartoon {
 
     private CompressedFileHandler compressedFileHandler;
     
@@ -25,6 +25,26 @@ public class PDBFileConverter implements PDBToTopsConverter {
         }
         return fileName.substring(0, dotPosition);
     }
+    
+    private Protein toProtein(String fileName, String fileType, String fourCharId) throws IOException {
+    	String decompressedFileName = this.compressedFileHandler.attemptDecompressionOfFile(fileName, fileType);
+        
+        // if the compressedFileHandler has successfully decompressed the file, it will have a new name
+        if (!decompressedFileName.equals("")) {
+            fileName = decompressedFileName;
+        }
+
+        FoldAnalyser foldAnalyser = new FoldAnalyser();
+        Protein protein = PDBReader.read(new File(this.pathToScratch, decompressedFileName).toString());
+        foldAnalyser.analyse(protein);
+        return protein;
+    }
+    
+    public tops.dw.protein.Protein convertToCartoon(
+    		String fileName, String fileType, String fourCharId) throws IOException {
+    	Protein protein = toProtein(fileName, fileType, fourCharId);
+    	return ProteinConverter.convert(protein);
+    }
 
     
     /**
@@ -35,18 +55,9 @@ public class PDBFileConverter implements PDBToTopsConverter {
      * @return
      * @throws IOException
      */
-    public String[] convert(String fileName, String fileType, String fourCharId) throws IOException {
-        String decompressedFileName = this.compressedFileHandler.attemptDecompressionOfFile(fileName, fileType);
-        
-        // if the compressedFileHandler has successfully decompressed the file, it will have a new name
-        if (!decompressedFileName.equals("")) {
-            fileName = decompressedFileName;
-        }
-
-        FoldAnalyser foldAnalyser = new FoldAnalyser();
-        Protein protein = PDBReader.read(new File(this.pathToScratch, decompressedFileName).toString());
-        foldAnalyser.analyse(protein);
-
+    public String[] convertToGraphs(String fileName, String fileType, String fourCharId) throws IOException {
+    	Protein protein = toProtein(fileName, fileType, fourCharId);
+    	
         // XXX TODO : why is fourCharId not used here?
         String[] chainStrings = protein.toTopsChainStringArray();
         String forename = this.getNameFromFilename(fileName);

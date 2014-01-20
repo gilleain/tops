@@ -9,7 +9,7 @@ import java.util.ListIterator;
 
 import javax.vecmath.Point3d;
 
-public class Chain {
+public class Chain implements Iterable<BackboneSegment> {
 
     private String label;
 
@@ -524,4 +524,9 @@ public class Chain {
 
         return s.toString();
     }
+
+	@Override
+	public Iterator<BackboneSegment> iterator() {
+		return this.backboneSegments.iterator();
+	}
 }

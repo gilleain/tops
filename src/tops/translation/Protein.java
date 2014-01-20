@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class Protein {
+public class Protein implements Iterable<Chain> {
 
     private String id;
 
@@ -28,16 +28,6 @@ public class Protein {
     public void addChain(Chain chain) {
         this.chains.add(chain);
     }
-
-    public Iterator<Chain> chainIterator() {
-        return this.chains.iterator();
-    }
-
-    /*
-     * public void findStructure(StructureFinder structureFinder) { for (int i =
-     * 0; i < this.chains.size(); i++) { structureFinder.findStructure((Chain)
-     * this.chains.get(i)); } }
-     */
 
     public HashMap<String, HashMap<String, String>> toTopsDomainStrings(
     		HashMap<String, List<Domain>> chainDomainMap) {
@@ -69,5 +59,10 @@ public class Protein {
         }
         return stringBuffer.toString();
     }
+
+	@Override
+	public Iterator<Chain> iterator() {
+		return this.chains.iterator();
+	}
 
 }

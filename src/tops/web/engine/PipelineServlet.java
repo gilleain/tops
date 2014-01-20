@@ -19,11 +19,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import tops.translation.PDBFileConverter;
-import tops.translation.PDBToTopsConverter;
+import tops.translation.PDBToGraph;
 
 public class PipelineServlet extends HttpServlet {
 
-    private PDBToTopsConverter pdbFileConverter;
+    private PDBToGraph pdbFileConverter;
 
     private String path_to_scratch;
 
@@ -67,7 +67,7 @@ public class PipelineServlet extends HttpServlet {
                         + " four_char_id : " + four_char_id);
                 String[] domains = null;
                 try {
-                    domains = this.pdbFileConverter.convert(file_name, file_type, four_char_id);
+                    domains = this.pdbFileConverter.convertToGraphs(file_name, file_type, four_char_id);
                     for (int j = 0; j < domains.length; j++) {
                         this.log("made domain string : " + domains[j] + " for job : " + four_char_id);
                     }

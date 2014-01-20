@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 import javax.vecmath.Point3d;
 
-public abstract class BackboneSegment implements Comparable<BackboneSegment> {
+public abstract class BackboneSegment implements Comparable<BackboneSegment>, Iterable<Residue> {
 
     protected int number;
 
@@ -73,17 +73,15 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment> {
     }
 
     public Residue lastResidue() throws NoSuchElementException {
-        return (Residue) this.residues.last();
+        return this.residues.last();
     }
 
-    public Iterator<Residue> residueIterator() {
+    public Iterator<Residue> iterator() {
         return this.residues.iterator();
     }
 
     public boolean bondedTo(Residue otherResidue) {
-        Iterator<Residue> residueIterator = this.residueIterator();
-        while (residueIterator.hasNext()) {
-            Residue residue = (Residue) residueIterator.next();
+        for (Residue residue : this) {
             if (residue.bondedTo(otherResidue)) {
                 return true;
             }
@@ -156,9 +154,7 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment> {
     }
 
     public boolean containsPDBNumber(int pdbResidueNumber) {
-        Iterator<Residue> itr = this.residueIterator();
-        while (itr.hasNext()) {
-            Residue r = (Residue) itr.next();
+        for (Residue r : this) {
             if (r.getPDBNumber() == pdbResidueNumber) {
                 return true;
             }

@@ -24,11 +24,7 @@ public class FoldAnalyser {
     }
 
     public Protein analyse(Protein protein) throws PropertyError {
-        Iterator<Chain> chains = protein.chainIterator();
-
-        while (chains.hasNext()) {
-            Chain chain = (Chain) chains.next();
-
+        for (Chain chain : protein) {
             if (chain.isDNA()) {
                 continue;
             }
@@ -90,9 +86,7 @@ public class FoldAnalyser {
         // basically, run through the residues, checking the list of hbonds to
         // find residues that might be in the other strand
         int numberOfHBonds = 0;
-        Iterator<Residue> strandResidues = strand.residueIterator();
-        while (strandResidues.hasNext()) {
-            Residue nextResidue = strandResidues.next();
+        for (Residue nextResidue : otherStrand) {
             if (otherStrand.bondedTo(nextResidue)) {
                 numberOfHBonds++;
             }

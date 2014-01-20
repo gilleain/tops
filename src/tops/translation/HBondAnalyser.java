@@ -65,10 +65,7 @@ public class HBondAnalyser {
     }
 
     public void analyse(Protein protein) throws PropertyError {
-        Iterator<Chain> chains = protein.chainIterator();
-
-        while (chains.hasNext()) {
-            Chain chain = (Chain) chains.next();
+        for (Chain chain : protein) {
             this.analyse(chain);
         }
     }

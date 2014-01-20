@@ -1,0 +1,52 @@
+package tops.translation;
+
+import tops.dw.protein.DomainDefinition;
+import tops.dw.protein.SecStrucElement;
+
+/**
+ * Temporary converter from tops.translation.Protein objects into tops.dw.protein.Protein objects.
+ * 
+ * @author maclean
+ *
+ */
+public class ProteinConverter {
+
+	public static tops.dw.protein.Protein convert(Protein newProtein) {
+		tops.dw.protein.Protein oldProtein = new tops.dw.protein.Protein();
+		oldProtein.setName(newProtein.getID());
+		for (Chain chain : newProtein) {
+			SecStrucElement s = toSSE(chain);
+			char chainLabel = chain.getCathCompatibleLabel().charAt(0);
+			DomainDefinition d = new DomainDefinition(chainLabel);
+			oldProtein.AddTopsLinkedList(s, d);
+		}
+		
+		return oldProtein;
+	}
+	
+	private static SecStrucElement toSSE(Chain chain) {
+		SecStrucElement s = null;
+		SecStrucElement head = null;
+		SecStrucElement prev = null;
+		int i = 1;
+		for (BackboneSegment backboneSegment : chain) {
+			s = new SecStrucElement();
+			if (head == null) {
+				head = s;
+			}
+			if (backboneSegment instanceof Strand) {
+				s.Type = "E";
+			} else if (backboneSegment instanceof Helix) {
+				s.Type = "H";
+			}
+			s.PDBStartResidue = backboneSegment.firstPDB();
+			s.PDBFinishResidue = backboneSegment.lastPDB();
+			s.SymbolNumber = i;
+			i++;
+			s.SetFrom(prev);
+			prev.SetTo(s);
+			prev = s;
+		}
+		return head;
+	}
+}

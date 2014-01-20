@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import tops.dw.protein.Protein;
+
 
 /**
  * @author maclean
  *
  */
-public class DsspTopsRunner implements PDBToTopsConverter {
+public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
     
     private RunDssp dssp;
     
@@ -26,7 +28,7 @@ public class DsspTopsRunner implements PDBToTopsConverter {
         this.compressedFileHandler = new CompressedFileHandler(scratchDirectory);
     }
     
-    public String[] convert(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
+    private String toTopsFile(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
     	String decompressedFileName = 
     			this.compressedFileHandler.attemptDecompressionOfFile(pdbFilename, fileType);
         
@@ -39,17 +41,30 @@ public class DsspTopsRunner implements PDBToTopsConverter {
         String topsFilename = fourLetterCode + ".tops";
         this.dssp.convert(pdbFilename, dsspFilename);
         this.tops.convert(fourLetterCode, "", topsFilename, "");
+        return topsFilename;
+    }
+
+    @Override
+    public String[] convertToGraphs(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
+    	String topsFilename = toTopsFile(pdbFilename, fileType, fourLetterCode);
         return this.tops2String.convert(topsFilename, "", "CATH");
     }
     
-    public void convertAndPrint(String pdbFilename) throws IOException {
+    @Override
+	public Protein convertToCartoon(
+			String pdbFilename, String fileType, String fourLetterCode) throws IOException {
+    	String topsFilename = toTopsFile(pdbFilename, fileType, fourLetterCode);
+		return new tops.dw.protein.Protein(topsFilename);
+	}
+
+	public void convertAndPrint(String pdbFilename) throws IOException {
         String fourLetterCode = "";
         if (pdbFilename.substring(0, 3).equals("pdb")) {
             fourLetterCode = pdbFilename.substring(3, 7);
         } else {
             fourLetterCode = pdbFilename.substring(0, 4);
         }
-        String[] topsStrings = this.convert(pdbFilename, "", fourLetterCode);
+        String[] topsStrings = this.convertToGraphs(pdbFilename, "", fourLetterCode);
         for (int j = 0; j < topsStrings.length; j++) {
             // XXX topsStrings have a space in front!
             System.out.println(topsStrings[j]); 
