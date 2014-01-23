@@ -44,7 +44,9 @@ public class ProteinConverter {
 			s.SymbolNumber = i;
 			i++;
 			s.SetFrom(prev);
-			prev.SetTo(s);
+			if (prev != null) {
+				prev.SetTo(s);
+			}
 			prev = s;
 		}
 		return head;
