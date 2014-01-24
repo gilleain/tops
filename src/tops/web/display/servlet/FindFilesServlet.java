@@ -28,8 +28,7 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
                 String nextPath = config.getInitParameter(nextClass);
                 this.tfm.addPathMapping(nextClass, nextPath);
                 this.getServletContext().log(
-                        "mapping classname : " + nextClass + " to path "
-                                + nextPath);
+                        "mapping classname : " + nextClass + " to path " + nextPath);
             }
         } catch (Exception e) {
             this.getServletContext().log("path problems", e);
@@ -52,21 +51,14 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
             this.rtfm(response);
         } // sanity check
 
-        if (((cid != null) && (!cid.equals("")))
-                && ((did != null) && (!did.equals("")))) {// all parameters
-                                                            // supplied
-//            String path = tfm.getPathMapping(cla);
+        if ((cid != null && !cid.equals("")) && (did != null && !did.equals(""))) { // all parameters supplied
             String filename = pid + cid + did + "." + typ;
-            // String name = pid + cid + did;
-            // String url = "/view?path=" + path + "&filename=" + filename +
-            // "&domid=" + name; OLD STYLE
             String url = "/view/" + cla + "/" + filename;
             RequestDispatcher dispatcher = request.getRequestDispatcher(url);
             dispatcher.forward(request, response);
         }
 
-        if ((cid != null) && (cid.equals(""))) { // no chain, search for
-                                                    // chain files
+        if ((cid != null) && (cid.equals(""))) { // no chain, search for chain files
             String[] names = null;
             try {
                 // get the file names from the directory
@@ -82,15 +74,12 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
         } else { // one of chain or domain may be blank
 
             Protein p = null;
-//            String filename = pid + cid + did + "." + typ;
             String topsfile = pid + cid + ".tops";
 
             try {
                 InputStream in = this.tfm.getStreamFromDir(cla, topsfile);
                 p = new Protein(in);
                 if (did.equals("")) {
-                    // String path = tfm.getPathMapping(cla); UNNECCESSARY
-
                     this.displayDomains(p, pid, cid, typ, cla, response); 
                     return;
                 }
@@ -143,10 +132,7 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
         while (e.hasMoreElements()) {
             DomainDefinition dd = e.nextElement();
             String name = dd.toString();
-            // String url = viewPath + "?path=" + path + "&filename=" + filename
-            // + "&domid=" + name; OLD STYLE
-            String filename = name + "." + filetype; // eg '2bopA0' + '.' +
-                                                        // 'gif' = '2bopA0.gif'
+            String filename = name + "." + filetype; // eg '2bopA0' + '.' +  'gif' = '2bopA0.gif'
             String url = this.viewPath + "/" + path + "/" + filename;
             pout.println("<tr><td>");
             pout.println("<a href=\"" + url + "\">");
@@ -165,10 +151,8 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
         } catch (IOException ioe) {
         }
 
-        pout
-                .println("<html><head><title>ERROR 403 : TOPS CARTOON NOT FOUND</title></head>");
-        pout.println("<body>Sorry, could not find this cartoon. Reason : <p>"
-                + fnfe);
+        pout.println("<html><head><title>ERROR 403 : TOPS CARTOON NOT FOUND</title></head>");
+        pout.println("<body>Sorry, could not find this cartoon. Reason : <p>" + fnfe);
         pout.println("</body></html>");
     }
 
@@ -184,4 +168,4 @@ public class FindFilesServlet extends javax.servlet.http.HttpServlet {
         pout.println("<body><b>PDB ID MUST BE SPECIFIED</b></body></html>");
     }
 
-} // EOC
+}
