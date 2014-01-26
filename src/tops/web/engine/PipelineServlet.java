@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -40,8 +40,7 @@ public class PipelineServlet extends HttpServlet {
     // following to be set in the upload method
     private String topNumber;
 
-    private String targetService; // the name of the servlet service that will
-                                    // receive this data
+    private String targetService; // the name of the servlet service that will receive this data
 
     private String pagesize;
 
@@ -51,17 +50,13 @@ public class PipelineServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HashMap<String, String> filenames = this.uploadPDBFiles(request);
+        Map<String, String> filenameTypeMap = this.uploadPDBFiles(request);
 
-        if (filenames.size() > 0) {
-
-            String[] results = new String[filenames.size()];
-            Iterator<String> filenameIterator = filenames.keySet().iterator();
-            int i = 0;
-
-            while (filenameIterator.hasNext()) {
-                String file_name = filenameIterator.next();
-                String file_type = filenames.get(file_name);
+        if (filenameTypeMap.size() > 0) {
+        	int i = 0;
+            String[] results = new String[filenameTypeMap.size()];
+            for (String file_name : filenameTypeMap.keySet()) {
+                String file_type = filenameTypeMap.get(file_name);
                 String four_char_id = this.randomName();
                 this.log("submitted file : " + file_name + " type : " + file_type
                         + " four_char_id : " + four_char_id);
@@ -89,22 +84,17 @@ public class PipelineServlet extends HttpServlet {
 
             String next = null;
             if (this.targetService.equals("match")) {
-                request.setAttribute("target", results[0]); // Note the this
-                                                            // only uses the
-                                                            // first file!
+                request.setAttribute("target", results[0]); // Note the this only uses the first file!
                 next = "/pattern/match";
             } else if (this.targetService.equals("compare")) {
-                request.setAttribute("newSubmission", "true"); // doesn't
-                                                                // matter what
-                                                                // this is, so
-                                                                // long as it's
-                                                                // set!
+            	// doesn't matter what this is, so long as it's set!
+                request.setAttribute("newSubmission", "true");
+                
                 request.setAttribute("topnum", this.topNumber); // !!
                 request.setAttribute("targetService", this.targetService); // !!
                 request.setAttribute("pagesize", this.pagesize); // !!
-                request.setAttribute("target", results[0]); // Note the this
-                                                            // only uses the
-                                                            // first file!
+                // Note the this only uses the first file!
+                request.setAttribute("target", results[0]); 
                 request.setAttribute("sub", this.sub); // !!
                 next = "/pattern/compare";
             } else if (this.targetService.equals("group")) {
@@ -153,8 +143,8 @@ public class PipelineServlet extends HttpServlet {
         return (int) (Math.random() * 9) + 1;
     }
 
-    public HashMap<String, String> uploadPDBFiles(HttpServletRequest request) {
-        HashMap<String, String> filenames = new HashMap<String, String>();
+    public Map<String, String> uploadPDBFiles(HttpServletRequest request) {
+        Map<String, String> filenames = new HashMap<String, String>();
 
         File repository = new File(path_to_scratch);
         
