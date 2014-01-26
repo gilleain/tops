@@ -84,12 +84,11 @@ public class TranslationServlet extends HttpServlet {
             return;
         }
 
-        // assuming the process hasn't failed so far, reply with the domain
-        // strings
+        // assuming the process hasn't failed so far, reply with the domain strings
         StringBuffer xmlBuffer = new StringBuffer();
         xmlBuffer.append("<status>conversion success</status>");
         for (int j = 0; j < results.size(); j++) {
-            String domainString = (String) results.get(j);
+            String domainString = results.get(j);
             xmlBuffer.append("<structure>");
             xmlBuffer.append("<domainString>").append(domainString).append("</domainString>");
             xmlBuffer.append("</structure>");
@@ -98,18 +97,15 @@ public class TranslationServlet extends HttpServlet {
 
     }
 
-    public void faliure(HttpServletResponse response, String message)
-            throws IOException {
+    public void faliure(HttpServletResponse response, String message) throws IOException {
         StringBuffer xmlBuffer = new StringBuffer();
         xmlBuffer.append("<status>").append(message).append("</status>");
         this.sendResponse(response, xmlBuffer);
     }
 
     // wrap the response in result tags and print to stream
-    public void sendResponse(HttpServletResponse response,
-            StringBuffer xmlBuffer) throws IOException {
-        xmlBuffer.insert(0,
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<result>");
+    public void sendResponse(HttpServletResponse response, StringBuffer xmlBuffer) throws IOException {
+        xmlBuffer.insert(0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<result>");
         xmlBuffer.append("</result>");
 
         response.setContentType("text/xml");
@@ -160,4 +156,4 @@ public class TranslationServlet extends HttpServlet {
         return filenames;
     }
 
-}// EOC
+}

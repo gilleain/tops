@@ -145,20 +145,18 @@ public class ClassificationServlet extends HttpServlet {
                 levelName = SCOPLevel.fullNames[levelIndex];
                 subLevelName = SCOPLevel.fullNames[subLevelIndex];
             } else {
-                this.warning("Unknown classification scheme : "
-                        + classificationSchemeName, response);
+                this.warning("Unknown classification scheme : " + classificationSchemeName, response);
                 return;
             }
         } catch (ArrayIndexOutOfBoundsException a) {
-            this.warning("No more levels in " + classificationSchemeName,
-                    response);
+            this.warning("No more levels in " + classificationSchemeName, response);
             return;
         }
 
         // get the TOPSStrings the database, along with their classifications as
         // the keys to a map
-        HashMap<String, String> instances = this.getInstances(classificationSchemeName,
-                classificationStub, subLevelIndex);
+        HashMap<String, String> instances = 
+        		this.getInstances(classificationSchemeName, classificationStub, subLevelIndex);
         if (instances == null || instances.size() == 0) {
             this.warning("no reps for this level!", response);
             return;
@@ -166,10 +164,8 @@ public class ClassificationServlet extends HttpServlet {
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out
-                .println("<html><head><meta http-equiv=\"Pragma\" content=\"no-cache\">");
-        out
-                .println("<link rel=\"stylesheet\" type=\"text/css\" href=\"tops.css\">");
+        out.println("<html><head><meta http-equiv=\"Pragma\" content=\"no-cache\">");
+        out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"tops.css\">");
         out.println("<title>" + levelName + " Group Pattern: "
                 + classificationStub + "</title></head><body>");
         out.println("<a href=\"" + ClassificationServlet.classificationURL + "\">Another level?</a>");
@@ -205,8 +201,7 @@ public class ClassificationServlet extends HttpServlet {
         out.println("<hr>");
 
         // now, start on the actual representatives of the subgroups
-        out
-                .println("<p><b>Diagrams of the representative examples for each sublevel of this group : </b></p><table class=\"results\">");
+        out.println("<p><b>Diagrams of the representative examples for each sublevel of this group : </b></p><table class=\"results\">");
 
         Iterator<String> itr = instances.keySet().iterator();
         TParser parser = new TParser();
