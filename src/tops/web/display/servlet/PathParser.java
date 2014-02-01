@@ -24,6 +24,10 @@ public class PathParser {
 	private final int DEFAULT_WIDTH;
 	private final int DEFAULT_HEIGHT;
 	
+	public PathParser() {
+		this(200, 200);
+	}
+	
 	public PathParser(int defaultWidth, int defaultHeight) {
 		this.DEFAULT_WIDTH = defaultWidth;
 		this.DEFAULT_HEIGHT = defaultHeight;
@@ -42,8 +46,6 @@ public class PathParser {
 			throw new IOException("No file specified");
 		}
 
-		int width = 0;
-		int height = 0;
 		String size = null;
 		String group = bits[1]; // eg 'cath'
 		params.put("group", group);
@@ -68,17 +70,18 @@ public class PathParser {
 		}
 		params.put("highlight", highlight);
 
+		String wStr;
+		String hStr;
 		if (size != null) {
 			int xPos = size.indexOf('x');
-			String wStr = size.substring(0, xPos);
-			params.put("width", wStr);
-			String hStr = size.substring(xPos + 1);
-			params.put("height", hStr);
+			wStr = size.substring(0, xPos);
+			hStr = size.substring(xPos + 1);
+		} else {
+			wStr = String.valueOf(DEFAULT_WIDTH);
+			hStr = String.valueOf(DEFAULT_HEIGHT);
 		}
-		if (width == 0)
-			width = DEFAULT_WIDTH;
-		if (height == 0)
-			height = DEFAULT_HEIGHT;
+		params.put("width", wStr);
+		params.put("height", hStr);
 
 		int dot = file.indexOf("."); // get start of filetype
 		String fileType = file.substring(dot + 1); // get extension
