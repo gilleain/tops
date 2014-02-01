@@ -1,22 +1,17 @@
 package tops.web.display.servlet;
 
-import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import tops.dw.protein.CATHcode;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.view.tops2D.cartoon.CartoonDrawer;
@@ -45,51 +40,29 @@ public class CartoonServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String path = request.getPathInfo(); // eg /cath/1.2/2bopA0.gif OR /cath/2bopA0.gif
-        PathParser pathParser = new PathParser(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        Map<String, String> params = pathParser.parsePath(path);
         
         ServletConfig config = this.getServletConfig();
+        CartoonDataSource source = new URICartoonDataSource(path, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        Map<String, String> params = source.getParams();
         String pathToFiles = config.getInitParameter(params.get("group"));
-        this.log("path = " + pathToFiles 
-        		+ " group = " + params.get("group") 
-        		+ " fileType = " + params.get("fileType") 
-        		+ " domain = " + params.get("domain") );
-
-        // first, try and get the data from the given source
-        File f = new File(pathToFiles, params.get("filename"));
-        if (!f.canRead()) {
-            this.error("File not found " + params.get("filename"), response);
-            return;
+        
+        Protein protein;
+        try {
+        	protein = source.getCartoon(pathToFiles);
+        } catch (IOException ioe) {
+        	this.error(ioe.getMessage(), response);
+        	return;
         }
 
         // quickly check if we only want the text of the file
         if (params.get("fileType").equals("tops")) { // TOPS! file format (basically, old-style tops file!)
             response.setContentType("text/plain");
-            PrintWriter out = response.getWriter();
-            String line;
-            BufferedReader buf = null;
-            try {
-                buf = new BufferedReader(new FileReader(f));
-                while ((line = buf.readLine()) != null) {
-                    out.println(line);
-                }
-            } finally {
-                if (buf != null) {
-                    buf.close();
-                }
-            }
+            ServletOutputStream out = response.getOutputStream();
+            protein.WriteTopsFile(out);
             return;
         }
 
-        // assuming the tops.dw.protein can be created, determine what to return
-        SecStrucElement root = this.getRoot(params.get("domain"), f);
-        
-        // do highlights
-        String highlight = params.get("highlight");
-        if (highlight != null) {
-            this.highlight(root, highlight);
-        }
-
+        SecStrucElement root = protein.getDomain(0);	// for now...
         String domain = params.get("domain");
         if (root == null) {
             this.error("Domain not found : " + domain, response);
@@ -133,53 +106,6 @@ public class CartoonServlet extends HttpServlet {
             return;
         }
 
-    }
-
-    private void highlight(SecStrucElement root, String highlight) {
-        Color strandColor = Color.yellow;
-        Color helixColor = Color.red;
-        Color otherColor = Color.blue;
-
-        // check for special cases - "none" and "all"
-        if (highlight.equals("none")) {
-            return;
-        } else if (highlight.equals("all")) {
-            for (SecStrucElement s = root; s != null; s = s.GetTo()) {
-                if (s.Type.equals("E")) {
-                    s.setColour(strandColor);
-                } else if (s.Type.equals("H")) {
-                    s.setColour(helixColor);
-                } else {
-                    s.setColour(otherColor);
-                }
-            }
-            return;
-        }
-
-        String[] bits = highlight.split("\\.");
-        for (int i = 0; i < bits.length; i++) {
-            int index = Integer.parseInt(bits[i]);
-            SecStrucElement s = root.GetSSEByNumber(index);
-            if (s.Type.equals("E")) {
-                s.setColour(strandColor);
-            } else if (s.Type.equals("H")) {
-                s.setColour(helixColor);
-            } else {
-                s.setColour(otherColor);
-            }
-        }
-    }
-
-    private SecStrucElement getRoot(String domid, File f) throws IOException {
-        Protein p = new Protein(f);
-
-        Vector<SecStrucElement> doms = p.GetLinkedLists();
-        int domainIndex = p.GetDomainIndex(new CATHcode(domid));
-        if (domainIndex == -1) {
-            return null;
-        }
-
-        return doms.elementAt(domainIndex);
     }
 
     private void error(String problem, HttpServletResponse response) {

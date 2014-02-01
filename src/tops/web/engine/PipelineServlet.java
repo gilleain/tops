@@ -31,20 +31,9 @@ public class PipelineServlet extends HttpServlet {
     public void init() throws ServletException {
         String home = this.getInitParameter("home.dir");
         this.path_to_scratch = home + "/scratch/";
-//        String dssp_executable = home + "/dssp";
-//        String tops_executable = home + "/tops";
         this.log("home directory = " + home);
         this.pdbFileConverter = new PDBFileConverter(this.path_to_scratch);
     }
-
-    // following to be set in the upload method
-    private String topNumber;
-
-    private String targetService; // the name of the servlet service that will receive this data
-
-    private String pagesize;
-
-    private String sub;
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -83,26 +72,23 @@ public class PipelineServlet extends HttpServlet {
             }
 
             String next = null;
-            if (this.targetService.equals("match")) {
+            String targetService = (String) request.getAttribute("targetService");
+            if (targetService.equals("match")) {
                 request.setAttribute("target", results[0]); // Note the this only uses the first file!
                 next = "/pattern/match";
-            } else if (this.targetService.equals("compare")) {
+            } else if (targetService.equals("compare")) {
             	// doesn't matter what this is, so long as it's set!
                 request.setAttribute("newSubmission", "true");
                 
-                request.setAttribute("topnum", this.topNumber); // !!
-                request.setAttribute("targetService", this.targetService); // !!
-                request.setAttribute("pagesize", this.pagesize); // !!
                 // Note the this only uses the first file!
                 request.setAttribute("target", results[0]); 
-                request.setAttribute("sub", this.sub); // !!
                 next = "/pattern/compare";
-            } else if (this.targetService.equals("group")) {
+            } else if (targetService.equals("group")) {
                 request.setAttribute("results", results);
                 next = "/pattern/group";
             } else {
-                this.log("unknown service : " + this.targetService);
-                this.faliure(response, "unknown service : " + this.targetService);
+                this.log("unknown service : " + targetService);
+                this.faliure(response, "unknown service : " + targetService);
                 return;
             }
 
@@ -161,17 +147,14 @@ public class PipelineServlet extends HttpServlet {
 				if (item.isFormField()) {
 					String fieldName = item.getFieldName();
 					if (fieldName.equals("topnum")) {
-						 // number of results to return
-						 this.topNumber = item.getString();
+						request.setAttribute("topnum", item.getString());
 					} else if (fieldName.equals("pagesize")) {
-						// page size
-						this.pagesize = item.getString();
+						request.setAttribute("pagesize", item.getString());
 					} else if (fieldName.equals("targetService")) {
-						// where is this going?
-						this.targetService = item.getString();
+						request.setAttribute("targetService", item.getString());
 					} else if (fieldName.equals("subclasses")) {
 						// cath, scop, nreps, superfamilies, etc
-						this.sub = item.getString();
+						request.setAttribute("sub", item.getString());
 					}
 				} else {
 					String name = item.getName();
@@ -187,4 +170,4 @@ public class PipelineServlet extends HttpServlet {
         return filenames;
     }
 
-}// EOC
+}
