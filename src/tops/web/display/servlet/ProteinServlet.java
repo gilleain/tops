@@ -20,7 +20,12 @@ public class ProteinServlet extends HttpServlet {
 
 //    private int DEFAULT_HEIGHT = 200;
 
-    private int w, h;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2888521649981595892L;
+
+	private int w, h;
 
     private String body, tail, matches;
 

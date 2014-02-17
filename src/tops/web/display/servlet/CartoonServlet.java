@@ -23,7 +23,12 @@ import tops.view.tops2D.cartoon.CartoonDrawer;
 
 public class CartoonServlet extends HttpServlet {
 
-    static {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8579686840885253792L;
+
+	static {
         System.setProperty("java.awt.headless", "true");
         // System.setProperty ("awt.toolkit", "com.eteks.awt.PJAToolkit");
         // System.setProperty("java.awt.graphicsenv",

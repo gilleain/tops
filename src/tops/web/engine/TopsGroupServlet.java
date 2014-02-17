@@ -20,7 +20,11 @@ import tops.engine.drg.Pattern;
 
 public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
 
-    private static final String diagramURL = "/tops/diagram";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6078417380709102405L;
+	private static final String diagramURL = "/tops/diagram";
 
     public String[] getInstances(String names) {
 

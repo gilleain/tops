@@ -24,7 +24,12 @@ import javax.servlet.http.HttpServletResponse;
 
 public class LogAnalyserServlet extends HttpServlet {
 
-    private String logDirectory;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7374994041084573631L;
+
+	private String logDirectory;
 
     private String prefix = "access_log";
 

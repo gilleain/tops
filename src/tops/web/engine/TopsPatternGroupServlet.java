@@ -15,7 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 
 public class TopsPatternGroupServlet extends HttpServlet {
 
-    public String getPattern(String pattern_id) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4051601334759040331L;
+
+	public String getPattern(String pattern_id) {
         String query = "SELECT * FROM TOPS_pattern WHERE pattern_id = "
                 + pattern_id + ";";
         try {

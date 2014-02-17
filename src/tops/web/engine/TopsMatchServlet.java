@@ -13,7 +13,12 @@ import tops.engine.drg.Matcher;
 
 public class TopsMatchServlet extends HttpServlet {
 
-    @Override
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4954322689423567290L;
+
+	@Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

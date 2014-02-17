@@ -9,7 +9,12 @@ import tops.dw.protein.*;
 
 public class FindFilesServlet extends javax.servlet.http.HttpServlet {
 
-    private TopsFileManager tfm;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8699565050755398690L;
+
+	private TopsFileManager tfm;
 
     private String contextPath;
 

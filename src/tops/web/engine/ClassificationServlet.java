@@ -30,7 +30,12 @@ import tops.model.classification.SCOPLevel;
 
 public class ClassificationServlet extends HttpServlet {
 
-    private static final String cartoonURL = "/tops/view";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5144597700148212412L;
+
+	private static final String cartoonURL = "/tops/view";
 
     private static final String diagramURL = "/tops/diagram";
 

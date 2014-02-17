@@ -11,7 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 
 public class SimpleCompareServlet extends HttpServlet {
 
-    @Override
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2545927077861998063L;
+
+	@Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         this.doPost(request, response);

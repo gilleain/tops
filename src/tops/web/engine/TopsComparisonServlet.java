@@ -24,7 +24,12 @@ import tops.engine.drg.Comparer;
 
 public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
-    private static String compareStartPageURL;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7416381583234400690L;
+
+	private static String compareStartPageURL;
 
     private static String advancedStartPageURL;
 

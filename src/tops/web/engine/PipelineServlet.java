@@ -23,7 +23,12 @@ import tops.translation.PDBToGraph;
 
 public class PipelineServlet extends HttpServlet {
 
-    private PDBToGraph pdbFileConverter;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3578846986797503235L;
+
+	private PDBToGraph pdbFileConverter;
 
     private String path_to_scratch;
 

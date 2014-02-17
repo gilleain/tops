@@ -21,7 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ClassicMatchServlet extends HttpServlet {
 
-    private static final String servletName = "classicmatch"; // for the form
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7212090454159915390L;
+
+	private static final String servletName = "classicmatch"; // for the form
                                                                 // action
 
     private static final String imageDir = "/tops/images/"; // where the pattern

@@ -15,7 +15,12 @@ import tops.view.tops2D.diagram.DiagramDrawer;
 
 public class DiagramServlet extends HttpServlet {
 
-    private int DEFAULT_WIDTH = 300;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2431033580433443788L;
+
+	private int DEFAULT_WIDTH = 300;
 
     private int DEFAULT_HEIGHT = 200;
 
