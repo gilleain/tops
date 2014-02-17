@@ -5,15 +5,16 @@ package tops.view.tops2D.cartoon.builder;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.OutputStream;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
 import tops.view.tops2D.cartoon.CartoonBuilder;
 
@@ -21,35 +22,48 @@ public class PDFBuilder implements CartoonBuilder {
 
     private Graphics2D g; // for drawing
 
-    private Document document; // the product that this builder makes
+    private PDDocument document; // the product that this builder makes
+    
+    private OutputStream output;
 
     public PDFBuilder(Rectangle bb, OutputStream out) {
+    	this.output = out;
+    	try {
+    		this.document = new PDDocument();
 
-        this.document = new Document();
-        try {
-            PdfWriter writer = PdfWriter.getInstance(this.document, out);
-            this.document.open();
+    		PDPage page = new PDPage();
+    		BufferedImage image = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
 
-            PdfContentByte cb = writer.getDirectContent();
-            PdfTemplate tp = cb.createTemplate(bb.width, bb.height);
-            tp.setWidth(bb.width);
-            tp.setHeight(bb.height);
+    		this.g = (Graphics2D) image.getGraphics();
 
-            this.g = tp.createGraphics(bb.width, bb.height);
+    		this.g.setColor(Color.white);
+    		this.g.fillRect(0, 0, bb.width, bb.height);
+    		this.g.setColor(Color.black);
+    		this.g.drawRect(0, 0, bb.width - 2, bb.height - 2); // bounds
+    		this.g.dispose();
 
-            this.g.setColor(Color.white);
-            this.g.fillRect(0, 0, bb.width, bb.height);
-            this.g.setColor(Color.black);
-            this.g.drawRect(0, 0, bb.width - 2, bb.height - 2); // bounds
-            this.g.dispose();
-            cb.addTemplate(tp, 50, 400);
-        } catch (DocumentException de) {
-            System.err.println(de.getMessage());
-        }
+    		PDXObjectImage ximage;
+    		ximage = new PDJpeg(document, image);
+    		PDPageContentStream content = new PDPageContentStream(document, page);
+    		content.drawImage(ximage, 50, 400);
+    		content.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public void printProduct() {
-        this.document.close();
+        try {
+        	this.document.save(output);
+			this.document.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (COSVisitorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public void connect(int x1, int y1, int x2, int y2) {

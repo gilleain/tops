@@ -6,11 +6,12 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Graphics; //scaling!
 import java.awt.Rectangle;
-
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import Acme.JPM.Encoders.GifEncoder;
+import javax.imageio.ImageIO;
 
 import tops.view.tops2D.cartoon.CartoonBuilder;
 
@@ -33,17 +34,6 @@ public class IMGBuilder implements CartoonBuilder {
 
     private static final int NAME_Y = 20;
 
-    static {
-        try {
-            Class<IMGBuilder> c = IMGBuilder.class;
-            com.eteks.awt.PJAGraphicsManager.getDefaultGraphicsManager()
-                    .loadFont(
-                            c.getClassLoader().getResourceAsStream("pja.pjaf"));
-        } catch (Exception ie) {
-            System.out.print("Can not load font " + ie);
-        }
-    }
-
     public IMGBuilder(String name, Rectangle bb, OutputStream out, int width,
             int height) {
         this.out = out;
@@ -51,8 +41,8 @@ public class IMGBuilder implements CartoonBuilder {
         this.h = height;
         //int currentWidth = bb.width;
         //int currentHeight = bb.height;
-        //int type = BufferedImage.TYPE_INT_RGB;
-        this.image = new com.eteks.awt.PJAImage(this.w, this.h);
+        int type = BufferedImage.TYPE_INT_RGB;
+        this.image = new BufferedImage(this.w, this.h, type);
         // BufferedImage image = new PJABufferedImage(w, h, type)
         this.g = this.image.getGraphics();
 
@@ -68,8 +58,7 @@ public class IMGBuilder implements CartoonBuilder {
 
     public void printProduct() {
         try {
-            GifEncoder gif = new GifEncoder(this.image, this.out);
-            gif.encode();
+            ImageIO.write((RenderedImage) image, "GIF", out);
         } catch (IOException ioe) {
             System.out.println(ioe);
         }

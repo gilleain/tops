@@ -525,7 +525,7 @@ public class Chain implements Iterable<BackboneSegment> {
         return s.toString();
     }
 
-	@Override
+    @Override
 	public Iterator<BackboneSegment> iterator() {
 		return this.backboneSegments.iterator();
 	}

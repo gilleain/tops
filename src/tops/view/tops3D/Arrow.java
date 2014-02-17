@@ -1,8 +1,8 @@
 package tops.view.tops3D;
 
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
-import com.sun.j3d.utils.geometry.Stripifier;
+//import com.sun.j3d.utils.geometry.GeometryInfo;
+//import com.sun.j3d.utils.geometry.NormalGenerator;
+//import com.sun.j3d.utils.geometry.Stripifier;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.GeometryArray;
@@ -315,42 +315,43 @@ public class Arrow {
             }
         }
 
-        GeometryInfo gi = new GeometryInfo(body);
-        // generate normals
-        NormalGenerator ng = new NormalGenerator();
-        ng.generateNormals(gi);
-        // stripify
-        Stripifier st = new Stripifier();
-        st.stripify(gi);
-        GeometryArray bodyResult = gi.getGeometryArray();
+//        GeometryInfo gi = new GeometryInfo(body);
+//        // generate normals
+//        NormalGenerator ng = new NormalGenerator();
+//        ng.generateNormals(gi);
+//        // stripify
+//        Stripifier st = new Stripifier();
+//        st.stripify(gi);
+//        GeometryArray bodyResult = gi.getGeometryArray();
+//
+//        QuadArray head = new QuadArray(24, GeometryArray.COORDINATES);
+//        if (orientation == SSE.UP) {
+//            for (int j = 0; j < Arrow.headPointsUp.length; j++) {
+//                Point3d memoryBurn = new Point3d();
+//                memoryBurn.add(center, Arrow.headPointsUp[j]);
+//                head.setCoordinate(j, memoryBurn);
+//            }
+//        } else {
+//            for (int i = 0; i < Arrow.headPointsDn.length; i++) {
+//                Point3d memoryBurn = new Point3d();
+//                memoryBurn.add(center, Arrow.headPointsDn[i]);
+//                head.setCoordinate(i, memoryBurn);
+//            }
+//        }
 
-        QuadArray head = new QuadArray(24, GeometryArray.COORDINATES);
-        if (orientation == SSE.UP) {
-            for (int j = 0; j < Arrow.headPointsUp.length; j++) {
-                Point3d memoryBurn = new Point3d();
-                memoryBurn.add(center, Arrow.headPointsUp[j]);
-                head.setCoordinate(j, memoryBurn);
-            }
-        } else {
-            for (int i = 0; i < Arrow.headPointsDn.length; i++) {
-                Point3d memoryBurn = new Point3d();
-                memoryBurn.add(center, Arrow.headPointsDn[i]);
-                head.setCoordinate(i, memoryBurn);
-            }
-        }
-
-        gi.reset(head);
-        // generate normals
-        ng.generateNormals(gi);
-        // stripify
-        st.stripify(gi);
-        GeometryArray headResult = gi.getGeometryArray();
-
-        Shape3D arrow = new Shape3D();
-        arrow.addGeometry(bodyResult);
-        arrow.addGeometry(headResult);
-        arrow.setAppearance(app);
-        return arrow;
+//        gi.reset(head);
+//        // generate normals
+//        ng.generateNormals(gi);
+//        // stripify
+//        st.stripify(gi);
+//        GeometryArray headResult = gi.getGeometryArray();
+//
+//        Shape3D arrow = new Shape3D();
+//        arrow.addGeometry(bodyResult);
+//        arrow.addGeometry(headResult);
+//        arrow.setAppearance(app);
+//        return arrow;
+        return null;
 
     }
 
