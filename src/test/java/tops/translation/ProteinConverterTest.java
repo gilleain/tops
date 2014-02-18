@@ -1,7 +1,6 @@
 package tops.translation;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -17,8 +16,16 @@ public class ProteinConverterTest {
 			BackboneSegment segment = null;
 			if (sseType.equals("E")) {
 				segment = new Strand(new Residue(start, start));
+				segment.setOrientation("UP");
+			} else if (sseType.equals("e")) {
+				segment = new Strand(new Residue(start, start));
+				segment.setOrientation("DOWN");
 			} else if (sseType.equals("H")) {
 				segment = new Helix(new Residue(start, start));
+				segment.setOrientation("UP");
+			} else if (sseType.equals("h")) {
+				segment = new Helix(new Residue(start, start));
+				segment.setOrientation("DOWN");
 			} else if (sseType.equals("N")) {
 				segment = new Terminus("N", 'N');
 			} else if (sseType.equals("C")) {
@@ -64,7 +71,7 @@ public class ProteinConverterTest {
 	
 	@Test
 	public void threeSSE() {
-		tops.translation.Protein p = makeNewProtein("E", "H", "E");
+		tops.translation.Protein p = makeNewProtein("N", "E", "H", "e", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
 		print(q);
 	}

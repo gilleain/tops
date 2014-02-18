@@ -41,6 +41,11 @@ public class ProteinConverter {
 			} else if (backboneSegment instanceof Terminus) {
 				s.Type = String.valueOf(((Terminus) backboneSegment).getTypeChar());
 			}
+			if (backboneSegment.getOrientation().equals("UP")) {
+				s.Direction = "UP";
+			} else {
+				s.Direction = "DOWN";
+			}
 			s.PDBStartResidue = backboneSegment.firstPDB();
 			s.PDBFinishResidue = backboneSegment.lastPDB();
 			s.SymbolNumber = i;

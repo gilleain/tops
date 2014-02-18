@@ -96,8 +96,8 @@
 			<param-value>/Users/maclean/tops/web/topsfiles/scop</param-value>
 		</init-param>
 		<init-param>
-			<param-name>scratch</param-name>
-			<param-value>/Users/maclean/tops/web/scratch</param-value>
+			<param-name>test</param-name>
+			<param-value>data/test</param-value>
 		</init-param>
 		<init-param>
 			<param-name>lib</param-name>
