@@ -30,9 +30,6 @@ public class CartoonServlet extends HttpServlet {
 
 	static {
         System.setProperty("java.awt.headless", "true");
-        // System.setProperty ("awt.toolkit", "com.eteks.awt.PJAToolkit");
-        // System.setProperty("java.awt.graphicsenv",
-        // "com.eteks.java2d.PJAGraphicsEnvironment");
     }
 
     private static final int DEFAULT_WIDTH = 200;
