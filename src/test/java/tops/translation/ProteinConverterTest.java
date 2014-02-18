@@ -1,6 +1,7 @@
 package tops.translation;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -18,6 +19,10 @@ public class ProteinConverterTest {
 				segment = new Strand(new Residue(start, start));
 			} else if (sseType.equals("H")) {
 				segment = new Helix(new Residue(start, start));
+			} else if (sseType.equals("N")) {
+				segment = new Terminus("N", 'N');
+			} else if (sseType.equals("C")) {
+				segment = new Terminus("C", 'C');
 			}
 			if (segment != null) {
 				segment.expandBy(new Residue(start + 1, start + 1));
@@ -45,14 +50,14 @@ public class ProteinConverterTest {
 	
 	@Test
 	public void singleSSE() {
-		tops.translation.Protein p = makeNewProtein("E");
+		tops.translation.Protein p = makeNewProtein("N", "E", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
 		print(q);
 	}
 	
 	@Test
 	public void twoSSE() {
-		tops.translation.Protein p = makeNewProtein("E", "H");
+		tops.translation.Protein p = makeNewProtein("N", "E", "H", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
 		print(q);
 	}

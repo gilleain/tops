@@ -38,6 +38,8 @@ public class ProteinConverter {
 				s.Type = "E";
 			} else if (backboneSegment instanceof Helix) {
 				s.Type = "H";
+			} else if (backboneSegment instanceof Terminus) {
+				s.Type = String.valueOf(((Terminus) backboneSegment).getTypeChar());
 			}
 			s.PDBStartResidue = backboneSegment.firstPDB();
 			s.PDBFinishResidue = backboneSegment.lastPDB();
