@@ -1,13 +1,23 @@
 package tops.web.display.servlet;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import tops.dw.protein.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class FindFilesServlet extends javax.servlet.http.HttpServlet {
+import tops.dw.protein.DomainDefinition;
+import tops.dw.protein.Protein;
+
+public class FindFilesServlet extends HttpServlet {
 
     /**
 	 * 

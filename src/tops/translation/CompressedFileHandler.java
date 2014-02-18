@@ -132,13 +132,13 @@ public class CompressedFileHandler {
                 throw new IOException("More than one entry in zipfile!");
             }
             String outputFileName = zipEntry.getName();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(
-                    zipFile.getInputStream(zipEntry));
-            this.pipeToFile(bufferedInputStream, new File(this.outputDirectory,
-                    outputFileName));
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(zipFile.getInputStream(zipEntry));
+            this.pipeToFile(bufferedInputStream, new File(this.outputDirectory, outputFileName));
             return outputFileName;
         } catch (NoSuchElementException nsee) {
             throw new IOException("Zipfile empty!");
+        } finally {
+        	zipFile.close();
         }
     }
 
