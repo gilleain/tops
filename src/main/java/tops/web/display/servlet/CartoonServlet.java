@@ -48,24 +48,26 @@ public class CartoonServlet extends HttpServlet {
 
         String path = request.getPathInfo(); // eg /cath/1.2/2bopA0.gif OR /cath/2bopA0.gif
         PathParser pathParser = new PathParser(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        Map<String, String> params = pathParser.parsePath(path);
+        Map<String, String> parsedParams = pathParser.parsePath(path);
         
         ServletConfig config = this.getServletConfig();
-        String pathToFiles = config.getInitParameter(params.get("group"));
+        String pathToFiles = config.getInitParameter(parsedParams.get("group"));
+        String realPath = config.getServletContext().getRealPath(pathToFiles);
         this.log("path = " + pathToFiles 
-        		+ " group = " + params.get("group") 
-        		+ " fileType = " + params.get("fileType") 
-        		+ " domain = " + params.get("domain") );
+        		+ " realPath = " + realPath
+        		+ " group = " + parsedParams.get("group") 
+        		+ " fileType = " + parsedParams.get("fileType") 
+        		+ " domain = " + parsedParams.get("domain") );
 
         // first, try and get the data from the given source
-        File f = new File(pathToFiles, params.get("filename"));
+        File f = new File(realPath, parsedParams.get("filename"));
         if (!f.canRead()) {
-            this.error("File not found " + params.get("filename"), response);
+            this.error("File not found " + parsedParams.get("filename"), response);
             return;
         }
 
         // quickly check if we only want the text of the file
-        if (params.get("fileType").equals("tops")) { // TOPS! file format (basically, old-style tops file!)
+        if (parsedParams.get("fileType").equals("tops")) { // TOPS! file format (basically, old-style tops file!)
             response.setContentType("text/plain");
             PrintWriter out = response.getWriter();
             String line;
@@ -84,23 +86,23 @@ public class CartoonServlet extends HttpServlet {
         }
 
         // assuming the tops.dw.protein can be created, determine what to return
-        SecStrucElement root = this.getRoot(params.get("domain"), f);
+        SecStrucElement root = this.getRoot(parsedParams.get("domain"), f);
         
         // do highlights
-        String highlight = params.get("highlight");
+        String highlight = parsedParams.get("highlight");
         if (highlight != null) {
             this.highlight(root, highlight);
         }
 
-        String domain = params.get("domain");
+        String domain = parsedParams.get("domain");
         if (root == null) {
             this.error("Domain not found : " + domain, response);
             return;
         }
 
-        String fileType = params.get("fileType");
-        int width = Integer.parseInt(params.get("width"));
-        int height = Integer.parseInt(params.get("height"));
+        String fileType = parsedParams.get("fileType");
+        int width = Integer.parseInt(parsedParams.get("width"));
+        int height = Integer.parseInt(parsedParams.get("height"));
         CartoonDrawer drawer = new CartoonDrawer();
         if (fileType.equals("gif")) { // Image - could be several types?
 
