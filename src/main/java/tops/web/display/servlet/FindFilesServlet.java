@@ -41,9 +41,10 @@ public class FindFilesServlet extends HttpServlet {
             while (e.hasMoreElements()) {
                 String nextClass = (String) e.nextElement();
                 String nextPath = config.getInitParameter(nextClass);
-                this.tfm.addPathMapping(nextClass, nextPath);
+                String realPath = config.getServletContext().getRealPath(nextPath);
+                this.tfm.addPathMapping(nextClass, realPath);
                 this.getServletContext().log(
-                        "mapping classname : " + nextClass + " to path " + nextPath);
+                        "mapping classname : " + nextClass + " to path " + nextPath + " actually at " + realPath);
             }
         } catch (Exception e) {
             this.getServletContext().log("path problems", e);
@@ -58,6 +59,9 @@ public class FindFilesServlet extends HttpServlet {
         String did = request.getParameter("domid");
         String cla = request.getParameter("classf");
         String typ = request.getParameter("filetype");
+        
+        System.out.println("pid [" + pid + "] chain [" + cid + "] domid [" + did + "] classf [" + cla + "] filetype [" + typ + "]");
+        
         this.contextPath = request.getContextPath();
         this.fullPath = this.contextPath + request.getServletPath(); // "/tops/find";
         this.viewPath = this.contextPath + "/view"; // "/tops/view";
@@ -130,8 +134,7 @@ public class FindFilesServlet extends HttpServlet {
         pout.println("</table></body></html>");
     }
 
-    private void displayDomains(Protein p, String pi, String c,
-            String filetype, String path, HttpServletResponse response) {
+    private void displayDomains(Protein p, String pi, String c, String filetype, String path, HttpServletResponse response) {
         Vector<DomainDefinition> domainNames = p.GetDomainDefs();
         response.setContentType("text/html");
         PrintWriter pout = null;
@@ -157,8 +160,7 @@ public class FindFilesServlet extends HttpServlet {
         pout.println("</table></body></html>");
     }
 
-    private void fileNotFound(FileNotFoundException fnfe,
-            HttpServletResponse response) {
+    private void fileNotFound(FileNotFoundException fnfe, HttpServletResponse response) {
         response.setContentType("text/html");
         PrintWriter pout = null;
         try {

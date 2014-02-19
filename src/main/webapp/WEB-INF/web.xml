@@ -11,10 +11,10 @@
 			<param-name>cath</param-name>
 			<param-value>/Users/maclean/tops/web/topsfiles/cath</param-value>
 		</init-param>
-		<init-param>
-			<param-name>scratch</param-name>
-			<param-value>/Users/maclean/tops/web/scratch</param-value>
-		</init-param>
+	    <init-param>
+            <param-name>test</param-name>
+            <param-value>/topsfiles/test</param-value>
+        </init-param>
 		<init-param>
 			<param-name>lib</param-name>
 			<param-value>/Users/maclean/tops/web/lib</param-value>
@@ -97,7 +97,7 @@
 		</init-param>
 		<init-param>
 			<param-name>test</param-name>
-			<param-value>data/test</param-value>
+			<param-value>topsfiles/test</param-value>
 		</init-param>
 		<init-param>
 			<param-name>lib</param-name>

@@ -42,8 +42,10 @@ public class TopsFileManager {
 
     public String[] getNames(String className, String pdbid, String chain) throws FileNotFoundException {
         String path = this.paths.get(className);
+        System.out.println("path = " + path);
         File directory = new File(path);
         String[] names = directory.list(new TopsFileFilter(pdbid, chain));
+        System.out.println("names = " + Arrays.toString(names));
         if (names.length == 0) {
             throw new FileNotFoundException("file : " + pdbid + chain + ".tops not found in dir");
         } else {
