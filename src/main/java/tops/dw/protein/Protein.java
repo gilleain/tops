@@ -293,8 +293,7 @@ public class Protein {
                         if (tmp_int[j] > 255)
                             tmp_int[j] = 255;
                     }
-                    CurrentSS.Colour = new Color(tmp_int[0], tmp_int[1],
-                            tmp_int[2]);
+                    CurrentSS.Colour = new Color(tmp_int[0], tmp_int[1], tmp_int[2]);
                 } else if (FirstToken.equals("Fixed")) {
                     int fs;
                     if (nTokens > 1) {

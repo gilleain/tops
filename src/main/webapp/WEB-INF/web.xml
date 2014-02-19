@@ -96,9 +96,9 @@
 			<param-value>/Users/maclean/tops/web/topsfiles/scop</param-value>
 		</init-param>
 		<init-param>
-			<param-name>test</param-name>
-			<param-value>topsfiles/test</param-value>
-		</init-param>
+            <param-name>test</param-name>
+            <param-value>/topsfiles/test</param-value>
+        </init-param>
 		<init-param>
 			<param-name>lib</param-name>
 			<param-value>/Users/maclean/tops/web/lib</param-value>

@@ -1,7 +1,16 @@
+##
+## TOPS: tops.dw.protein topology information file
+##
+## Protein code 2BOP
+## Number of domains 1
+##
+
+DOMAIN_NUMBER 0 2bopA0 5 10 100
+
 SecondaryStructureType N
 Direction UP
-Label
-Colour 255 255 255
+Label N1
+Colour 0 0 0
 Next -1
 Fixed -1
 FixedType UNKNOWN
@@ -11,10 +20,10 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 2
-PDBFinishResidue 2
+PDBStartResidue 10
+PDBFinishResidue 11
 SymbolNumber 1
-Chain null
+Chain A
 Chirality 0
 CartoonX 0
 CartoonY 0
@@ -28,8 +37,8 @@ Fill 0
 
 SecondaryStructureType E
 Direction UP
-Label
-Colour 255 255 255
+Label E1
+Colour 255 0 0
 Next -1
 Fixed -1
 FixedType UNKNOWN
@@ -39,10 +48,10 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 3
-PDBFinishResidue 4
+PDBStartResidue 12
+PDBFinishResidue 16
 SymbolNumber 2
-Chain null
+Chain A
 Chirality 0
 CartoonX 0
 CartoonY 0
@@ -55,9 +64,9 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType H
-Direction UP
-Label
-Colour 255 255 255
+Direction DOWN
+Label H2
+Colour 0 0 0
 Next -1
 Fixed -1
 FixedType UNKNOWN
@@ -67,10 +76,10 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 5
-PDBFinishResidue 6
+PDBStartResidue 17
+PDBFinishResidue 25
 SymbolNumber 3
-Chain null
+Chain A
 Chirality 0
 CartoonX 0
 CartoonY 0
@@ -83,9 +92,9 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType E
-Direction DOWN
-Label
-Colour 255 255 255
+Direction UP
+Label E3
+Colour 0 0 0
 Next -1
 Fixed -1
 FixedType UNKNOWN
@@ -95,10 +104,10 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 7
-PDBFinishResidue 8
+PDBStartResidue 26
+PDBFinishResidue 29
 SymbolNumber 4
-Chain null
+Chain A
 Chirality 0
 CartoonX 0
 CartoonY 0
@@ -112,8 +121,8 @@ Fill 0
 
 SecondaryStructureType C
 Direction UP
-Label
-Colour 255 255 255
+Label C4
+Colour 0 0 0
 Next -1
 Fixed -1
 FixedType UNKNOWN
@@ -123,10 +132,10 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 10
-PDBFinishResidue 10
+PDBStartResidue 30
+PDBFinishResidue 31
 SymbolNumber 5
-Chain null
+Chain A
 Chirality 0
 CartoonX 0
 CartoonY 0
