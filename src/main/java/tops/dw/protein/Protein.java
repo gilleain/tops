@@ -233,8 +233,7 @@ public class Protein {
                         for (j = 0; j < 3; j++) {
                             if (st.hasMoreTokens()) {
                                 try {
-                                    tmp_int[j] = Integer.parseInt(st
-                                            .nextToken());
+                                    tmp_int[j] = Integer.parseInt(st.nextToken());
                                 } catch (NumberFormatException e) {
                                     throw new TopsFileFormatException();
                                 }
@@ -242,8 +241,7 @@ public class Protein {
                                 throw new TopsFileFormatException();
                             }
                         }
-                        ddef.addSequenceFragment(new IntegerInterval(
-                                tmp_int[1], tmp_int[2]), tmp_int[0]);
+                        ddef.addSequenceFragment(new IntegerInterval(tmp_int[1], tmp_int[2]), tmp_int[0]);
                     }
 
                     countss = 0;

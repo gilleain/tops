@@ -32,7 +32,7 @@ public class PDFBuilder implements CartoonBuilder {
     		this.document = new PDDocument();
 
     		PDPage page = new PDPage();
-    		BufferedImage image = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_INT_ARGB);
+    		BufferedImage image = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_3BYTE_BGR);
 
     		this.g = (Graphics2D) image.getGraphics();
 
@@ -42,8 +42,7 @@ public class PDFBuilder implements CartoonBuilder {
     		this.g.drawRect(0, 0, bb.width - 2, bb.height - 2); // bounds
     		this.g.dispose();
 
-    		PDXObjectImage ximage;
-    		ximage = new PDJpeg(document, image);
+    		PDXObjectImage ximage = new PDJpeg(document, image);
     		PDPageContentStream content = new PDPageContentStream(document, page);
     		content.drawImage(ximage, 50, 400);
     		content.close();

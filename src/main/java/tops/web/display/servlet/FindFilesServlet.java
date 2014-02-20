@@ -2,10 +2,8 @@ package tops.web.display.servlet;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.Vector;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -13,9 +11,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
+import tops.dw.protein.SecStrucElement;
 
 public class FindFilesServlet extends HttpServlet {
 
@@ -25,12 +25,6 @@ public class FindFilesServlet extends HttpServlet {
 	private static final long serialVersionUID = -8699565050755398690L;
 
 	private TopsFileManager tfm;
-
-    private String contextPath;
-
-    private String viewPath;
-
-    private String fullPath;
 
     @Override
     public void init() throws ServletException {
@@ -52,137 +46,75 @@ public class FindFilesServlet extends HttpServlet {
     }
 
     @Override
-    public void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pid = request.getParameter("pcode");
         String cid = request.getParameter("chain");
         String did = request.getParameter("domid");
         String cla = request.getParameter("classf");
-        String typ = request.getParameter("filetype");
+        String action = request.getParameter("action");
         
-        System.out.println("pid [" + pid + "] chain [" + cid + "] domid [" + did + "] classf [" + cla + "] filetype [" + typ + "]");
+        System.out.println("pid [" + pid + "] chain [" + cid + "] domid [" + did + "] classf [" + cla + "]");
         
-        this.contextPath = request.getContextPath();
-        this.fullPath = this.contextPath + request.getServletPath(); // "/tops/find";
-        this.viewPath = this.contextPath + "/view"; // "/tops/view";
 
+        // sanity check
         if (pid.equals("")) {
-            this.rtfm(response);
-        } // sanity check
+        	this.printError("<html><head><title>Error</title></head>" +
+        					"<body><b>PDB ID MUST BE SPECIFIED</b></body></html>",
+        					response);
+        	return;
+        } 
 
-        if ((cid != null && !cid.equals("")) && (did != null && !did.equals(""))) { // all parameters supplied
-            String filename = pid + cid + did + "." + typ;
-            String url = "/view/" + cla + "/" + filename;
-            RequestDispatcher dispatcher = request.getRequestDispatcher(url);
-            dispatcher.forward(request, response);
-        }
-
-        if ((cid != null) && (cid.equals(""))) { // no chain, search for chain files
-            String[] names = null;
-            try {
-                // get the file names from the directory
-                names = this.tfm.getNames(cla, pid, cid);
-
-            } catch (FileNotFoundException fnfe) {
-                this.fileNotFound(fnfe, response);
-                return;
-            }
-
-            this.listChains(names, cla, pid, typ, response);
-
-        } else { // one of chain or domain may be blank
-
-            Protein p = null;
-            String topsfile = pid + cid + ".tops";
-
-            try {
-                InputStream in = this.tfm.getStreamFromDir(cla, topsfile);
-                p = new Protein(in);
-                if (did.equals("")) {
-                    this.displayDomains(p, pid, cid, typ, cla, response); 
-                    return;
-                }
-
-            } catch (FileNotFoundException fnfe) {
-                this.fileNotFound(fnfe, response);
-                return;
-            }
-
-        }
-    }
-
-    private void listChains(String[] names, String cl, String pi, String tp,
-            HttpServletResponse response) {
-        response.setContentType("text/html");
-        PrintWriter pout = null;
         try {
-            pout = response.getWriter();
-        } catch (IOException ioe) {
-            this.log("listChains : ", ioe);
-        }
+	        if ((cid != null) && (cid.equals(""))) { // no chain, search for chain files
+	        	// get the file names from the directory
+	        	String[] names = this.tfm.getNames(cla, pid, cid);
+	        	
+	        	// for each file name, read in the file, and add to a single protein object
+	        	Protein mergedProtein = new Protein();
+	        	for (String name : names) {
+	        		Protein chain = new Protein(this.tfm.getStreamFromDir(cla, name));
+	        		for (DomainDefinition dd : chain.GetDomainDefs()) {
+	        			SecStrucElement root = chain.getDomain(chain.GetDomainIndex(dd.getCATHcode()));
+	        			mergedProtein.AddTopsLinkedList(root, dd);
+	        		}
+	        	}
+	        	handle(mergedProtein, action, request, response);
 
-        pout.println("<html><head><title>Chains found for : " + pi
-                + "</title></head><body><table align=\"center\">");
-        for (int i = 0; i < names.length; i++) {
-            String ch = names[i].substring(4, 5);
-            String url = this.fullPath + "?pcode=" + pi + "&chain=" + ch
-                    + "&domid=&classf=" + cl + "&filetype=" + tp;
-            pout.println("<tr><td>");
-            pout.println("<a href=\"" + url + "\">" + names[i]);
-            pout.println("</a></td></tr>");
+	        } else if ((cid != null && !cid.equals("")) && (did != null && !did.equals(""))) { // all parameters supplied
+	        	String topsfile = pid + cid + ".tops";	// Uhm, then what happens here if either are blank??
+	        	Protein protein = new Protein(this.tfm.getStreamFromDir(cla, topsfile));
+	        	handle(protein, action, request, response);
+	        } else {
+	        	// TODO - no chain or domain?
+	        }
+        } catch (FileNotFoundException fnfe) {
+        	this.printError(
+        			"<html><head><title>ERROR 403 : TOPS CARTOON NOT FOUND</title></head>" +
+        					"<body>Sorry, could not find this cartoon. Reason : <p>" + fnfe +
+        					"</body></html>",
+        					response
+        			);
+        	return;
         }
-        pout.println("</table></body></html>");
     }
-
-    private void displayDomains(Protein p, String pi, String c, String filetype, String path, HttpServletResponse response) {
-        Vector<DomainDefinition> domainNames = p.GetDomainDefs();
-        response.setContentType("text/html");
-        PrintWriter pout = null;
-        try {
-            pout = response.getWriter();
-        } catch (IOException ioe) {
-            this.log("displayDomains : ", ioe);
-        }
-
-        pout.println("<html><head><title>Domains for : " + pi + " Chain " + c
-                + "</title></head><body><table align=\"center\">");
-        Enumeration<DomainDefinition> e = domainNames.elements();
-        while (e.hasMoreElements()) {
-            DomainDefinition dd = e.nextElement();
-            String name = dd.toString();
-            String filename = name + "." + filetype; // eg '2bopA0' + '.' +  'gif' = '2bopA0.gif'
-            String url = this.viewPath + "/" + path + "/" + filename;
-            pout.println("<tr><td>");
-            pout.println("<a href=\"" + url + "\">");
-            pout.println("<img src=\"" + url + "\"></img>");
-            pout.println("</a></td></tr>");
-        }
-        pout.println("</table></body></html>");
+    
+    private void handle(Protein protein, String action, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	HttpSession session = request.getSession();
+    	session.setAttribute("protein", protein);
+    	String url = "/" + action;
+    	RequestDispatcher dispatcher = request.getRequestDispatcher(url);
+        dispatcher.forward(request, response);
     }
-
-    private void fileNotFound(FileNotFoundException fnfe, HttpServletResponse response) {
-        response.setContentType("text/html");
+    
+    private void printError(String message, HttpServletResponse response) {
+    	response.setContentType("text/html");
         PrintWriter pout = null;
         try {
             pout = response.getWriter();
         } catch (IOException ioe) {
         }
-
-        pout.println("<html><head><title>ERROR 403 : TOPS CARTOON NOT FOUND</title></head>");
-        pout.println("<body>Sorry, could not find this cartoon. Reason : <p>" + fnfe);
-        pout.println("</body></html>");
-    }
-
-    private void rtfm(HttpServletResponse response) {
-        response.setContentType("text/html");
-        PrintWriter pout = null;
-        try {
-            pout = response.getWriter();
-        } catch (IOException ioe) {
-        }
-
-        pout.println("<html><head><title>RTFM</title></head>");
-        pout.println("<body><b>PDB ID MUST BE SPECIFIED</b></body></html>");
+        pout.write(message);
+        pout.flush();
     }
 
 }

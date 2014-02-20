@@ -132,6 +132,10 @@
 			<param-value>/Users/maclean/tops</param-value>
 		</init-param>
 	</servlet>
+	<servlet>
+        <servlet-name>SummaryServlet</servlet-name>
+        <servlet-class>tops.web.display.servlet.SummaryServlet</servlet-class>
+    </servlet>
 	<!--<filter>
 		<filter-name>log</filter-name>
 		<filter-class>LogFilter</filter-class>
@@ -140,6 +144,10 @@
 		<filter-name>log</filter-name>
 		<url-pattern>/pattern/*</url-pattern>
 	</filter-mapping>-->
+	<servlet-mapping>
+        <servlet-name>SummaryServlet</servlet-name>
+        <url-pattern>/summary</url-pattern>
+    </servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>LogAnalyserServlet</servlet-name>
 		<url-pattern>/log</url-pattern>

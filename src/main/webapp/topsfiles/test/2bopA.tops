@@ -53,8 +53,8 @@ PDBFinishResidue 16
 SymbolNumber 2
 Chain A
 Chirality 0
-CartoonX 0
-CartoonY 0
+CartoonX 10
+CartoonY 10
 AxesStartPoint 0.0 0.0 0.0
 AxesFinishPoint 0.0 0.0 0.0
 SymbolRadius 0
@@ -81,8 +81,8 @@ PDBFinishResidue 25
 SymbolNumber 3
 Chain A
 Chirality 0
-CartoonX 0
-CartoonY 0
+CartoonX 20
+CartoonY 10
 AxesStartPoint 0.0 0.0 0.0
 AxesFinishPoint 0.0 0.0 0.0
 SymbolRadius 0
@@ -109,8 +109,8 @@ PDBFinishResidue 29
 SymbolNumber 4
 Chain A
 Chirality 0
-CartoonX 0
-CartoonY 0
+CartoonX 30
+CartoonY 30
 AxesStartPoint 0.0 0.0 0.0
 AxesFinishPoint 0.0 0.0 0.0
 SymbolRadius 0
@@ -137,8 +137,8 @@ PDBFinishResidue 31
 SymbolNumber 5
 Chain A
 Chirality 0
-CartoonX 0
-CartoonY 0
+CartoonX 40
+CartoonY 30
 AxesStartPoint 0.0 0.0 0.0
 AxesFinishPoint 0.0 0.0 0.0
 SymbolRadius 0
