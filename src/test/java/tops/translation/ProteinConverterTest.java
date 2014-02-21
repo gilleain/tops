@@ -1,10 +1,6 @@
 package tops.translation;
 
-import java.io.PrintWriter;
-
 import org.junit.Test;
-
-import tops.dw.protein.SecStrucElement;
 
 public class ProteinConverterTest {
 	
@@ -41,39 +37,25 @@ public class ProteinConverterTest {
 		return p;
 	}
 	
-	public void print(tops.dw.protein.Protein protein) {
-		PrintWriter writer = new PrintWriter(System.out);
-		for (int i = 0; i < protein.NumberDomains(); i++) {
-			SecStrucElement root = protein.getDomain(i);
-			SecStrucElement current = root;
-			while (current != null) {
-				current.PrintAsText(writer);
-				writer.println();
-				writer.flush();
-				current = current.GetTo();
-			}
-		}
-	}
-	
 	@Test
 	public void singleSSE() {
 		tops.translation.Protein p = makeNewProtein("N", "E", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		print(q);
+		q.WriteTopsFile(System.out);
 	}
 	
 	@Test
 	public void twoSSE() {
 		tops.translation.Protein p = makeNewProtein("N", "E", "H", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		print(q);
+		q.WriteTopsFile(System.out);
 	}
 	
 	@Test
 	public void threeSSE() {
 		tops.translation.Protein p = makeNewProtein("N", "E", "H", "e", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		print(q);
+		q.WriteTopsFile(System.out);
 	}
 
 }
