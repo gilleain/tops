@@ -1,5 +1,6 @@
 package tops.translation;
 
+import tops.dw.protein.CATHcode;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.SecStrucElement;
 
@@ -17,7 +18,7 @@ public class ProteinConverter {
 		for (Chain chain : newProtein) {
 			SecStrucElement s = toSSE(chain);
 			char chainLabel = chain.getCathCompatibleLabel().charAt(0);
-			DomainDefinition d = new DomainDefinition(chainLabel);
+			DomainDefinition d = new DomainDefinition(new CATHcode(newProtein.getID() + String.valueOf(chainLabel)));
 			oldProtein.AddTopsLinkedList(s, d);
 		}
 		

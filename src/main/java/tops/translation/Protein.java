@@ -12,13 +12,16 @@ public class Protein implements Iterable<Chain> {
     private List<Chain> chains;
 
     public Protein() {
-        this.id = "";
-        this.chains = new ArrayList<Chain>();
+        this("");
     }
 
     public Protein(String id) {
-        this();
-        this.id = id.toLowerCase();
+        this.chains = new ArrayList<Chain>();
+        setID(id);
+    }
+    
+    public void setID(String id) {
+    	this.id = id.toLowerCase();
     }
 
     public String getID() {

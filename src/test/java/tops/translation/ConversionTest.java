@@ -13,17 +13,21 @@ public class ConversionTest {
 		FoldAnalyser foldAnalyser = new FoldAnalyser();
 		Protein protein = PDBReader.read(file);
 		foldAnalyser.analyse(protein);
+		String id = file.getName().substring(0, file.getName().indexOf("."));
+		protein.setID(id);
 		tops.dw.protein.Protein oldStyleProtein = ProteinConverter.convert(protein);
-		File outputFile = new File(outputDir, protein.getID() + ".tops");
-		oldStyleProtein.WriteTopsFile(new FileOutputStream(outputFile));
+		File outputFile = new File(outputDir, id + ".tops");
+		FileOutputStream outputStream = new FileOutputStream(outputFile);
+		oldStyleProtein.WriteTopsFile(outputStream);
+		outputStream.flush();
+		outputStream.close();
 	}
 
 	@Test
 	public void convertExamplesDir() throws IOException {
 		URL inputURL = this.getClass().getResource("/examples/pdb");
-		URL outputURL = this.getClass().getResource("/examples/tops");
 		File inputDir = new File(inputURL.getFile());
-		File outputDir = new File(outputURL.getFile());
+		File outputDir = new File("src/test/resources/examples/tops");
 		for (String filename : inputDir.list()) {
 			try {
 				convert(new File(inputDir, filename), outputDir);
