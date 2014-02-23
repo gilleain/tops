@@ -7,7 +7,7 @@ import java.net.URL;
 
 import org.junit.Test;
 
-public class ConversionTest {
+public class PDBToTopsConversionTest {
 	
 	public void convert(File file, File outputDir) throws IOException {
 		FoldAnalyser foldAnalyser = new FoldAnalyser();

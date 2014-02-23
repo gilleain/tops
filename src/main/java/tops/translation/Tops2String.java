@@ -1,16 +1,15 @@
 package tops.translation;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.File;
 import java.io.FileReader;
-
-import java.util.Iterator;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,38 +19,35 @@ public class Tops2String {
 //            .compile("DOMAIN_NUMBER\\s\\S+\\s(\\w+)\\s.*")).matcher("");
               .compile("DOMAIN_NUMBER\\s\\d+\\s(\\w+).*")).matcher("");
 
-    private Matcher sse_type = (Pattern.compile("SecondaryStructureType\\s(.)"))
-            .matcher("");
+    private Matcher sse_type = (Pattern.compile("SecondaryStructureType\\s(.)")).matcher("");
 
-    private Matcher directions = (Pattern.compile("Direction\\s(.)"))
-            .matcher("");
+    private Matcher directions = (Pattern.compile("Direction\\s(.+)")).matcher("");
 
-    private Matcher bridgeparts = (Pattern.compile("BridgePartner\\s(.*)"))
-            .matcher("");
+    private Matcher bridgeparts = (Pattern.compile("BridgePartner\\s(.*)")).matcher("");
 
-    private Matcher bridgetypes = (Pattern.compile("BridgePartnerType\\s(.*)"))
-            .matcher("");
+    private Matcher bridgetypes = (Pattern.compile("BridgePartnerType\\s(.*)")).matcher("");
 
-    private Matcher symbolnums = (Pattern.compile("SymbolNumber\\s(.*)"))
-            .matcher("");
+    private Matcher symbolnums = (Pattern.compile("SymbolNumber\\s(.*)")).matcher("");
 
-    private Matcher chirals = (Pattern.compile("Chirality.([-\\d]+)"))
-            .matcher("");
+    private Matcher chirals = (Pattern.compile("Chirality.([-\\d]+)")).matcher("");
 
     private Matcher fill = (Pattern.compile("Fill.+")).matcher("");
 
-    private String topsDirectoryPath;
+    private File topsDirectory;
 
     public Tops2String(String topsDirectoryPath) {
-        this.topsDirectoryPath = topsDirectoryPath;
+        this(new File(topsDirectoryPath));
+    }
+    
+    public Tops2String(File topsDirectory) {
+    	this.topsDirectory = topsDirectory;
     }
 
-    public String[] convert(String tops_file_name, String replacement_pdbid,
-            String classificationScheme) throws IOException {
+    public String[] convert(String tops_file_name, String replacement_pdbid, String classificationScheme) throws IOException {
         BufferedReader bufferedReader = 
-            new BufferedReader(new FileReader(new File(this.topsDirectoryPath, tops_file_name)));
+            new BufferedReader(new FileReader(new File(this.topsDirectory, tops_file_name)));
         String line = new String();
-        HashMap<String, HashMap<String, HashMap<Integer, String>>> domains = new HashMap<String, HashMap<String, HashMap<Integer, String>>>();
+        Map<String, Map<String, Map<Integer, String>>> domains = new HashMap<String, Map<String, Map<Integer, String>>>();
         String current_domain = new String();
         int current_pos = 0;
 
@@ -102,7 +98,7 @@ public class Tops2String {
         return this.getData(domains, replacement_pdbid, classificationScheme);
     }
 
-    private String[] getData(HashMap<String, HashMap<String, HashMap<Integer, String>>> domains, String replacement_pdbid, String scheme) {
+    private String[] getData(Map<String, Map<String, Map<Integer, String>>> domains, String replacement_pdbid, String scheme) {
         // now, go through the map, getting the data
         Set<String> keys = domains.keySet();
         String[] domain_strings = new String[keys.size()];
@@ -155,26 +151,26 @@ public class Tops2String {
             }
 
             // convert the data
-            HashMap<?, ?> domain_map = (HashMap<?, ?>) domains.get(domain_id);
+            Map<String, Map<Integer, String>> domain_map = domains.get(domain_id);
 
             StringBuffer topsString = new StringBuffer();
-            HashMap<Integer, HashMap<Integer, String>> bonds = new HashMap<Integer, HashMap<Integer, String>>();
+            Map<Integer, Map<Integer, String>> bonds = new HashMap<Integer, Map<Integer, String>>();
             boolean lookingForChiralPartner = false;
             String last_chiral_flag = new String();
             char last_symbol = 'N';
             Integer lastVertex = new Integer(0);
 
-            HashMap<?, ?> sse_type_map = (HashMap<?, ?>) domain_map.get("SSE_TYPE");
+            Map<Integer, String> sse_type_map = domain_map.get("SSE_TYPE");
             // System.err.println(sse_type_map);
-            HashMap<?, ?> directions_map = (HashMap<?, ?>) domain_map.get("DIRECTIONS");
+            Map<Integer, String> directions_map = domain_map.get("DIRECTIONS");
             // System.err.println(directions_map);
-            HashMap<?, ?> bridge_parts_map = (HashMap<?, ?>) domain_map.get("BRIDGEPARTS");
+            Map<Integer, String> bridge_parts_map = domain_map.get("BRIDGEPARTS");
             // System.err.println(bridge_parts_map);
-            HashMap<?, ?> bridge_types_map = (HashMap<?, ?>) domain_map.get("BRIDGETYPES");
+            Map<Integer, String> bridge_types_map = domain_map.get("BRIDGETYPES");
             // System.err.println(bridge_types_map);
 //            HashMap symbolnums_map = (HashMap) domain_map.get("SYMBOLNUMS");
             // System.err.println(symbolnums_map);
-            HashMap<?, ?> chirals_map = (HashMap<?, ?>) domain_map.get("CHIRALS");
+            Map<Integer, String> chirals_map = domain_map.get("CHIRALS");
             // System.err.println(chirals_map);
 
             topsString.append(name).append(' ');
@@ -184,8 +180,7 @@ public class Tops2String {
                 String type = (String) sse_type_map.get(currentVertex);
                 String dir = (String) directions_map.get(currentVertex);
                 char type_as_char = type.charAt(0);
-                char symbol = (dir.equals("D")) ? Character
-                        .toLowerCase(type_as_char) : type_as_char;
+                char symbol = (dir.equals("D")) ? Character.toLowerCase(type_as_char) : type_as_char;
                 topsString.append(symbol);
 
                 HashMap<Integer, String> partner_type = (HashMap<Integer, String>) bonds.get(currentVertex);
@@ -256,7 +251,7 @@ public class Tops2String {
             Iterator<Integer> lefts = leftHandEnds.iterator();
             while (lefts.hasNext()) {
                 Integer leftHandEnd = (Integer) lefts.next();
-                HashMap<Integer, String> otherEnds = bonds.get(leftHandEnd);
+                Map<Integer, String> otherEnds = bonds.get(leftHandEnd);
 
                 TreeSet<Integer> rightHandEnds = new TreeSet<Integer>(otherEnds.keySet());
                 for (Integer rightHandEnd : rightHandEnds) {
@@ -275,11 +270,11 @@ public class Tops2String {
         return domain_strings;
     }
 
-    public void storeData(HashMap<String, HashMap<String, HashMap<Integer, String>>> map, String domain, int pos, String key, String value) {
+    public void storeData(Map<String, Map<String, Map<Integer, String>>> map, String domain, int pos, String key, String value) {
         // first, get the values map for a particular domain (create if !exists)
-        HashMap<String, HashMap<Integer, String>> domainMap = (HashMap<String, HashMap<Integer, String>>) map.get(domain);
+        Map<String, Map<Integer, String>> domainMap = map.get(domain);
         if (domainMap == null) {
-            domainMap = new HashMap<String, HashMap<Integer, String>>();
+            domainMap = new HashMap<String, Map<Integer, String>>();
             map.put(domain, domainMap);
         }
 
