@@ -42,9 +42,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 11 10
+BridgePartnerSide L R
+BridgePartnerType A P
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -70,9 +70,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 11
+BridgePartnerSide R
+BridgePartnerType P
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -126,9 +126,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 8 9
+BridgePartnerSide L R
+BridgePartnerType A A
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -210,9 +210,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 5 9
+BridgePartnerSide R L
+BridgePartnerType A A
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -238,9 +238,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 5 8
+BridgePartnerSide L R
+BridgePartnerType A A
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -266,9 +266,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 2 11
+BridgePartnerSide L R
+BridgePartnerType P A
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -294,9 +294,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 3 2 10
+BridgePartnerSide L R L
+BridgePartnerType P A A
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0

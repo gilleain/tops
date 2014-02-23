@@ -42,9 +42,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 3
+BridgePartnerSide R
+BridgePartnerType A
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -70,9 +70,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner
-BridgePartnerSide
-BridgePartnerType
+BridgePartner 2
+BridgePartnerSide L
+BridgePartnerType A
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0

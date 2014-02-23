@@ -8,7 +8,7 @@ import java.util.List;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-public class Sheet {
+public class Sheet implements Iterable<BackboneSegment> {
 
     private int number;
 
@@ -121,9 +121,8 @@ public class Sheet {
     }
 
     public void reorient() {
-        BackboneSegment firstInSheet = (BackboneSegment) this.strands.get(0);
-        BackboneSegment lastInSheet = (BackboneSegment) this.strands.get(this
-                .size() - 1);
+        BackboneSegment firstInSheet = this.strands.get(0);
+        BackboneSegment lastInSheet = this.strands.get(this.size() - 1);
         if (firstInSheet.compareTo(lastInSheet) == 1) {
             this.reverse();
         }
@@ -131,7 +130,7 @@ public class Sheet {
 
     public void assignOrientationsToStrands() {
         // arbitrarily assign the first strand as UP
-        BackboneSegment firstStrand = (BackboneSegment) this.strands.get(0);
+        BackboneSegment firstStrand = this.strands.get(0);
         firstStrand.setOrientation("UP");
 
         // while we're at it, we might as well calculate the sheet axis
@@ -139,8 +138,8 @@ public class Sheet {
         sheetVector.set(firstStrand.getAxis().getAxisVector());
 
         for (int i = 0; i < this.strands.size() - 1; i++) {
-            BackboneSegment strand = (BackboneSegment) this.strands.get(i);
-            BackboneSegment partner = (BackboneSegment) this.strands.get(i + 1);
+            BackboneSegment strand = this.strands.get(i);
+            BackboneSegment partner = this.strands.get(i + 1);
             // System.out.println(strand + " -> " + partner);
 
             this.assignOrientations(strand, partner);
@@ -157,8 +156,7 @@ public class Sheet {
         this.setAxis(sheetVector);
     }
 
-    private void assignOrientations(BackboneSegment strand,
-            BackboneSegment partner) {
+    private void assignOrientations(BackboneSegment strand, BackboneSegment partner) {
         char relativeOrientation = strand.getRelativeOrientation(partner);
         if (relativeOrientation == 'P') {
             String strandOrientation = strand.getOrientation();

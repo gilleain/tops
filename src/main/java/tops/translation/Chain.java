@@ -433,8 +433,7 @@ public class Chain implements Iterable<BackboneSegment> {
         if (domain.isEmpty()) {
             backboneSegmentIterator = this.backboneSegments.iterator();
         } else {
-            List<BackboneSegment> segmentsFilteredByDomain = 
-            		domain.filter(this.backboneSegments);
+            List<BackboneSegment> segmentsFilteredByDomain = domain.filter(this.backboneSegments);
             segmentsFilteredByDomain.add(0, new Terminus("N Terminus", 'N'));
             segmentsFilteredByDomain.add(new Terminus("C Terminus", 'C'));
             backboneSegmentIterator = segmentsFilteredByDomain.iterator();
@@ -442,8 +441,7 @@ public class Chain implements Iterable<BackboneSegment> {
 
         int vertexNumber = 0;
         while (backboneSegmentIterator.hasNext()) {
-            BackboneSegment nextBackboneSegment = (BackboneSegment) backboneSegmentIterator
-                    .next();
+            BackboneSegment nextBackboneSegment = backboneSegmentIterator.next();
             if (nextBackboneSegment instanceof UnstructuredSegment) {
                 continue;
             } else {
@@ -459,7 +457,7 @@ public class Chain implements Iterable<BackboneSegment> {
         Iterator<Sheet> sheetIterator = this.sheets.iterator();
         List<Edge> edges = new ArrayList<Edge>();
         while (sheetIterator.hasNext()) {
-            Sheet sheet = (Sheet) sheetIterator.next();
+            Sheet sheet = sheetIterator.next();
             edges.addAll(sheet.toTopsEdges(domain));
         }
 
