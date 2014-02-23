@@ -21,16 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ClassicMatchServlet extends HttpServlet {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 7212090454159915390L;
 
-	private static final String servletName = "classicmatch"; // for the form
-                                                                // action
+	private static final String servletName = "classicmatch"; // for the form action
 
-    private static final String imageDir = "/tops/images/"; // where the pattern
-                                                            // images are
+    private static final String imageDir = "/tops/images/"; // where the pattern images are
 
     @SuppressWarnings("unchecked")
 	@Override
@@ -43,8 +38,7 @@ public class ClassicMatchServlet extends HttpServlet {
         HashMap<String, String> pattern_map = new HashMap<String, String>();
 
         if (generateForm == null) {
-            pattern_map = this.generateForm(out); // do a query to get the data
-                                                // for the map
+            pattern_map = this.generateForm(out); // do a query to get the data for the map
             session.setAttribute("pattern_map", pattern_map); // store the
                                                                 // pattern data
                                                                 // in the
@@ -109,14 +103,10 @@ public class ClassicMatchServlet extends HttpServlet {
 
         out.println("<html>");
         out.println("<head>");
-        out
-                .println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/tops/classic.css\">");
-        out
-                .println("<script type=\"text/javascript\" src=\"/tops/classic.js\"></script>");
-        out
-                .println("<title>Classic Patterns</title></head><body onload=\"highlightFirst()\">");
-        out
-                .println("<h1 align=\"center\">Find Matches For Classic Protein Structure Patterns</h1><p>");
+        out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/tops/classic.css\">");
+        out.println("<script type=\"text/javascript\" src=\"/tops/classic.js\"></script>");
+        out.println("<title>Classic Patterns</title></head><body onload=\"highlightFirst()\">");
+        out.println("<h1 align=\"center\">Find Matches For Classic Protein Structure Patterns</h1><p>");
         out.println("<table><tr>");
 
         // print out the pictures
@@ -128,24 +118,20 @@ public class ClassicMatchServlet extends HttpServlet {
             String filename = (String) pics.get(j);
             filename += "_thumb.png"; // start by printing the thumbnails
             String imgid = "img" + j;
-            out.println("<img id=\"" + imgid + "\" src=\"" + ClassicMatchServlet.imageDir
-                    + filename + "\" ");
+            out.println("<img id=\"" + imgid + "\" src=\"" + ClassicMatchServlet.imageDir+ filename + "\" ");
             out.println("onclick=\"selectName(" + j + ", this.id)\">");
             if (j % images_per_cell == (images_per_cell - 1))
                 out.println("</td>");
         }
-        out.println("<td><form id=\"theForm\" action=\"" + ClassicMatchServlet.servletName
-                + "\" method=\"POST\">");
+        out.println("<td><form id=\"theForm\" action=\"" + ClassicMatchServlet.servletName + "\" method=\"POST\">");
 
         // print out the patterns
         int numberOfPatterns = names.size();
-        out.println("<select name=\"pattern_id\" size=\"" + numberOfPatterns
-                + "\">");
+        out.println("<select name=\"pattern_id\" size=\"" + numberOfPatterns + "\">");
         for (int i = 0; i < numberOfPatterns; i++) {
             String optid = "opt" + i;
             String imgtarget = "img" + i;
-            out.println("<option id=\"" + optid + "\" value=\"" + ids.get(i)
-                    + "\" ");
+            out.println("<option id=\"" + optid + "\" value=\"" + ids.get(i)+ "\" ");
             out.println("onclick=\"selectImage(\'" + imgtarget + "\')\"");
             if (i == 0)
                 out.println("selected>");
@@ -154,29 +140,20 @@ public class ClassicMatchServlet extends HttpServlet {
             out.println(names.get(i) + "</option>");
         }
         out.println("</select>");
-        out
-                .println("<input type=\"hidden\" name=\"generate\" value=\"false\">");
+        out.println("<input type=\"hidden\" name=\"generate\" value=\"false\">");
         out.println("</td></tr><tr>");
 
         out.println("<td>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"cath,crep,arep,trep\" checked>CATH treps</input><br/>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"cath,crep,arep,trep,hrep\">CATH hreps</input><br/>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"cath,crep,arep,trep,hrep,nrep\">CATH nreps</input><br/>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"cath,all\">CATH all</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"cath,crep,arep,trep\" checked>CATH treps</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"cath,crep,arep,trep,hrep\">CATH hreps</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"cath,crep,arep,trep,hrep,nrep\">CATH nreps</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"cath,all\">CATH all</input><br/>");
         out.println("</td>");
         out.println("<td>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"scop,class,fold\">SCOP folds</input><br/>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"scop,class,fold,superfamily\">SCOP superfamilies</input><br/>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"scop,class,fold,superfamily,family\">SCOP families</input><br/>");
-        out
-                .println("<input type=\"radio\" name=\"subclasses\" value=\"scop,all\">SCOP all</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"scop,class,fold\">SCOP folds</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"scop,class,fold,superfamily\">SCOP superfamilies</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"scop,class,fold,superfamily,family\">SCOP families</input><br/>");
+        out.println("<input type=\"radio\" name=\"subclasses\" value=\"scop,all\">SCOP all</input><br/>");
         out.println("</td>");
         out.println("<td><input type=\"submit\" value=\"match\"></td>");
         out.println("</form></tr>");

@@ -1,32 +1,27 @@
 package tops.web.engine;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.util.ArrayList;
-
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import tops.engine.Result;
-//import tops.engine.TParser;
 import tops.engine.TopsStringFormatException;
-
 import tops.engine.drg.Comparer;
-
-//import tops.engine.inserts.Matcher;
-//import tops.engine.inserts.Pattern;
-//import tops.engine.inserts.TParser;
 
 public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -7416381583234400690L;
 
 	private static String compareStartPageURL;
@@ -90,7 +85,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
     public void displayPage(int page, int pageSize, Result[] results,
             PrintWriter out, String targetName, String target,
-            HashMap<Integer, ArrayList<String>> idToNameMap, String targetService, String classification) {
+            Map<Integer, List<String>> idToNameMap, String targetService, String classification) {
         out
                 .println("<html><head><meta http-equiv=\"Pragma\" content=\"no-cache\">");
         if (targetService.equals("compare")
@@ -123,10 +118,8 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             out.println("<p><b>" + results.length + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
             if (results.length == 0) {
-                out.println("Sorry, no matches for this pattern!"); // probably
-                                                                    // from
-                                                                    // pattern
-                                                                    // invention
+            	// probably from pattern invention
+                out.println("Sorry, no matches for this pattern!"); 
                 return;
             }
         } else if (targetService.equals("insert-match")) {
@@ -135,10 +128,8 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             out.println("<p><b>" + results.length + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
             if (results.length == 0) {
-                out.println("Sorry, no matches for this pattern!"); // probably
-                                                                    // from
-                                                                    // pattern
-                                                                    // invention
+            	// probably from pattern invention
+                out.println("Sorry, no matches for this pattern!"); 
                 return;
             }
         } else {
@@ -147,10 +138,8 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             out.println("<p><b>" + results.length + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
             if (results.length == 0) {
-                out.println("Sorry, no matches for this pattern!"); // probably
-                                                                    // from
-                                                                    // pattern
-                                                                    // invention
+            	// probably from pattern invention
+                out.println("Sorry, no matches for this pattern!"); 
                 return;
             }
         }
@@ -160,8 +149,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         String nameString = "";
 
         if (targetService.equals("insert-match")) {
-            tops.engine.inserts.TParser parser = new tops.engine.inserts.TParser(
-                    target);
+            tops.engine.inserts.TParser parser = new tops.engine.inserts.TParser(target);
             vertexString = new String(parser.getVerticesWithInserts());
             edgeString = parser.getEdgeString();
             nameString = parser.getName();
@@ -175,10 +163,9 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         if (edgeString.equals("")) {
             edgeString = "none";
         }
-        String patternDiagramURL = "/" + vertexString + "/" + edgeString + "/"
-                + nameString + ".gif";
+        String patternDiagramURL = "/" + vertexString + "/" + edgeString + "/" + nameString + ".gif";
         out.println("<img src=\"" + TopsComparisonServlet.diagramURL + "/300/100/none"
-                + patternDiagramURL + "\"/></p><hr>");
+        			+ patternDiagramURL + "\"/></p><hr>");
 
         if (pageSize > results.length)
             pageSize = results.length; // no funny business!
@@ -214,17 +201,14 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         out.println("<th>Classification</th></thead>");
         out.println("<tbody>");
 
-        // run through the groups, printing out rows for each identical member
-        // of that group
-        boolean evenrow = true; // a flag to enable altering the class of
-                                // alternate group 'blocks'
+        // run through the groups, printing out rows for each identical member of that group
+        boolean evenrow = true; // a flag to enable altering the class of alternate group 'blocks'
         float compression = 0;
 
         String nameUrl = new String();
         String numUrl = new String();
         if (classification.equals("scop")) {
-            nameUrl = TopsComparisonServlet.scopURL; // scop treats names and numbers the same - as
-                                // 'keys'
+            nameUrl = TopsComparisonServlet.scopURL; // scop treats names and numbers the same - as 'keys'
             numUrl = TopsComparisonServlet.scopURL;
         } else {
             nameUrl = TopsComparisonServlet.cathNameURL;
@@ -237,7 +221,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
         for (int i = startIndex; i < endIndex; i++) {
             Integer id = new Integer(results[i].getID());
-            ArrayList<String> nameList = idToNameMap.get(id);
+            List<String> nameList = idToNameMap.get(id);
             String data = results[i].getData();
 //            String insertString = null; // TODO sort this all out!
             String matchString = null;
@@ -273,31 +257,19 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                             + "/100x100/" + name + ".gif";
                     String diagramImageURL = TopsComparisonServlet.diagramURL + "/200/100/none/"
                             + body + "/" + tail + "/" + name + ".gif";
-                    // String diagramImageURL = diagramURL + "?data=" + data +
-                    // "&width=100&height=50";
 
-                    out.println("<td><img src=\"" + cartoonImageURL
-                            + "\"></img></td>");
-                    out.println("<td><img src=\"" + diagramImageURL
-                            + "\"></img></td>");
+                    out.println("<td><img src=\"" + cartoonImageURL + "\"></img></td>");
+                    out.println("<td><img src=\"" + diagramImageURL + "\"></img></td>");
                     out.println("<td>" + compression + "</td>");
                 } else {
                     String cartoonImageHighlightedURL = TopsComparisonServlet.cartoonURL + "/"
                             + classification + "/100x100/" + matchString + "/"
                             + name + ".gif";
-                    // String diagramImageHighlightedURL = diagramURL + "?data="
-                    // + data + "&matches=" + matchString +
-                    // "&width=100&height=50";
 
-                    out.println("<td><img src=\"" + cartoonImageHighlightedURL
-                            + "\"></img></td>");
-                    // out.println("<td><img src=\"" +
-                    // diagramImageHighlightedURL + "\"></img></td>");
+                    out.println("<td><img src=\"" + cartoonImageHighlightedURL + "\"></img></td>");
                 }
-                out.println("<td><a href=\"" + nameUrl + name + "\">" + name
-                        + "</a></td>");
-                out.println("<td><a href=\"" + numUrl + classif + "\">"
-                        + classif + "</a></td>");
+                out.println("<td><a href=\"" + nameUrl + name + "\">" + name + "</a></td>");
+                out.println("<td><a href=\"" + numUrl + classif + "\">" + classif + "</a></td>");
                 out.println("</tr>");
             }
             evenrow = !evenrow;
@@ -305,15 +277,14 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         out.println("</tbody></table></p>");
     }
 
-    private void mapList(HashMap<Integer, ArrayList<String>> map, Integer key, String value) {
-        ArrayList<String> list;
+    private void mapList(Map<Integer, List<String>> map, Integer key, String value) {
+        List<String> list;
 
         if (map.containsKey(key)) {
-            list = (ArrayList<String>) map.get(key);
+            list = map.get(key);
             list.add(value); // ADD VALUE! :)
         } else {
-            list = new ArrayList<String>(); // make a new list, starting with the
-                                    // current key
+            list = new ArrayList<String>(); // make a new list, starting with the current key
             list.add(value); // look lively!
         }
         map.put(key, list);
@@ -334,15 +305,9 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
         HttpSession session = request.getSession();
         Result[] results = (Result[]) session.getAttribute("results");
-        String newSubmission = (String) request.getAttribute("newSubmission"); // this
-                                                                                // should
-                                                                                // have
-                                                                                // been
-                                                                                // passed
-                                                                                // in
-                                                                                // by
-                                                                                // the
-                                                                                // caller
+        
+        // this should have been passed in by the caller
+        String newSubmission = (String) request.getAttribute("newSubmission"); 
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -354,7 +319,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         String[] subclasses; // parsed from a 'sub' string from input
         String targetName = "NONAME"; // get the target from request and parse
                                         // to get head
-        HashMap<Integer, ArrayList<String>> idToNameMap = null;
+        Map<Integer, List<String>> idToNameMap = null;
 
         if (newSubmission == null) {
             if (results == null) { // the results have been removed from the
@@ -368,7 +333,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             pageSizeS = (String) session.getAttribute("pagesize");
             targetName = (String) session.getAttribute("targetName");
             target = (String) session.getAttribute("target");
-            idToNameMap = (HashMap<Integer, ArrayList<String>>) session.getAttribute("idToNameMap");
+            idToNameMap = (Map<Integer, List<String>>) session.getAttribute("idToNameMap");
             subclasses = (String[]) session.getAttribute("subclasses");
 
             if (pageS != null)
@@ -425,22 +390,17 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
             query_b += where_expression + ";";
 
-            if (targetService.equals("match")
-                    || targetService.equals("advanced-match")) {
+            if (targetService.equals("match") || targetService.equals("advanced-match")) {
                 tops.engine.TParser parser = new tops.engine.TParser(target);
                 String vertexstring = parser.getVertexString();
-                where_expression += " AND length(vertex_string) >= "
-                        + vertexstring.length();
+                where_expression += " AND length(vertex_string) >= " + vertexstring.length();
             } else if (targetService.equals("insert-match")) {
-                tops.engine.inserts.TParser parser = new tops.engine.inserts.TParser(
-                        target);
+                tops.engine.inserts.TParser parser = new tops.engine.inserts.TParser(target);
                 char[] vertices = parser.getVerticesWithInserts();
-                where_expression += " AND length(vertex_string) >= "
-                        + vertices.length;
+                where_expression += " AND length(vertex_string) >= "  + vertices.length;
             }
 
-            query_a += where_expression
-                    + " AND gr = group_id GROUP BY group_id;";
+            query_a += where_expression + " AND gr = group_id GROUP BY group_id;";
 
             this.log("A = " + query_a + " B = " + query_b);
 
@@ -465,7 +425,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 // now concatenate the names together into a csv list, put lists
                 // into a map
                 ResultSet rs2 = statement.executeQuery(query_b);
-                idToNameMap = new HashMap<Integer, ArrayList<String>>();
+                idToNameMap = new HashMap<Integer, List<String>>();
                 // idToClassMap = new HashMap();
 
                 while (rs2.next()) {
@@ -475,8 +435,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                     String cl = rs2.getString("class");
                     String data = dom_id + "\t" + cl;
 
-                    this.mapList(idToNameMap, gr, data); // map the groupid to the
-                                                    // domain name
+                    this.mapList(idToNameMap, gr, data); // map the groupid to the domain name
                     // mapList(idToClassMap, gr, cl); //map the groupid to the
                     // class //ERRR...just use the one map
                 }
@@ -490,17 +449,14 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             if (instances != null) {
                 try {
                     Result[] tmp = null;
-                    if (targetService.equals("compare")
-                            || targetService.equals("advanced-compare")) {
+                    if (targetService.equals("compare") || targetService.equals("advanced-compare")) {
                         Comparer ex = new Comparer();
                         tmp = ex.compare(target, instances);
                     } else if (targetService.equals("insert-match")) {
-                        tops.engine.inserts.Matcher m = new tops.engine.inserts.Matcher(
-                                instances);
+                        tops.engine.inserts.Matcher m = new tops.engine.inserts.Matcher(instances);
                         tmp = m.runResults(new tops.engine.inserts.Pattern(target));
                     } else {
-                        tops.engine.drg.Matcher m = new tops.engine.drg.Matcher(
-                                instances);
+                        tops.engine.drg.Matcher m = new tops.engine.drg.Matcher(instances);
                         tmp = m.runResults(new tops.engine.drg.Pattern(target));
                     }
 

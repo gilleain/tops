@@ -67,6 +67,10 @@
 	<servlet>
 		<servlet-name>MatchServlet</servlet-name>
 		<servlet-class>tops.web.engine.TopsMatchServlet</servlet-class>
+		<init-param>
+		  <param-name>patternSourceType</param-name>
+		  <param-value>MEMORY</param-value>
+		</init-param>
 	</servlet>
 	<servlet>
 		<servlet-name>ClassicMatchServlet</servlet-name>
