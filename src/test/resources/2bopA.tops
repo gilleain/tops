@@ -1,0 +1,148 @@
+##
+## TOPS: tops.dw.protein topology information file
+##
+## Protein code 2BOP
+## Number of domains 1
+##
+
+DOMAIN_NUMBER 0 2bopA0 5 10 100
+
+SecondaryStructureType N
+Direction UP
+Label N1
+Colour 0 0 0
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 10
+PDBFinishResidue 11
+SymbolNumber 1
+Chain A
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction UP
+Label E1
+Colour 255 0 0
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 12
+PDBFinishResidue 16
+SymbolNumber 2
+Chain A
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType H
+Direction DOWN
+Label H2
+Colour 0 0 0
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 17
+PDBFinishResidue 25
+SymbolNumber 3
+Chain A
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction UP
+Label E3
+Colour 0 0 0
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 26
+PDBFinishResidue 29
+SymbolNumber 4
+Chain A
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType C
+Direction UP
+Label C4
+Colour 0 0 0
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 30
+PDBFinishResidue 31
+SymbolNumber 5
+Chain A
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0

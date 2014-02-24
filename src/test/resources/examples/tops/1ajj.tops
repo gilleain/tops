@@ -1,0 +1,176 @@
+##
+## TOPS: tops.dw.protein topology information file
+##
+## Protein code 1ajj
+## Number of domains 1
+##
+
+DOMAIN_NUMBER 0 1ajj0 
+
+SecondaryStructureType N
+Direction UP
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue -1
+PDBFinishResidue -1
+SymbolNumber 1
+Chain null
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType H
+Direction UP
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 19
+PDBFinishResidue 23
+SymbolNumber 2
+Chain null
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction UP
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner 5
+BridgePartnerSide R
+BridgePartnerType P
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 22
+PDBFinishResidue 24
+SymbolNumber 3
+Chain null
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType H
+Direction UP
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 33
+PDBFinishResidue 37
+SymbolNumber 4
+Chain null
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType E
+Direction UP
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner 3
+BridgePartnerSide L
+BridgePartnerType P
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 33
+PDBFinishResidue 36
+SymbolNumber 5
+Chain null
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType C
+Direction UP
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue -1
+PDBFinishResidue -1
+SymbolNumber 6
+Chain null
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0

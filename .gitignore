@@ -6,3 +6,5 @@ web/WEB-INF/lib/
 classes
 jars
 designer.jar
+/target
+.settings
