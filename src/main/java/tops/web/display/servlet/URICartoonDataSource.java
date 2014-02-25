@@ -48,17 +48,19 @@ public class URICartoonDataSource implements CartoonDataSource {
 
 	private Protein getProtein(String domid, File f) throws IOException {
 		Protein p = new Protein(f);
+//		System.out.println("Got protein " + p.getName());
 
 		Vector<SecStrucElement> doms = p.GetLinkedLists();
 		int domainIndex = p.GetDomainIndex(new CATHcode(domid));
 		if (domainIndex == -1) {
-			return null;
+			return p;
 		}
 
 		Protein pp = new Protein();
 		SecStrucElement s = doms.elementAt(domainIndex);
 		DomainDefinition d = p.GetDomainDefs().elementAt(domainIndex);
         pp.AddTopsLinkedList(s, d);
+//        System.out.println("Made protein " + pp.getName());
         return pp;
 	}
 

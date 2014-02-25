@@ -19,9 +19,6 @@ import tops.dw.protein.SecStrucElement;
 
 public class FindFilesServlet extends HttpServlet {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -8699565050755398690L;
 
 	private TopsFileManager tfm;

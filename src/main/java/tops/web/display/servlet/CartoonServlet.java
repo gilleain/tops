@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,9 +17,6 @@ import tops.view.tops2D.cartoon.CartoonDrawer;
 
 public class CartoonServlet extends HttpServlet {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -8579686840885253792L;
 
 	static {
@@ -31,31 +27,31 @@ public class CartoonServlet extends HttpServlet {
 
     private static final int DEFAULT_HEIGHT = 200;
 
-    /*
-     * horrible hack to ensure images have correct filenames. uses extra path
-     * info to the servlet as the parameters so a request for
-     * '/tops/path-servlet-name/group/chaindomain.ext' gets chain.tops (or db equiv.) 
-     * from whatever directory 'group' maps to and renders it as an ".ext" file. 'nice'
-     */
     @Override
-    public void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        String path = request.getPathInfo(); // eg /cath/1.2/2bopA0.gif OR /cath/2bopA0.gif
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    	String path = request.getPathInfo(); // eg /cath/1.2/2bopA0.gif OR /cath/2bopA0.gif
         
         ServletConfig config = this.getServletConfig();
         CartoonDataSource source = new URICartoonDataSource(path, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         Map<String, String> params = source.getParams();
+        System.out.println(params);
         String pathToFiles = config.getInitParameter(params.get("group"));
+        String realPath = config.getServletContext().getRealPath(pathToFiles);
+        System.out.println(pathToFiles + " -> " + realPath);
         
         Protein protein;
         try {
-        	protein = source.getCartoon(pathToFiles);
+        	protein = source.getCartoon(realPath);
+        	if (protein == null) { System.out.println("protein null!"); }
+        	handle(protein, params, response);
         } catch (IOException ioe) {
         	this.error(ioe.getMessage(), response);
         	return;
         }
 
+    }
+    
+    private void handle(Protein protein, Map<String, String> params, HttpServletResponse response) throws IOException {
         // quickly check if we only want the text of the file
         if (params.get("fileType").equals("tops")) { // TOPS! file format (basically, old-style tops file!)
             response.setContentType("text/plain");
@@ -108,7 +104,6 @@ public class CartoonServlet extends HttpServlet {
             this.error("filetype is not supported", response);
             return;
         }
-
     }
 
     private void error(String problem, HttpServletResponse response) {

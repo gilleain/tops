@@ -23,9 +23,6 @@ import tops.translation.PDBToGraph;
 
 public class PipelineServlet extends HttpServlet {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 3578846986797503235L;
 
 	private PDBToGraph pdbFileConverter;
@@ -72,7 +69,7 @@ public class PipelineServlet extends HttpServlet {
 
             if (results[0] == null) {
                 this.log("no results!");
-                this.faliure(response, "Conversion process failed!");
+                this.failure(response, "Conversion process failed!");
                 return;
             }
 
@@ -93,7 +90,7 @@ public class PipelineServlet extends HttpServlet {
                 next = "/pattern/group";
             } else {
                 this.log("unknown service : " + targetService);
-                this.faliure(response, "unknown service : " + targetService);
+                this.failure(response, "unknown service : " + targetService);
                 return;
             }
 
@@ -102,13 +99,13 @@ public class PipelineServlet extends HttpServlet {
 
         } else {
             this.log("no filenames!");
-            this.faliure(response, "No filenames!");
+            this.failure(response, "No filenames!");
             return;
         }
 
     }
 
-    public void faliure(HttpServletResponse response, String message) {
+    public void failure(HttpServletResponse response, String message) {
         response.setContentType("text/html");
         PrintWriter out = null;
         try {
