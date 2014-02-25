@@ -43,7 +43,7 @@ public class FindFilesServlet extends HttpServlet {
     }
 
     @Override
-    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pid = request.getParameter("pcode");
         String cid = request.getParameter("chain");
         String did = request.getParameter("domid");

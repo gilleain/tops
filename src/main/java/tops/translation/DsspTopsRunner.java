@@ -22,8 +22,14 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
     private CompressedFileHandler compressedFileHandler;
     
     public DsspTopsRunner(String scratchDirectory) {
-        this.dssp = new RunDssp("./dssp", scratchDirectory, scratchDirectory, "./");
-        this.tops = new RunTops("./tops", scratchDirectory, scratchDirectory, "./");
+        this("./", scratchDirectory);
+    }
+    
+    public DsspTopsRunner(String executableDir, String scratchDirectory) {
+    	String dsspPath = new File(executableDir, "dssp").toString();
+    	String topsPath = new File(executableDir, "Tops").toString();
+        this.dssp = new RunDssp(dsspPath, scratchDirectory, scratchDirectory, "./");
+        this.tops = new RunTops(topsPath, scratchDirectory, scratchDirectory, "./");
         this.tops2String = new Tops2String(scratchDirectory);
         this.compressedFileHandler = new CompressedFileHandler(scratchDirectory);
     }

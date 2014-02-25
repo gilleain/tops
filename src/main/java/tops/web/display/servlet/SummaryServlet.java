@@ -25,7 +25,7 @@ public class SummaryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1404081477291934173L;
 	
     private String viewPath;
-
+    
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	HttpSession session = request.getSession();
@@ -34,11 +34,11 @@ public class SummaryServlet extends HttpServlet {
     	String contextPath = request.getContextPath();
         this.viewPath = contextPath + "/view"; // "/tops/view";
         
-        String path = "";
-        displayDomains(protein, path, response);
+        String group = "";
+        displayDomains(protein, group, response);
     }
 
-    private void displayDomains(Protein protein, String path, HttpServletResponse response) {
+    private void displayDomains(Protein protein, String group, HttpServletResponse response) {
         Vector<DomainDefinition> domainNames = protein.GetDomainDefs();
         response.setContentType("text/html");
         PrintWriter pout = null;
@@ -55,10 +55,10 @@ public class SummaryServlet extends HttpServlet {
             DomainDefinition dd = e.nextElement();
             String name = dd.toString();
             String filename = name + ".gif"; // eg '2bopA0' + '.' +  'gif' = '2bopA0.gif'
-            String url = this.viewPath + "/" + path + "/" + filename;
+            String url = this.viewPath + "/" + group + "/" + filename;
             pout.println("<tr><td>");
             pout.println("<a href=\"" + url + "\">");
-            pout.println("<img src=\"" + url + "\"></img>");
+            pout.println("<img src=\"" + url + "\"/>");
             pout.println("</a></td></tr>");
         }
         pout.println("</table></body></html>");

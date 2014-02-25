@@ -19,9 +19,10 @@ public class UploadCartoonDataSource implements CartoonDataSource {
 	
 	private Map<String, String> filenameMap;
 	
-	public UploadCartoonDataSource(Map<String, String> filenameMap, String pathToScratch) {
+	public UploadCartoonDataSource(
+			Map<String, String> filenameMap, String executablePath, String pathToScratch) {
 		this.filenameMap = filenameMap;
-		this.cartoonConverter = new DsspTopsRunner(pathToScratch);
+		this.cartoonConverter = new DsspTopsRunner(executablePath, pathToScratch);
 	}
 
 	@Override

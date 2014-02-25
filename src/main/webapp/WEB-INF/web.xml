@@ -124,9 +124,13 @@
 		<servlet-name>TranslationServlet</servlet-name>
 		<servlet-class>tops.web.engine.TranslationServlet</servlet-class>
 		<init-param>
-			<param-name>home.dir</param-name>
-			<param-value>/Users/maclean/tops/web</param-value>
+			<param-name>scratch.dir</param-name>
+			<param-value>scratch</param-value>
 		</init-param>
+		<init-param>
+            <param-name>executable.path</param-name>
+            <param-value>bin</param-value>
+        </init-param>
 	</servlet>
 	<servlet>
 		<servlet-name>LogAnalyserServlet</servlet-name>

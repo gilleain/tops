@@ -12,8 +12,8 @@ public class RunDssp extends Executer {
 
     private String run_directory;
 
-    public RunDssp(String path_to_dssp, String pdb_directory,
-            String output_directory, String run_directory) {
+    public RunDssp(String path_to_dssp, String pdb_directory, 
+    			   String output_directory, String run_directory) {
         this.path_to_dssp = path_to_dssp;
         this.pdb_directory = pdb_directory;
         this.output_directory = output_directory;

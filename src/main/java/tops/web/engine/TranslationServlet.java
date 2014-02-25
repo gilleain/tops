@@ -17,27 +17,27 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import tops.dw.protein.Protein;
-import tops.translation.PDBToGraph;
 import tops.web.display.servlet.CartoonDataSource;
 import tops.web.display.servlet.UploadCartoonDataSource;
 
 public class TranslationServlet extends HttpServlet {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -7794798388203061901L;
 
-	private PDBToGraph pdbFileConverter;
-
     private String pathToScratch;
+    
+    private String executablePath;
 
     @Override
     public void init() throws ServletException {
-        String home = this.getInitParameter("home.dir");
-        this.log("home directory = " + home);
-
-        this.pathToScratch = home + "/scratch/";
+        String scratchDir = this.getInitParameter("scratch.dir");
+        String exePath = this.getInitParameter("executable.path");
+        
+        this.pathToScratch = getServletContext().getRealPath(scratchDir);
+        this.executablePath = getServletContext().getRealPath(exePath);
+        
+        this.log("scratch directory = " + scratchDir + " -> " + pathToScratch);
+        this.log("exe path = " + exePath + " -> " + executablePath);
     }
 
     @Override
@@ -45,10 +45,11 @@ public class TranslationServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HashMap<String, String> filenameMap = this.uploadPDBFiles(request);
-        CartoonDataSource cartoonDataSource = new UploadCartoonDataSource(filenameMap, pathToScratch);
-        Protein cartoon = cartoonDataSource.getCartoon(pathToScratch);
+        CartoonDataSource cartoonDataSource = 
+        		new UploadCartoonDataSource(filenameMap, executablePath, pathToScratch);
+        Protein protein = cartoonDataSource.getCartoon(pathToScratch);
         HttpSession session = request.getSession();
-        session.setAttribute("cartoon", cartoon);
+        session.setAttribute("protein", protein);
     }
 
     public HashMap<String, String> uploadPDBFiles(HttpServletRequest request) {
