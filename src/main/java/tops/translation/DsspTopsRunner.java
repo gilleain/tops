@@ -21,11 +21,14 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
     
     private CompressedFileHandler compressedFileHandler;
     
+    private String scratchDirectory;
+    
     public DsspTopsRunner(String scratchDirectory) {
         this("./", scratchDirectory);
     }
     
     public DsspTopsRunner(String executableDir, String scratchDirectory) {
+    	this.scratchDirectory = scratchDirectory;
     	String dsspPath = new File(executableDir, "dssp").toString();
     	String topsPath = new File(executableDir, "Tops").toString();
         this.dssp = new RunDssp(dsspPath, scratchDirectory, scratchDirectory, "./");
@@ -34,7 +37,7 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
         this.compressedFileHandler = new CompressedFileHandler(scratchDirectory);
     }
     
-    private String toTopsFile(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
+    private File toTopsFile(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
     	String decompressedFileName = 
     			this.compressedFileHandler.attemptDecompressionOfFile(pdbFilename, fileType);
         
@@ -47,20 +50,20 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
         String topsFilename = fourLetterCode + ".tops";
         this.dssp.convert(pdbFilename, dsspFilename);
         this.tops.convert(fourLetterCode, "", topsFilename, "");
-        return topsFilename;
+        return new File(scratchDirectory, topsFilename);
     }
 
     @Override
     public String[] convertToGraphs(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
-    	String topsFilename = toTopsFile(pdbFilename, fileType, fourLetterCode);
-        return this.tops2String.convert(topsFilename, "", "CATH");
+    	File topsFile = toTopsFile(pdbFilename, fileType, fourLetterCode);
+        return this.tops2String.convert(topsFile.toString(), "", "CATH");
     }
     
     @Override
 	public Protein convertToCartoon(
 			String pdbFilename, String fileType, String fourLetterCode) throws IOException {
-    	String topsFilename = toTopsFile(pdbFilename, fileType, fourLetterCode);
-		return new tops.dw.protein.Protein(topsFilename);
+    	File topsFile = toTopsFile(pdbFilename, fileType, fourLetterCode);
+		return new tops.dw.protein.Protein(topsFile);
 	}
 
 	public void convertAndPrint(String pdbFilename) throws IOException {
