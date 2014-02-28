@@ -28,6 +28,20 @@ public class SummaryServlet extends HttpServlet {
     
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	// XXX - for now, a duplicate of doPost! FIXME
+    	HttpSession session = request.getSession();
+    	Protein protein = (Protein) session.getAttribute("protein");
+    	
+    	String contextPath = request.getContextPath();
+        this.viewPath = contextPath + "/view"; // "/tops/view";
+        
+        String group = "";
+        displayDomains(protein, group, response);
+    }
+    
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	// XXX - for now, a duplicate of doGet! FIXME
     	HttpSession session = request.getSession();
     	Protein protein = (Protein) session.getAttribute("protein");
     	

@@ -29,13 +29,15 @@ public class CartoonServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	String path = request.getPathInfo(); // eg /cath/1.2/2bopA0.gif OR /cath/2bopA0.gif
         
+    	// convert the URI into a cartoon source
+        CartoonDataSource source = new URICartoonDataSource(request);
+        Map<String, String> uriParams = source.getParams();
+        System.out.println(uriParams);
+
+        // translate the group ID into a location for the data 
         ServletConfig config = this.getServletConfig();
-        CartoonDataSource source = new URICartoonDataSource(path, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        Map<String, String> params = source.getParams();
-        System.out.println(params);
-        String pathToFiles = config.getInitParameter(params.get("group"));
+        String pathToFiles = config.getInitParameter(uriParams.get("group"));
         String realPath = config.getServletContext().getRealPath(pathToFiles);
         System.out.println(pathToFiles + " -> " + realPath);
         
@@ -43,7 +45,7 @@ public class CartoonServlet extends HttpServlet {
         try {
         	protein = source.getCartoon(realPath);
         	if (protein == null) { System.out.println("protein null!"); }
-        	handle(protein, params, response);
+        	handle(protein, uriParams, response);
         } catch (IOException ioe) {
         	this.error(ioe.getMessage(), response);
         	return;
@@ -69,8 +71,10 @@ public class CartoonServlet extends HttpServlet {
         }
 
         String fileType = params.get("fileType");
-        int width = Integer.parseInt(params.get("width"));
-        int height = Integer.parseInt(params.get("height"));
+        String widthParam = params.get("width");
+        String heightParam = params.get("height");
+        int width = (widthParam == null)? DEFAULT_WIDTH : Integer.parseInt(widthParam);
+        int height = (heightParam == null)? DEFAULT_HEIGHT : Integer.parseInt(heightParam);
         CartoonDrawer drawer = new CartoonDrawer();
         if (fileType.equals("gif")) { // Image - could be several types?
 

@@ -6,18 +6,27 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServletRequest;
+
 import tops.dw.protein.CATHcode;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 
+/**
+ * Get the location for a protein-cartoon from a URI like "/cath/1.2/2bopA0.gif" or
+ *  "/cath/2bopA0.gif" which leads to a set of parameters to find the data.
+ *  
+ * @author maclean
+ *
+ */
 public class URICartoonDataSource implements CartoonDataSource {
 
 	private Map<String, String> params;
 
-	public URICartoonDataSource(String uri, int defaultWidth, int defaultHeight) 
-			throws StringIndexOutOfBoundsException, IOException {
-		PathParser pathParser = new PathParser(defaultWidth, defaultHeight);
+	public URICartoonDataSource(HttpServletRequest request) throws StringIndexOutOfBoundsException, IOException {
+		String uri = request.getPathInfo(); 
+		PathParser pathParser = new PathParser();
 		this.params = pathParser.parsePath(uri);
 	}
 
