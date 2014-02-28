@@ -39,7 +39,7 @@ public class TranslationServlet extends HttpServlet {
 
         CartoonDataSource cartoonDataSource = 
         		new UploadCartoonDataSource(request, executablePath, pathToScratch);
-        Protein protein = cartoonDataSource.getCartoon(pathToScratch);
+        Protein protein = cartoonDataSource.getCartoon();
         HttpSession session = request.getSession();
         session.setAttribute("protein", protein);
         String url = "/summary";	// XXX TMP

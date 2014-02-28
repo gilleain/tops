@@ -16,7 +16,7 @@ import tops.dw.protein.Protein;
  */
 public interface CartoonDataSource {
 
-	public Protein getCartoon(String directory) throws IOException;
+	public Protein getCartoon() throws IOException;
 	
 	public Map<String, String> getParams();
 }

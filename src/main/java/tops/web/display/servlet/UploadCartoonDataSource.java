@@ -41,7 +41,7 @@ public class UploadCartoonDataSource implements CartoonDataSource {
 	}
 
 	@Override
-	public Protein getCartoon(String directory) {
+	public Protein getCartoon() {
 		// XXX - can't currently handle multiple files!
 		if (filenameMap.size() > 1)	return null;		
 

@@ -48,7 +48,7 @@ public class SummaryServlet extends HttpServlet {
     	String contextPath = request.getContextPath();
         this.viewPath = contextPath + "/view"; // "/tops/view";
         
-        String group = "";
+        String group = "session";	// pseudo-group indicating the data is in the session :/
         displayDomains(protein, group, response);
     }
 

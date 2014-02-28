@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
 import tops.dw.protein.CATHcode;
@@ -23,11 +24,27 @@ import tops.dw.protein.SecStrucElement;
 public class URICartoonDataSource implements CartoonDataSource {
 
 	private Map<String, String> params;
+	
+	private String sourceDirectory;
+	
+	private Protein protein;
 
-	public URICartoonDataSource(HttpServletRequest request) throws StringIndexOutOfBoundsException, IOException {
+	public URICartoonDataSource(HttpServletRequest request, ServletConfig config) 
+			throws StringIndexOutOfBoundsException, IOException {
 		String uri = request.getPathInfo(); 
 		PathParser pathParser = new PathParser();
 		this.params = pathParser.parsePath(uri);
+		
+		// translate the group ID into a location for the data
+		String pathToFiles = config.getInitParameter(params.get("group"));
+        this.sourceDirectory = config.getServletContext().getRealPath(pathToFiles);
+        System.out.println(pathToFiles + " -> " + sourceDirectory);
+        
+        if (params.get("group").equals("session")) {
+			protein = (Protein) request.getSession().getAttribute("protein");	// ugh...
+		} else {
+			protein = getFromFile();
+		}
 	}
 
 	public Map<String, String> getParams() {
@@ -35,16 +52,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 	}
 
 	@Override
-	public Protein getCartoon(String directory) throws IOException {
-
-		// first, try and get the data from the given source
-		File f = new File(directory, params.get("filename"));
-		if (!f.canRead()) {
-			throw new IOException("File not found " + params.get("filename"));
-		}
-		
-		 // assuming the tops.dw.protein can be created, determine what to return
-        Protein protein = this.getProtein(params.get("domain"), f);
+	public Protein getCartoon() throws IOException {
 
 		// do highlights
 		String highlight = params.get("highlight");
@@ -53,6 +61,17 @@ public class URICartoonDataSource implements CartoonDataSource {
 		}
 
 		return protein;
+	}
+	
+	private Protein getFromFile() throws IOException {
+		// first, try and get the data from the given source
+		File f = new File(sourceDirectory, params.get("filename"));
+		if (!f.canRead()) {
+			throw new IOException("File not found " + params.get("filename"));
+		}
+
+		// assuming the tops.dw.protein can be created, determine what to return
+		return this.getProtein(params.get("domain"), f);
 	}
 
 	private Protein getProtein(String domid, File f) throws IOException {

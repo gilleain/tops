@@ -31,21 +31,16 @@ public class CartoonServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         
     	// convert the URI into a cartoon source
-        CartoonDataSource source = new URICartoonDataSource(request);
-        Map<String, String> uriParams = source.getParams();
-        System.out.println(uriParams);
-
-        // translate the group ID into a location for the data 
-        ServletConfig config = this.getServletConfig();
-        String pathToFiles = config.getInitParameter(uriParams.get("group"));
-        String realPath = config.getServletContext().getRealPath(pathToFiles);
-        System.out.println(pathToFiles + " -> " + realPath);
+    	ServletConfig config = this.getServletConfig();
+        CartoonDataSource source = new URICartoonDataSource(request, config);
         
         Protein protein;
         try {
-        	protein = source.getCartoon(realPath);
-        	if (protein == null) { System.out.println("protein null!"); }
-        	handle(protein, uriParams, response);
+        	protein = source.getCartoon();
+        	if (protein == null) { 
+        		System.out.println("protein null!");	// XXX - throw error
+        	}
+        	handle(protein, source.getParams(), response);
         } catch (IOException ioe) {
         	this.error(ioe.getMessage(), response);
         	return;
