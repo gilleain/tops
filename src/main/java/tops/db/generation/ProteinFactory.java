@@ -96,19 +96,19 @@ public class ProteinFactory extends TopsFactory {
                 lastDOM_ID = DOM_ID;
                 lastSSE = currentSSE;
 
-                currentSSE.Type = Type;
-                currentSSE.SymbolNumber = SSE_No / 2;
-                currentSSE.Direction = Direction;
-                currentSSE.Label = null;
-                currentSSE.Colour = new Color(Red, Green, Blue);
+                currentSSE.setType(Type);
+                currentSSE.setSymbolNumber(SSE_No / 2);
+                currentSSE.setDirection(Direction);
+                currentSSE.setLabel(null);
+                currentSSE.setColour(new Color(Red, Green, Blue));
 
                 // currentSSE.SetFixedIndex(??); //??
                 // currentSSE.SetNextIndex(NextFixedSSE); //private??why?
                 currentSSE.SetFixedType(FixedType);
                 currentSSE.SetSeqStartResidue(SeqStartResidue);
                 currentSSE.SetSeqFinishResidue(SeqStartResidue + SeqLength);
-                currentSSE.PDBStartResidue = PDBStartResidue;
-                currentSSE.PDBFinishResidue = PDBFinishResidue;
+                currentSSE.setPDBStartResidue(PDBStartResidue);
+                currentSSE.setPDBFinishResidue(PDBFinishResidue);
 
                 currentSSE
                         .SetAxesStartPoint(AxisStartX, AxisStartY, AxisStartZ);

@@ -204,7 +204,7 @@ public class OrientInfo {
     // must be guaranteed whenever its called
     private int relZOrient(SecStrucElement ref[], SecStrucElement orient[]) {
 
-        if (ref[0].Direction.equals(orient[0].Direction))
+        if (ref[0].getDirection().equals(orient[0].getDirection()))
             return 1;
         else
             return -1;

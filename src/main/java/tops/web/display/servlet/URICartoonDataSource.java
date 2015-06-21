@@ -102,9 +102,9 @@ public class URICartoonDataSource implements CartoonDataSource {
 			return;
 		} else if (highlight.equals("all")) {
 			for (SecStrucElement s = root; s != null; s = s.GetTo()) {
-				if (s.Type.equals("E")) {
+				if (s.getType().equals("E")) {
 					s.setColour(strandColor);
-				} else if (s.Type.equals("H")) {
+				} else if (s.getType().equals("H")) {
 					s.setColour(helixColor);
 				} else {
 					s.setColour(otherColor);
@@ -117,9 +117,9 @@ public class URICartoonDataSource implements CartoonDataSource {
 		for (int i = 0; i < bits.length; i++) {
 			int index = Integer.parseInt(bits[i]);
 			SecStrucElement s = root.GetSSEByNumber(index);
-			if (s.Type.equals("E")) {
+			if (s.getType().equals("E")) {
 				s.setColour(strandColor);
-			} else if (s.Type.equals("H")) {
+			} else if (s.getType().equals("H")) {
 				s.setColour(helixColor);
 			} else {
 				s.setColour(otherColor);

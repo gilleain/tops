@@ -252,12 +252,12 @@ public class CartoonDrawer {
         Point pos = ss.GetPosition();
         Color col = ss.getColour();
 
-        if (ss.Type.equals("H")) {
+        if (ss.getType().equals("H")) {
             this.drawHelix(pos.x, pos.y, radius, col);
-        } else if (ss.Type.equals("E")) {
-            this.drawStrand(pos.x, pos.y, radius, ss.Direction, col);
-        } else if ((ss.Type.equals("C")) || (ss.Type.equals("N"))) {
-            this.drawTerminus(pos.x, pos.y, radius, ss.Label);
+        } else if (ss.getType().equals("E")) {
+            this.drawStrand(pos.x, pos.y, radius, ss.getDirection(), col);
+        } else if ((ss.getType().equals("C")) || (ss.getType().equals("N"))) {
+            this.drawTerminus(pos.x, pos.y, radius, ss.getLabel());
         }
 
     }
@@ -309,7 +309,7 @@ public class CartoonDrawer {
 
         SecStrucElement to = from.GetTo();
         /* Don't connect from a C terminus or to an N terminus */
-        if (from.Type.equals("C") || to.Type.equals("N"))
+        if (from.getType().equals("C") || to.getType().equals("N"))
             return;
 
         int radiusFrom = from.GetSymbolRadius();
@@ -322,9 +322,9 @@ public class CartoonDrawer {
          * draw from border rather than centre if direction is down (D) or if
          * Type is N or C
          */
-        if (from.Direction.equals("D") || from.Type.equals("C")
-                || from.Type.equals("N")) {
-            if (from.Type.equals("E")) {
+        if (from.getDirection().equals("D") || from.getType().equals("C")
+                || from.getType().equals("N")) {
+            if (from.getType().equals("E")) {
                 pointFrom = this.downTriangleBorder(from.GetPosition(), to
                         .GetPosition(), radiusFrom);
             } else {
@@ -337,9 +337,9 @@ public class CartoonDrawer {
          * draw to border rather than centre if direction is up (U) or if Type
          * is N or C
          */
-        if (to.Direction.equals("U") || to.Type.equals("C")
-                || to.Type.equals("N")) {
-            if (to.Type.equals("E")) {
+        if (to.getDirection().equals("U") || to.getType().equals("C")
+                || to.getType().equals("N")) {
+            if (to.getType().equals("E")) {
                 pointTo = this.upTriangleBorder(to.GetPosition(),
                         from.GetPosition(), radiusTo);
             } else {

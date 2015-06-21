@@ -92,14 +92,14 @@ public class ProteinTest {
 	public SecStrucElement make(String chain, Color color, String direction,
 								String label, int pdbStart, int pdbEnd, int symbolNumber, String type) {
 		SecStrucElement root = new SecStrucElement();
-		root.Chain = chain;
-		root.Colour = color;
-		root.Direction = direction;
-		root.Label = label;
-		root.PDBStartResidue = pdbStart;
-		root.PDBFinishResidue = pdbEnd;
-		root.SymbolNumber = symbolNumber;
-		root.Type = type;
+		root.setChain(chain);
+		root.setColour(color);
+		root.setDirection(direction);
+		root.setLabel(label);
+		root.setPDBStartResidue(pdbStart);
+		root.setPDBFinishResidue(pdbEnd);
+		root.setSymbolNumber(symbolNumber);
+		root.setType(type);
 		return root;
 	}
 

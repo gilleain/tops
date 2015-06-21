@@ -1,9 +1,7 @@
 package tops.dw.protein;
 
 import java.util.*;
-
 import java.io.*;
-
 import java.awt.*;
 
 import tops.dw.editor.Annotation;
@@ -12,21 +10,21 @@ import tops.dw.editor.PostscriptFactory;
 
 public class SecStrucElement {
 
-    public int SymbolNumber;
+    private int SymbolNumber;
 
-    public String Type;
+    private String Type;
 
-    public String Direction;
+    private String Direction;
 
-    public int PDBStartResidue;
+    private int PDBStartResidue;
 
-    public int PDBFinishResidue;
+    private int PDBFinishResidue;
 
-    public String Chain;
+    private String Chain;
 
-    public String Label;
+    private String Label;
 
-    public Color Colour;
+    private Color Colour;
 
     private SecStrucElement From = null, To = null;
 
@@ -44,7 +42,7 @@ public class SecStrucElement {
 
     private Vector<Point> ConnectionTo;
 
-    private String FixedType;
+	private String FixedType;
 
     private Vector<Integer> BridgePartner;
 
@@ -1257,8 +1255,65 @@ public class SecStrucElement {
         this.ReflectYZ();
         this.ReflectZX();
     }
+    
 
-    @Override
+    public int getSymbolNumber() {
+		return SymbolNumber;
+	}
+
+	public void setSymbolNumber(int symbolNumber) {
+		SymbolNumber = symbolNumber;
+	}
+
+	public String getType() {
+		return Type;
+	}
+
+	public void setType(String type) {
+		Type = type;
+	}
+
+	public String getDirection() {
+		return Direction;
+	}
+
+	public void setDirection(String direction) {
+		Direction = direction;
+	}
+
+	public int getPDBStartResidue() {
+		return PDBStartResidue;
+	}
+
+	public void setPDBStartResidue(int pDBStartResidue) {
+		PDBStartResidue = pDBStartResidue;
+	}
+
+	public int getPDBFinishResidue() {
+		return PDBFinishResidue;
+	}
+
+	public void setPDBFinishResidue(int pDBFinishResidue) {
+		PDBFinishResidue = pDBFinishResidue;
+	}
+
+	public String getChain() {
+		return Chain;
+	}
+
+	public void setChain(String chain) {
+		Chain = chain;
+	}
+
+    public String getLabel() {
+		return Label;
+	}
+
+	public void setLabel(String label) {
+		Label = label;
+	}
+
+	@Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
 

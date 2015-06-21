@@ -264,18 +264,18 @@ public class Protein {
                         LastSS.SetTo(CurrentSS);
                     LastSS = CurrentSS;
 
-                    CurrentSS.Type = st.nextToken();
-                    CurrentSS.SymbolNumber = countss - 1;
+                    CurrentSS.setType(st.nextToken());
+                    CurrentSS.setSymbolNumber(countss - 1);
 
                 } else if (FirstToken.equals("Direction")) {
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
-                    CurrentSS.Direction = st.nextToken();
+                    CurrentSS.setDirection(st.nextToken());
                 } else if (FirstToken.equals("Label")) {
                     if (nTokens > 1) {
-                        CurrentSS.Label = st.nextToken();
+                        CurrentSS.setLabel(st.nextToken());
                     } else {
-                        CurrentSS.Label = null;
+                        CurrentSS.setLabel(null);
                     }
                 } else if (FirstToken.equals("Colour")) {
                     for (j = 0; j < 3; j++) {
@@ -291,7 +291,7 @@ public class Protein {
                         if (tmp_int[j] > 255)
                             tmp_int[j] = 255;
                     }
-                    CurrentSS.Colour = new Color(tmp_int[0], tmp_int[1], tmp_int[2]);
+                    CurrentSS.setColour(new Color(tmp_int[0], tmp_int[1], tmp_int[2]));
                 } else if (FirstToken.equals("Fixed")) {
                     int fs;
                     if (nTokens > 1) {
@@ -465,21 +465,20 @@ public class Protein {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
-                    CurrentSS.PDBStartResidue = Integer
-                            .parseInt(st.nextToken());
+                    CurrentSS.setPDBStartResidue(
+                    		Integer.parseInt(st.nextToken()));
 
                 } else if (FirstToken.equals("PDBFinishResidue")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
-                    CurrentSS.PDBFinishResidue = Integer.parseInt(st
-                            .nextToken());
+                    CurrentSS.setPDBFinishResidue(Integer.parseInt(st.nextToken()));
 
                 } else if (FirstToken.equals("Chain")) {
                     if (st.hasMoreTokens()) {
-                        CurrentSS.Chain = st.nextToken();
+                        CurrentSS.setChain(st.nextToken());
                     } else {
-                        CurrentSS.Chain = " ";
+                        CurrentSS.setChain(" ");
                     }
                 } else if (FirstToken.equals("Fill")) {
 

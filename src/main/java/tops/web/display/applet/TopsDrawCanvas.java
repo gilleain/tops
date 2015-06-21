@@ -317,8 +317,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
         StringBuffer topsString = new StringBuffer();
         for (SecStrucElement s = this.RootSecStruc; s != null; s = s.GetTo()) {
-            char type = s.Type.charAt(0);
-            type = (s.Direction.equals("D")) ? Character.toLowerCase(type)
+            char type = s.getType().charAt(0);
+            type = (s.getDirection().equals("D")) ? Character.toLowerCase(type)
                     : type;
             topsString.append(type);
         }
@@ -508,10 +508,11 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     }
 
     public void flip(SecStrucElement s) {
-        if (s.Direction.equals("U"))
-            s.Direction = "D";
-        else if (s.Direction.equals("D"))
-            s.Direction = "U";
+        if (s.getDirection().equals("U")) {
+            s.setDirection("D");
+        } else if (s.getDirection().equals("D")) {
+            s.setDirection("U");
+        }
         this.repaint();
     }
 
@@ -691,17 +692,17 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 + " at (" + x + ", " + y + ")");
 
         SecStrucElement newSSE = new SecStrucElement();
-        newSSE.Type = type;
-        newSSE.Direction = direction;
+        newSSE.setType(type);
+        newSSE.setDirection(direction);
         newSSE.PlaceElement(x, y);
         newSSE.SetSymbolRadius(defaultRadius);
 
         if (this.RootSecStruc == null) {
             // make N and C terminii
             SecStrucElement nTerminus = new SecStrucElement();
-            nTerminus.Type = "N";
-            nTerminus.Direction = "U";
-            nTerminus.Label = "N";
+            nTerminus.setType("N");
+            nTerminus.setDirection("U");
+            nTerminus.setLabel("N");
             nTerminus.PlaceElement(x - defaultSeparation, y); // ARBITRARY!
             nTerminus.SetSymbolRadius(defaultRadius);
             nTerminus.SetTo(newSSE);
@@ -709,9 +710,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             newSSE.SetFrom(nTerminus);
 
             SecStrucElement cTerminus = new SecStrucElement();
-            cTerminus.Type = "C";
-            cTerminus.Direction = "U";
-            cTerminus.Label = "C";
+            cTerminus.setType("C");
+            cTerminus.setDirection("U");
+            cTerminus.setLabel("C");
             cTerminus.PlaceElement(x + defaultSeparation, y); // ARBITRARY!
             cTerminus.SetSymbolRadius(defaultRadius);
             cTerminus.SetFrom(newSSE);
@@ -722,7 +723,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         } else {
             // deal with the C-terminus in a special way - add the new SSE
             // _before_ it
-            if (this.SelectedSymbol.Type.equals("C")) {
+            if (this.SelectedSymbol.getType().equals("C")) {
                 newSSE.SetTo(this.SelectedSymbol);
                 this.SelectedSymbol.SetFrom(newSSE);
                 newSSE.SetFrom(this.SelectedSymbol.GetFrom());
@@ -742,15 +743,15 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public synchronized void DeleteSelected() {
         // can't delete terminii!
-        if ((this.SelectedSymbol.Type.equals("N"))
-                || (this.SelectedSymbol.Type.equals("C"))) {
+        if ((this.SelectedSymbol.getType().equals("N"))
+                || (this.SelectedSymbol.getType().equals("C"))) {
             System.err.println("can't delete terminii!");
             return;
         }
 
         // delete terminii if we delete the final symbol
-        if ((this.SelectedSymbol.GetFrom().Type.equals("N"))
-                && (this.SelectedSymbol.GetTo().Type.equals("C"))) {
+        if ((this.SelectedSymbol.GetFrom().getType().equals("N"))
+                && (this.SelectedSymbol.GetTo().getType().equals("C"))) {
             this.RootSecStruc = null;
             return;
         }
@@ -1168,22 +1169,22 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         ScreenR = ss.GetSymbolRadius();
         ScreenPos = ss.GetPosition();
 
-        if (ss.Type.equals("H")) {
+        if (ss.getType().equals("H")) {
             if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
                 c = this.selectedHelixColor;
             this.DrawHelix(ScreenPos.x, ScreenPos.y, ScreenR, c, gc);
         }
 
-        if (ss.Type.equals("E")) {
+        if (ss.getType().equals("E")) {
             if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
                 c = this.selectedStrandColor;
-            this.DrawStrand(ScreenPos.x, ScreenPos.y, ScreenR, ss.Direction, c, gc);
+            this.DrawStrand(ScreenPos.x, ScreenPos.y, ScreenR, ss.getDirection(), c, gc);
         }
 
-        if ((ss.Type.equals("C")) || (ss.Type.equals("N"))) {
+        if ((ss.getType().equals("C")) || (ss.getType().equals("N"))) {
             if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
                 c = this.selectedTerminusColor;
-            this.DrawTerminus(ScreenPos.x, ScreenPos.y, ScreenR, ss.Label, c, gc);
+            this.DrawTerminus(ScreenPos.x, ScreenPos.y, ScreenR, ss.getLabel(), c, gc);
         }
 
     }
@@ -1301,7 +1302,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             return;
 
         /* Don't connect from a C terminus or to an N terminus */
-        if (s.Type.equals("C") || To.Type.equals("N"))
+        if (s.getType().equals("C") || To.getType().equals("N"))
             return;
 
         FromScreenR = s.GetSymbolRadius();
@@ -1315,8 +1316,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * two symbols
          */
         if (s.GetConnectionTo().isEmpty()) {
-            this.JoinPoints(s.GetPosition(), s.Direction, s.Type, FromScreenR, To
-                    .GetPosition(), To.Direction, To.Type, ToScreenR,
+            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR, To
+                    .GetPosition(), To.getDirection(), To.getType(), ToScreenR,
                     GraphicsOutput);
         }
         /* the case where there are some intervening connection points */
@@ -1325,7 +1326,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
             Point PointTo = ConnectionEnum.nextElement();
 
-            this.JoinPoints(s.GetPosition(), s.Direction, s.Type, FromScreenR,
+            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR,
                     PointTo, "*", "*", 0, GraphicsOutput);
 
             Point PointFrom;
@@ -1337,8 +1338,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             }
 
             PointFrom = PointTo;
-            this.JoinPoints(PointFrom, "*", "*", 0, To.GetPosition(), To.Direction,
-                    To.Type, ToScreenR, GraphicsOutput);
+            this.JoinPoints(PointFrom, "*", "*", 0, To.GetPosition(), To.getDirection(),
+                    To.getType(), ToScreenR, GraphicsOutput);
 
         }
 

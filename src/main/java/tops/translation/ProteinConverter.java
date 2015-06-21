@@ -42,20 +42,20 @@ public class ProteinConverter {
 				head = s;
 			}
 			if (backboneSegment instanceof Strand) {
-				s.Type = "E";
+				s.setType("E");
 			} else if (backboneSegment instanceof Helix) {
-				s.Type = "H";
+				s.setType("H");
 			} else if (backboneSegment instanceof Terminus) {
-				s.Type = String.valueOf(((Terminus) backboneSegment).getTypeChar());
+				s.setType(String.valueOf(((Terminus) backboneSegment).getTypeChar()));
 			}
 			if (backboneSegment.getOrientation().equals("UP")) {
-				s.Direction = "UP";
+				s.setDirection("UP");
 			} else {
-				s.Direction = "DOWN";
+				s.setDirection("DOWN");
 			}
-			s.PDBStartResidue = backboneSegment.firstPDB();
-			s.PDBFinishResidue = backboneSegment.lastPDB();
-			s.SymbolNumber = i;
+			s.setPDBStartResidue(backboneSegment.firstPDB());
+			s.setPDBFinishResidue(backboneSegment.lastPDB());
+			s.setSymbolNumber(i);
 			i++;
 			s.SetFrom(prev);
 			if (prev != null) {
@@ -71,8 +71,8 @@ public class ProteinConverter {
 				if (prevStrand != null) {
 					SecStrucElement prevElement = segmentElementMap.get(prevStrand);
 					SecStrucElement currElement = segmentElementMap.get(strand);
-					prevElement.AddBridgePartner(currElement.SymbolNumber);
-					currElement.AddBridgePartner(prevElement.SymbolNumber);
+					prevElement.AddBridgePartner(currElement.getSymbolNumber());
+					currElement.AddBridgePartner(prevElement.getSymbolNumber());
 					prevElement.AddBridgePartnerSide("R"); // XXX
 					currElement.AddBridgePartnerSide("L"); // XXX
 					char relativeOrientation = prevStrand.getRelativeOrientation(strand);
