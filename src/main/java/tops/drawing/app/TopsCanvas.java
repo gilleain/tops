@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.RepaintManager;
 
 import tops.drawing.Cartoon;
+import tops.drawing.TopsCartoon;
 import tops.drawing.symbols.CartoonConnector;
 import tops.drawing.symbols.SSESymbol;
 
@@ -82,7 +83,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     public TopsCanvas( TopsEditor parentPanel) {
         this.parentPanel = parentPanel;
 
-        this.cartoon = new Cartoon();
+        this.cartoon = new TopsCartoon();
         
         undoStack = new Stack<UndoEvent>();
         dragging = false;

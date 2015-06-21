@@ -29,7 +29,7 @@ public class CartoonLayout {
 	}
 	
 	public Cartoon layout(Topology topology) {
-		Cartoon cartoon = new Cartoon();
+		Cartoon cartoon = new TopsCartoon();
 		
 		int x = this.startX;
 		int y = this.startY;
