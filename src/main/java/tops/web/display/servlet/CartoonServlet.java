@@ -53,7 +53,7 @@ public class CartoonServlet extends HttpServlet {
         if (params.get("fileType").equals("tops")) { // TOPS! file format (basically, old-style tops file!)
             response.setContentType("text/plain");
             ServletOutputStream out = response.getOutputStream();
-            protein.WriteTopsFile(out);
+            protein.writeTopsFile(out);
             return;
         }
 

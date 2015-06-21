@@ -28,8 +28,8 @@ public class BatchAnnotater {
 	        int b = 20;
 			
 			Protein p = new Protein(inFile);
-			Vector<DomainDefinition> names = p.GetDomainDefs();
-			for (int i = 0; i < p.NumberDomains(); i++) {
+			Vector<DomainDefinition> names = p.getDomainDefs();
+			for (int i = 0; i < p.numberDomains(); i++) {
 				SecStrucElement domain = p.getDomain(i);
 				domain.fitToRectangle(0, 0, w, h, b);
 				

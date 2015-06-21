@@ -53,7 +53,7 @@ public class SummaryServlet extends HttpServlet {
     }
 
     private void displayDomains(Protein protein, String group, HttpServletResponse response) {
-        Vector<DomainDefinition> domainNames = protein.GetDomainDefs();
+        Vector<DomainDefinition> domainNames = protein.getDomainDefs();
         response.setContentType("text/html");
         PrintWriter pout = null;
         try {

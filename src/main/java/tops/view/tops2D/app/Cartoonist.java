@@ -38,8 +38,8 @@ public class Cartoonist {
         
         try {
             Protein protein = new Protein(new File(topsFilepath));
-            Vector<DomainDefinition> dd = protein.GetDomainDefs();
-            Vector<SecStrucElement> ll = protein.GetLinkedLists();
+            Vector<DomainDefinition> dd = protein.getDomainDefs();
+            Vector<SecStrucElement> ll = protein.getLinkedLists();
 
             if (outputType.equalsIgnoreCase("pdf") || outputType.equalsIgnoreCase("img")) {
                 FileOutputStream fos = new FileOutputStream(outputFilepath);

@@ -40,8 +40,8 @@ public class ProteinTest {
 		e3.SetTo(c4);
 		c4.SetFrom(e3);
 		
-		protein.AddTopsLinkedList(root, dd);
-		protein.WriteTopsFile(System.out);
+		protein.addTopsLinkedList(root, dd);
+		protein.writeTopsFile(System.out);
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class ProteinTest {
 		e3.SetTo(c4);
 		c4.SetFrom(e3);
 		
-		protein.AddTopsLinkedList(root, dd);
+		protein.addTopsLinkedList(root, dd);
 		
 		CATHcode c2 = new CATHcode("2bopB0");
 		DomainDefinition dd2 = new DomainDefinition(c2);
@@ -84,9 +84,9 @@ public class ProteinTest {
 		e8.SetTo(c9);
 		c9.SetFrom(e8);
 		
-		protein.AddTopsLinkedList(root2, dd2);
+		protein.addTopsLinkedList(root2, dd2);
 		
-		protein.WriteTopsFile(System.out);
+		protein.writeTopsFile(System.out);
 	}
 	
 	public SecStrucElement make(String chain, Color color, String direction,

@@ -70,9 +70,9 @@ public class FindFilesServlet extends HttpServlet {
 	        	Protein mergedProtein = new Protein();
 	        	for (String name : names) {
 	        		Protein chain = new Protein(this.tfm.getStreamFromDir(cla, name));
-	        		for (DomainDefinition dd : chain.GetDomainDefs()) {
-	        			SecStrucElement root = chain.getDomain(chain.GetDomainIndex(dd.getCATHcode()));
-	        			mergedProtein.AddTopsLinkedList(root, dd);
+	        		for (DomainDefinition dd : chain.getDomainDefs()) {
+	        			SecStrucElement root = chain.getDomain(chain.getDomainIndex(dd.getCATHcode()));
+	        			mergedProtein.addTopsLinkedList(root, dd);
 	        		}
 	        	}
 	        	handle(mergedProtein, action, request, response);

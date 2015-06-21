@@ -41,21 +41,21 @@ public class ProteinConverterTest {
 	public void singleSSE() {
 		tops.translation.Protein p = makeNewProtein("N", "E", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		q.WriteTopsFile(System.out);
+		q.writeTopsFile(System.out);
 	}
 	
 	@Test
 	public void twoSSE() {
 		tops.translation.Protein p = makeNewProtein("N", "E", "H", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		q.WriteTopsFile(System.out);
+		q.writeTopsFile(System.out);
 	}
 	
 	@Test
 	public void threeSSE() {
 		tops.translation.Protein p = makeNewProtein("N", "E", "H", "e", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		q.WriteTopsFile(System.out);
+		q.writeTopsFile(System.out);
 	}
 
 }

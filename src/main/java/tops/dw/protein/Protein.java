@@ -7,16 +7,16 @@ import java.awt.*;
 
 public class Protein {
 
-    private String Name;
+    private String name;
 
-    private Vector<SecStrucElement> TopsLinkedLists;
+    private Vector<SecStrucElement> topsLinkedLists;
 
-    private Vector<DomainDefinition> DomainDefs;
+    private Vector<DomainDefinition> domainDefs;
 
     public Protein() {
-        this.DomainDefs = new Vector<DomainDefinition>();
-        this.TopsLinkedLists = new Vector<SecStrucElement>();
-        this.Name = "Unknown";
+        this.domainDefs = new Vector<DomainDefinition>();
+        this.topsLinkedLists = new Vector<SecStrucElement>();
+        this.name = "Unknown";
     }
     
     public Protein(String filename) throws FileNotFoundException, IOException,
@@ -30,57 +30,57 @@ public class Protein {
         this();
 
         FileInputStream fis = new FileInputStream(TopsFile);
-        this.ReadTopsFile(fis);
+        this.readTopsFile(fis);
 
         StringTokenizer st = new StringTokenizer(TopsFile.getName(), ".");
 
         if (st.hasMoreTokens())
-            this.Name = st.nextToken();
+            this.name = st.nextToken();
 
     }
 
     public Protein(BufferedReader br) throws IOException,
             TopsFileFormatException {
         this();
-        this.ReadTopsFile(br);
+        this.readTopsFile(br);
     }
 
     public Protein(InputStream InStream) throws IOException,
             TopsFileFormatException {
         this();
-        this.ReadTopsFile(InStream);
+        this.readTopsFile(InStream);
     }
 
     public Protein(InputStream InStream, String name) throws IOException,
             TopsFileFormatException {
         this(InStream);
-        this.Name = name;
+        this.name = name;
     }
     
     public String getName() {
-    	return this.Name;
+    	return this.name;
     }
     
     public void setName(String name) {
-    	this.Name = name;
+    	this.name = name;
     }
 
-    public void AddTopsLinkedList(SecStrucElement s, DomainDefinition d) {
+    public void addTopsLinkedList(SecStrucElement s, DomainDefinition d) {
 
-        if (this.TopsLinkedLists == null) {
-            this.TopsLinkedLists = new Vector<SecStrucElement>();
-            this.DomainDefs = new Vector<DomainDefinition>();
+        if (this.topsLinkedLists == null) {
+            this.topsLinkedLists = new Vector<SecStrucElement>();
+            this.domainDefs = new Vector<DomainDefinition>();
         }
-        this.TopsLinkedLists.addElement(s);
-        this.DomainDefs.addElement(d);
+        this.topsLinkedLists.addElement(s);
+        this.domainDefs.addElement(d);
 
     }
 
-    public int GetDomainIndex(CATHcode cc) {
+    public int getDomainIndex(CATHcode cc) {
 
         int i;
         int ind = -1;
-        Enumeration<DomainDefinition> e = this.DomainDefs.elements();
+        Enumeration<DomainDefinition> e = this.domainDefs.elements();
         CATHcode CompareCathCode;
 
         for (i = 0; e.hasMoreElements(); i++) {
@@ -96,49 +96,49 @@ public class Protein {
     }
     
     public SecStrucElement getRootSSE(String domainName) {
-    	for (int i = 0; i < this.DomainDefs.size(); i++) {
-    		CATHcode code = ((DomainDefinition) this.DomainDefs.get(i)).getCATHcode();
+    	for (int i = 0; i < this.domainDefs.size(); i++) {
+    		CATHcode code = ((DomainDefinition) this.domainDefs.get(i)).getCATHcode();
     		if (code.toString().equals(domainName)) {
-    			return (SecStrucElement) this.TopsLinkedLists.get(i);
+    			return (SecStrucElement) this.topsLinkedLists.get(i);
     		}
     	}
     	return null;
     }
 
-    public Vector<SecStrucElement> GetLinkedLists() {
-        return this.TopsLinkedLists;
+    public Vector<SecStrucElement> getLinkedLists() {
+        return this.topsLinkedLists;
     }
 
-    public int NumberDomains() {
-        return this.DomainDefs.size();
+    public int numberDomains() {
+        return this.domainDefs.size();
     }
 
-    public Vector<DomainDefinition> GetDomainDefs() {
-        return this.DomainDefs;
+    public Vector<DomainDefinition> getDomainDefs() {
+        return this.domainDefs;
     }
     
     public SecStrucElement getDomain(int i) {
-    	return (SecStrucElement) this.TopsLinkedLists.get(i);
+    	return (SecStrucElement) this.topsLinkedLists.get(i);
     }
 
     @Override
     public String toString() {
-        return this.Name;
+        return this.name;
     }
 
-    public void WriteTopsFile(OutputStream os) {
+    public void writeTopsFile(OutputStream os) {
 
         if (os == null)
             return;
 
         PrintWriter pw = new PrintWriter(os, true);
 
-        this.WriteTopsHeader(pw);
+        this.writeTopsHeader(pw);
 
-        if ((this.DomainDefs != null) && (this.TopsLinkedLists != null)) {
+        if ((this.domainDefs != null) && (this.topsLinkedLists != null)) {
 
-            Enumeration<DomainDefinition> ddefs = this.DomainDefs.elements();
-            Enumeration<SecStrucElement> lls = this.TopsLinkedLists.elements();
+            Enumeration<DomainDefinition> ddefs = this.domainDefs.elements();
+            Enumeration<SecStrucElement> lls = this.topsLinkedLists.elements();
 
             int i;
             for (i = 0; ddefs.hasMoreElements(); i++) {
@@ -166,25 +166,25 @@ public class Protein {
 
     }
 
-    private void WriteTopsHeader(PrintWriter pw) {
+    private void writeTopsHeader(PrintWriter pw) {
 
         pw.println("##");
         pw.println("## TOPS: tops.dw.protein topology information file");
         pw.println("##");
-        pw.println("## Protein code " + this.Name);
+        pw.println("## Protein code " + this.name);
 
-        pw.println("## Number of domains " + this.NumberDomains());
+        pw.println("## Number of domains " + this.numberDomains());
         pw.println("##");
         pw.print("\n");
 
     }
 
-    private void ReadTopsFile(InputStream InStream) throws IOException,
+    private void readTopsFile(InputStream InStream) throws IOException,
             TopsFileFormatException {
-        this.ReadTopsFile(new BufferedReader(new InputStreamReader(InStream)));
+        this.readTopsFile(new BufferedReader(new InputStreamReader(InStream)));
     }
 
-    private void ReadTopsFile(BufferedReader br) throws IOException,
+    private void readTopsFile(BufferedReader br) throws IOException,
             TopsFileFormatException {
 
         String line = null, FirstToken;
@@ -256,7 +256,7 @@ public class Protein {
                     CurrentSS = new SecStrucElement();
 
                     if (countss == 1) {
-                        this.AddTopsLinkedList(CurrentSS, ddef);
+                        this.addTopsLinkedList(CurrentSS, ddef);
                     }
 
                     CurrentSS.SetFrom(LastSS);
@@ -501,16 +501,16 @@ public class Protein {
 
         }
 
-        Enumeration<SecStrucElement> lls = this.GetLinkedLists().elements();
+        Enumeration<SecStrucElement> lls = this.getLinkedLists().elements();
         while (lls.hasMoreElements()) {
             SecStrucElement ll = (SecStrucElement) lls.nextElement();
-            this.FixedFromFixedIndex(ll);
-            this.NextFromNextIndex(ll);
+            this.fixedFromFixedIndex(ll);
+            this.nextFromNextIndex(ll);
         }
 
     }
 
-    private void FixedFromFixedIndex(SecStrucElement root) {
+    private void fixedFromFixedIndex(SecStrucElement root) {
 
         if (!root.IsRoot())
             return;
@@ -522,7 +522,7 @@ public class Protein {
 
     }
 
-    private void NextFromNextIndex(SecStrucElement root) {
+    private void nextFromNextIndex(SecStrucElement root) {
 
         if (!root.IsRoot())
             return;

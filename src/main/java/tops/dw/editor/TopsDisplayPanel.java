@@ -66,7 +66,7 @@ public class TopsDisplayPanel extends Panel {
      * Construct for a tops.dw.protein
      */
     public TopsDisplayPanel(Protein p) {
-        this(p.GetLinkedLists(), p.GetDomainDefs());
+        this(p.getLinkedLists(), p.getDomainDefs());
     }
 
     /* END constructors */
@@ -158,7 +158,7 @@ public class TopsDisplayPanel extends Panel {
      *            the tops.dw.protein
      */
     public void setDiagrams(Protein p) {
-        this.setDiagrams(p.GetLinkedLists(), p.GetDomainDefs());
+        this.setDiagrams(p.getLinkedLists(), p.getDomainDefs());
     }
 
     /**
@@ -211,7 +211,7 @@ public class TopsDisplayPanel extends Panel {
      *            the tops.dw.protein
      */
     public void addDiagrams(Protein p) {
-        this.addDiagrams(p.GetLinkedLists(), p.GetDomainDefs());
+        this.addDiagrams(p.getLinkedLists(), p.getDomainDefs());
     }
 
     /**

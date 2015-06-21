@@ -18,7 +18,7 @@ public class PDBToTopsConversionTest {
 		tops.dw.protein.Protein oldStyleProtein = ProteinConverter.convert(protein);
 		File outputFile = new File(outputDir, id + ".tops");
 		FileOutputStream outputStream = new FileOutputStream(outputFile);
-		oldStyleProtein.WriteTopsFile(outputStream);
+		oldStyleProtein.writeTopsFile(outputStream);
 		outputStream.flush();
 		outputStream.close();
 	}

@@ -28,7 +28,7 @@ public class ProteinFactory extends TopsFactory {
             rootSSE = this.getConnectionPoints(chainName, rootSSE);
             CATHcode code = new CATHcode(dom_id);
             DomainDefinition domainDefinition = new DomainDefinition(code);
-            p.AddTopsLinkedList(rootSSE, domainDefinition);
+            p.addTopsLinkedList(rootSSE, domainDefinition);
         }
 
         return p;
@@ -137,7 +137,7 @@ public class ProteinFactory extends TopsFactory {
         String name = args[1];
         ProteinFactory proteinFactory = new ProteinFactory();
         Protein p = proteinFactory.getProtein(source, name);
-        p.WriteTopsFile(System.out);
+        p.writeTopsFile(System.out);
     }
 
 }

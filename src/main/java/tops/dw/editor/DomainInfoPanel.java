@@ -37,8 +37,8 @@ public class DomainInfoPanel extends Panel {
 
         this.proteins.addElement(p);
 
-        Enumeration<DomainDefinition> DomainDefs = p.GetDomainDefs().elements();
-        Enumeration<SecStrucElement> Diagrams = p.GetLinkedLists().elements();
+        Enumeration<DomainDefinition> DomainDefs = p.getDomainDefs().elements();
+        Enumeration<SecStrucElement> Diagrams = p.getLinkedLists().elements();
 
         DomainDefinition dd;
         SecStrucElement ss;

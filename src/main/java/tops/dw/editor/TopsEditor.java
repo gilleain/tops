@@ -484,7 +484,7 @@ public class TopsEditor implements ActionListener {
                         dc.SetCCodeCoordinates();
                     }
                     if (wr_prot != null)
-                        wr_prot.WriteTopsFile(fos);
+                        wr_prot.writeTopsFile(fos);
                     dcenum = dcs.elements();
                     while (dcenum.hasMoreElements()) {
                         dc = (TopsDrawCanvas) dcenum.nextElement();
@@ -507,8 +507,8 @@ public class TopsEditor implements ActionListener {
         Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
             Protein p = (Protein) prots.nextElement();
-            Enumeration<DomainDefinition> doms = p.GetDomainDefs().elements();
-            Enumeration<SecStrucElement> lls = p.GetLinkedLists().elements();
+            Enumeration<DomainDefinition> doms = p.getDomainDefs().elements();
+            Enumeration<SecStrucElement> lls = p.getLinkedLists().elements();
             while (doms.hasMoreElements() && lls.hasMoreElements()) {
                 strs.addElement(doms.nextElement().toString());
                 diags.addElement(lls.nextElement());
@@ -799,8 +799,8 @@ public class TopsEditor implements ActionListener {
         Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
             Protein p = (Protein) prots.nextElement();
-            Enumeration<DomainDefinition> doms = p.GetDomainDefs().elements();
-            Enumeration<SecStrucElement> lls = p.GetLinkedLists().elements();
+            Enumeration<DomainDefinition> doms = p.getDomainDefs().elements();
+            Enumeration<SecStrucElement> lls = p.getLinkedLists().elements();
             while (doms.hasMoreElements() && lls.hasMoreElements()) {
                 strs.addElement(doms.nextElement().toString());
                 diags.addElement(lls.nextElement());

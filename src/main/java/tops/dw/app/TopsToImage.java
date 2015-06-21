@@ -58,8 +58,8 @@ public class TopsToImage {
         TopsDrawCanvas.PREF_HEIGHT = 280;
         TopsDrawCanvas.PREF_WIDTH = 360;
 
-        Enumeration<SecStrucElement> Diagrams = p.GetLinkedLists().elements();
-        Enumeration<DomainDefinition> Domains = p.GetDomainDefs().elements();
+        Enumeration<SecStrucElement> Diagrams = p.getLinkedLists().elements();
+        Enumeration<DomainDefinition> Domains = p.getDomainDefs().elements();
 
         int n = 0;
         Vector<TopsDrawCanvas> draw_canvs = new Vector<TopsDrawCanvas>();

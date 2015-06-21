@@ -23,7 +23,7 @@ public class ProteinConverter {
 			SecStrucElement s = toSSE(chain);
 			char chainLabel = chain.getCathCompatibleLabel().charAt(0);
 			DomainDefinition d = new DomainDefinition(new CATHcode(newProtein.getID() + String.valueOf(chainLabel)));
-			oldProtein.AddTopsLinkedList(s, d);
+			oldProtein.addTopsLinkedList(s, d);
 		}
 		
 		return oldProtein;
