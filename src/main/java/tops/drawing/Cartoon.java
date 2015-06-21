@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import tops.drawing.symbols.Bond;
 import tops.drawing.symbols.Box;
@@ -19,15 +20,19 @@ import tops.drawing.symbols.DashedLine;
 import tops.drawing.symbols.EquilateralTriangle;
 import tops.drawing.symbols.SSESymbol;
 
-
-
+/**
+ * A 2.5 dimensional view of a protein topology.
+ * 
+ * @author maclean
+ *
+ */
 public class Cartoon implements Cloneable {
-    private ArrayList<SSESymbol> sseSymbols;
-    private ArrayList<CartoonConnector> connections;
-    private ArrayList<Bond> rArcs;
-    private ArrayList<Bond> lArcs;
-    private ArrayList<Bond> aBonds;
-    private ArrayList<Bond> pBonds;
+    private List<SSESymbol> sseSymbols;
+    private List<CartoonConnector> connections;
+    private List<Bond> rArcs;
+    private List<Bond> lArcs;
+    private List<Bond> aBonds;
+    private List<Bond> pBonds;
     
     private CartoonConnector selected_connector;
     
@@ -102,7 +107,7 @@ public class Cartoon implements Cloneable {
         }
     }
     
-    private ArrayList<Bond> cloneBonds(Cartoon clone, ArrayList<Bond> bonds) {
+    private ArrayList<Bond> cloneBonds(Cartoon clone, List<Bond> bonds) {
         ArrayList<Bond> bondClones = new ArrayList<Bond>();
         for (int i = 0; i < bonds.size(); i++) {
             Bond bond = bonds.get(i);
@@ -115,7 +120,7 @@ public class Cartoon implements Cloneable {
     
     private void cloneBond(ConnectionSymbol originalConnection, 
     					   ConnectionSymbol clonedConnection, 
-    					   ArrayList<SSESymbol> clonedSSESymbols) {
+    					   List<SSESymbol> clonedSSESymbols) {
         SSESymbol start = originalConnection.getStartSSESymbol();
         SSESymbol end = originalConnection.getEndSSESymbol();
         int startIndex = this.sseSymbols.indexOf(start);
@@ -539,7 +544,7 @@ public class Cartoon implements Cloneable {
         }
     }
     
-    public void updateBonds(SSESymbol symbol, ArrayList<Bond> bonds) {
+    public void updateBonds(SSESymbol symbol, List<Bond> bonds) {
         for (int i = 0; i < bonds.size(); i++) {
             Bond bond = bonds.get(i);
             if (bond.contains(symbol)) {
@@ -763,7 +768,7 @@ public class Cartoon implements Cloneable {
     }
     
     public void resizeSymbols() {
-        
+        // TODO
     }
     
     public void createUpStrand(int symbolNumber, int x, int y, int canvasSize) {
@@ -841,7 +846,7 @@ public class Cartoon implements Cloneable {
         this.sseSymbols.remove(sseSymbol);
     }
     
-    private void deleteBonds(SSESymbol sseSymbol, ArrayList<Bond> bonds) {
+    private void deleteBonds(SSESymbol sseSymbol, List<Bond> bonds) {
         Iterator<Bond> itr = bonds.iterator();
         while (itr.hasNext()) {
             Bond bond = itr.next();
@@ -950,7 +955,7 @@ public class Cartoon implements Cloneable {
     }
 
     public void validateHBonds() {
-        // loop through the aBonds and pBonds loking for bonds that
+        // loop through the aBonds and pBonds looking for bonds that
         // should be switched
 
         ArrayList<Bond> temp_bonds = new ArrayList<Bond>();
@@ -999,7 +1004,7 @@ public class Cartoon implements Cloneable {
 
     // returns the R_Arc from that is created between a symbol and another symbol
     // if one of those symbols is sseSymbols<symbolNum>
-    public String getBondInfo(int symbolNum, ArrayList<Bond> ar, String sse_rep) {
+    public String getBondInfo(int symbolNum, List<Bond> ar, String sse_rep) {
         String bond_string = "";
         for (int j = 0; j < ar.size(); j++) {
             Bond bond = ar.get(j);
@@ -1021,7 +1026,7 @@ public class Cartoon implements Cloneable {
     }
 
     
-    public boolean bondBetween(SSESymbol start, SSESymbol end, ArrayList<Bond> bonds) {
+    public boolean bondBetween(SSESymbol start, SSESymbol end, List<Bond> bonds) {
         for (int i = 0; i < bonds.size(); i++) {
             Bond bond = bonds.get(i);
             if (bond.contains(start) && bond.contains(end)) {
@@ -1071,7 +1076,7 @@ public class Cartoon implements Cloneable {
         return isValid;
     }
 
-    //returns true if it is valid to ceate a R arc between the source and destination
+    //returns true if it is valid to create an R arc between the source and destination
     public boolean canCreateLArc(SSESymbol source, SSESymbol dest) {
         boolean isValid = true;
 
