@@ -629,7 +629,7 @@
 	</target>
 
 	<target description="the tiny viewer" name="tiny">
-		<javac debug="true" destdir="classes" srcdir="src">
+		<javac debug="true" destdir="classes" srcdir="src/main/java">
 			<include name="tops/view/tops2D/app/Diagrammer.java"/>
 			<include name="tops/view/tops2D/app/TinyViewer.java"/>
 			<include name="tops/view/tops2D/app/TParser.java"/>
