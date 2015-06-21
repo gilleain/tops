@@ -57,7 +57,7 @@ public class TemplateDialog extends JDialog implements ActionListener {
     };
 
     private JLabel templateName_label;
-    private JComboBox templateName_combo;
+    private JComboBox<Object> templateName_combo;
     private JPanel templateComboPanel;
     private JPanel middle_panel, template_image_panel, inner_pic_panel;
     private JPanel template_description_panel;
@@ -88,7 +88,7 @@ public class TemplateDialog extends JDialog implements ActionListener {
         container = getContentPane();
 
         templateName_label = new JLabel();
-        templateName_combo = new JComboBox();
+        templateName_combo = new JComboBox<Object>();
         templateComboPanel = new JPanel();
 
         template_image_panel = new JPanel();
@@ -127,7 +127,7 @@ public class TemplateDialog extends JDialog implements ActionListener {
         templateName_label.setForeground(Color.black);
         
         // combo box settings
-        templateName_combo.setModel(new DefaultComboBoxModel(this.template_names));
+        templateName_combo.setModel(new DefaultComboBoxModel<Object>(this.template_names));
         templateName_combo.setSelectedIndex(0);
         templateName_combo.setForeground(Color.black);
         

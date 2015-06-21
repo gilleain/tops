@@ -10,6 +10,7 @@ package tops.drawing.app;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 
@@ -37,10 +38,10 @@ public class SubmissionDialog extends JDialog implements ActionListener {
     private JPanel submit_but_panel;
 
     private JTextField tops_name;
-    private JComboBox results_num_list;
-    private JComboBox results_per_page_list;
-    private JComboBox subclasses_list;
-    private JComboBox submission_list;
+    private JComboBox<?> results_num_list;
+    private JComboBox<?> results_per_page_list;
+    private JComboBox<?> subclasses_list;
+    private JComboBox<?> submission_list;
     private JButton submit, cancel;
 
     public boolean finished = false;
@@ -102,10 +103,10 @@ public class SubmissionDialog extends JDialog implements ActionListener {
                           "SCOP folds", "SCOP superfamilies", "SCOP families", "SCOP all"};
         String[] data4 = {"advanced-compare", "advanced-match", "insert-match"};
         
-        results_num_list = new JComboBox(data1);
-        results_per_page_list = new JComboBox(data2);
-        subclasses_list = new JComboBox(data3);
-        submission_list = new JComboBox(data4);
+        results_num_list = new JComboBox<Object>(data1);
+        results_per_page_list = new JComboBox<Object>(data2);
+        subclasses_list = new JComboBox<Object>(data3);
+        submission_list = new JComboBox<Object>(data4);
         
         tops_name_panel.add(new JLabel("    TOPS Name:                                "));
         tops_name_panel.add(tops_name);
