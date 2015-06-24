@@ -87,7 +87,11 @@ public class TopsEditor extends JApplet {
         this.add(canvasScrollPane, BorderLayout.CENTER);
         this.setVisible(true);
         
-        templateDialog = new TemplateDialog(this);
+        try {
+        	templateDialog = new TemplateDialog(this);
+        } catch (NullPointerException npe) {
+        	System.err.println("npe when making template dialog");
+        }
         submitDialog = new SubmissionDialog(this);
         addEditDialog = new InsertEditRangeDialog(this);
         
