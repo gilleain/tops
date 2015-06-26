@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,8 +26,8 @@ import tops.drawing.model.Topology;
  */
 public class LayerDiagram {
     
-    private ArrayList<ConnectionLine> connectionLines;
-    private ArrayList<Layer> layers;
+    private List<ConnectionLine> connectionLines;
+    private List<Layer> layers;
 //    private TerminalBox nTerminus;
 //    private TerminalBox cTerminus;
     
@@ -50,7 +51,7 @@ public class LayerDiagram {
     public void createFromModel(Topology model) {
        
         // convert the sheets into layers and set the z-order
-        ArrayList<TSE> tses = model.getTSES();
+        List<TSE> tses = model.getTSES();
         HashMap<Integer, LayerElement> sseToElementMap = new HashMap<Integer, LayerElement>();
         int zOrder = 0;
         for (int i = 0; i < tses.size(); i++) {
@@ -78,7 +79,7 @@ public class LayerDiagram {
 
         
         // make the connection lines
-        ArrayList<Connection> connections = model.getConnections();
+        List<Connection> connections = model.getConnections();
         for (int i = 0; i < connections.size(); i++) {
             Connection connection = (Connection) connections.get(i);
             SSE first = connection.getFirst();

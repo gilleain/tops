@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import tops.drawing.symbols.Arc;
@@ -22,9 +23,9 @@ import tops.drawing.symbols.Triangle;
  */
 public class Diagram {
     
-    private ArrayList<SSESymbol> sseSymbols;
-    private ArrayList<Arc> arcs;
-    private ArrayList<Line> backbone;
+    private List<SSESymbol> sseSymbols;
+    private List<Arc> arcs;
+    private List<Line> backbone;
     
     private boolean isLaidOut;
     

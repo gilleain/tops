@@ -3,6 +3,7 @@ package tops.drawing;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import tops.drawing.model.Helix;
 import tops.drawing.model.SSE;
@@ -35,7 +36,7 @@ public class CartoonLayout {
 		int y = this.startY;
 		HashMap<Integer, SSESymbol> symbolMap = new HashMap<Integer, SSESymbol>();
 		
-		ArrayList<TSE> tses = topology.getTSES();
+		List<TSE> tses = topology.getTSES();
 		for (TSE tse : tses) {
 			ArrayList<SSE> sses = tse.getSSEs();
 			for (SSE sse : sses) {

@@ -1,6 +1,7 @@
 package tops.drawing.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -10,10 +11,10 @@ import java.util.ArrayList;
  */
 public class Topology {
     
-    private ArrayList<SSE> sses;
-    private ArrayList<Connection> connections;
-    private ArrayList<TSE> tses;
-    private ArrayList<Chirality> chiralities;
+    private List<SSE> sses;
+    private List<Connection> connections;
+    private List<TSE> tses;
+    private List<Chirality> chiralities;
     
     public Topology() {
         this.sses = new ArrayList<SSE>();
@@ -149,15 +150,15 @@ public class Topology {
         }
     }
     
-    public ArrayList<SSE> getSSES() {
+    public List<SSE> getSSES() {
         return this.sses;
     }
     
-    public ArrayList<TSE> getTSES() {
+    public List<TSE> getTSES() {
         return this.tses;
     }
     
-    public ArrayList<Connection> getConnections() {
+    public List<Connection> getConnections() {
         return this.connections;
     }
     
