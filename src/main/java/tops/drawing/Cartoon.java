@@ -55,16 +55,6 @@ public class Cartoon implements Cloneable {
         
     }
     
-    public Cartoon(ArrayList<SSESymbol> sseSymbols, ArrayList<CartoonConnector> connections, ArrayList<Bond> rArcs, ArrayList<Bond> lArcs, ArrayList<Bond> aBonds, ArrayList<Bond> pBonds) {
-        this();
-        this.sseSymbols = sseSymbols;
-        this.connections = connections;
-        this.rArcs = rArcs;
-        this.lArcs = lArcs;
-        this.aBonds = aBonds;
-        this.pBonds = pBonds;
-    }
-    
     /**
      * @param dimension the width or height of the canvas 
      * @return the size of the sses in this cartoon
