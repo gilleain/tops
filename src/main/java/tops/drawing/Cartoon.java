@@ -444,7 +444,10 @@ public class Cartoon implements Cloneable {
         }
         sseSymbols.add(sourceIndex + 1, newSSESymbol);
         
-        this.renumberSymbolsFrom(sourceIndex + 1);
+        for (int i = sourceIndex + 1; i < this.sseSymbols.size(); i++) {
+            SSESymbol sseSymbol = this.sseSymbols.get(i);
+            sseSymbol.setSymbolNumber(i);
+        }
         newSSESymbol.setSymbolNumber(source.getSymbolNumber() + 1);
         
         CartoonConnector connector = this.connections.get(sourceIndex);
@@ -452,13 +455,6 @@ public class Cartoon implements Cloneable {
         connector.recreateShape();
         
         connections.add(sourceIndex + 1, new CartoonConnector(sourceIndex + 1, newSSESymbol, dest));
-    }
-    
-    public void renumberSymbolsFrom(int fromIndex) {
-        for (int i = fromIndex; i < this.sseSymbols.size(); i++) {
-            SSESymbol sseSymbol = this.sseSymbols.get(i);
-            sseSymbol.setSymbolNumber(i);
-        }
     }
     
     public void updateConnectors(SSESymbol sseSymbol) {
