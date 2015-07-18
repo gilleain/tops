@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import tops.engine.CountingHandler;
 import tops.engine.Edge;
 import tops.engine.MatchHandler;
 import tops.engine.MatcherI;
@@ -42,7 +43,30 @@ public class Matcher implements MatcherI {
         }
     }
 
-    public void setDiagrams(Pattern[] diagrams) {
+    @Override
+	public void match(PatternI pattern, PatternI instance, MatchHandler matchHandler) {
+		boolean matchFound = false;
+		boolean shouldReset = false;
+		if (pattern.preProcess(instance)) {
+			if (matches(pattern, instance) && stringMatch(pattern, instance)) {
+				matchHandler.handle(pattern, instance);
+				matchFound = true;
+			}
+		}
+		if (!matchFound) {
+			pattern.reset();	// flip
+			shouldReset = true;
+			if (matches(pattern, instance) && stringMatch(pattern, instance)) {
+				matchHandler.handle(pattern, instance);
+				matchFound = true;
+			}
+		}
+		if (shouldReset) {
+			pattern.reset();
+		}
+	}
+
+	public void setDiagrams(Pattern[] diagrams) {
         this.diagrams = diagrams;
     }
 
@@ -193,29 +217,12 @@ public class Matcher implements MatcherI {
         }
     }
     
-    @Override
-    public void match(PatternI pattern, PatternI instance, MatchHandler matchHandler) {
-    	boolean matchFound = false;
-    	boolean shouldReset = false;
-    	if (pattern.preProcess(instance)) {
-    		if (matches(pattern, instance)) {
-    			matchHandler.handle(pattern, instance);
-    			matchFound = true;
-    		}
-    	}
-    	if (!matchFound) {
-    		pattern.reset();	// flip
-    		shouldReset = true;
-    		if (matches(pattern, instance)) {
-    			matchHandler.handle(pattern, instance);
-    			matchFound = true;
-    		}
-    	}
-    	if (shouldReset) {
-    		pattern.reset();
+    public void matchAll(PatternI pattern, MatchHandler matchHandler) {
+    	for (PatternI instance : diagrams) {
+    		match(pattern, instance, matchHandler);
     	}
     }
-
+    
     public String match(Pattern p, Pattern d) {
         String result = new String();
         boolean matchfound = false;
@@ -394,34 +401,9 @@ public class Matcher implements MatcherI {
     }
 
     public int numberMatching(Pattern p) {
-        boolean matchFound;
-        int numberMatching = 0;
-        for (int i = 0; i < this.diagrams.length; ++i) {
-            matchFound = false;
-            PatternI diagram = diagrams[i]; 
-            if (p.preProcess(diagram)) {
-                if (this.matches(p, diagram)) {
-                    if (p.stringMatch(diagram, false)) {
-                        matchFound = true;
-                    }
-                }
-            }
-            if (!matchFound) {
-                p.reset();
-                if (p.preProcess(this.diagrams[i])) {
-                    if (this.matches(p, this.diagrams[i])) {
-                        if (p.stringMatch(diagram, true)) {
-                            matchFound = true;
-                        }
-                    }
-                }
-                p.reset();
-            }
-            if (matchFound) {
-                numberMatching++;
-            }
-        }
-        return numberMatching;
+    	CountingHandler handler = new CountingHandler();
+    	matchAll(p, handler);
+    	return handler.getCount();
     }
 
     public boolean runChiral(Pattern p) {
@@ -466,11 +448,17 @@ public class Matcher implements MatcherI {
     public boolean stringMatch(Pattern pattern) {
         for (int i = 0; i < this.diagrams.length; ++i) {
             PatternI target = this.diagrams[i];
-            if (pattern.subSequenceCompare(0, 0, 0, 0, target, false) 
-            		|| pattern.subSequenceCompare(0, 0, 0, 0, target, true))
-                return true;
+            if (stringMatch(pattern, target)) {
+            	return true;
+            }
         }
         return false;
+    }
+    
+    // TODO - this should really replace the above method?
+    private boolean stringMatch(PatternI pattern, PatternI target) {
+    	return (pattern.subSequenceCompare(0, 0, 0, 0, target, false) 
+        		|| pattern.subSequenceCompare(0, 0, 0, 0, target, true));
     }
 
     public boolean matches(PatternI p, PatternI d) {
