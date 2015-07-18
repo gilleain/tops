@@ -33,10 +33,10 @@ public interface PatternI {
 
 	public String getVertexString(int last, int i, boolean flip);
 
-	public char getVertexType(int ptrB);
-
 	public int[] getMatches();
 
 	public String getOutsertC(boolean b);
+
+	public boolean verticesIncrease();
 
 }

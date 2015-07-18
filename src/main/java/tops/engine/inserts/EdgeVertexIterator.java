@@ -11,7 +11,7 @@ import tops.engine.Vertex;
  * takes a reference to an Iterator that is a view on the edges. The edges MUST
  * be sorted.
  */
-public class EdgeVertexIterator implements Iterator<Object> {
+public class EdgeVertexIterator implements Iterator<Vertex> {
 
     private TreeSet<Vertex> edge_vertices;
 
@@ -35,7 +35,7 @@ public class EdgeVertexIterator implements Iterator<Object> {
         return this.vertexIterator.hasNext();
     }
 
-    public Object next() {
+    public Vertex next() {
         return this.vertexIterator.next();
     }
 

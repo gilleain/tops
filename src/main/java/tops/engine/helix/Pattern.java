@@ -520,6 +520,22 @@ public class Pattern implements PatternI {
         }
         return matches;
     }
+    
+    @Override
+    public boolean verticesIncrease() {
+        int last = 0;
+        int[] m = getMatches();
+        for (int i = 0; i < m.length; i++) {
+            if (m[i] != 0) {
+                if (m[i] <= last) {
+                    return false;
+                } else {
+                    last = m[i];
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public String toString() {
@@ -582,12 +598,6 @@ public class Pattern implements PatternI {
 	public boolean stringMatch(PatternI diagram, boolean flip) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public char getVertexType(int ptrB) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }
 

@@ -7,17 +7,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import tops.engine.Edge;
+import tops.engine.PatternI;
 import tops.engine.Vertex;
 
-public class Pattern {
+public class Pattern implements PatternI {
 
-    private int size, vsize;
+    private int size;
 
     // the vertex sequence from the last edge to the C terminus
-    public String outsertC; 
+    private String outsertC; 
 
     // the vertex sequence from the N terminus to the last edge
-    public String outsertN; 
+    private String outsertN; 
 
     private String head;
 
@@ -74,7 +75,6 @@ public class Pattern {
 
         for (int i = 0; i < verts.length; ++i) {
             this.vertices.add(new Vertex(verts[i], i));
-            this.vsize++;
         }
     }
 
@@ -199,7 +199,7 @@ public class Pattern {
         int lastVertexPosition = 0;
         EdgeVertexIterator connectedVertices = this.getEdgeVertexIterator();
         while (connectedVertices.hasNext()) {
-            Vertex currentVertex = (Vertex) connectedVertices.next();
+            Vertex currentVertex = connectedVertices.next();
             int currentVertexPosition = currentVertex.getPos();
             if ((currentVertexPosition - lastVertexPosition) > 1) {
                 String insertString = this.getVertexStringBetween(
@@ -229,17 +229,15 @@ public class Pattern {
     public String getVertexStringWithInserts() {
         StringBuffer vertexStringWithInserts = new StringBuffer();
         vertexStringWithInserts.append('N');
-        Insert outsertN = (Insert) this.insertList.get(0);
+        Insert outsertN = this.insertList.get(0);
         Pattern.logger.info("got outsert : " + outsertN.toString());
-        vertexStringWithInserts.append('[').append(outsertN.toString()).append(
-                ']');
+        vertexStringWithInserts.append('[').append(outsertN.toString()).append(']');
         for (int i = 1; i < this.vertices.size() - 1; i++) {
-            char c = ((Vertex) (this.vertices.get(i))).getType();
+            char c = this.vertices.get(i).getType();
             vertexStringWithInserts.append(c);
-            Insert insert = (Insert) this.insertList.get(i);
+            Insert insert = this.insertList.get(i);
             Pattern.logger.info("got insert : " + insert.toString());
-            vertexStringWithInserts.append('[').append(insert.toString())
-                    .append(']');
+            vertexStringWithInserts.append('[').append(insert.toString()).append(']');
         }
         vertexStringWithInserts.append('C');
 
@@ -290,8 +288,8 @@ public class Pattern {
                 return false;
             }
         } else { // else, no existing edge - add new one
-            Vertex lvert = (Vertex) this.vertices.get(i);
-            Vertex rvert = (Vertex) this.vertices.get(j);
+            Vertex lvert = this.vertices.get(i);
+            Vertex rvert = this.vertices.get(j);
             Edge ne = new Edge(lvert, rvert, c);
             this.edges.add(ne);
             this.currentChiralEdge = ne;
@@ -301,7 +299,7 @@ public class Pattern {
 
     public int edgesContains(int i, int j) {
         for (int e = 0; e < this.edges.size(); e++) {
-            Edge nextEdge = (Edge) this.edges.get(e);
+            Edge nextEdge = this.edges.get(e);
             if (nextEdge.atPosition(i, j)) {
                 return e;
             }
@@ -317,8 +315,7 @@ public class Pattern {
             int l = this.currentChiralEdge.getLeft();
             int r = this.currentChiralEdge.getRight();
             int edgeAtPos = this.edgesContains(l, r);
-            ((Edge) this.edges.get(edgeAtPos)).setType('P'); // it will only ever be
-                                                        // P!
+            this.edges.get(edgeAtPos).setType('P'); // it will only ever be P!
         }
     }
 
@@ -331,14 +328,15 @@ public class Pattern {
     }
 
     public Vertex getVertex(int i) {
-        return (Vertex) (this.vertices.get(i));
+        return this.vertices.get(i);
     }
 
     public Edge getEdge(int i) {
-        if (i >= this.edges.size())
-            return (Edge) (this.edges.get(this.edges.size() - 1));
-        else
-            return (Edge) (this.edges.get(i));
+        if (i >= this.edges.size()) {
+            return this.edges.get(this.edges.size() - 1);
+        } else {
+            return this.edges.get(i);
+        }
     }
 
     public boolean noEdges() {
@@ -374,18 +372,18 @@ public class Pattern {
         return sum;
     }
 
-    public boolean isLargerThan(Pattern other) {
-        return (this.getVSize() > other.getVSize())
-                || (this.esize() > other.esize());
+    public boolean isLargerThan(PatternI d) {
+        return (this.vsize() > d.vsize())	// TODO : vsize vs getVSize()!
+                || (this.esize() > d.esize());
     }
 
     public boolean isSmallerThan(Pattern other) {
-        return (this.getVSize() < other.getVSize())
+        return (this.getVSize() < other.getVSize())// TODO : vsize vs getVSize()!
                 || (this.esize() < other.esize());
     }
 
-    public boolean preProcess(Pattern d) {
-        if (this.isLargerThan(d)) {
+    public boolean preProcess(PatternI d) {
+        if (isLargerThan(d)) {
             Pattern.logger.info("pattern is larger than its target!");
             return false; // pattern must be smaller.
         }
@@ -395,9 +393,9 @@ public class Pattern {
         // matches are added to the target edge
         for (int i = 0; i < this.size; ++i) {
             found = false;
-            current = (Edge) (this.edges.get(i));
-            for (int j = 0; j < d.size; ++j) {
-                target = (Edge) (d.edges.get(j));
+            current = this.edges.get(i);
+            for (int j = 0; j < d.vsize(); ++j) {
+                target = d.getEdge(j);
                 Pattern.logger.info("matching current: " + i + " and target: " + j);
                 boolean indicesMatch = current.matches(target);
                 if (!indicesMatch) {
@@ -406,8 +404,7 @@ public class Pattern {
                     continue;
                 }
 
-                boolean subSeqMatch = this.subSequenceCompareWithInserts(
-                        current, target, d);
+                boolean subSeqMatch = subSequenceCompareWithInserts(current, target, d);
                 if (!subSeqMatch) {
                     Pattern.logger.info("edges " + i + "(" + current + ") != " + j
                             + "(" + target + ") => sub sequences don't match");
@@ -511,7 +508,7 @@ public class Pattern {
     }
 
     // get the pattern with inserts eg : N[0]E[1]E[2]E[1]C
-    public String getInsertString(Pattern d) {
+    public String getInsertString(PatternI d) {
         StringBuffer insertresult = new StringBuffer(" N");
         int last = 0;
         int isize = 0;
@@ -523,8 +520,8 @@ public class Pattern {
                 last = nxt.getMatch();
             } else {
                 int j = last + 1;
-                for (; j < ((Vertex) this.vertices.get(i + 1)).getMatch(); ++j) {
-                    char dt = ((Vertex) d.vertices.get(j)).getType();
+                for (; j < this.vertices.get(i + 1).getMatch(); ++j) {
+                    char dt = d.getVertex(j).getType();
                     if (nxt.getType() == dt)
                         break;
                 }
@@ -533,7 +530,7 @@ public class Pattern {
             }
             insertresult.append(nxt.getType());
         }
-        isize = d.vsize - last;
+        isize = d.vsize() - last;
         // System.out.println("isize = " + isize + " last = " + last);
         if (isize > 0)
             insertresult.append('[').append(isize - 2).append(']');
@@ -545,7 +542,7 @@ public class Pattern {
 
     // get an array of strings of the unattached vertices
     // 'd' is an EXAMPLE, not a pattern
-    public String[] getInsertStringArr(Pattern d, boolean flip) { 
+    public String[] getInsertStringArr(PatternI d, boolean flip) { 
         ArrayList<String> results = new ArrayList<String>();
         int last = 1;
         int m = 0;
@@ -614,34 +611,32 @@ public class Pattern {
                 && this.subSequenceCompare(outerProbeRight, outerTargetRight);
     }
 
-    public boolean subSequenceCompareWithInserts(Edge pEdge, Edge tEdge,
-            Pattern target) {
+    public boolean subSequenceCompareWithInserts(Edge pEdge, Edge tEdge, PatternI d) {
         int pLeft = pEdge.getLeft();
         int pRight = pEdge.getRight();
         int tLeft = tEdge.getLeft();
         int tRight = tEdge.getRight();
         int pEnd = this.vsize() - 1; // -1 to convert from #items to index
                                         // (ie a[6] is the 7th element)
-        int tEnd = target.vsize() - 1;
+        int tEnd = d.vsize() - 1;
 
         // boolean outerLeft = subSequenceCompareWithInserts(1, pLeft - 1, 1,
         // tLeft - 1, target);
-        boolean outerLeft = this.compareRecursively(0, pLeft, 0, tLeft, target);
+        boolean outerLeft = compareRecursively(0, pLeft, 0, tLeft, d);
         Pattern.logger.info("outerL compare " + outerLeft);
         if (!outerLeft)
             return false;
 
         // boolean inner = subSequenceCompareWithInserts(pLeft + 1, pRight - 1,
         // tLeft + 1, tRight - 1, target);
-        boolean inner = this.compareRecursively(pLeft, pRight, tLeft, tRight, target);
+        boolean inner = compareRecursively(pLeft, pRight, tLeft, tRight, d);
         Pattern.logger.info("inner compare " + inner);
         if (!inner)
             return false;
 
         // boolean outerRight = subSequenceCompareWithInserts(pRight + 1, pEnd -
         // 1, tRight + 1, tEnd - 1, target);
-        boolean outerRight = this.compareRecursively(pRight, pEnd, tRight, tEnd,
-                target);
+        boolean outerRight = compareRecursively(pRight, pEnd, tRight, tEnd, d);
         Pattern.logger.info("outerR compare " + outerRight);
         if (!outerRight)
             return false;
@@ -650,21 +645,20 @@ public class Pattern {
     }
 
     public boolean compareRecursively(int patternStart, int patternEnd,
-            int targetStart, int targetEnd, Pattern target) {
+            int targetStart, int targetEnd, PatternI d) {
         Pattern.logger.info("pattern=(" + patternStart + ", " + patternEnd
                 + ") target=(" + targetStart + ", " + targetEnd + ")");
-        return this.recursiveCompare(patternStart, patternEnd, targetStart,
-                targetEnd, target);
+        return recursiveCompare(patternStart, patternEnd, targetStart, targetEnd, d);
     }
 
     public boolean recursiveCompare(int patternPosition, int patternEnd,
-            int targetPosition, int targetEnd, Pattern target) {
+            int targetPosition, int targetEnd, PatternI d) {
         Pattern.logger.info("pattern=(" + patternPosition + ", " + patternEnd
                 + ") target=(" + targetPosition + ", " + targetEnd + ")");
         if (patternPosition > patternEnd || targetPosition > targetEnd)
             return false;
-        char pattern_char = this.getTypeOfVertex(patternPosition);
-        char target_char = target.getTypeOfVertex(targetPosition);
+        char pattern_char = getVertex(patternPosition).getType();
+        char target_char = d.getVertex(targetPosition).getType();
         if (pattern_char == target_char) {
             Pattern.logger.info(pattern_char + " == " + target_char);
             if (patternPosition >= patternEnd) { // got to the last part of
@@ -691,7 +685,7 @@ public class Pattern {
                                                                 // forward
                 Pattern.logger.info("trying next position : " + nextPosition);
                 if (this.recursiveCompare(patternPosition + 1, patternEnd,
-                        nextPosition, targetEnd, target)) {
+                        nextPosition, targetEnd, d)) {
                     return true;
                 }
             }
@@ -743,8 +737,8 @@ public class Pattern {
                 return false;
             }
 
-            pattern_char = this.getTypeOfVertex(pattern_ptr);
-            target_char = target.getTypeOfVertex(target_ptr);
+            pattern_char = getVertex(pattern_ptr).getType();
+            target_char = target.getVertex(target_ptr).getType();
 
             Pattern.logger.info("comparing " + pattern_char + " to " + target_char);
             if (pattern_char == target_char) {
@@ -786,10 +780,6 @@ public class Pattern {
         return true;
     }
 
-    public char getTypeOfVertex(int i) {
-        return ((Vertex) this.vertices.get(i)).getType();
-    }
-
     public boolean subSequenceCompare(String a, String b) {
         int ptrA, ptrB;
         char c;
@@ -821,7 +811,7 @@ public class Pattern {
 
     public boolean verticesIncrease() {
         int last = 0;
-        int[] m = this.getMatches();
+        int[] m = getMatches();
         for (int i = 0; i < m.length; i++) {
             if (m[i] != 0) {
                 if (m[i] <= last) {
@@ -984,5 +974,30 @@ public class Pattern {
         System.out.println(p);
     }
 
-}// EOC
+	@Override
+	public boolean subSequenceCompare(int i, int right, int j, int right2,
+			PatternI d, boolean b) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getLastEdgeVertexPosition() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int indexOfFirstUnmatchedEdge() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean stringMatch(PatternI diagram, boolean flip) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}
 

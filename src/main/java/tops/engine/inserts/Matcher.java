@@ -9,13 +9,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import tops.engine.Edge;
+import tops.engine.MatcherI;
+import tops.engine.PatternI;
 import tops.engine.Result;
 
-public class Matcher {
+public class Matcher implements MatcherI {
 
     private int k;
 
-    private Pattern[] diagrams;
+    private PatternI[] diagrams;
 
     private Stack<Integer> PVS, TVS;
 
@@ -101,7 +103,13 @@ public class Matcher {
             return new String();
     }
 
-    // return a Result array rather than a String array
+    @Override
+	public boolean matches(PatternI pattern, PatternI instance) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	// return a Result array rather than a String array
     public Result[] runResults(Pattern p) {
         List<Result> results = new ArrayList<Result>();
         for (int i = 0; i < this.diagrams.length; ++i) {
@@ -109,7 +117,7 @@ public class Matcher {
             result.setID(this.diagrams[i].getName());
             boolean matchfound = false;
             if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
+                if (match(p, this.diagrams[i])) {
                     matchfound = true;
                     result.setData(p.getInsertString(this.diagrams[i]) + "\t"
                             + p.getVertexMatchedString());
@@ -118,7 +126,7 @@ public class Matcher {
             p.reset();
             // NOTE: Resetting now FLIPS too!
             if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
+                if (match(p, this.diagrams[i])) {
                     if (!matchfound) {
                         matchfound = true;
                         result.setData(p.getInsertString(this.diagrams[i]) + "\t"
@@ -310,10 +318,10 @@ public class Matcher {
         return true;
     }
 
-    public boolean subSeqMatch(Pattern p, Edge c, int last, Pattern d) {
-        String probe = p.getVertexString(c.left.getPos() + 1, c.right.getPos(),
-                false);
-        String target = d.getVertexString(
+    public boolean subSeqMatch(PatternI p, Edge c, int last, PatternI diagram) {
+        String probe = 
+        		p.getVertexString(c.left.getPos() + 1, c.right.getPos(), false);
+        String target = diagram.getVertexString(
                 c.getCurrentMatch().left.getPos() + 1,
                 c.getCurrentMatch().right.getPos(), false);
         return this.subSeqMatch(probe, target);
@@ -359,7 +367,7 @@ public class Matcher {
         return true;
     }
 
-    public boolean match(Pattern p, Pattern d) {
+    public boolean match(PatternI p, PatternI diagram) {
         this.k = 0;
         int last = 1;
         while (this.k < p.esize()) { // Run through the pattern edges.
@@ -367,22 +375,23 @@ public class Matcher {
             if (!current.hasMoreMatches()) {
                 return false;
             }
-            if (this.findNextMatch(p, current) && p.verticesIncrease()
-                    && (this.subSeqMatch(p, current, last, d))) {
+            if (findNextMatch(p, current) 
+            		&& p.verticesIncrease()
+                    && subSeqMatch(p, current, last, diagram)) {
                 last = current.right.getPos() + 1; // aargh!
                 ++this.k;
             } else {
                 if (this.k > 0) {
-                    if (!this.nextSmallestEdge(p, current)) {
+                    if (!nextSmallestEdge(p, current)) {
                         return false;
                     }
                 }
                 p.setMovedUpTo(this.k);
-                if (!this.advancePositions(p, current)) {
+                if (!advancePositions(p, current)) {
                     return false;
                 }
             }
-        } // end while(k)
+        }
 
         if (p.noEdges()) {
             return true;
@@ -390,10 +399,10 @@ public class Matcher {
             Edge e = p.getEdge(this.k); // IE : get the last edge
             int rhe = e.getCurrentMatch().right.getPos();
 
-            String doutCup = d.getVertexString(rhe + 1, 0, false);
-            String doutCdn = d.getVertexString(rhe + 1, 0, true);
-            if (this.subSeqMatch(p.outsertC, doutCup)
-                    || this.subSeqMatch(p.outsertC, doutCdn)) {
+            String doutCup = diagram.getVertexString(rhe + 1, 0, false);
+            String doutCdn = diagram.getVertexString(rhe + 1, 0, true);
+            String outsertC = p.getOutsertC(false);
+            if (subSeqMatch(outsertC, doutCup)|| subSeqMatch(outsertC, doutCdn)) {
                 return true;
             } else {
                 return false;
@@ -402,11 +411,8 @@ public class Matcher {
 
     }
 
-    // ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-
-    public boolean findNextMatch(Pattern p, Edge current) {
+    public boolean findNextMatch(PatternI p, Edge current) {
         int c = 0;
-        // System.out.println("findNextMatch");
         if (this.k == 0) {
             while (current.hasMoreMatches()) {
                 Edge match = current.getCurrentMatch();
@@ -438,10 +444,10 @@ public class Matcher {
         }
     }
 
-    public boolean nextSmallestEdge(Pattern p, Edge current) {
+    public boolean nextSmallestEdge(PatternI p, Edge current) {
         // System.out.println("nextSmallestMatch");
         boolean found = false;
-        Edge last = (p.getEdge(this.k - 1)).getCurrentMatch();
+        Edge last = p.getEdge(this.k - 1).getCurrentMatch();
         while ((current.hasMoreMatches()) && (found == false)) {
             Edge match = current.getCurrentMatch();
             if (match.greaterThan(last))
@@ -452,7 +458,7 @@ public class Matcher {
         return found;
     }
 
-    public boolean advancePositions(Pattern p, Edge current) {
+    public boolean advancePositions(PatternI p, Edge current) {
         // 'isRight' tells you which end of backedge pvert is...
         // System.out.println("advancePositions");
         boolean found = false, isRight = false, attached = false;
@@ -466,9 +472,8 @@ public class Matcher {
         this.TVS.push(new Integer(tvert));
 
         while (!this.PVS.empty()) {
-            pvert = ((Integer) (this.PVS.pop())).intValue();
-            tvert = ((Integer) (this.TVS.pop())).intValue();
-            // System.out.println("pvert, tvert = " + pvert + ", " + tvert);
+            pvert = PVS.pop().intValue();
+            tvert = TVS.pop().intValue();
             // FORALL EDGES LESS THAN THE STUCK EDGE
             for (int j = this.k - 1; j >= 0; --j) {
                 Edge backedge = p.getEdge(j);

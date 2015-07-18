@@ -35,7 +35,7 @@ public class Pattern implements PatternI {
 
     private Edge currentChiralEdge;
     
-    private ArrayList<Vertex> currentSheet;
+    private List<Vertex> currentSheet;
 
     public Pattern() {
         this.head = new String("pattern:");
@@ -583,7 +583,7 @@ public class Pattern implements PatternI {
     	while (ptrA < end) {
             if (ptrB >= otherEnd)
                 return false;
-            char c = other.getVertexType(ptrB);
+            char c = other.getVertex(ptrB).getType();
             if (flipped) {
             	if (Character.isUpperCase(c)) {
             		c += 32;
@@ -770,5 +770,22 @@ public class Pattern implements PatternI {
             counter.setPos(tmp + amount); // move up all the internal numbers!
         }
     }
+
+	@Override
+	public boolean verticesIncrease() {
+        int last = 0;
+        int[] m = getMatches();
+        for (int i = 0; i < m.length; i++) {
+            if (m[i] != 0) {
+                if (m[i] <= last) {
+                    return false;
+                } else {
+                    last = m[i];
+                }
+            }
+        }
+        return true;
+    }
+
 }
 
