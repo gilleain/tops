@@ -1,7 +1,7 @@
 package tops.engine.drg;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
 import tops.engine.Edge;
@@ -9,7 +9,7 @@ import tops.engine.Vertex;
 
 public class Sheet {
 
-    private ArrayList<Vertex> vertices; // a reference to the underlying list of vertices
+    private List<Vertex> vertices; // a reference to the underlying list of vertices
 
     private Stack<Edge> edges; // a stack to enable mistakes to be popped off
 
@@ -17,7 +17,7 @@ public class Sheet {
 
     private Vertex rhv, lhv;
 
-    public Sheet(Vertex l, Vertex r, char type, ArrayList<Vertex> v) {
+    public Sheet(Vertex l, Vertex r, char type, List<Vertex> v) {
         this.vertices = v;
         this.edges = new Stack<Edge>();
         this.lastInsertedVertex = 0;
@@ -48,7 +48,7 @@ public class Sheet {
     }
 
     public boolean canExtend(int i, char typ) {
-        char vtyp = ((Vertex) this.vertices.get(i)).getType();
+        char vtyp = this.vertices.get(i).getType();
         return (vtyp == typ);
     }
 
@@ -59,15 +59,13 @@ public class Sheet {
         if (this.edgesContains(edge)) {
             return false;
         }
-        return (((Vertex) this.vertices.get(i)).getType() == ityp 
-        		&& ((Vertex) this.vertices.get(j)).getType() == jtyp);
+        return this.vertices.get(i).getType() == ityp 
+        		&& this.vertices.get(j).getType() == jtyp;
     }
 
     // why doesn't the edges Stack use its 'contains' method right?
     private boolean edgesContains(Edge edge) {
-        Iterator<Edge> itr = this.edges.iterator();
-        while (itr.hasNext()) {
-            Edge e = (Edge) itr.next();
+        for (Edge e : edges) {
             if (e.equals(edge)) {
             	return true;
             }
@@ -83,10 +81,10 @@ public class Sheet {
         this.vertices.add(i, new Vertex(vtype, i));
         this.lastInsertedVertex = i;
         if (i == this.getLEndpoint()) {
-            this.lhv = (Vertex) this.vertices.get(i);
+            this.lhv = this.vertices.get(i);
         }
         if (i > this.getREndpoint()) {
-            this.rhv = (Vertex) this.vertices.get(i);
+            this.rhv = this.vertices.get(i);
         }
         this.renumberFrom(i + 1);
     }
@@ -97,10 +95,10 @@ public class Sheet {
 
     private Edge makeEdge(int i, int j, char e) {
     	 // get the current vertex to extend from
-        Vertex l = (Vertex) this.vertices.get(i);
+        Vertex l = this.vertices.get(i);
                                                 
         // get the next vertex to be extended to
-        Vertex r = (Vertex) this.vertices.get(j);
+        Vertex r = this.vertices.get(j);
                                                  
         return new Edge(l, r, e);
     }
@@ -116,11 +114,11 @@ public class Sheet {
         }
         
         if (this.lastInsertedVertex == this.lhv.getPos()) {
-            this.lhv = (Vertex) this.vertices.get(this.lastInsertedVertex + 1);
+            this.lhv = this.vertices.get(this.lastInsertedVertex + 1);
         }
         
         if (this.lastInsertedVertex == this.rhv.getPos()) {
-            this.rhv = (Vertex) this.vertices.get(this.lastInsertedVertex + 1);
+            this.rhv = this.vertices.get(this.lastInsertedVertex + 1);
         }
         
         this.vertices.remove(this.lastInsertedVertex);
@@ -137,7 +135,7 @@ public class Sheet {
     private void renumberFrom(int i) {
         int p = this.vertices.size();
         for (int j = i; j < p; j++) {
-            ((Vertex) (this.vertices.get(j))).setPos(j);
+            this.vertices.get(j).setPos(j);
         }
     }
 
@@ -148,7 +146,7 @@ public class Sheet {
     }
 
     public static void main(String[] args) {
-        ArrayList<Vertex> v = new ArrayList<Vertex>();
+        List<Vertex> v = new ArrayList<Vertex>();
         v.add(new Vertex('N', 0));
         v.add(new Vertex('C', 1));
         

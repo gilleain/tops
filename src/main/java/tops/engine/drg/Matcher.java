@@ -54,7 +54,7 @@ public class Matcher {
     public String[] run(String[] patterns, String d)
             throws TopsStringFormatException {
         Pattern diagram = new Pattern(d);
-        ArrayList<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<String>();
         for (int i = 0; i < patterns.length; i++) {
             String result = this.match(new Pattern(patterns[i]), diagram);
             if (!result.equals(""))
@@ -66,7 +66,7 @@ public class Matcher {
     // synthesise insert ranges from the matches of the pattern to the set of
     // targets
     public String matchAndGetInserts(Pattern pattern) {
-        ArrayList<int[]> ranges = new ArrayList<int[]>();
+        List<int[]> ranges = new ArrayList<int[]>();
         Pattern p = pattern;
         try {
             p = new Pattern(pattern.toString()); // !!ARRRGH!
@@ -125,7 +125,7 @@ public class Matcher {
                     minmax[0] = insertLength;
                 }
 
-//              expand the maximum of the range
+                // expand the maximum of the range
                 if (minmax[1] == -1 || insertLength > minmax[1]) { 
                     minmax[1] = insertLength;
                 }
@@ -545,8 +545,8 @@ public class Matcher {
         this.TVS.push(new Integer((current.getCurrentMatch()).getLeft()));
 
         while (!this.PVS.empty()) {
-            int pvert = ((Integer) (this.PVS.pop())).intValue();
-            int tvert = ((Integer) (this.TVS.pop())).intValue();
+            int pvert = this.PVS.pop().intValue();
+            int tvert = this.TVS.pop().intValue();
             // FORALL EDGES LESS THAN THE STUCK EDGE
             for (int j = this.k - 1; j >= 0; --j) {
                 Edge backedge = p.getEdge(j);
@@ -567,7 +567,7 @@ public class Matcher {
                 		backedge.moved = true;
                 		found = false;
                 		while ((backedge.hasMoreMatches()) && (found == false)) {
-                			Edge e = (backedge.getCurrentMatch());
+                			Edge e = backedge.getCurrentMatch();
                 			int wt2 = e.getRight();
                 			int vt2 = e.getLeft();
                 			if ((wt2 >= tvert)

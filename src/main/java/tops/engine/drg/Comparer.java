@@ -1,8 +1,11 @@
 package tops.engine.drg;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.io.*;
+import java.util.List;
 
 import tops.engine.Edge;
 import tops.engine.Result;
@@ -88,8 +91,7 @@ public class Comparer {
     }
 
     public Result[] compare(String probe, String[] examples) throws TopsStringFormatException {
-        //String[] results = new String[examples.length];
-        ArrayList<Result> results = new ArrayList<Result>(examples.length);
+        List<Result> results = new ArrayList<Result>(examples.length);
         Pattern[] pair = new Pattern[2];
         pair[0] = new Pattern(probe);
         System.out.println("for probe : \t" + probe);

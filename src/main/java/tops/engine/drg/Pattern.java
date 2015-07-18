@@ -1,11 +1,11 @@
 package tops.engine.drg;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import tops.engine.Edge;
-import tops.engine.TopsStringFormatException;
 import tops.engine.TParser;
+import tops.engine.TopsStringFormatException;
 import tops.engine.Vertex;
 
 public class Pattern {
@@ -14,9 +14,9 @@ public class Pattern {
 
     private String classification;
 
-    private ArrayList<Vertex> vertices;
+    private List<Vertex> vertices;
 
-    private ArrayList<Edge> edges;
+    private List<Edge> edges;
     
     private int[] inserts;
     
@@ -62,18 +62,18 @@ public class Pattern {
     public Pattern(Pattern p) {
     	this();
     	for (int i = 0; i < p.vsize(); i++) {
-    		this.vertices.add(new Vertex((Vertex) p.vertices.get(i)));
+    		this.vertices.add(new Vertex(p.vertices.get(i)));
     	}
     	
     	for (int i = 0; i < p.esize(); i++) {
-    		Edge other = (Edge) p.edges.get(i);
-    		Vertex l = (Vertex) this.vertices.get(other.getLeft());
-    		Vertex r = (Vertex) this.vertices.get(other.getRight());
+    		Edge other = p.edges.get(i);
+    		Vertex l = this.vertices.get(other.getLeft());
+    		Vertex r = this.vertices.get(other.getRight());
     		this.edges.add(new Edge(l, r, other.type));
     	}
     	
     	for (int i = 0; i < p.currentSheet.size(); i++) {
-    		Vertex v = (Vertex) p.currentSheet.get(i);
+    		Vertex v = p.currentSheet.get(i);
     		this.currentSheet.add(this.vertices.get(v.getPos()));
     	}
     	
@@ -86,8 +86,6 @@ public class Pattern {
     	this.vertices.add(new Vertex('N', 0));
     	this.vertices.add(new Vertex('C', 1));
     }
-    
-    ///
     
     public int sizeOfCurrentSheet() {
     	return this.currentSheet.size();
@@ -141,13 +139,11 @@ public class Pattern {
     }
     
     public char getVertexType(int i) {
-    	return ((Vertex) this.vertices.get(i)).getType();
+    	return this.vertices.get(i).getType();
     }
     
     private boolean edgeBetween(int i, int j) {
-    	  Iterator<Edge> itr = this.edges.iterator();
-          while (itr.hasNext()) {
-              Edge e = (Edge) itr.next();
+    	 for (Edge e : this.edges) {
               if (e.getLeft() == i && e.getRight() == j) {
             	  return true;
               }
@@ -163,10 +159,10 @@ public class Pattern {
     	Vertex v = new Vertex(vtype, i);
         this.vertices.add(i, v);
         if (i == this.getLEndpoint()) {
-            this.lhv = (Vertex) this.vertices.get(i);
+            this.lhv = this.vertices.get(i);
         }
         if (i > this.getREndpoint()) {
-            this.rhv = (Vertex) this.vertices.get(i);
+            this.rhv = this.vertices.get(i);
         }
         this.renumberFrom(i + 1);
         this.currentSheet.add(v);
@@ -179,10 +175,10 @@ public class Pattern {
 
     private Edge makeEdge(int i, int j, char e) {
     	 // get the current vertex to extend from
-        Vertex l = (Vertex) this.vertices.get(i);
+        Vertex l = this.vertices.get(i);
                                                 
         // get the next vertex to be extended to
-        Vertex r = (Vertex) this.vertices.get(j);
+        Vertex r = this.vertices.get(j);
                                                  
         return new Edge(l, r, e);
     }
@@ -190,11 +186,9 @@ public class Pattern {
     private void renumberFrom(int i) {
         int p = this.vertices.size();
         for (int j = i; j < p; j++) {
-            ((Vertex) (this.vertices.get(j))).setPos(j);
+            this.vertices.get(j).setPos(j);
         }
     }
-    ///
-    
 
     public void setCompression(float compression) {
         this.compression = compression;
@@ -206,8 +200,7 @@ public class Pattern {
 
     public int getNumberOfHBonds() {
         int numberOfHBonds = 0;
-        for (int i = 0; i < this.edges.size(); i++) {
-            Edge e = (Edge) this.edges.get(i);
+        for (Edge e : this.edges) {
             char type = e.getType();
             if ((type == 'A') 
             		|| (type == 'P') 
@@ -221,8 +214,7 @@ public class Pattern {
 
     public int getNumberOfChirals() {
         int numberOfChirals = 0;
-        for (int i = 0; i < this.edges.size(); i++) {
-            Edge e = (Edge) this.edges.get(i);
+        for (Edge e : this.edges) {
             char type = e.getType();
             if ((type == 'R') || (type == 'L') || (type == 'Z')
                     || (type == 'X')) {
@@ -295,8 +287,8 @@ public class Pattern {
                 return false;
             }
         } else { // else, no existing edge - add new one
-            Vertex lvert = (Vertex) this.vertices.get(i);
-            Vertex rvert = (Vertex) this.vertices.get(j);
+            Vertex lvert = this.vertices.get(i);
+            Vertex rvert = this.vertices.get(j);
             Edge ne = new Edge(lvert, rvert, c);
             this.edges.add(ne);
             this.currentChiralEdge = ne;
@@ -306,7 +298,7 @@ public class Pattern {
 
     public int edgesContains(int i, int j) {
         for (int e = 0; e < this.edges.size(); e++) {
-            Edge nextEdge = (Edge) this.edges.get(e);
+            Edge nextEdge = this.edges.get(e);
             if (nextEdge.atPosition(i, j)) {
                 return e;
             }
@@ -323,7 +315,7 @@ public class Pattern {
             int r = this.currentChiralEdge.getRight();
             int edgeAtPos = this.edgesContains(l, r);
             // it will only ever be P!
-            ((Edge) this.edges.get(edgeAtPos)).setType('P'); 
+            this.edges.get(edgeAtPos).setType('P'); 
         }
     }
 
@@ -340,14 +332,14 @@ public class Pattern {
     }
     
     public Vertex getVertex(int i) {
-        return (Vertex) (this.vertices.get(i));
+        return this.vertices.get(i);
     }
 
     public Edge getEdge(int i) {
         if (i >= this.edges.size()) {
-            return (Edge) (this.edges.get(this.edges.size() - 1));
+            return this.edges.get(this.edges.size() - 1);
         } else {
-            return (Edge) (this.edges.get(i));
+            return this.edges.get(i);
         }
     }
     
@@ -361,7 +353,7 @@ public class Pattern {
     }
     
     public boolean edgeUnmatched(int i) {
-    	Edge e = (Edge) this.edges.get(i);
+    	Edge e = this.edges.get(i);
     	return e.getLeftMatch() == 0 || e.getRightMatch() == 0;
     }
 
@@ -381,7 +373,7 @@ public class Pattern {
     public String getVertexMatchedString() {
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < this.vertices.size(); ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i);
+            Vertex nxt = this.vertices.get(i);
             int nxtMatch = nxt.getMatch();
             if (nxtMatch != 0) {
                 result.append(nxtMatch).append('.');
@@ -395,7 +387,7 @@ public class Pattern {
     public String getMatchString() {
         StringBuffer matchresult = new StringBuffer(" [");
         for (int i = 0; i < this.vertices.size(); ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i);
+            Vertex nxt = this.vertices.get(i);
             if (nxt.getMatch() != 0) {
                 matchresult.append(i).append('-')
                 .append(nxt.getMatch()).append(",");
@@ -410,7 +402,7 @@ public class Pattern {
         int last = 0;
         Vertex nxt;
         for (int i = 0; i < this.vertices.size(); ++i) {
-            nxt = (Vertex) this.vertices.get(i);
+            nxt = this.vertices.get(i);
             if (nxt.getMatch() > 0) {
                 this.inserts[i] = nxt.getMatch() - last;
             } else {
@@ -425,15 +417,15 @@ public class Pattern {
         int last = 0;
         int isize = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i); // get pattern vertex ref
+            Vertex nxt = this.vertices.get(i); // get pattern vertex ref
             isize = nxt.getMatch() - last;
             if (isize > 0) {
                 insertresult.append('[').append(isize - 1).append(']');
                 last = nxt.getMatch();
             } else {
                 int j = last + 1;
-                for (; j < ((Vertex) this.vertices.get(i + 1)).getMatch(); ++j) {
-                    char dt = ((Vertex) d.vertices.get(j)).getType();
+                for (; j < this.vertices.get(i + 1).getMatch(); ++j) {
+                    char dt = d.vertices.get(j).getType();
                     if (nxt.getType() == dt)
                         break;
                 }
@@ -458,7 +450,7 @@ public class Pattern {
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i); // get pattern vertex ref
+            Vertex nxt = this.vertices.get(i); // get pattern vertex ref
             m = nxt.getMatch();
             // it IS an edge vertex, setMatch() only called in the Edge class
             if (m != 0) { 
@@ -497,7 +489,7 @@ public class Pattern {
     public String mergeInsertArrayWithVertices(String[] ins) {
         StringBuffer ret = new StringBuffer();
         for (int i = 0; i < ins.length; i++) {
-            ret.append(((Vertex) this.vertices.get(i)).getType());
+            ret.append(this.vertices.get(i).getType());
             ret.append(ins[i]);
         }
         ret.append('C');
@@ -512,9 +504,9 @@ public class Pattern {
         boolean found = false;
         // matches are added to the target edge
         for (int i = 0; i < this.esize(); ++i) {
-            Edge current = (Edge) (this.edges.get(i));
+            Edge current = this.edges.get(i);
             for (int j = 0; j < d.esize(); ++j) {
-                Edge target = (Edge) (d.edges.get(j));
+                Edge target = d.edges.get(j);
                 if ((current.matches(target)) && this.efficientStringComp(current, target, d)) {
                     current.addMatch(target);
                     found = true;
@@ -619,7 +611,7 @@ public class Pattern {
         }
     }
 
-    public void parse(String s) throws TopsStringFormatException {
+    private void parse(String s) throws TopsStringFormatException {
         try {
             TParser parser = new TParser(s);
 
@@ -635,9 +627,9 @@ public class Pattern {
                 int l = Integer.parseInt(edgeStrings[j]);
                 int r = Integer.parseInt(edgeStrings[j + 1]);
                 char t = edgeStrings[j + 2].charAt(0);
-                Vertex left = (Vertex) this.vertices.get(l);
+                Vertex left = this.vertices.get(l);
                 left.setIndex((char) (t + 32));
-                Vertex right = (Vertex) this.vertices.get(r);
+                Vertex right = this.vertices.get(r);
                 right.setIndex(t);
                 this.edges.add(new Edge(left, right, t));
             }
@@ -650,8 +642,8 @@ public class Pattern {
     
     private void setOutserts() {
     	if (!this.edges.isEmpty()) {
-            int first = ((Edge) this.edges.get(0)).left.getPos();
-            int last = ((Edge) this.edges.get(this.edges.size() - 1)).right.getPos();
+            int first = this.edges.get(0).left.getPos();
+            int last = this.edges.get(this.edges.size() - 1).right.getPos();
             this.outsertN = this.getVertexString(0, first, false);
             this.outsertC = this.getVertexString(last + 1, 0, false);
             
@@ -664,8 +656,8 @@ public class Pattern {
         Edge first, second;
         for (int i = 0; i < this.esize(); ++i) {
             for (int j = 0; j < this.esize() - 1; ++j) {
-                first = (Edge) this.edges.get(j);
-                second = (Edge) this.edges.get(j + 1);
+                first = this.edges.get(j);
+                second = this.edges.get(j + 1);
                 if (first.greaterThan(second)) {
                     this.edges.set(j, second);
                     this.edges.set(j + 1, first);
@@ -676,11 +668,11 @@ public class Pattern {
 
     public void setIndices() {
         for (int i = 0; i < this.edges.size() - 1; i++) {
-        	Edge ei = (Edge) this.edges.get(i); 
+        	Edge ei = this.edges.get(i); 
             int il = ei.getLeft();
             int ir = ei.getRight();
             for (int j = i + 1; j < this.edges.size(); ++j) {
-            	Edge ej = (Edge) this.edges.get(j);
+            	Edge ej = this.edges.get(j);
                 int jl = ej.getLeft();
                 int jr = ej.getRight();
                 if (il == jl) {
@@ -703,11 +695,11 @@ public class Pattern {
 
     public void reset() {
         for (int i = 0; i < this.edges.size(); ++i) {
-            ((Edge) (this.edges.get(i))).reset();
+            this.edges.get(i).reset();
         }
         for (int i = 1; i < this.vertices.size() - 1; ++i) { // don't bother with N/C
-            ((Vertex) (this.vertices.get(i))).resetMatch();
-            ((Vertex) (this.vertices.get(i))).flip();
+            this.vertices.get(i).resetMatch();
+            this.vertices.get(i).flip();
         }
     }
 
@@ -739,8 +731,7 @@ public class Pattern {
 
     public String getEdgeString() {
         StringBuffer result = new StringBuffer();
-        for (int j = 0; j < this.edges.size(); ++j) {
-            Edge e = (Edge) this.edges.get(j);
+        for (Edge e : this.edges) {
             result.append(e.left.getPos());
             result.append(':');
             result.append(e.right.getPos());
@@ -764,12 +755,10 @@ public class Pattern {
     private void renumber(int from, int amount) {
         Vertex counter;
         for (int i = from + 1; i < this.vertices.size() - 1; i++) {
-            counter = (Vertex) this.vertices.get(i);
+            counter = this.vertices.get(i);
             int tmp = counter.getPos();
-            // System.out.println("Vertex : " + counter.getType() + "@ " + i +
-            // "|" + tmp + " to Vertex " + (tmp + 1));
             counter.setPos(tmp + amount); // move up all the internal numbers!
         }
     }
-}// EOC
+}
 
