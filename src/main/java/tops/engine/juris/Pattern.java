@@ -154,15 +154,15 @@ class Pattern {
         for (int i = 1; i < ins.length - 1; i++) {
             s = ins[i];
             e = (Edge) this.edges.get(i - 1);
-            lhe = e.left.getPos();
-            e.left.setPos(lhe + l); // shift the left-hand-end
+            lhe = e.getLeftVertex().getPos();
+            e.getLeftVertex().setPos(lhe + l); // shift the left-hand-end
             if (s != "") { // if there is indeed an insert!
                 for (j = 0; j < s.length(); j++) {
                     this.vertices.add(j + l + 1, new Vertex(s.charAt(j), j + l + 1));
                 }
                 l += s.length(); // acumulate
             }
-            e.right.setPos(e.right.getPos() + l); // l has accumulated the
+            e.getRightVertex().setPos(e.getRightVertex().getPos() + l); // l has accumulated the
                                                     // length (if any) of insert
         }
         s = ins[ins.length - 1]; // last one
@@ -202,9 +202,9 @@ class Pattern {
     }
 
     boolean stringComp(Edge p, Edge t, Pattern d) {
-        String probe = this.getVertexString(p.left.getPos(), p.right.getPos(),
+        String probe = this.getVertexString(p.getLeftVertex().getPos(), p.getRightVertex().getPos(),
                 false);
-        String target = d.getVertexString(t.left.getPos(), t.right.getPos(),
+        String target = d.getVertexString(t.getLeftVertex().getPos(), t.getRightVertex().getPos(),
                 false);
         int ptrP, ptrT;
         char c;
@@ -255,7 +255,7 @@ class Pattern {
         // fillSheets();
         // setOutserts();
         if (!this.edges.isEmpty()) {
-            int last = ((Edge) this.edges.get(this.edges.size() - 1)).right.getPos();
+            int last = ((Edge) this.edges.get(this.edges.size() - 1)).getRightVertex().getPos();
             this.outsertC = this.getVertexString(last + 1, 0, false);
             // System.out.println("Edges not emptry : outsertC = " + outsertC +
             // " last = " + last);
@@ -282,10 +282,10 @@ class Pattern {
     /*
      * removed because target outserts can overlap with edges void setOutserts() {
      * if (!edges.isEmpty()) { Edge e = (Edge) edges.get(0); //have to do the
-     * first one separately String out = getVertexString(1, e.left.getPos(),
-     * false); int last = e.right.getPos(); for (int i = 1; i < edges.size();
+     * first one separately String out = getVertexString(1, e.getLeftVertex().getPos(),
+     * false); int last = e.getRightVertex().getPos(); for (int i = 1; i < edges.size();
      * ++i) { e = (Edge) edges.get(i); out = getVertexString(last,
-     * e.left.getPos(), false); e.setOutsert(out); last = e.right.getPos(); }
+     * e.getLeftVertex().getPos(), false); e.setOutsert(out); last = e.getRightVertex().getPos(); }
      * outsertC = getVertexString(last, 0, false); } }
      */
 
@@ -296,26 +296,26 @@ class Pattern {
         int jr = 0;
         // System.out.println("SET INDICES CALLED");
         for (int i = 0; i < this.edges.size() - 1; i++) {
-            il = ((Edge) this.edges.get(i)).left.getPos();
-            ir = ((Edge) this.edges.get(i)).right.getPos();
+            il = ((Edge) this.edges.get(i)).getLeftVertex().getPos();
+            ir = ((Edge) this.edges.get(i)).getRightVertex().getPos();
             // System.out.println("il:" + il + " ir:" + ir);
             for (int j = i + 1; j < this.edges.size(); ++j) {
-                jl = ((Edge) this.edges.get(j)).left.getPos();
-                jr = ((Edge) this.edges.get(j)).right.getPos();
+                jl = ((Edge) this.edges.get(j)).getLeftVertex().getPos();
+                jr = ((Edge) this.edges.get(j)).getRightVertex().getPos();
                 // System.out.println("jl:" + jl + " jr:" + jr);
                 if (il == jl) {
-                    ((Edge) this.edges.get(i)).S2++;
-                    ((Edge) this.edges.get(j)).S1++;
+                    edges.get(i).addS2();
+                    edges.get(j).addS1();
                 }
 
                 if (ir == jl) {
-                    ((Edge) this.edges.get(i)).E1++;
-                    ((Edge) this.edges.get(j)).S1++;
+                    edges.get(i).addE1();
+                    edges.get(j).addS1();
                 }
 
                 if (ir == jr) {
-                    ((Edge) this.edges.get(i)).E1++;
-                    ((Edge) this.edges.get(j)).E1++;
+                    edges.get(i).addE1();
+                    edges.get(j).addE1();
                 }
             }
         }
@@ -375,9 +375,9 @@ class Pattern {
         Edge e;
         for (int j = 0; j < this.edges.size(); ++j) {
             e = (Edge) this.edges.get(j);
-            result.append(e.left.getPos());
+            result.append(e.getLeftVertex().getPos());
             result.append(':');
-            result.append(e.right.getPos());
+            result.append(e.getRightVertex().getPos());
             result.append(e.getType());
         }
         return result.toString();
@@ -413,10 +413,10 @@ class Pattern {
 
     public Pattern extendRight(char vr, char et) {
         // make a new edge from the right hand pattern node
-        int rightHandEnd = this.current.right.getPos() + 1;
+        int rightHandEnd = this.current.getRightVertex().getPos() + 1;
         Vertex r = new Vertex(vr, rightHandEnd);
         this.vertices.add(rightHandEnd, r); // add the vertex to the list
-        Edge e = new Edge(this.current.right, r, et);
+        Edge e = new Edge(this.current.getRightVertex(), r, et);
         this.current = e;
         this.edges.add(e); // add the edge
         this.setIndices();
@@ -425,10 +425,10 @@ class Pattern {
 
     public Pattern extendLeft(char vr, char et) {
         // make a new edge from the left hand pattern node
-        int rightHandEnd = this.current.right.getPos() + 1;
+        int rightHandEnd = this.current.getRightVertex().getPos() + 1;
         Vertex r = new Vertex(vr, rightHandEnd);
         this.vertices.add(rightHandEnd, r);
-        Edge e = new Edge(this.current.left, r, et);
+        Edge e = new Edge(this.current.getLeftVertex(), r, et);
         this.edges.add(e);
         this.setIndices();
         return this;
@@ -436,11 +436,11 @@ class Pattern {
 
     public Pattern extendMiddle(char vl, char et) {
         // make a new edge TO the right hand pattern node
-        int leftHandEnd = this.current.right.getPos(); // !
+        int leftHandEnd = this.current.getRightVertex().getPos(); // !
         Vertex l = new Vertex(vl, leftHandEnd);
         this.vertices.add(leftHandEnd, l);
         this.renumber(leftHandEnd, 1);
-        Edge e = new Edge(l, this.current.right, et);
+        Edge e = new Edge(l, this.current.getRightVertex(), et);
         this.current = e;
         this.edges.add(e); // sort?
         this.setIndices();
@@ -449,11 +449,11 @@ class Pattern {
 
     public Pattern extendTwist(char vl, char et) {
         // make a new edge TO the right hand pattern node and TWIST
-        int leftHandEnd = this.current.right.getPos() - 2; // !
+        int leftHandEnd = this.current.getRightVertex().getPos() - 2; // !
         Vertex l = new Vertex(vl, leftHandEnd);
         this.vertices.add(leftHandEnd, l);
         this.renumber(leftHandEnd, 1);
-        Edge e = new Edge(l, this.current.right, et);
+        Edge e = new Edge(l, this.current.getRightVertex(), et);
         this.edges.add(e); // sort?
         this.setIndices();
         return this;
@@ -461,8 +461,8 @@ class Pattern {
 
     public Pattern overlap(char vl, char vr, char et) {
         // make a new edge whose LHE is less than current's RHE.
-        int leftHandEnd = this.current.left.getPos() + 1;
-        int rightHandEnd = this.current.right.getPos() + 1;
+        int leftHandEnd = this.current.getLeftVertex().getPos() + 1;
+        int rightHandEnd = this.current.getRightVertex().getPos() + 1;
         Vertex l = new Vertex(vl, leftHandEnd);
         Vertex r = new Vertex(vr, rightHandEnd);
         this.vertices.add(leftHandEnd, l);
@@ -476,7 +476,7 @@ class Pattern {
 
     public Pattern insert(char vl, char vr, char et) {
         // make a new edge whose RHE is less than current's RHE.
-        int leftHandEnd = this.current.left.getPos() + 1;
+        int leftHandEnd = this.current.getLeftVertex().getPos() + 1;
         int rightHandEnd = leftHandEnd + 1;
         Vertex l = new Vertex(vl, leftHandEnd);
         Vertex r = new Vertex(vr, rightHandEnd);
@@ -491,7 +491,7 @@ class Pattern {
 
     public Pattern append(char vl, char vr, char et) {
         // make a new edge with both ends larger than current's RHE.
-        int leftHandEnd = this.current.right.getPos() + 1;
+        int leftHandEnd = this.current.getRightVertex().getPos() + 1;
         int rightHandEnd = leftHandEnd + 1;
         Vertex l = new Vertex(vl, leftHandEnd);
         Vertex r = new Vertex(vr, rightHandEnd);
@@ -525,7 +525,7 @@ class Pattern {
     public boolean canERight(char el) {
         if (this.current == null)
             return false;
-        if (el != this.current.right.getType())
+        if (el != this.current.getRightVertex().getType())
             return false;
         return true;
     }
@@ -533,7 +533,7 @@ class Pattern {
     public boolean canELeft(char el) {
         if (this.current == null)
             return false;
-        if (el != this.current.left.getType())
+        if (el != this.current.getLeftVertex().getType())
             return false;
         return true;
     }
@@ -541,7 +541,7 @@ class Pattern {
     public boolean canEMiddle(char er) {
         if (this.current == null)
             return false;
-        if (er != this.current.right.getType())
+        if (er != this.current.getRightVertex().getType())
             return false;
         return true;
     }

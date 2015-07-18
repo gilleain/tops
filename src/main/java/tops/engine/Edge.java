@@ -1,18 +1,21 @@
 package tops.engine;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Edge implements Comparable<Edge> {
+	
+	public boolean moved;	// TODO
 
-    public Vertex left, right; // BAD IDEA!
+    private Vertex left;
+    
+    private Vertex right;
 
-    public char type;
+    private char type;
 
-    public int p, S1, S2, E1, E2, mp;
+    private int S1, S2, E1, E2, mp;
 
-    private ArrayList<Edge> matchList;
-
-    public boolean moved;
+    private List<Edge> matchList;
 
     private int rangeMinimum;
 
@@ -22,13 +25,28 @@ public class Edge implements Comparable<Edge> {
         this.left = l;
         this.right = r;
         this.type = t;
-        this.p = 0;
         this.S1 = this.S2 = this.E1 = this.E2 = 0;
         this.matchList = new ArrayList<Edge>();
         this.mp = 0;
         this.moved = false;
         this.rangeMinimum = -1; // -1 indicates 'infinite' bounds.
         this.rangeMaximum = -1;
+    }
+    
+    public void addS1() {
+    	this.S1++;
+    }
+    
+    public void addS2() {
+    	this.S2++;
+    }
+    
+    public void addE1() {
+    	this.E1++;
+    }
+    
+    public void addE2() {
+    	this.E2++;
     }
     
     public int getRangeMinimum() {

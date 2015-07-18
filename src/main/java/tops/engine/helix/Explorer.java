@@ -577,8 +577,8 @@ public class Explorer {
             for (int j = i + 1; j <= rhe + 1; j++) {
                 for (int t = 0; t < Explorer.types.length; t++) {
                     Edge ed = Explorer.types[t];
-                    char l = (ed.left).getType();
-                    char r = (ed.right).getType();
+                    char l = ed.getLeftVertex().getType();
+                    char r = ed.getRightVertex().getType();
                     char e = ed.getType();
 
                     result = this.addNewSheet(i, j, l, r, e);
@@ -623,8 +623,8 @@ public class Explorer {
                         if (i < j) {
                             for (int t = 0; t < Explorer.types.length; t++) {
                                 Edge ed = Explorer.types[t];
-                                char l = (ed.left).getType();
-                                char r = (ed.right).getType();
+                                char l = ed.getLeftVertex().getType();
+                                char r = ed.getRightVertex().getType();
                                 char e = ed.getType();
                                 if (this.currentSheet.canCyclise(i, j, l, r)) {
                                     this.currentSheet.extend(i, j, e);
@@ -643,8 +643,8 @@ public class Explorer {
                         if (i < j) {
                             for (int t = 0; t < Explorer.types.length; t++) {
                                 Edge ed = Explorer.types[t];
-                                char l = (ed.left).getType();
-                                char r = (ed.right).getType();
+                                char l = ed.getLeftVertex().getType();
+                                char r = ed.getRightVertex().getType();
                                 char e = ed.getType();
                                 if (this.currentSheet.canExtend(i, l)) {
                                     this.currentSheet.insertBefore(j, r);
@@ -666,8 +666,8 @@ public class Explorer {
                         if (i < j) {
                             for (int t = 0; t < Explorer.types.length; t++) {
                                 Edge ed = Explorer.types[t];
-                                char l = (ed.left).getType();
-                                char r = (ed.right).getType();
+                                char l = ed.getLeftVertex().getType();
+                                char r = ed.getRightVertex().getType();
                                 char e = ed.getType();
                                 if (this.currentSheet.canExtend(j - 1, r)) {
                                     this.currentSheet.insertBefore(i, l);

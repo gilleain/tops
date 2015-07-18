@@ -70,7 +70,7 @@ public class Pattern implements PatternI {
     		Edge other = p.edges.get(i);
     		Vertex l = this.vertices.get(other.getLeft());
     		Vertex r = this.vertices.get(other.getRight());
-    		this.edges.add(new Edge(l, r, other.type));
+    		this.edges.add(new Edge(l, r, other.getType()));
     	}
     	
     	for (int i = 0; i < p.currentSheet.size(); i++) {
@@ -652,8 +652,8 @@ public class Pattern implements PatternI {
     
     private void setOutserts() {
     	if (!this.edges.isEmpty()) {
-            int first = this.edges.get(0).left.getPos();
-            int last = this.edges.get(this.edges.size() - 1).right.getPos();
+            int first = this.edges.get(0).getLeftVertex().getPos();
+            int last = this.edges.get(this.edges.size() - 1).getRightVertex().getPos();
             this.outsertN = this.getVertexString(0, first, false);
             this.outsertC = this.getVertexString(last + 1, 0, false);
             
@@ -686,18 +686,18 @@ public class Pattern implements PatternI {
                 int jl = ej.getLeft();
                 int jr = ej.getRight();
                 if (il == jl) {
-                    ei.S2++;
-                    ej.S1++;
+                    ei.addS2();
+                    ej.addS1();
                 }
 
                 if (ir == jl) {
-                    ei.E1++;
-                    ej.S1++;
+                    ei.addE1();
+                    ej.addS1();
                 }
 
                 if (ir == jr) {
-                    ei.E1++;
-                    ej.E1++;
+                    ei.addE1();
+                    ej.addE1();
                 }
             }
         }
@@ -742,9 +742,9 @@ public class Pattern implements PatternI {
     public String getEdgeString() {
         StringBuffer result = new StringBuffer();
         for (Edge e : this.edges) {
-            result.append(e.left.getPos());
+            result.append(e.getLeftVertex().getPos());
             result.append(':');
-            result.append(e.right.getPos());
+            result.append(e.getRightVertex().getPos());
             result.append(e.getType());
         }
         return result.toString();

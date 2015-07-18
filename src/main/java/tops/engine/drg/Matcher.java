@@ -153,9 +153,9 @@ public class Matcher implements MatcherI {
         Edge e;
         for (int j = 0; j < p.esize(); ++j) {
             e = p.getEdge(j);
-            patternString.append(e.left.getPos());
+            patternString.append(e.getLeftVertex().getPos());
             patternString.append(':');
-            patternString.append(e.right.getPos());
+            patternString.append(e.getRightVertex().getPos());
             patternString.append(e.getType());
         }
         return patternString.toString();
@@ -576,16 +576,16 @@ public class Matcher implements MatcherI {
                 					|| ((vt2 >= tvert) && (isRight == true))) {
                 				if (isRight) {
                 					tvert = wt2;
-                					if (backedge.left.getMatch() != 0) {
-                						backedge.left.resetMatch();
+                					if (backedge.getLeftVertex().getMatch() != 0) {
+                						backedge.getLeftVertex().resetMatch();
                 						pvert = backedge.getLeft();
                 						this.PVS.push(new Integer(pvert));
                 						this.TVS.push(new Integer(tvert));
                 					}
                 				} else {
                 					tvert = vt2;
-                					if (backedge.right.getMatch() != 0) {
-                						backedge.right.resetMatch();
+                					if (backedge.getRightVertex().getMatch() != 0) {
+                						backedge.getRightVertex().resetMatch();
                 						pvert = backedge.getRight();
                 						this.PVS.push(new Integer(pvert));
                 						this.TVS.push(new Integer(tvert));

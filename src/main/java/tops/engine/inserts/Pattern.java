@@ -595,16 +595,15 @@ public class Pattern implements PatternI {
     }
 
     public boolean stringComp(Edge p, Edge t, Pattern d) {
-        String innerProbe = this.getVertexString(p.left.getPos(), p.right
-                .getPos(), false);
-        String outerProbeLeft = this.getVertexString(0, p.left.getPos(), false);
-        String outerProbeRight = this.getVertexString(p.right.getPos(), 0,
-                false);
+        String innerProbe = getVertexString(
+        		p.getLeftVertex().getPos(), p.getRightVertex().getPos(), false);
+        String outerProbeLeft = getVertexString(0, p.getLeftVertex().getPos(), false);
+        String outerProbeRight = getVertexString(p.getRightVertex().getPos(), 0, false);
 
-        String innerTarget = d.getVertexString(t.left.getPos(), t.right
-                .getPos(), false);
-        String outerTargetLeft = d.getVertexString(0, t.left.getPos(), false);
-        String outerTargetRight = d.getVertexString(t.right.getPos(), 0, false);
+        String innerTarget = 
+        		d.getVertexString(t.getLeftVertex().getPos(), t.getRightVertex().getPos(), false);
+        String outerTargetLeft = d.getVertexString(0, t.getLeftVertex().getPos(), false);
+        String outerTargetRight = d.getVertexString(t.getRightVertex().getPos(), 0, false);
 
         return this.subSequenceCompare(innerProbe, innerTarget)
                 && this.subSequenceCompare(outerProbeLeft, outerTargetLeft)
@@ -799,12 +798,10 @@ public class Pattern implements PatternI {
     }
 
     private void setOutserts() {
-        int first = ((Edge) this.edges.get(0)).left.getPos();
-        int last = ((Edge) this.edges.get(this.edges.size() - 1)).right.getPos();
-        this.outsertN = this.getVertexString(0, first, false);
-        this.outsertC = this.getVertexString(last + 1, 0, false);
-        // System.out.println("Edges not emptry : outsertN = " + outsertN + "
-        // outsertC = " + outsertC + " first = " + first + " last = " + last);
+        int first = edges.get(0).getLeftVertex().getPos();
+        int last = edges.get(edges.size() - 1).getRightVertex().getPos();
+        this.outsertN = getVertexString(0, first, false);
+        this.outsertC = getVertexString(last + 1, 0, false);
     }
 
     /* ****************** INSERTS!! ****************** */
@@ -853,28 +850,25 @@ public class Pattern implements PatternI {
         int jl = 0;
         int ir = 0;
         int jr = 0;
-        // System.out.println("SET INDICES CALLED");
         for (int i = 0; i < this.edges.size() - 1; i++) {
-            il = ((Edge) this.edges.get(i)).left.getPos();
-            ir = ((Edge) this.edges.get(i)).right.getPos();
-            // System.out.println("il:" + il + " ir:" + ir);
-            for (int j = i + 1; j < this.edges.size(); ++j) {
-                jl = ((Edge) this.edges.get(j)).left.getPos();
-                jr = ((Edge) this.edges.get(j)).right.getPos();
-                // System.out.println("jl:" + jl + " jr:" + jr);
+            il = edges.get(i).getLeftVertex().getPos();
+            ir = edges.get(i).getRightVertex().getPos();
+            for (int j = i + 1; j < edges.size(); ++j) {
+                jl = edges.get(j).getLeftVertex().getPos();
+                jr = edges.get(j).getRightVertex().getPos();
                 if (il == jl) {
-                    ((Edge) this.edges.get(i)).S2++;
-                    ((Edge) this.edges.get(j)).S1++;
+                    edges.get(i).addS2();
+                    edges.get(j).addS1();
                 }
 
                 if (ir == jl) {
-                    ((Edge) this.edges.get(i)).E1++;
-                    ((Edge) this.edges.get(j)).S1++;
+                    edges.get(i).addE1();
+                    edges.get(j).addS1();
                 }
 
                 if (ir == jr) {
-                    ((Edge) this.edges.get(i)).E1++;
-                    ((Edge) this.edges.get(j)).E1++;
+                    edges.get(i).addE1();
+                    edges.get(j).addE1();
                 }
             }
         }
@@ -959,9 +953,9 @@ public class Pattern implements PatternI {
         Edge e;
         for (int j = 0; j < this.edges.size(); ++j) {
             e = (Edge) this.edges.get(j);
-            result.append(e.left.getPos());
+            result.append(e.getLeftVertex().getPos());
             result.append(':');
-            result.append(e.right.getPos());
+            result.append(e.getRightVertex().getPos());
             result.append(e.getType());
         }
         return result.toString();
