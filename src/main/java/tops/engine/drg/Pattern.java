@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tops.engine.Edge;
+import tops.engine.PatternI;
 import tops.engine.TParser;
 import tops.engine.TopsStringFormatException;
 import tops.engine.Vertex;
 
-public class Pattern {
+public class Pattern implements PatternI {
 
     private String head;	
 
@@ -412,7 +413,7 @@ public class Pattern {
     }
 
     // get the pattern with inserts eg : N[0]E[1]E[2]E[1]C
-    public String getInsertString(Pattern d) {
+    public String getInsertString(PatternI d) {
         StringBuffer insertresult = new StringBuffer(" N");
         int last = 0;
         int isize = 0;
@@ -425,7 +426,7 @@ public class Pattern {
             } else {
                 int j = last + 1;
                 for (; j < this.vertices.get(i + 1).getMatch(); ++j) {
-                    char dt = d.vertices.get(j).getType();
+                    char dt = d.getVertex(j).getType();
                     if (nxt.getType() == dt)
                         break;
                 }
@@ -445,7 +446,7 @@ public class Pattern {
 
     // get an array of strings of the unattached vertices
     // 'd' is an EXAMPLE, not a pattern
-    public String[] getInsertStringArr(Pattern d, boolean flip) { 
+    public String[] getInsertStringArr(PatternI d, boolean flip) { 
         ArrayList<String> results = new ArrayList<String>();
         int last = 1;
         int m = 0;
@@ -496,7 +497,7 @@ public class Pattern {
         return ret.toString();
     }
 
-    public boolean preProcess(Pattern d) {
+    public boolean preProcess(PatternI d) {
         if (this.esize() > d.esize()) {
 //        	System.out.println("pattern larger than target");
             return false; // pattern must be smaller.
@@ -506,8 +507,9 @@ public class Pattern {
         for (int i = 0; i < this.esize(); ++i) {
             Edge current = this.edges.get(i);
             for (int j = 0; j < d.esize(); ++j) {
-                Edge target = d.edges.get(j);
-                if ((current.matches(target)) && this.efficientStringComp(current, target, d)) {
+                Edge target = d.getEdge(j);
+                if ((current.matches(target)) && 
+                		efficientStringComp(current, target, d)) {
                     current.addMatch(target);
                     found = true;
                 }
@@ -541,7 +543,7 @@ public class Pattern {
             && this.subSequenceCompare(outerProbeRight, outerTargetRight);
     }
     
-    public boolean efficientStringComp(Edge p, Edge t, Pattern d) {
+    public boolean efficientStringComp(Edge p, Edge t, PatternI d) {
     	int pl = p.getLeft();
     	int pr = p.getRight();
     	int tl = t.getLeft();
@@ -552,13 +554,13 @@ public class Pattern {
         	&& this.subSequenceCompare(pr, 0, tr, 0, d, false);
     }
     
-    public boolean stringMatch(Pattern other, boolean flipped) {
+    public boolean stringMatch(PatternI other, boolean flipped) {
     	return this.subSequenceCompare(0, 0, 0, 0, other, flipped);
     }
     
     // TODO : use this, test it, replace stringComp...
     public boolean subSequenceCompare(int start, int end, 
-    		int otherStart, int otherEnd, Pattern other, boolean flipped) {
+    		int otherStart, int otherEnd, PatternI other, boolean flipped) {
     	int ptrA = start;
     	int ptrB = otherStart;
     	
