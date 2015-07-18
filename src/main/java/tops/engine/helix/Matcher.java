@@ -10,12 +10,14 @@ import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 import tops.engine.Edge;
+import tops.engine.MatcherI;
+import tops.engine.PatternI;
 import tops.engine.PlainFormatter;
 import tops.engine.Result;
 import tops.engine.TopsStringFormatException;
 import tops.engine.Vertex;
 
-public class Matcher {
+public class Matcher implements MatcherI {
 
     private int k;
 
@@ -487,9 +489,8 @@ public class Matcher {
         return true;
     }
 
-    public boolean subSeqMatch(Edge c, int last, Pattern p, Pattern d) {
-        String probe = p.getVertexString(c.left.getPos() + 1, c.right.getPos(),
-                false);
+    public boolean subSeqMatch(Edge c, int last, PatternI p, PatternI d) {
+        String probe = p.getVertexString(c.left.getPos() + 1, c.right.getPos(), false);
         String target = d.getVertexString(
                 c.getCurrentMatch().left.getPos() + 1,
                 c.getCurrentMatch().right.getPos(), false);
@@ -540,7 +541,8 @@ public class Matcher {
         return true;
     }
 
-    public boolean matches(Pattern p, Pattern d) {
+    @Override
+    public boolean matches(PatternI p, PatternI d) {
         this.k = 0;
         int last = 1;
         while (this.k < p.esize()) { // Run through the pattern edges.
@@ -550,19 +552,20 @@ public class Matcher {
                 return false;
             }
 
-            if (this.findNextMatch(p, current) && this.verticesIncrease(p, current)
-                    && this.subSeqMatch(current, last, p, d)) {
+            if (findNextMatch(p, current) 
+            		&& verticesIncrease(p, current)
+                    && subSeqMatch(current, last, p, d)) {
                 last = current.right.getPos() + 1; // aargh!
                 ++this.k;
             } else {
                 if (this.k > 0) {
-                    if (!this.nextSmallestEdge(p, current)) {
+                    if (!nextSmallestEdge(p, current)) {
                         // System.err.println("!nextsmallestedge");
                         return false;
                     }
                 }
                 p.setMovedUpTo(this.k);
-                if (!this.advancePositions(p, current)) {
+                if (!advancePositions(p, current)) {
                     // System.err.println("!advancepostions");
                     return false;
                 }
@@ -577,8 +580,8 @@ public class Matcher {
 
             String doutCup = d.getVertexString(rhe + 1, 0, false);
             String doutCdn = d.getVertexString(rhe + 1, 0, true);
-            if (this.subSeqMatch(p.outsertC, doutCup)
-                    || this.subSeqMatch(p.outsertC, doutCdn)) {
+            if (subSeqMatch(p.getOutsertC(false), doutCup)
+                    || subSeqMatch(p.getOutsertC(false), doutCdn)) {
                 return true;
             } else {
                 // System.err.println("nosubseqmatch");
@@ -588,9 +591,7 @@ public class Matcher {
 
     }
 
-    // ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-
-    boolean findNextMatch(Pattern p, Edge current) {
+    public boolean findNextMatch(PatternI p, Edge current) {
         int c = 0;
         // System.out.println("findNextMatch");
         if (this.k == 0) {
@@ -624,7 +625,7 @@ public class Matcher {
         }
     }
 
-    boolean nextSmallestEdge(Pattern p, Edge current) {
+    public boolean nextSmallestEdge(PatternI p, Edge current) {
         // System.out.println("nextSmallestMatch");
         boolean found = false;
         Edge last = (p.getEdge(this.k - 1)).getCurrentMatch();
@@ -638,30 +639,22 @@ public class Matcher {
         return found;
     }
 
-    boolean verticesIncrease(Pattern p, Edge current) {
+    boolean verticesIncrease(PatternI p, Edge current) {
         int last = 0;
-        // int end = current.right.getPos();
         int[] m = p.getMatches();
-        // System.out.print('[');
-        // for (int j = 0; j < m.length; ++j) { System.out.print(m[j] + ", "); }
-        // System.out.print("] ");
         for (int i = 0; i < m.length; i++) {
             if (m[i] != 0) {
                 if (m[i] <= last) {
-                    // System.out.print(m[i] + " not greater than " + last);
                     return false;
                 } else {
-                    // if (last != 0) System.out.print(m[i] + " > " + last + "
-                    // (i = " + i + ") , ");
                     last = m[i];
                 }
             }
         }
-        // System.out.print(" Done.\n");
         return true;
     }
 
-    boolean advancePositions(Pattern p, Edge current) {
+    public boolean advancePositions(PatternI p, Edge current) {
         // 'isRight' tells you which end of backedge pvert is...
         // System.out.println("advancePositions");
         boolean found = false, isRight = false, attached = false;
@@ -773,6 +766,5 @@ public class Matcher {
             tsfe.printStackTrace();
         }
     }
-
-}// EOC
+}
 

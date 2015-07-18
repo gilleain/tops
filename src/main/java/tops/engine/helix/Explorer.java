@@ -211,8 +211,8 @@ public class Explorer {
             // float c2 = doCompression(pair, chi);
             float c2 = this.doDrgCompression(pair, chi);
 
-            Result r = new Result(c2, pair[1].head, chi.toString(), pair[1]
-                    .getClassification());
+            Result r = new Result(
+            		c2, pair[1].getName(), chi.toString(), pair[1].getClassification());
 
             results.add(r);
             this.clear(); // reset pattern edge stack etc

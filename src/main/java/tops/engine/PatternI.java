@@ -35,4 +35,8 @@ public interface PatternI {
 
 	public char getVertexType(int ptrB);
 
+	public int[] getMatches();
+
+	public String getOutsertC(boolean b);
+
 }

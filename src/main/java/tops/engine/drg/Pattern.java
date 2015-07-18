@@ -397,6 +397,14 @@ public class Pattern implements PatternI {
         matchresult.setCharAt(matchresult.length() - 1, ']');
         return matchresult.toString();
     }
+    
+    public int[] getMatches() {
+        int[] matches = new int[vertices.size() - 2];
+        for (int i = 0; i < matches.length; ++i) {
+            matches[i] = vertices.get(i + 1).getMatch();
+        }
+        return matches;
+    }
 
     public void setInserts() {
         this.inserts = new int[this.vertices.size() - 1];

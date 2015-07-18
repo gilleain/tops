@@ -4,33 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tops.engine.Edge;
-import tops.engine.TopsStringFormatException;
+import tops.engine.PatternI;
 import tops.engine.TParser;
+import tops.engine.TopsStringFormatException;
 import tops.engine.Vertex;
 
-public class Pattern {
+public class Pattern implements PatternI {
 
-    int size, vsize;
+    private int[] inserts;
 
-    int[] inserts;
-
-    String outsertC; // the vertex sequence from the last edge to the C
+    private String outsertC; // the vertex sequence from the last edge to the C
                         // terminus
 
-    String outsertN; // the vertex sequence from the N terminus to the last
+    private String outsertN; // the vertex sequence from the N terminus to the last
                         // edge
 
-    String head;
+    private String head;
 
-    String classification;
+    private String classification;
 
-    Edge current;
+    private Edge currentChiralEdge;
 
-    Edge currentChiralEdge;
+    private List<Vertex> vertices = new ArrayList<Vertex>();
 
-    List<Vertex> vertices = new ArrayList<Vertex>();
-
-    List<Edge> edges = new ArrayList<Edge>();
+    private List<Edge> edges = new ArrayList<Edge>();
 
     public Pattern() {
         this.head = new String("pattern");
@@ -39,8 +36,6 @@ public class Pattern {
     public Pattern(String s) throws TopsStringFormatException {
         this.deCompress(s);
         this.setIndices();
-        if (!this.noEdges())
-            this.current = (Edge) this.edges.get(this.edges.size() - 1);
     }
 
     public int getNumberOfHBonds() {
@@ -155,7 +150,7 @@ public class Pattern {
         return -1; // not found
     }
 
-    void removeLastChiral() {
+    public void removeLastChiral() {
         char ctype = this.currentChiralEdge.getType();
         if ((ctype == 'R') || (ctype == 'L')) {
             this.edges.remove(this.currentChiralEdge);
@@ -168,39 +163,39 @@ public class Pattern {
         }
     }
 
-    void addEdges(List<Edge> newEdges) {
+    public void addEdges(List<Edge> newEdges) {
         this.edges.addAll(newEdges);
     }
 
-    void addVertices(List<Vertex> newVertices) {
+    public void addVertices(List<Vertex> newVertices) {
         this.vertices.addAll(newVertices);
     }
 
-    Vertex getVertex(int i) {
+    public Vertex getVertex(int i) {
         return (Vertex) (this.vertices.get(i));
     }
 
-    Edge getEdge(int i) {
+    public Edge getEdge(int i) {
         if (i >= this.edges.size())
             return (Edge) (this.edges.get(this.edges.size() - 1));
         else
             return (Edge) (this.edges.get(i));
     }
 
-    boolean noEdges() {
+    public boolean noEdges() {
         return this.edges.isEmpty();
     }
 
-    int vsize() {
+    public int vsize() {
         return this.vertices.size();
     }
 
-    int esize() {
+    public int esize() {
         return this.edges.size();
     }
 
     // get the simple list of matching
-    String getVertexMatchedString() {
+    public String getVertexMatchedString() {
         StringBuffer result = new StringBuffer();
         for (int i = 0; i < this.vertices.size(); ++i) {
             Vertex nxt = (Vertex) this.vertices.get(i);
@@ -214,7 +209,7 @@ public class Pattern {
     }
 
     // get the correspondance list eg : [1, 2, 4, 5]
-    String getMatchString() {
+    public String getMatchString() {
         // StringBuffer matchresult = new StringBuffer("<Corr>[");
         StringBuffer matchresult = new StringBuffer(" [");
         for (int i = 0; i < this.vertices.size(); ++i) {
@@ -230,7 +225,7 @@ public class Pattern {
         return matchresult.toString();
     }
 
-    void setInserts() {
+    public void setInserts() {
         this.inserts = new int[this.vertices.size() - 1];
         int last = 0;
         Vertex nxt;
@@ -245,7 +240,7 @@ public class Pattern {
     }
 
     // get the pattern with inserts eg : N[0]E[1]E[2]E[1]C
-    String getInsertString(Pattern d) {
+    public String getInsertString(PatternI d) {
         StringBuffer insertresult = new StringBuffer(" N");
         int last = 0;
         int isize = 0;
@@ -258,7 +253,7 @@ public class Pattern {
             } else {
                 int j = last + 1;
                 for (; j < ((Vertex) this.vertices.get(i + 1)).getMatch(); ++j) {
-                    char dt = ((Vertex) d.vertices.get(j)).getType();
+                    char dt = d.getVertex(j).getType();
                     if (nxt.getType() == dt)
                         break;
                 }
@@ -267,7 +262,7 @@ public class Pattern {
             }
             insertresult.append(nxt.getType());
         }
-        isize = d.vsize - last;
+        isize = d.vsize() - last;
         // System.out.println("isize = " + isize + " last = " + last);
         if (isize > 0)
             insertresult.append('[').append(isize - 2).append(']');
@@ -279,7 +274,7 @@ public class Pattern {
     }
 
     // get an array of strings of the unattached vertices
-    String[] getInsertStringArr(Pattern d, boolean flip) { // 'd' is an
+    public String[] getInsertStringArr(PatternI d, boolean flip) { // 'd' is an
                                                             // EXAMPLE, not a
                                                             // pattern
         List<String> results = new ArrayList<String>();
@@ -301,7 +296,7 @@ public class Pattern {
         return (String[]) results.toArray(new String[0]);
     }
 
-    String splice(String[] ins) {
+    public String splice(String[] ins) {
         String s;
         int offset = 1;
         int pos;
@@ -324,7 +319,7 @@ public class Pattern {
 
     // this method could replace the /splice/ method above.
     // except that splice actually adds new vertices...
-    String mergeInsertArrayWithVertices(String[] ins) {
+    public String mergeInsertArrayWithVertices(String[] ins) {
         StringBuffer ret = new StringBuffer();
         for (int i = 0; i < ins.length; i++) {
             ret.append(((Vertex) this.vertices.get(i)).getType());
@@ -334,22 +329,19 @@ public class Pattern {
         return ret.toString();
     }
 
-    boolean preProcess(Pattern d) {
+    public boolean preProcess(PatternI d) {
         if (this.esize() > d.esize()) {
             // System.err.println("pattern larger than target! pattern = " +
             // this.esize() + " target = " + d.esize());
             return false; // pattern must be smaller.
         }
         boolean found = false;
-        Edge current, target;
+        Edge target;
         // matches are added to the target edge
-        for (int i = 0; i < this.size; ++i) {
-            current = (Edge) (this.edges.get(i));
-            for (int j = 0; j < d.size; ++j) {
-                target = (Edge) (d.edges.get(j));
-                if ((current.matches(target)) && this.stringComp(current, target, d)) {
-                    // System.err.println("current: " + i + " matches target: "
-                    // + j);
+        for (Edge current : edges) {
+            for (int j = 0; j < d.esize(); ++j) {
+                target = d.getEdge(j);
+                if ((current.matches(target)) && stringComp(current, target, d)) {
                     current.addMatch(target);
                     found = true;
                 }
@@ -358,17 +350,14 @@ public class Pattern {
             if (!found)
                 return false;
             found = false;
-//            current.turbo(); // cast the arraylist to an array to speed things up
         }
         return true;
     }
 
-    boolean stringComp(Edge p, Edge t, Pattern d) {
-        String innerProbe = this.getVertexString(p.left.getPos(), p.right
-                .getPos(), false);
-        String outerProbeLeft = this.getVertexString(0, p.left.getPos(), false);
-        String outerProbeRight = this.getVertexString(p.right.getPos(), 0,
-                false);
+    public boolean stringComp(Edge p, Edge t, PatternI d) {
+        String innerProbe = getVertexString(p.left.getPos(), p.right.getPos(), false);
+        String outerProbeLeft = getVertexString(0, p.left.getPos(), false);
+        String outerProbeRight = getVertexString(p.right.getPos(), 0, false);
 
         String innerTarget = d.getVertexString(t.left.getPos(), t.right
                 .getPos(), false);
@@ -380,7 +369,7 @@ public class Pattern {
                 && this.subSequenceCompare(outerProbeRight, outerTargetRight);
     }
 
-    boolean subSequenceCompare(String a, String b) {
+    public boolean subSequenceCompare(String a, String b) {
         int ptrA, ptrB;
         char c;
         ptrA = ptrB = 0;
@@ -396,13 +385,13 @@ public class Pattern {
         return true;
     }
 
-    void setMovedUpTo(int k) {
+    public void setMovedUpTo(int k) {
         for (int i = 0; i < k; ++i) {
             ((Edge) this.edges.get(i)).moved = false;
         }
     }
 
-    void deCompress(String s) throws TopsStringFormatException {
+    public void deCompress(String s) throws TopsStringFormatException {
         try {
             TParser parser = new TParser(s);
 
@@ -412,7 +401,6 @@ public class Pattern {
             this.classification = parser.getClassification();
             for (int i = 0; i < verts.length; ++i) {
                 this.vertices.add(new Vertex(verts[i], i));
-                this.vsize++;
             }
             int l, r;
             char t;
@@ -437,24 +425,19 @@ public class Pattern {
                 int last = ((Edge) this.edges.get(this.edges.size() - 1)).right.getPos();
                 this.outsertN = this.getVertexString(0, first, false);
                 this.outsertC = this.getVertexString(last + 1, 0, false);
-                // System.out.println("Edges not emptry : outsertN = " +
-                // outsertN + " outsertC = " + outsertC + " first = " + first +
-                // " last = " + last);
             }
         } catch (Exception e) {
             throw new TopsStringFormatException(s + " " + e.toString());
         }
     }
 
-    void sortEdges() {
-        this.size = this.edges.size();
+    public void sortEdges() {
+        int size = this.edges.size();
         Edge first, second;
-        for (int i = 0; i < this.size; ++i) {
-            for (int j = 0; j < this.size - 1; ++j) {
-                first = (Edge) this.edges.get(j);
-                second = (Edge) this.edges.get(j + 1);
-                // System.out.println("first = " + first.toString() + " second =
-                // " + second.toString());
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j < size - 1; ++j) {
+                first = edges.get(j);
+                second = edges.get(j + 1);
                 if (first.greaterThan(second)) {
                     this.edges.set(j, second);
                     this.edges.set(j + 1, first);
@@ -463,7 +446,7 @@ public class Pattern {
         }
     }
 
-    void setIndices() {
+    public void setIndices() {
         int il = 0;
         int jl = 0;
         int ir = 0;
@@ -495,7 +478,7 @@ public class Pattern {
         }
     }
 
-    void reset() {
+    public void reset() {
         for (int i = 0; i < this.edges.size(); ++i) {
             ((Edge) (this.edges.get(i))).reset();
         }
@@ -529,10 +512,12 @@ public class Pattern {
         return (this.vertices.size() < 3);
     }
 
+    @Override
     public int[] getMatches() {
-        int[] matches = new int[this.vertices.size() - 2];
-        for (int i = 0; i < matches.length; ++i)
-            matches[i] = ((Vertex) (this.vertices.get(i + 1))).getMatch();
+        int[] matches = new int[vertices.size() - 2];
+        for (int i = 0; i < matches.length; ++i) {
+            matches[i] = vertices.get(i + 1).getMatch();
+        }
         return matches;
     }
 
@@ -573,5 +558,36 @@ public class Pattern {
             counter.setPos(tmp + amount); // move up all the internal numbers!
         }
     }
-}// EOC
+
+	@Override
+	public boolean subSequenceCompare(int i, int right, int j, int right2,
+			PatternI d, boolean b) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getLastEdgeVertexPosition() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int indexOfFirstUnmatchedEdge() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean stringMatch(PatternI diagram, boolean flip) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public char getVertexType(int ptrB) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+}
 
