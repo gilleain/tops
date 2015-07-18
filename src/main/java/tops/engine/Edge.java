@@ -13,7 +13,7 @@ public class Edge implements Comparable<Edge> {
 
     private char type;
 
-    private int S1, S2, E1, E2, mp;
+    private int S1, S2, E1, E2, matchPointer;
 
     private List<Edge> matchList;
 
@@ -27,7 +27,7 @@ public class Edge implements Comparable<Edge> {
         this.type = t;
         this.S1 = this.S2 = this.E1 = this.E2 = 0;
         this.matchList = new ArrayList<Edge>();
-        this.mp = 0;
+        this.matchPointer = 0;
         this.moved = false;
         this.rangeMinimum = -1; // -1 indicates 'infinite' bounds.
         this.rangeMaximum = -1;
@@ -178,27 +178,27 @@ public class Edge implements Comparable<Edge> {
     }
 
     public Edge getCurrentMatch() {
-    	return (Edge) this.matchList.get(this.mp);
+    	return this.matchList.get(this.matchPointer);
     }
 
     public boolean hasMoreMatches() {
-    	return this.mp < this.matchList.size();
+    	return this.matchPointer < this.matchList.size();
     }
 
     public void moveMatchPtr() {
-        this.mp++;
+        this.matchPointer++;
     }
 
     public void resetMatchPtr(int p) {
-        this.mp += p;
+        this.matchPointer += p;
     }
     
     public void setMatchPtr(int p) {
-    	this.mp = p;
+    	this.matchPointer = p;
     }
     
     public int getMatchPtr() {
-    	return this.mp;
+    	return this.matchPointer;
     }
 
     public boolean greaterThan(Edge dat) {
@@ -210,7 +210,7 @@ public class Edge implements Comparable<Edge> {
 
     public void reset() {
         this.matchList = new ArrayList<Edge>();
-        this.mp = 0;
+        this.matchPointer = 0;
     }
 
     public boolean connectedTo(Edge dat) {
@@ -224,8 +224,9 @@ public class Edge implements Comparable<Edge> {
         } else {
             if (this.greaterThan(other)) {
                 return 1;
-            } else
+            } else {
                 return -1;
+            }
         }
     }
 
@@ -237,8 +238,8 @@ public class Edge implements Comparable<Edge> {
     @Override
     public String toString() {
         StringBuffer tmp = new StringBuffer();
-        tmp.append(this.left.getPos()).append(':').append(this.right.getPos()).append(
-                this.type);
+        tmp.append(this.left.getPos()).append(':').append(
+        		this.right.getPos()).append(this.type);
         return tmp.toString();
     }
 

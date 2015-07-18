@@ -637,7 +637,7 @@ public class Matcher implements MatcherI {
         return true;
     }
 
-    public boolean advancePositions(PatternI p, Edge current) {
+    private boolean advancePositions(PatternI p, Edge current) {
         // 'isRight' tells you which end of backedge pvert is...
         // System.out.println("advancePositions");
         boolean found = false, isRight = false, attached = false;
@@ -651,8 +651,8 @@ public class Matcher implements MatcherI {
         this.TVS.push(new Integer(tvert));
 
         while (!this.PVS.empty()) {
-            pvert = ((Integer) (this.PVS.pop())).intValue();
-            tvert = ((Integer) (this.TVS.pop())).intValue();
+            pvert = PVS.pop().intValue();
+            tvert = TVS.pop().intValue();
             // System.out.println("pvert, tvert = " + pvert + ", " + tvert);
             // FORALL EDGES LESS THAN THE STUCK EDGE
             for (int j = this.k - 1; j >= 0; --j) {
@@ -723,7 +723,7 @@ public class Matcher implements MatcherI {
     }// end of backtrack
 
     public static void main(String[] args) {
-        ArrayList<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<String>();
         String line;
         String pattern = args[0];
         String filename = args[1];
