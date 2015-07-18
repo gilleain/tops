@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 import tops.engine.Edge;
+import tops.engine.MatchHandler;
 import tops.engine.MatcherI;
 import tops.engine.PatternI;
 import tops.engine.PlainFormatter;
@@ -47,6 +48,29 @@ public class Matcher implements MatcherI {
         for (int p = 0; p < diag.length; ++p) {
             this.diagrams[p] = new Pattern(diag[p]);
         }
+    }
+    
+    @Override
+    public void match(PatternI pattern, PatternI instance, MatchHandler matchHandler) {
+    	boolean matchFound = false;
+    	boolean shouldReset = false;
+    	if (pattern.preProcess(instance)) {
+    		if (matches(pattern, instance)) {
+    			matchHandler.handle(pattern, instance);
+    			matchFound = true;
+    		}
+    	}
+    	if (!matchFound) {
+    		pattern.reset();	// flip
+    		shouldReset = true;
+    		if (matches(pattern, instance)) {
+    			matchHandler.handle(pattern, instance);
+    			matchFound = true;
+    		}
+    	}
+    	if (shouldReset) {
+    		pattern.reset();
+    	}
     }
 
     public void setLogging(boolean on) {

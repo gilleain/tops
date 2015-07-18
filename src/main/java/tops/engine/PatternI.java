@@ -39,4 +39,6 @@ public interface PatternI {
 
 	public boolean verticesIncrease();
 
+	public void reset();
+
 }
