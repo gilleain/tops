@@ -1,13 +1,18 @@
 package tops.drawing.model;
 
-
-public class Strand extends SSE {
-    private int sseNumber;
-	private boolean isUp;
+public class Unknown extends SSE {
     
-    public Strand(int sseNumber, boolean isUp) {
+    private int sseNumber;
+
+
+    public Unknown(int sseNumber) {
         this.sseNumber = sseNumber;
-        this.isUp = isUp;
+    }
+    
+    @Override
+    public boolean isUp() {
+        // TODO Auto-generated method stub
+        return false;
     }
     
     public void setSSENumber(int sseNumber) {
@@ -21,17 +26,14 @@ public class Strand extends SSE {
     public int getSSENumber() {
         return this.sseNumber;
     }
-    
-    public boolean isUp() {
-        return this.isUp;
-    }
-    
+
+    @Override
     public boolean equals(SSE other) {
-        return other instanceof Strand && other.getSSENumber() == this.sseNumber;
+        return (other instanceof Unknown);  // TODO...
     }
     
     public String toString() {
-        return "Strand " + this.sseNumber + "("  + getStringRange() + ")";
+        return "Unknown " + this.sseNumber + "("  + getStringRange() + ")";
     }
 
 }

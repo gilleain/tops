@@ -687,24 +687,20 @@ public class Cartoon implements Cloneable {
             connection.draw(g2);
         }
         
-        Iterator<Bond> e = lArcs.iterator();
-        while (e.hasNext()) {
-            ((DashedLine) e.next()).draw(g2);
+        for (Bond e : lArcs) {
+            ((DashedLine) e).draw(g2);
         }
 
-        e = rArcs.iterator();
-        while (e.hasNext()) {
-            ((DashedLine) e.next()).draw(g2);
+        for (Bond e : rArcs) {
+            ((DashedLine) e).draw(g2);
         }
 
-        e = pBonds.iterator();
-        while (e.hasNext()) {
-            ((DashedLine) e.next()).draw(g2);
+        for (Bond e : pBonds) {
+            ((DashedLine) e).draw(g2);
         }
 
-        e = aBonds.iterator();
-        while (e.hasNext()) {
-            ((DashedLine) e.next()).draw(g2);
+        for (Bond e : aBonds) {
+            ((DashedLine) e).draw(g2);
         }
     }
     

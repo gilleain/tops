@@ -7,6 +7,30 @@ package tops.drawing.model;
  */
 public abstract class SSE {
     
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public void setEnd(int end) {
+        this.end = end;
+    }
+    
+    public String getStringRange() {
+        return String.format("%s-%s", start, end);
+    }
+
+    private int start;
+    
+    private int end;
+    
     public abstract boolean isUp();
     
     public boolean isParallelTo(SSE other) {

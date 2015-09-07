@@ -13,6 +13,8 @@ public class Protein {
 
     private Vector<DomainDefinition> domainDefs;
 
+    public int NChains;
+
     public Protein() {
         this.domainDefs = new Vector<DomainDefinition>();
         this.topsLinkedLists = new Vector<SecStrucElement>();

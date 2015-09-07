@@ -32,6 +32,6 @@ public class Helix extends SSE {
    }
     
     public String toString() {
-        return "Helix";
+        return "Helix " + this.sseNumber + "("  + getStringRange() + ")";
     }
 }
