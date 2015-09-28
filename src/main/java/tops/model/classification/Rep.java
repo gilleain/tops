@@ -1,6 +1,5 @@
 package tops.model.classification;
 
-import tops.model.TopsParser;
 
 public class Rep {
 
@@ -14,9 +13,11 @@ public class Rep {
 
     public Rep(String levelName, String topsString) {
         this.levelName = levelName;
-        this.pdbID = TopsParser.getName(topsString);
-        this.data = TopsParser.getDataSubstring(topsString);
-        this.code = TopsParser.getClassification(topsString);
+        
+        // XXX TopsParser was deleted...
+//        this.pdbID = TopsParser.getName(topsString);
+//        this.data = TopsParser.getDataSubstring(topsString);
+//        this.code = TopsParser.getClassification(topsString);
     }
 
     public Rep(String levelName, String code, String pdbID, String data) {
