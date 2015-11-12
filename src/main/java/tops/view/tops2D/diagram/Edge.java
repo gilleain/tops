@@ -16,11 +16,11 @@ abstract class Edge {
 
     public final int type;
 
-    protected SSE left, right;
+    protected Vertex left, right;
 
     protected Shape s; // could be a shape?
 
-    public Edge(SSE left, SSE right, int type) {
+    public Edge(Vertex left, Vertex right, int type) {
         this.left = left;
         this.right = right;
         this.type = type;

@@ -3,28 +3,27 @@ package tops.view.tops2D.diagram;
 import java.awt.*;
 import java.awt.geom.*;
 
-public abstract class SSE {
+public abstract class Vertex {
 
-    protected boolean isDown;
     protected Rectangle2D bb;
     private Color color = null;
     private Shape s;
     private int pos;
 
-    public SSE(boolean b, int p) {
+    public Vertex(int pos) {
         // XXX potentially a problem if we try to draw without layout!
         this.bb = null; 
         
-        this.isDown = b;
-        this.pos = p;
+//        this.isDown = isDown;
+        this.pos = pos;
        
     }
     
     public void setBounds(Rectangle2D bb) {
         this.bb = bb;
-        if (this.isDown) {
-            this.shift();
-        }
+//        if (this.isDown) {    // TODO : why is this necessary?
+//            this.shift();
+//        }
     }
     
     public int getCenterX() {

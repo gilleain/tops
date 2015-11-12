@@ -4,10 +4,10 @@ import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 
 
-public class Strand extends SSE {
+public class Strand extends OrientedVertex {
 
-    public Strand(boolean b, int i) {
-        super(b, i);
+    public Strand(boolean isDown, int position) {
+        super(position, isDown);
     }
 
     @Override
@@ -16,7 +16,7 @@ public class Strand extends SSE {
         int by = (int) (this.bb.getY());
         int bh = (int) (this.bb.getHeight());
         int bw = (int) (this.bb.getWidth());
-        int pnty = (this.isDown) ? (by + bh) : by;
+        int pnty = (this.isDown()) ? (by + bh) : by;
 
         GeneralPath gp = new GeneralPath();
         gp.moveTo(bx + (bw / 2), pnty);

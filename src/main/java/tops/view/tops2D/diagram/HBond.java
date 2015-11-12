@@ -7,7 +7,7 @@ import java.awt.geom.Arc2D;
 
 public class HBond extends Edge {
 
-    public HBond(SSE left, SSE right, int type) {
+    public HBond(Vertex left, Vertex right, int type) {
         super(left, right, type);
     }
 

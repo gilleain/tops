@@ -3,10 +3,10 @@ package tops.view.tops2D.diagram;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
-public class Term extends SSE {
+public class Term extends Vertex {
 
-    public Term(boolean b, int i) {
-        super(b, i);
+    public Term(int position) {
+        super(position);
     }
 
     @Override

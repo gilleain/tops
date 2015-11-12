@@ -7,7 +7,7 @@ import java.awt.geom.Arc2D;
 
 public class Chiral extends Edge {
 
-    public Chiral(SSE left, SSE right, int type) {
+    public Chiral(Vertex left, Vertex right, int type) {
         super(left, right, type);
     }
 

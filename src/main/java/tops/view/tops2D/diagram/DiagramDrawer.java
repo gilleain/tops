@@ -15,6 +15,7 @@ public class DiagramDrawer {
     private Graph gr;
     private Color backgroundColor = Color.white;
     private boolean showLabelNumbers;
+    private SSEDiagramBuilder builder;
 
     public DiagramDrawer(int w, int h) {
         this.w = w;
@@ -26,7 +27,8 @@ public class DiagramDrawer {
 
     public DiagramDrawer(String vertices, String edges, String highlights, int w, int h) {
         this(w, h);
-        this.gr = new Graph(vertices, edges, highlights);
+        builder = new SSEDiagramBuilder();
+        this.gr = builder.build(vertices, edges, highlights);
     }
     
     public void setGraph(Graph gr) {
@@ -34,7 +36,7 @@ public class DiagramDrawer {
     }
     
     public void setData(String vertices, String edges, String highlights) {
-        this.gr = new Graph(vertices, edges, highlights);
+        this.gr = builder.build(vertices, edges, highlights);
     }
     
     public void setShowLabelNumbers(boolean val) {
@@ -57,7 +59,7 @@ public class DiagramDrawer {
             
             int numberOfVertices = this.gr.numberOfVertices();
             
-            // XXX : various attepts to parameterize the label positions
+            // XXX : various attempts to parameterize the label positions
             //int labelY = (5 * this.h) / 6;
             //int labelY = (int) this.axis + ((3 * this.w) / (numberOfVertices * 2));
             int labelY = (int) this.axis + (this.w / numberOfVertices);
@@ -66,7 +68,7 @@ public class DiagramDrawer {
             FontRenderContext frc = g2.getFontRenderContext();
             
             for (int i = 0; i < numberOfVertices; i++) {
-                SSE sse = this.gr.getVertex(i);
+                Vertex sse = this.gr.getVertex(i);
                 g2.setColor(sse.getColor());
                 g2.draw(sse.getShape());
                 
