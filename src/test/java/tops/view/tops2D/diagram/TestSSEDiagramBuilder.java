@@ -27,16 +27,16 @@ public class TestSSEDiagramBuilder {
         chain.addHBondSet(hBondSet);
         protein.addChain(chain);
         
-        SSEDiagramBuilder builder = new SSEDiagramBuilder();
-        Graph graph = builder.build(protein);
+        DiagramConverter builder = new DiagramConverter();
+        Graph graph = builder.toDiagram(protein);
         assertEquals(2, graph.numberOfVertices());
         assertEquals(1, graph.numberOfEdges());
     }
     
     @Test
     public void buildFromString() {
-        SSEDiagramBuilder builder = new SSEDiagramBuilder();
-        Graph graph = builder.build("NEEC", "1:2A", "");
+        DiagramConverter builder = new DiagramConverter();
+        Graph graph = builder.toDiagram("NEEC", "1:2A", "");
         assertEquals(4, graph.numberOfVertices());
         assertEquals(1, graph.numberOfEdges());
     }

@@ -7,7 +7,7 @@ import java.awt.geom.Arc2D;
 
 public class Chiral extends Edge {
 
-    public Chiral(Vertex left, Vertex right, int type) {
+    public Chiral(Vertex left, Vertex right, Type type) {
         super(left, right, type);
     }
 
@@ -21,7 +21,7 @@ public class Chiral extends Edge {
     }
 
     public Color getColor() {
-        if (this.type == Edge.LEFT_CHIRAL) {
+        if (this.type == Edge.Type.LEFT_CHIRAL) {
             return Color.orange;
         } else {
             return Color.blue;

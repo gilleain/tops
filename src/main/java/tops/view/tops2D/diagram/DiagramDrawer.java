@@ -15,7 +15,7 @@ public class DiagramDrawer {
     private Graph gr;
     private Color backgroundColor = Color.white;
     private boolean showLabelNumbers;
-    private SSEDiagramBuilder builder;
+    private DiagramConverter builder;
 
     public DiagramDrawer(int w, int h) {
         this.w = w;
@@ -27,8 +27,8 @@ public class DiagramDrawer {
 
     public DiagramDrawer(String vertices, String edges, String highlights, int w, int h) {
         this(w, h);
-        builder = new SSEDiagramBuilder();
-        this.gr = builder.build(vertices, edges, highlights);
+        builder = new DiagramConverter();
+        this.gr = builder.toDiagram(vertices, edges, highlights);
     }
     
     public void setGraph(Graph gr) {
@@ -36,7 +36,7 @@ public class DiagramDrawer {
     }
     
     public void setData(String vertices, String edges, String highlights) {
-        this.gr = builder.build(vertices, edges, highlights);
+        this.gr = builder.toDiagram(vertices, edges, highlights);
     }
     
     public void setShowLabelNumbers(boolean val) {

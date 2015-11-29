@@ -52,7 +52,15 @@ public class Graph {
     }
     
     public Vertex getVertex(int i) {
-        return (Vertex) this.sses.get(i);
+        return this.sses.get(i);
+    }
+    
+    public List<Vertex> getVertices() {
+        return this.sses;
+    }
+    
+    public List<Edge> getEdges() {
+        return this.edges;
     }
 
     public int numberOfEdges() {
@@ -60,7 +68,7 @@ public class Graph {
     }
     
     public Edge getEdge(int i) {
-        return (Edge) this.edges.get(i);
+        return this.edges.get(i);
     }
 
     public boolean isEmpty() {

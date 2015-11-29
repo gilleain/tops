@@ -16,6 +16,8 @@ import tops.model.Chain;
 import tops.model.HBondSet;
 import tops.model.Protein;
 import tops.model.SSE;
+import tops.view.tops2D.diagram.Graph;
+import tops.view.tops2D.diagram.DiagramConverter;
 
 public class TestDsspReaderFromFile {
     
@@ -41,7 +43,7 @@ public class TestDsspReaderFromFile {
     
     @Test
     public void test1WAP() throws FileNotFoundException, IOException {
-        test("1wap", SSE.Type.EXTENDED, -0.9);
+        test("1wap", SSE.Type.EXTENDED, SSE.Type.EXTENDED, -0.9);
     }
     
     @Test
@@ -51,7 +53,7 @@ public class TestDsspReaderFromFile {
     
     @Test
     public void test1IFC() throws FileNotFoundException, IOException {
-       test("1ifc", SSE.Type.EXTENDED, -0.9);
+       test("1ifc", null, -0.9);
     }
     
     @Test
@@ -83,6 +85,9 @@ public class TestDsspReaderFromFile {
         } else {
             printHBondSets(chain, startType, endType);
         }
+        DiagramConverter converter = new DiagramConverter();
+        Graph graph = converter.toDiagram(protein);
+        System.out.println(converter.toTopsString(graph));
     }
     
     private void printHBondSets(Chain chain, SSE.Type startType, SSE.Type endType) {

@@ -27,8 +27,8 @@ public class TestHBondHelper {
     @Test
     public void testHelix() {
         Map<SSE, List<HBond>> sseToHBondMap = new HashMap<SSE, List<HBond>>();
-        SSE helix = makeSSE(0, 10, SSE.Type.ALPHA_HELIX);
-        makeHelicalBonds(sseToHBondMap, helix, 0, 10);
+        SSE helix = makeSSE(1, 10, SSE.Type.ALPHA_HELIX);
+        makeHelicalBonds(sseToHBondMap, helix, 1, 10);
         List<HBondSet> hBondSets = HBondHelper.makeHBondSets(sseToHBondMap);
         assertEquals(1, hBondSets.size());
         assertEquals(6, hBondSets.get(0).size());
@@ -106,9 +106,9 @@ public class TestHBondHelper {
     private void makeHelicalBonds(Map<SSE, List<HBond>> sseToHBondMap, SSE helix, int start, int end) {
         List<HBond> hBonds = new ArrayList<HBond>();
         int lowerEnd = start;
-        int count = (end - start) - 4;
+        int count = (end + 1 - start) - 4;
         for (int counter = 0; counter < count; counter++) {
-            hBonds.add(new HBond(lowerEnd, lowerEnd + 4));
+            hBonds.add(new HBond(lowerEnd + 4, lowerEnd));
             lowerEnd++;
         }
         sseToHBondMap.put(helix, hBonds);
@@ -117,7 +117,7 @@ public class TestHBondHelper {
     
     private SSE makeSSE(int start, int end, SSE.Type type) {
         SSE sse = new SSE(start, type);
-        for (int index = start + 1; index <= end; index++) {
+        for (int index = start; index <= end; index++) {
 //            System.out.println("adding residue " + index);
             sse.addResidue(new Residue("", index, null));
         }

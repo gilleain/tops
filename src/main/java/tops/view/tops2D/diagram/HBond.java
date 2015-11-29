@@ -7,7 +7,7 @@ import java.awt.geom.Arc2D;
 
 public class HBond extends Edge {
 
-    public HBond(Vertex left, Vertex right, int type) {
+    public HBond(Vertex left, Vertex right, Type type) {
         super(left, right, type);
     }
 
@@ -23,7 +23,7 @@ public class HBond extends Edge {
 
     @Override
     public Color getColor() {
-        if (this.type == Edge.PARALLEL_HBOND) {
+        if (this.type == Edge.Type.PARALLEL_HBOND) {
             return Color.red;
         } else {
             return Color.green;
