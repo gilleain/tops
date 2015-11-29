@@ -37,9 +37,9 @@ public class HBondSet {
     
     public void addHBond(HBond hBond) {
         if (hBonds.add(hBond)) {
-            System.out.println("Adding bond " + hBond);
+//            System.out.println("Adding bond " + hBond);
         } else {
-            System.out.println("Duplicate bond " + hBond);
+//            System.out.println("Duplicate bond " + hBond);
         }
     }
     

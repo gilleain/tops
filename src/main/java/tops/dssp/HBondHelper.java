@@ -13,15 +13,15 @@ import tops.model.SSE;
 public class HBondHelper {
     
     public static List<HBondSet> makeHBondSets(Map<SSE, List<HBond>> sseToHBondMap) {
-        System.out.println("Making hBondSets for ");
-        for (SSE sse : sseToHBondMap.keySet()) {
-            System.out.println(sse + " -> " + sseToHBondMap.get(sse));
-        }
+//        System.out.println("Making hBondSets for ");
+//        for (SSE sse : sseToHBondMap.keySet()) {
+//            System.out.println(sse + " -> " + sseToHBondMap.get(sse));
+//        }
         
         Set<SSE> sseSet = sseToHBondMap.keySet();
         Map<SSE, List<HBondSet>> hBondSetMap = new HashMap<SSE, List<HBondSet>>();
         for (SSE sse : sseSet) {
-            System.out.println("Assigning hbonds for sse " + sse);
+//            System.out.println("Assigning hbonds for sse " + sse);
             for (HBond hBond : sseToHBondMap.get(sse)) {
                 int otherEnd = getOtherEnd(hBond, sse);
                 if (otherEnd < sse.getStart()) {
@@ -31,29 +31,29 @@ public class HBondHelper {
                 HBondSet hBondSet;
                 if (otherSSE == null) {
                     // TODO : throw exception?
-                    System.out.println("No other sse for " + hBond + " " + hBondSetMap);
+//                    System.out.println("No other sse for " + hBond + " " + hBondSetMap);
                     continue;
                 } else {
                     if (hBondSetMap.containsKey(sse)) {
                         List<HBondSet> hBondSets = hBondSetMap.get(sse);
                         if (hBondSets == null) {
                             hBondSet = null;
-                            System.out.println("No hbondset-list for " + hBond + " " + hBondSetMap);
+//                            System.out.println("No hbondset-list for " + hBond + " " + hBondSetMap);
                         } else {
                             hBondSet = getHBondSet(hBondSets, otherSSE);
                             if (hBondSet == null) {
                                 hBondSet = makeHBondSet(sse, otherSSE);
                                 hBondSets.add(hBondSet);
                             }
-                            System.out.println("Adding bond " + hBond + " to set " + hBondSet);
+//                            System.out.println("Adding bond " + hBond + " to set " + hBondSet);
                         }
                     } else {
                         hBondSet = makeHBondSet(sse, otherSSE, hBondSetMap);
-                        System.out.println("Making bond " + hBond + " in set " + hBondSet);
+//                        System.out.println("Making bond " + hBond + " in set " + hBondSet);
                     }
                 }
                 if (hBondSet == null) {
-                    System.out.println("No hbondset for " + hBond + " " + hBondSetMap);
+//                    System.out.println("No hbondset for " + hBond + " " + hBondSetMap);
                 } else {
                     hBondSet.addHBond(hBond);
                 }

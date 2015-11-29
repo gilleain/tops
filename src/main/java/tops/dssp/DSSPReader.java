@@ -56,15 +56,19 @@ public class DSSPReader {
         for (DsspModel.Line line : dsspModel.getLines()) {
             if (currentChain == null) {
                 currentChain = new Chain(line.chainName);
+//                System.out.println("Making new chain " + line.chainName);
             }
             if (!currentChain.getName().equals(line.chainName)) {
+//                System.out.println("finishing chain " + line.chainName + " " + sseToHBondMap);
                 finishChain(protein, currentChain, sseToHBondMap);
                 sseToHBondMap.clear();
+                currentChain = new Chain(line.chainName);
             }
             int pdbIndex = parsePdbIndex(line.dsspNumber);
             if (currentSSEType == null || !currentSSEType.equals(line.sseType)) {
                 currentSSE = makeSSE(pdbIndex, line.sseType);
                 currentChain.addSSE(currentSSE);
+                sseToHBondMap.put(currentSSE, new ArrayList<HBond>());
                 currentSSEType = line.sseType;
             }
             Point3d caPosition = parsePosition(line.xca, line.yca, line.zca);
@@ -82,6 +86,7 @@ public class DSSPReader {
             HBond ohn2 = makeNHOBond(pdbIndex, line.ohn2);
             addToHBondMap(sseToHBondMap, currentSSE, ohn2);
         }
+//        System.out.println("finishing chain " + currentChain.getName() + " " + sseToHBondMap);
         finishChain(protein, currentChain, sseToHBondMap);
         return protein;
     }
@@ -108,7 +113,7 @@ public class DSSPReader {
         String[] parts = hbondString.split(",");
         int offset = Integer.parseInt(parts[0]);
         double energy = Double.parseDouble(parts[1]);
-        if (isEnergySignificant(energy)) {
+        if (offset > 0 && isEnergySignificant(energy)) {
             return new HBond(index, index + offset);
         } else {
             return null;
@@ -119,7 +124,7 @@ public class DSSPReader {
         String[] parts = hbondString.split(",");
         int offset = Integer.parseInt(parts[0]);
         double energy = Double.parseDouble(parts[1]);
-        if (isEnergySignificant(energy)) {
+        if (offset > 0 && isEnergySignificant(energy)) {
             return new HBond(index + offset, index);
         } else {
             return null;
