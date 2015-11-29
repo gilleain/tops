@@ -1,4 +1,4 @@
-package tops.translation;
+package tops.translation.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import javax.vecmath.Point3d;
+
+import tops.translation.Geometer;
 
 public class Chain implements Iterable<BackboneSegment> {
 

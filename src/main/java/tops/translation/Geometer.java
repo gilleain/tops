@@ -11,6 +11,8 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.linalg.EigenvalueDecomposition;
 import cern.jet.math.Functions;
+import tops.translation.model.Axis;
+import tops.translation.model.Plane;
 
 public class Geometer {
 

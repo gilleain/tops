@@ -7,6 +7,8 @@ import java.net.URL;
 
 import org.junit.Test;
 
+import tops.translation.model.Protein;
+
 public class PDBToTopsConversionTest {
 	
 	public void convert(File file, File outputDir) throws IOException {

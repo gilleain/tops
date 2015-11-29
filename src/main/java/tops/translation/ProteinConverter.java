@@ -7,6 +7,13 @@ import java.util.Map;
 import tops.dw.protein.CATHcode;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.SecStrucElement;
+import tops.translation.model.BackboneSegment;
+import tops.translation.model.Chain;
+import tops.translation.model.Helix;
+import tops.translation.model.Protein;
+import tops.translation.model.Sheet;
+import tops.translation.model.Strand;
+import tops.translation.model.Terminus;
 
 /**
  * Temporary converter from tops.translation.Protein objects into tops.dw.protein.Protein objects.

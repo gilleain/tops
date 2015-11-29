@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tops.translation.model.Domain;
+
 public class CATHDomainFileParser {
 
     private static Pattern domainPattern = Pattern

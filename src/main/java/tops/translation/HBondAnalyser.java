@@ -11,6 +11,11 @@ import java.util.Properties;
 
 import javax.vecmath.Point3d;
 
+import tops.translation.model.Chain;
+import tops.translation.model.HBond;
+import tops.translation.model.Protein;
+import tops.translation.model.Residue;
+
 public class HBondAnalyser {
 
     private Properties properties;

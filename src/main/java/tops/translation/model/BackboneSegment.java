@@ -1,4 +1,4 @@
-package tops.translation;
+package tops.translation.model;
 
 import java.util.ArrayList;
 import java.util.TreeSet;

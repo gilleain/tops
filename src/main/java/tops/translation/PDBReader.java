@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import tops.translation.model.Chain;
+import tops.translation.model.Protein;
+import tops.translation.model.Residue;
+
 public class PDBReader {
 
     public static Protein read(String filename) throws IOException {

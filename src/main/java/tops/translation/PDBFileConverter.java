@@ -3,6 +3,8 @@ package tops.translation;
 import java.io.File;
 import java.io.IOException;
 
+import tops.translation.model.Protein;
+
 public class PDBFileConverter implements PDBToGraph, PDBToCartoon {
 
     private CompressedFileHandler compressedFileHandler;

@@ -1,4 +1,4 @@
-package tops.translation;
+package tops.translation.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
+
+import tops.translation.Geometer;
 
 public class Sheet implements Iterable<BackboneSegment> {
 

@@ -1,10 +1,12 @@
-package tops.translation;
+package tops.translation.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.vecmath.Point3d;
+
+import tops.translation.Geometer;
 
 public class Residue implements Comparable<Object> {
 

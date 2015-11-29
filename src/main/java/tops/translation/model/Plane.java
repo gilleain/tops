@@ -1,4 +1,4 @@
-package tops.translation;
+package tops.translation.model;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;

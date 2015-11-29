@@ -1,4 +1,4 @@
-package tops.translation;
+package tops.translation.model;
 
 public abstract class RepetitiveStructure extends BackboneSegment {
 

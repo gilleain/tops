@@ -10,6 +10,16 @@ import java.util.ListIterator;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import tops.translation.model.Axis;
+import tops.translation.model.BackboneSegment;
+import tops.translation.model.Chain;
+import tops.translation.model.Domain;
+import tops.translation.model.Protein;
+import tops.translation.model.Residue;
+import tops.translation.model.Sheet;
+import tops.translation.model.Strand;
+import tops.translation.model.Terminus;
+
 public class FoldAnalyser {
 
     private HBondAnalyser hBondAnalyser;

@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import tops.model.Chain;
 import tops.model.Protein;
 import tops.view.tops2D.diagram.DiagramConverter;
 import tops.view.tops2D.diagram.Graph;

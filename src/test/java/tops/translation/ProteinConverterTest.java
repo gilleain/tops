@@ -2,10 +2,17 @@ package tops.translation;
 
 import org.junit.Test;
 
+import tops.translation.model.BackboneSegment;
+import tops.translation.model.Chain;
+import tops.translation.model.Helix;
+import tops.translation.model.Residue;
+import tops.translation.model.Strand;
+import tops.translation.model.Terminus;
+
 public class ProteinConverterTest {
 	
-	public tops.translation.Protein makeNewProtein(String... sseTypes) {
-		tops.translation.Protein p = new tops.translation.Protein();
+	public tops.translation.model.Protein makeNewProtein(String... sseTypes) {
+		tops.translation.model.Protein p = new tops.translation.model.Protein();
 		Chain chain = new Chain("A");
 		int start = 1;
 		for (String sseType : sseTypes) {
@@ -39,21 +46,21 @@ public class ProteinConverterTest {
 	
 	@Test
 	public void singleSSE() {
-		tops.translation.Protein p = makeNewProtein("N", "E", "C");
+		tops.translation.model.Protein p = makeNewProtein("N", "E", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
 		q.writeTopsFile(System.out);
 	}
 	
 	@Test
 	public void twoSSE() {
-		tops.translation.Protein p = makeNewProtein("N", "E", "H", "C");
+		tops.translation.model.Protein p = makeNewProtein("N", "E", "H", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
 		q.writeTopsFile(System.out);
 	}
 	
 	@Test
 	public void threeSSE() {
-		tops.translation.Protein p = makeNewProtein("N", "E", "H", "e", "C");
+		tops.translation.model.Protein p = makeNewProtein("N", "E", "H", "e", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
 		q.writeTopsFile(System.out);
 	}
