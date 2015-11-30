@@ -3,6 +3,7 @@ package tops.translation.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.vecmath.Point3d;
 
@@ -98,10 +99,9 @@ public class Residue implements Comparable<Object> {
         return this.hBonds.iterator();
     }
 
-    public ArrayList<HBond> getNTerminalHBonds() {
+    public List<HBond> getNTerminalHBonds() {
         ArrayList<HBond> nTerminalHBonds = new ArrayList<HBond>();
-        for (int i = 0; i < this.hBonds.size(); i++) {
-            HBond hBond = (HBond) this.hBonds.get(i);
+        for (HBond hBond : this.hBonds) {
             if (hBond.residueIsDonor(this)) {
                 // System.out.println("N : " + hBond + " for " + this);
                 nTerminalHBonds.add(hBond);
@@ -110,10 +110,9 @@ public class Residue implements Comparable<Object> {
         return nTerminalHBonds;
     }
 
-    public ArrayList<HBond> getCTerminalHBonds() {
-        ArrayList<HBond> cTerminalHBonds = new ArrayList<HBond>();
-        for (int i = 0; i < this.hBonds.size(); i++) {
-            HBond hBond = (HBond) this.hBonds.get(i);
+    public List<HBond> getCTerminalHBonds() {
+        List<HBond> cTerminalHBonds = new ArrayList<HBond>();
+        for (HBond hBond : this.hBonds) {
             if (hBond.residueIsAcceptor(this)) {
                 // System.out.println("C : " + hBond + " for " + this);
                 cTerminalHBonds.add(hBond);
@@ -125,20 +124,19 @@ public class Residue implements Comparable<Object> {
     public int[] getHBondPartners() {
         int[] partners = new int[this.hBonds.size()];
         for (int i = 0; i < this.hBonds.size(); i++) {
-            HBond hbond = (HBond) this.hBonds.get(i);
+            HBond hbond = this.hBonds.get(i);
             partners[i] = hbond.getPartner(this).getAbsoluteNumber();
         }
         return partners;
     }
 
     public boolean bondedTo(Residue other) {
-        for (int i = 0; i < this.hBonds.size(); i++) {
-            HBond hbond = (HBond) this.hBonds.get(i);
-            if (hbond == null) {
+        for (HBond hBond : this.hBonds) {
+            if (hBond == null) {
                 System.err.println("hbond null");
                 continue;
             }
-            if (hbond.contains(other)) {
+            if (hBond.contains(other)) {
                 return true;
             }
         }

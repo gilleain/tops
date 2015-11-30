@@ -1,12 +1,12 @@
 package tops.translation;
 
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.vecmath.Point3d;
@@ -202,7 +202,7 @@ public class HBondAnalyser {
 
             // now, use these hbond assignments to determine the residue's
             // environment
-            ArrayList<String> tags = this.convertBondsToTags(first);
+            List<String> tags = this.convertBondsToTags(first);
             // System.out.println(first.toFullString() + " " + tags);
 
             this.updateSSEEndpoints(index, tags, chain);
@@ -217,11 +217,11 @@ public class HBondAnalyser {
         chain.addTerminii();
     }
 
-    public ArrayList<String> convertBondsToTags(Residue residue) {
-        ArrayList<HBond> nTerminalHBonds = residue.getNTerminalHBonds();
-        ArrayList<HBond> cTerminalHBonds = residue.getCTerminalHBonds();
+    public List<String> convertBondsToTags(Residue residue) {
+        List<HBond> nTerminalHBonds = residue.getNTerminalHBonds();
+        List<HBond> cTerminalHBonds = residue.getCTerminalHBonds();
 
-        ArrayList<String> tags = new ArrayList<String>();
+        List<String> tags = new ArrayList<String>();
 
         for (int i = 0; i < nTerminalHBonds.size(); i++) {
             int n = (nTerminalHBonds.get(i)).getResidueSeparation();
@@ -305,7 +305,7 @@ public class HBondAnalyser {
         return null;
     }
 
-    public void updateSSEEndpoints(int index, ArrayList<String> tags, Chain chain) {
+    public void updateSSEEndpoints(int index, List<String> tags, Chain chain) {
         if (tags.contains("Start of a 310 helix")) {
 
             // not seen any three ten bond before
