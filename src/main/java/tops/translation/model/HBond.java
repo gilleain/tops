@@ -11,14 +11,27 @@ public class HBond implements Comparable<HBond> {
     private double nhoAngle;
 
     private double hocAngle;
+    
+    private double energy;
 
-    public HBond(Residue donor, Residue acceptor, double distance,
-            double nhoAngle, double hocAngle) {
+    /**
+     * Construct an HBond from geometric parameters
+     */
+    public HBond(Residue donor, Residue acceptor, double distance, double nhoAngle, double hocAngle) {
         this.donor = donor;
         this.acceptor = acceptor;
         this.distance = distance;
         this.nhoAngle = nhoAngle;
         this.hocAngle = hocAngle;
+    }
+    
+    /**
+     * Construct an HBond with just an energy.
+     */
+    public HBond(Residue donor, Residue acceptor, double energy) {
+        this.donor = donor;
+        this.acceptor = acceptor;
+        this.energy = energy;
     }
 
     // sort by donor, then acceptor (well, why not, eh?)
@@ -78,8 +91,7 @@ public class HBond implements Comparable<HBond> {
 
     @Override
     public String toString() {
-        return String.format("%3s - %3s (%4.2f, %6.2f, %6.2f)",
-                this.donor, this.acceptor, this.distance, this.nhoAngle,
-                this.hocAngle);
+        return String.format("%3s - %3s (%4.2f, %6.2f, %6.2f) [%2.2f]",
+                this.donor, this.acceptor, this.distance, this.nhoAngle, this.hocAngle, this.energy);
     }
 }

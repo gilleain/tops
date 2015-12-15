@@ -68,4 +68,8 @@ public class Protein implements Iterable<Chain> {
 		return this.chains.iterator();
 	}
 
+    public List<Chain> getChains() {
+        return this.chains;
+    }
+
 }

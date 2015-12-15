@@ -1,7 +1,9 @@
 package tops.dssp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +12,13 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import cern.colt.Arrays;
-import tops.model.Chain;
-import tops.model.HBondSet;
-import tops.model.Protein;
-import tops.model.SSE;
+import tops.translation.model.BackboneSegment;
+import tops.translation.model.Chain;
+import tops.translation.model.HBondSet;
+import tops.translation.model.Helix;
+import tops.translation.model.Protein;
+import tops.translation.model.Strand;
+
 
 public class TestDsspReaderFromModel {
     
@@ -44,24 +48,32 @@ public class TestDsspReaderFromModel {
         List<Chain> chains = protein.getChains();
         assertEquals("Number of chains", 1, chains.size());
         Chain chain = chains.get(0);
-        assertEquals("Number of sses", 3, chain.getSSES().size());
+        assertEquals("Number of sses", 3, chain.getBackboneSegments().size());
         
-        SSE sse1 = chain.getSSES().get(0);
+        BackboneSegment sse1 = chain.getBackboneSegments().get(0);
         assertEquals("First sse size", 3, sse1.getResidues().size());
-        assertEquals("First sse type", SSE.Type.EXTENDED, sse1.getType());
+        assertEquals("First sse type", hasType(SSEType.EXTENDED, sse1));
         
-        SSE sse2 = chain.getSSES().get(1);
+        BackboneSegment sse2 = chain.getBackboneSegments().get(1);
         assertEquals("Second sse size", 6, sse2.getResidues().size());
-        assertEquals("Second sse type", SSE.Type.ALPHA_HELIX, sse2.getType());
+        assertEquals("Second sse type", hasType(SSEType.ALPHA_HELIX, sse2));
         
-        SSE sse3 = chain.getSSES().get(2);
+        BackboneSegment sse3 = chain.getBackboneSegments().get(2);
         assertEquals("Third sse size", 3, sse3.getResidues().size());
-        assertEquals("Third sse type", SSE.Type.EXTENDED, sse3.getType());
+        assertTrue("Third sse type", hasType(SSEType.EXTENDED, sse3));
 
         List<HBondSet> hBondSets = chain.getHBondSets();
         assertEquals("Two hbond sets", 2, hBondSets.size());
         for (HBondSet hBondSet : hBondSets) {
             System.out.println(hBondSet);
+        }
+    }
+    
+    private boolean hasType(SSEType type, BackboneSegment sse) {
+        switch (type) {
+            case ALPHA_HELIX: return sse instanceof Helix;
+            case EXTENDED: return sse instanceof Strand;
+            default: return false;
         }
     }
     

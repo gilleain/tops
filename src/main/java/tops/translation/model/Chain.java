@@ -72,8 +72,8 @@ public class Chain implements Iterable<BackboneSegment> {
     }
 
     public void createStrand(int strandStartIndex, int strandEndIndex) {
-        BackboneSegment strand = new Strand(this
-                .getResidueByAbsoluteNumbering(strandStartIndex));
+        BackboneSegment strand = new Strand(
+                this.getResidueByAbsoluteNumbering(strandStartIndex));
         for (int i = strandStartIndex + 1; i < strandEndIndex + 1; i++) {
             strand.expandBy(this.getResidueByAbsoluteNumbering(i));
         }
@@ -83,8 +83,8 @@ public class Chain implements Iterable<BackboneSegment> {
     }
 
     public void createLoop(int startIndex, int endIndex) {
-        BackboneSegment unstructured = new UnstructuredSegment(this
-                .getResidueByAbsoluteNumbering(startIndex));
+        BackboneSegment unstructured = new UnstructuredSegment(
+                this.getResidueByAbsoluteNumbering(startIndex));
         for (int i = startIndex + 1; i < endIndex + 1; i++) {
             unstructured.expandBy(this.getResidueByAbsoluteNumbering(i));
         }
@@ -285,6 +285,10 @@ public class Chain implements Iterable<BackboneSegment> {
 
     public void addBackboneSegment(BackboneSegment backboneSegment) {
         this.backboneSegments.add(backboneSegment);
+    }
+    
+    public List<BackboneSegment> getBackboneSegments() {
+        return this.backboneSegments;
     }
 
     public ListIterator<BackboneSegment> backboneSegmentListIterator() {

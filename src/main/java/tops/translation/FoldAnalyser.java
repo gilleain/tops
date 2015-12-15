@@ -113,8 +113,7 @@ public class FoldAnalyser {
         }
     }
 
-    public void addStrandPair(BackboneSegment first, BackboneSegment second,
-            Chain chain) {
+    public void addStrandPair(BackboneSegment first, BackboneSegment second, Chain chain) {
         Sheet firstSheet = chain.getSheetContaining(first);
         Sheet secondSheet = chain.getSheetContaining(second);
 

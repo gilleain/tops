@@ -12,12 +12,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import tops.model.Chain;
-import tops.model.HBondSet;
-import tops.model.Protein;
 import tops.model.SSE;
-import tops.view.tops2D.diagram.Graph;
+import tops.translation.model.BackboneSegment;
+import tops.translation.model.Chain;
+import tops.translation.model.HBondSet;
+import tops.translation.model.Helix;
+import tops.translation.model.Protein;
+import tops.translation.model.Strand;
 import tops.view.tops2D.diagram.DiagramConverter;
+import tops.view.tops2D.diagram.Graph;
 
 public class TestDsspReaderFromFile {
     
@@ -27,28 +30,28 @@ public class TestDsspReaderFromFile {
     public void test1NOT() throws FileNotFoundException, IOException {
         Protein protein = new DSSPReader().read(stream("1not.dssp"));
         assertNotNull(protein);
-        System.out.println(protein.getChains().get(0).getSSES());
+        System.out.println(protein.iterator().next());
     }
     
     @Test
     public void test1QRE() throws FileNotFoundException, IOException {
-//       test("1qre", SSE.Type.EXTENDED, -0.9);
-        test("1qre", SSE.Type.S_BEND, -0.9);
+//       test("1qre", SSEType.EXTENDED, -0.9);
+        test("1qre", SSEType.S_BEND, -0.9);
     }
     
     @Test
     public void test1TGX() throws FileNotFoundException, IOException {
-       test("1tgx", SSE.Type.EXTENDED, -0.1);
+       test("1tgx", SSEType.EXTENDED, -0.1);
     }
     
     @Test
     public void test1WAP() throws FileNotFoundException, IOException {
-        test("1wap", SSE.Type.EXTENDED, SSE.Type.EXTENDED, -0.9);
+        test("1wap", SSEType.EXTENDED, SSEType.EXTENDED, -0.9);
     }
     
     @Test
     public void test1SWU() throws FileNotFoundException, IOException {
-       test("1swu", SSE.Type.EXTENDED, -0.9);
+       test("1swu", SSEType.EXTENDED, -0.9);
     }
     
     @Test
@@ -58,55 +61,64 @@ public class TestDsspReaderFromFile {
     
     @Test
     public void test1MOL() throws FileNotFoundException, IOException {
-       test("1mol", SSE.Type.EXTENDED, -0.9);
+       test("1mol", SSEType.EXTENDED, -0.9);
     }
     
     @Test
     public void test1NAR() throws FileNotFoundException, IOException {
-       test("1nar", SSE.Type.EXTENDED, -0.9);
+       test("1nar", SSEType.EXTENDED, -0.9);
     }
     
     private void test(String name) throws FileNotFoundException, IOException {
-        test(name, SSE.Type.EXTENDED, -0.01);
+        test(name, SSEType.EXTENDED, -0.01);
     }
     
-    private void test(String name, SSE.Type type, double minEnergy) throws FileNotFoundException, IOException {
+    private void test(String name, SSEType type, double minEnergy) throws FileNotFoundException, IOException {
         test(name, type, type, minEnergy);
     }
     
-    private void test(String name, SSE.Type startType, SSE.Type endType, double minEnergy) throws FileNotFoundException, IOException {
+    private void test(String name, SSEType startType, SSEType endType, double minEnergy) throws FileNotFoundException, IOException {
         Protein protein = new DSSPReader(minEnergy).read(stream(name + ".dssp"));
         assertNotNull(protein);
-        Chain chain = protein.getChains().get(0);
-        printSSEByType(chain.getSSES(), startType);
+        Chain chain = protein.iterator().next();
+        printSSEByType(chain.getBackboneSegments(), startType);
         if (startType == endType) {
             printHBondSets(chain, startType, null);
             printHBondSets(chain, null, endType);
         } else {
             printHBondSets(chain, startType, endType);
         }
-        DiagramConverter converter = new DiagramConverter();
-        Graph graph = converter.toDiagram(protein);
-        System.out.println(converter.toTopsString(graph));
+//        DiagramConverter converter = new DiagramConverter();
+//        Graph graph = converter.toDiagram(protein);
+//        System.out.println(converter.toTopsString(graph));
+        System.out.println(protein.toTopsChainStringArray());
     }
     
-    private void printHBondSets(Chain chain, SSE.Type startType, SSE.Type endType) {
+    private void printHBondSets(Chain chain, SSEType startType, SSEType endType) {
         List<HBondSet> hBondSets = chain.getHBondSets();
         Collections.sort(hBondSets, sort);
         for (HBondSet hBondSet : hBondSets) {
-            SSE start = hBondSet.getStart();
-            SSE end = hBondSet.getEnd();
-            if ((startType == null || start.getType() == startType) 
-                    && (endType == null || end.getType() == endType)) {
+            BackboneSegment start = hBondSet.getStart();
+            BackboneSegment end = hBondSet.getEnd();
+            if ((startType == null || hasType(start, startType)) 
+                    && (endType == null || hasType(end, endType))) {
                 System.out.println(hBondSet);
             }
         }
     }
     
-    private void printSSEByType(List<SSE> sses, SSE.Type type) {
+    private boolean hasType(BackboneSegment sse, SSEType type) {
+        switch (type) {
+            case ALPHA_HELIX: return sse instanceof Helix;
+            case EXTENDED: return sse instanceof Strand;
+            default: return false;
+        }
+    }
+    
+    private void printSSEByType(List<BackboneSegment> sses, SSEType type) {
         System.out.print("[ ");
-        for (SSE sse : sses) {
-            if (type == null || sse.getType() == type) {
+        for (BackboneSegment sse : sses) {
+            if (type == null || hasType(sse, type)) {
                 System.out.print(sse);
                 System.out.print(" ");
             }
@@ -123,9 +135,9 @@ public class TestDsspReaderFromFile {
 
         @Override
         public int compare(HBondSet o1, HBondSet o2) {
-            int d = o1.getStart().getStart() - o2.getStart().getStart();
+            int d = o1.getStart().getNumber() - o2.getStart().getNumber();
             if (d == 0) {
-                return Integer.compare(o1.getEnd().getStart(), o2.getEnd().getStart());
+                return Integer.compare(o1.getEnd().getNumber(), o2.getEnd().getNumber());
             } else {
                 return d;
             }

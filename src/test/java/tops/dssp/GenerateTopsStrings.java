@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import tops.model.Protein;
+import tops.translation.model.Protein;
 import tops.view.tops2D.diagram.DiagramConverter;
 import tops.view.tops2D.diagram.Graph;
 
@@ -55,8 +55,9 @@ public class GenerateTopsStrings {
         Protein protein = new DSSPReader(DEFAULT_MIN_ENERGY).read(file.getPath());
 //      Chain chain = protein.getChains().get(0);
       DiagramConverter converter = new DiagramConverter();
-      Graph graph = converter.toDiagram(protein);
-      return converter.toTopsString(graph);
+//      Graph graph = converter.toDiagram(protein);
+//      return converter.toTopsString(graph);
+      return String.valueOf(protein.toTopsChainStringArray());  // FIXME
     }
 
 }

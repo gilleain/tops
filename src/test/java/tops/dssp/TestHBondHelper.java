@@ -10,24 +10,28 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import tops.model.HBond;
-import tops.model.HBondSet;
-import tops.model.Residue;
-import tops.model.SSE;
+import tops.translation.model.BackboneSegment;
+import tops.translation.model.HBond;
+import tops.translation.model.HBondSet;
+import tops.translation.model.Helix;
+import tops.translation.model.Residue;
+import tops.translation.model.Strand;
+import tops.translation.model.UnstructuredSegment;
+
 
 public class TestHBondHelper {
     
     @Test
     public void testEmptyMap() {
-        Map<SSE, List<HBond>> sseToHBondMap = new HashMap<SSE, List<HBond>>();
+        Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
         List<HBondSet> hBondSetMap = HBondHelper.makeHBondSets(sseToHBondMap);
         assertTrue(hBondSetMap.isEmpty());
     }
     
     @Test
     public void testHelix() {
-        Map<SSE, List<HBond>> sseToHBondMap = new HashMap<SSE, List<HBond>>();
-        SSE helix = makeSSE(1, 10, SSE.Type.ALPHA_HELIX);
+        Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
+        BackboneSegment helix = makeBackboneSegment(1, 10, SSEType.ALPHA_HELIX);
         makeHelicalBonds(sseToHBondMap, helix, 1, 10);
         List<HBondSet> hBondSets = HBondHelper.makeHBondSets(sseToHBondMap);
         assertEquals(1, hBondSets.size());
@@ -36,10 +40,10 @@ public class TestHBondHelper {
     
     @Test
     public void testBAB() {
-        Map<SSE, List<HBond>> sseToHBondMap = new HashMap<SSE, List<HBond>>();
-        SSE strand1 = makeSSE(0, 10, SSE.Type.EXTENDED);
-        SSE helix   = makeSSE(11, 20, SSE.Type.ALPHA_HELIX);
-        SSE strand2 = makeSSE(21, 30, SSE.Type.EXTENDED);
+        Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
+        BackboneSegment strand1 = makeBackboneSegment(0, 10, SSEType.EXTENDED);
+        BackboneSegment helix   = makeBackboneSegment(11, 20, SSEType.ALPHA_HELIX);
+        BackboneSegment strand2 = makeBackboneSegment(21, 30, SSEType.EXTENDED);
         
         makeHelicalBonds(sseToHBondMap, helix, 11, 20);
         connectParallelStrands(sseToHBondMap, strand1, strand2, 1, 10, 21, 30);
@@ -53,9 +57,9 @@ public class TestHBondHelper {
     
     @Test
     public void testHairpin() {
-        Map<SSE, List<HBond>> sseToHBondMap = new HashMap<SSE, List<HBond>>();
-        SSE strand1 = makeSSE(0, 10, SSE.Type.EXTENDED);
-        SSE strand2 = makeSSE(12, 22, SSE.Type.EXTENDED);
+        Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
+        BackboneSegment strand1 = makeBackboneSegment(0, 10, SSEType.EXTENDED);
+        BackboneSegment strand2 = makeBackboneSegment(12, 22, SSEType.EXTENDED);
         connectAntiparallelStrands(sseToHBondMap, strand1, strand2, 0, 10, 12, 22);
         
         List<HBondSet> hBondSets = HBondHelper.makeHBondSets(sseToHBondMap);
@@ -65,12 +69,12 @@ public class TestHBondHelper {
         }
     }
     
-    private void connectAntiparallelStrands(Map<SSE, List<HBond>> sseToHBondMap, SSE strand1, SSE strand2, int startA, int endA, int startB, int endB) {
+    private void connectAntiparallelStrands(Map<BackboneSegment, List<HBond>> sseToHBondMap, BackboneSegment strand1, BackboneSegment strand2, int startA, int endA, int startB, int endB) {
         List<HBond> hBonds = new ArrayList<HBond>();
         int indexA = startA;
         int indexB = endB;
         while (indexA < endA && indexB > startB) {
-            addAntiparallelPair(indexA, indexB, hBonds);
+            addAntiparallelPair(indexA, indexB, strand1, strand2, hBonds);
             indexA += 2; indexB -= 2;
         }
         sseToHBondMap.put(strand1, hBonds);
@@ -79,17 +83,19 @@ public class TestHBondHelper {
         System.out.println(strand2 + " ; " + hBonds);
     }
     
-    private void addAntiparallelPair(int i, int j, List<HBond> hBonds) {
-        hBonds.add(new HBond(i, j));  // N(i) -> O(j+2)
-        hBonds.add(new HBond(j, i));  // O(i) -> N(j+2)
+    private void addAntiparallelPair(int i, int j, BackboneSegment strand1, BackboneSegment strand2, List<HBond> hBonds) {
+        Residue ri = strand1.getResidueByAbsoluteNumber(i);
+        Residue rj = strand2.getResidueByAbsoluteNumber(i);
+        hBonds.add(new HBond(ri, rj, 0));  // N(i) -> O(j+2)
+        hBonds.add(new HBond(rj, ri, 0));  // O(i) -> N(j+2)
     }
     
-    private void connectParallelStrands(Map<SSE, List<HBond>> sseToHBondMap, SSE strand1, SSE strand2, int startA, int endA, int startB, int endB) {
+    private void connectParallelStrands(Map<BackboneSegment, List<HBond>> sseToHBondMap, BackboneSegment strand1, BackboneSegment strand2, int startA, int endA, int startB, int endB) {
         List<HBond> hBonds = new ArrayList<HBond>();
         int indexA = startA;
         int indexB = startB;
         while (indexA < endA && indexB < endB) {
-            addParallelPair(indexA, indexB, hBonds);
+            addParallelPair(indexA, indexB, strand1, strand2, hBonds);
             indexA += 2; indexB += 2;
         }
         sseToHBondMap.put(strand1, hBonds);
@@ -98,31 +104,44 @@ public class TestHBondHelper {
         System.out.println(strand2 + " ; " + hBonds);
     }
     
-    private void addParallelPair(int j, int k, List<HBond> hBonds) {
-        hBonds.add(new HBond(k+1, j));  // O(j) -> N(k + 1)
-        hBonds.add(new HBond(j, k-1));  // N(j) -> O(k - 1)
+    private void addParallelPair(int j, int k, BackboneSegment strand1, BackboneSegment strand2, List<HBond> hBonds) {
+        Residue rkPlus1 = strand1.getResidueByAbsoluteNumber(k+1);
+        Residue rkMinus1 = strand1.getResidueByAbsoluteNumber(k-1);
+        Residue rj = strand2.getResidueByAbsoluteNumber(j);
+        hBonds.add(new HBond(rkPlus1, rj, 0));   // O(j) -> N(k + 1)
+        hBonds.add(new HBond(rj, rkMinus1 ,0));  // N(j) -> O(k - 1)
     }
     
-    private void makeHelicalBonds(Map<SSE, List<HBond>> sseToHBondMap, SSE helix, int start, int end) {
+    private void makeHelicalBonds(Map<BackboneSegment, List<HBond>> sseToHBondMap, BackboneSegment helix, int start, int end) {
         List<HBond> hBonds = new ArrayList<HBond>();
         int lowerEnd = start;
         int count = (end + 1 - start) - 4;
         for (int counter = 0; counter < count; counter++) {
-            hBonds.add(new HBond(lowerEnd + 4, lowerEnd));
+            Residue r4 = helix.getResidueByAbsoluteNumber(lowerEnd + 4);
+            Residue r = helix.getResidueByAbsoluteNumber(lowerEnd);
+            hBonds.add(new HBond(r4, r, 0));
             lowerEnd++;
         }
         sseToHBondMap.put(helix, hBonds);
         System.out.println(helix + " ; " + hBonds);
     }
     
-    private SSE makeSSE(int start, int end, SSE.Type type) {
-        SSE sse = new SSE(start, type);
+    private BackboneSegment makeBackboneSegment(int start, int end, SSEType type) {
+        BackboneSegment sse = makeSSE(type);
         for (int index = start; index <= end; index++) {
 //            System.out.println("adding residue " + index);
-            sse.addResidue(new Residue("", index, null));
+            sse.expandBy(new Residue(index, index, "GLY"));
         }
         System.out.println(sse);
         return sse;
+    }
+    
+    private BackboneSegment makeSSE(SSEType type) {
+        switch (type) {
+            case ALPHA_HELIX: return new Helix();
+            case EXTENDED: return new Strand();
+            default: return new UnstructuredSegment();
+        }
     }
 
 }

@@ -12,11 +12,15 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import tops.model.Chain;
-import tops.model.HBond;
-import tops.model.Protein;
-import tops.model.Residue;
-import tops.model.SSE;
+import tops.translation.model.BackboneSegment;
+import tops.translation.model.Chain;
+import tops.translation.model.HBond;
+import tops.translation.model.Helix;
+import tops.translation.model.Protein;
+import tops.translation.model.Residue;
+import tops.translation.model.Strand;
+import tops.translation.model.UnstructuredSegment;
+
 
 public class DSSPReader {
     
@@ -48,42 +52,45 @@ public class DSSPReader {
     public Protein createProtein(DsspModel dsspModel) {
         Protein protein = new Protein();
         String currentSSEType = null;
-        SSE currentSSE = null;
+        BackboneSegment currentSSE = null;
         Chain currentChain = null;
         
-        Map<SSE, List<HBond>> sseToHBondMap = new HashMap<SSE, List<HBond>>();
+        Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
         
         for (DsspModel.Line line : dsspModel.getLines()) {
             if (currentChain == null) {
                 currentChain = new Chain(line.chainName);
 //                System.out.println("Making new chain " + line.chainName);
             }
-            if (!currentChain.getName().equals(line.chainName)) {
+            if (!currentChain.getLabel().equals(line.chainName)) {
 //                System.out.println("finishing chain " + line.chainName + " " + sseToHBondMap);
                 finishChain(protein, currentChain, sseToHBondMap);
                 sseToHBondMap.clear();
                 currentChain = new Chain(line.chainName);
             }
-            int pdbIndex = parsePdbIndex(line.dsspNumber);
+            int pdbIndex = parsePdbIndex(line.pdbNumber);
+            int dsspNumber = Integer.valueOf(line.dsspNumber);
             if (currentSSEType == null || !currentSSEType.equals(line.sseType)) {
-                currentSSE = makeSSE(pdbIndex, line.sseType);
-                currentChain.addSSE(currentSSE);
+                currentSSE = makeSSE(line.sseType);
+                currentChain.addBackboneSegment(currentSSE);
                 sseToHBondMap.put(currentSSE, new ArrayList<HBond>());
                 currentSSEType = line.sseType;
             }
             Point3d caPosition = parsePosition(line.xca, line.yca, line.zca);
-            currentSSE.addResidue(new Residue(line.aminoAcidName, pdbIndex, caPosition));
+            Residue residue = new Residue(dsspNumber, pdbIndex, line.aminoAcidName);
+            residue.setAtom("CA", caPosition);
+            currentSSE.expandBy(residue);
             
-            HBond nho1 = makeNHOBond(pdbIndex, line.nho1);
+            HBond nho1 = makeNHOBond(residue, line.nho1, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, nho1);
                     
-            HBond ohn1 = makeOHNBond(pdbIndex, line.ohn1);
+            HBond ohn1 = makeOHNBond(residue, line.ohn1, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, ohn1);
             
-            HBond nho2 = makeNHOBond(pdbIndex, line.nho2);
+            HBond nho2 = makeNHOBond(residue, line.nho2, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, nho2);
             
-            HBond ohn2 = makeNHOBond(pdbIndex, line.ohn2);
+            HBond ohn2 = makeNHOBond(residue, line.ohn2, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, ohn2);
         }
 //        System.out.println("finishing chain " + currentChain.getName() + " " + sseToHBondMap);
@@ -91,12 +98,12 @@ public class DSSPReader {
         return protein;
     }
     
-    private void finishChain(Protein protein, Chain currentChain, Map<SSE, List<HBond>> sseToHBondMap) {
+    private void finishChain(Protein protein, Chain currentChain, Map<BackboneSegment, List<HBond>> sseToHBondMap) {
         currentChain.addHBondSets(HBondHelper.makeHBondSets(sseToHBondMap));
         protein.addChain(currentChain);
     }
 
-    private void addToHBondMap(Map<SSE, List<HBond>> map, SSE sse, HBond hBond) {
+    private void addToHBondMap(Map<BackboneSegment, List<HBond>> map, BackboneSegment sse, HBond hBond) {
         if (hBond != null) {
             List<HBond> hBonds;
             if (map.containsKey(sse)) {
@@ -109,23 +116,27 @@ public class DSSPReader {
         }
     }
     
-    private HBond makeNHOBond(int index, String hbondString) {
+    private HBond makeNHOBond(Residue residue, String hbondString, Chain currentChain) {
         String[] parts = hbondString.split(",");
         int offset = Integer.parseInt(parts[0]);
         double energy = Double.parseDouble(parts[1]);
-        if (offset > 0 && isEnergySignificant(energy)) {
-            return new HBond(index, index + offset);
+        if (offset < 0 && isEnergySignificant(energy)) {
+            int partnerIndex = residue.getAbsoluteNumber() + offset;
+            Residue partner = currentChain.getResidueByAbsoluteNumbering(partnerIndex);
+            return new HBond(residue, partner, energy);
         } else {
             return null;
         }
     }
     
-    private HBond makeOHNBond(int index, String hbondString) {
+    private HBond makeOHNBond(Residue residue, String hbondString, Chain currentChain) {
         String[] parts = hbondString.split(",");
         int offset = Integer.parseInt(parts[0]);
         double energy = Double.parseDouble(parts[1]);
-        if (offset > 0 && isEnergySignificant(energy)) {
-            return new HBond(index + offset, index);
+        if (offset < 0 && isEnergySignificant(energy)) {
+            int partnerIndex = residue.getAbsoluteNumber() + offset;
+            Residue partner = currentChain.getResidueByAbsoluteNumbering(partnerIndex);
+            return new HBond(partner, residue, energy);
         } else {
             return null;
         }
@@ -135,8 +146,13 @@ public class DSSPReader {
         return energy < minEnergy; 
     }
     
-    private SSE makeSSE(int pdbIndex, String sseType) {
-        return new SSE(pdbIndex, SSE.Type.fromCode(sseType));
+    private BackboneSegment makeSSE(String sseTypeString) {
+        SSEType type = SSEType.fromCode(sseTypeString);
+        switch (type) {
+            case ALPHA_HELIX: return new Helix();
+            case EXTENDED: return new Strand();
+            default: return new UnstructuredSegment();
+        }
     }
     
     private DsspModel createModel(BufferedReader dsspfile) throws IOException {

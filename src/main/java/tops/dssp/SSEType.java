@@ -1,21 +1,27 @@
 package tops.dssp;
 
-
 public enum SSEType {
-    RIGHT_ALPHA_HELIX ('H'), 
-    HELIX_310 ('G'), 
-    PI_HELIX ('I'), 
-    EXTENDED ('E'), 
-    TURN ('T'), 
-    ISO_BRIDGE ('B');
+    ALPHA_HELIX ("H"),
+    HELIX_310 ("G"),
+    PI_HELIX ("I"),
+    EXTENDED ("E"),
+    TURN ("T"),
+    ISO_BRIDGE ("B"),
+    S_BEND("S"),
+    UNKNOWN ("U");
     
-    private final char symbol;
+    private String code;
     
-    private SSEType(char symbol) {
-        this.symbol = symbol;
+    private SSEType(String code) {
+        this.code = code;
     }
     
-    public String toString() {
-        return String.valueOf(symbol);
+    public static SSEType fromCode(String code) {
+        for (SSEType type : SSEType.values()) {
+            if (type.code.equals(code)) {
+                return type;
+            }
+        }
+        return SSEType.UNKNOWN;
     }
 }

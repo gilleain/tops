@@ -1,9 +1,10 @@
 package tops.translation.model;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.TreeSet;
 
 import javax.vecmath.Point3d;
 
@@ -69,7 +70,7 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
     }
 
     public Residue firstResidue() throws NoSuchElementException {
-        return (Residue) this.residues.first();
+        return this.residues.first();
     }
 
     public Residue lastResidue() throws NoSuchElementException {
@@ -78,6 +79,15 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
 
     public Iterator<Residue> iterator() {
         return this.residues.iterator();
+    }
+    
+    public Residue getResidueByAbsoluteNumber(int number) {
+        for (Residue residue : this.residues) {
+            if (residue.getAbsoluteNumber() == number) {
+                return residue;
+            }
+        }
+        return null;
     }
 
     public boolean bondedTo(Residue otherResidue) {
@@ -117,11 +127,11 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
         }
     }
 
-    public ArrayList<Point3d> getCAlphaCoordinates() {
-        ArrayList<Point3d> cAlphas = new ArrayList<Point3d>();
+    public List<Point3d> getCAlphaCoordinates() {
+        List<Point3d> cAlphas = new ArrayList<Point3d>();
         Iterator<Residue> itr = this.residues.iterator();
         while (itr.hasNext()) {
-            Residue nextResidue = (Residue) itr.next();
+            Residue nextResidue = itr.next();
             cAlphas.add(nextResidue.getCoordinates("CA"));
         }
         return cAlphas;
@@ -235,5 +245,13 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
         } else {
             return 'P';
         }
+    }
+
+    public List<Residue> getResidues() {
+        List<Residue> residueList = new ArrayList<Residue>();
+        for (Residue residue : this.residues) {
+            residueList.add(residue);
+        }
+        return residueList;
     }
 }
