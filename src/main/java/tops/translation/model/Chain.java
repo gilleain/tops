@@ -533,4 +533,14 @@ public class Chain implements Iterable<BackboneSegment> {
 	public Iterator<BackboneSegment> iterator() {
 		return this.backboneSegments.iterator();
 	}
+
+    public List<HBondSet> getHBondSets() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void addHBondSets(List<HBondSet> makeHBondSets) {
+        // TODO Auto-generated method stub
+        
+    }
 }
