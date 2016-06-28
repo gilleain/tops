@@ -6,21 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
 
-import tops.model.SSE;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
 import tops.translation.model.HBondSet;
 import tops.translation.model.Helix;
 import tops.translation.model.Protein;
 import tops.translation.model.Strand;
-import tops.view.tops2D.diagram.DiagramConverter;
-import tops.view.tops2D.diagram.Graph;
 
 public class TestDsspReaderFromFile {
     
@@ -69,6 +65,11 @@ public class TestDsspReaderFromFile {
        test("1nar", SSEType.EXTENDED, -0.9);
     }
     
+    @Test
+    public void test2BOP() throws FileNotFoundException, IOException {
+       test("2bop", SSEType.EXTENDED, -0.9);
+    }
+    
     private void test(String name) throws FileNotFoundException, IOException {
         test(name, SSEType.EXTENDED, -0.01);
     }
@@ -83,20 +84,22 @@ public class TestDsspReaderFromFile {
         Chain chain = protein.iterator().next();
         printSSEByType(chain.getBackboneSegments(), startType);
         if (startType == endType) {
-            printHBondSets(chain, startType, null);
-            printHBondSets(chain, null, endType);
+//            printHBondSets(chain, startType, null);
+//            printHBondSets(chain, null, endType);
         } else {
             printHBondSets(chain, startType, endType);
         }
 //        DiagramConverter converter = new DiagramConverter();
 //        Graph graph = converter.toDiagram(protein);
 //        System.out.println(converter.toTopsString(graph));
-        System.out.println(protein.toTopsChainStringArray());
+        for (String s : protein.toTopsChainStringArray()) {
+            System.out.println(s);
+        }
     }
     
     private void printHBondSets(Chain chain, SSEType startType, SSEType endType) {
         List<HBondSet> hBondSets = chain.getHBondSets();
-        Collections.sort(hBondSets, sort);
+//        Collections.sort(hBondSets, sort);
         for (HBondSet hBondSet : hBondSets) {
             BackboneSegment start = hBondSet.getStart();
             BackboneSegment end = hBondSet.getEnd();

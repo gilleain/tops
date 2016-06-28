@@ -56,7 +56,8 @@ public class DSSPReader {
         Chain currentChain = null;
         
         Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
-        
+        List<Residue> residues = parseResidues(dsspModel);
+        int index = 0;
         for (DsspModel.Line line : dsspModel.getLines()) {
             if (currentChain == null) {
                 currentChain = new Chain(line.chainName);
@@ -68,8 +69,6 @@ public class DSSPReader {
                 sseToHBondMap.clear();
                 currentChain = new Chain(line.chainName);
             }
-            int pdbIndex = parsePdbIndex(line.pdbNumber);
-            int dsspNumber = Integer.valueOf(line.dsspNumber);
             if (currentSSEType == null || !currentSSEType.equals(line.sseType)) {
                 currentSSE = makeSSE(line.sseType);
                 currentChain.addBackboneSegment(currentSSE);
@@ -77,25 +76,37 @@ public class DSSPReader {
                 currentSSEType = line.sseType;
             }
             Point3d caPosition = parsePosition(line.xca, line.yca, line.zca);
-            Residue residue = new Residue(dsspNumber, pdbIndex, line.aminoAcidName);
+            Residue residue = residues.get(index);
             residue.setAtom("CA", caPosition);
             currentSSE.expandBy(residue);
             
-            HBond nho1 = makeNHOBond(residue, line.nho1, currentChain);
+            HBond nho1 = makeNHOBond(residue, residues, line.nho1, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, nho1);
                     
-            HBond ohn1 = makeOHNBond(residue, line.ohn1, currentChain);
+            HBond ohn1 = makeOHNBond(residue, residues, line.ohn1, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, ohn1);
             
-            HBond nho2 = makeNHOBond(residue, line.nho2, currentChain);
+            HBond nho2 = makeNHOBond(residue, residues, line.nho2, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, nho2);
             
-            HBond ohn2 = makeNHOBond(residue, line.ohn2, currentChain);
+            HBond ohn2 = makeNHOBond(residue, residues, line.ohn2, currentChain);
             addToHBondMap(sseToHBondMap, currentSSE, ohn2);
+            
+            index++;
         }
 //        System.out.println("finishing chain " + currentChain.getName() + " " + sseToHBondMap);
         finishChain(protein, currentChain, sseToHBondMap);
         return protein;
+    }
+    
+    private List<Residue> parseResidues(DsspModel dsspModel) {
+        List<Residue> residues = new ArrayList<Residue>();
+        for (DsspModel.Line line : dsspModel.getLines()) {
+            int pdbIndex = parsePdbIndex(line.pdbNumber);
+            int dsspNumber = Integer.valueOf(line.dsspNumber);
+            residues.add(new Residue(dsspNumber, pdbIndex, line.aminoAcidName));
+        }
+        return residues;
     }
     
     private void finishChain(Protein protein, Chain currentChain, Map<BackboneSegment, List<HBond>> sseToHBondMap) {
@@ -116,26 +127,26 @@ public class DSSPReader {
         }
     }
     
-    private HBond makeNHOBond(Residue residue, String hbondString, Chain currentChain) {
+    private HBond makeNHOBond(Residue residue, List<Residue> residues, String hbondString, Chain currentChain) {
         String[] parts = hbondString.split(",");
-        int offset = Integer.parseInt(parts[0]);
-        double energy = Double.parseDouble(parts[1]);
+        int offset = Integer.parseInt(parts[0].trim());
+        double energy = Double.parseDouble(parts[1].trim());
         if (offset < 0 && isEnergySignificant(energy)) {
             int partnerIndex = residue.getAbsoluteNumber() + offset;
-            Residue partner = currentChain.getResidueByAbsoluteNumbering(partnerIndex);
+            Residue partner = residues.get(partnerIndex);
             return new HBond(residue, partner, energy);
         } else {
             return null;
         }
     }
     
-    private HBond makeOHNBond(Residue residue, String hbondString, Chain currentChain) {
+    private HBond makeOHNBond(Residue residue, List<Residue> residues, String hbondString, Chain currentChain) {
         String[] parts = hbondString.split(",");
-        int offset = Integer.parseInt(parts[0]);
-        double energy = Double.parseDouble(parts[1]);
+        int offset = Integer.parseInt(parts[0].trim());
+        double energy = Double.parseDouble(parts[1].trim());
         if (offset < 0 && isEnergySignificant(energy)) {
             int partnerIndex = residue.getAbsoluteNumber() + offset;
-            Residue partner = currentChain.getResidueByAbsoluteNumbering(partnerIndex);
+            Residue partner = residues.get(partnerIndex);
             return new HBond(partner, residue, energy);
         } else {
             return null;

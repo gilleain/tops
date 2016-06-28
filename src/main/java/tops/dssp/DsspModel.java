@@ -100,6 +100,15 @@ public class DsspModel {
             yca = line.substring(122, 129).trim();
             zca = line.substring(129).trim();
         }
+        
+        public String toString() {
+            String format = "%5s%5s%2s%2s%3s%8s%4s%4s%1s%4s%s%s%s%s%s%s%s%s%s%s%s%s";
+            return String.format(format, 
+                    dsspNumber, pdbNumber, chainName, aminoAcidName,
+                    sseType, structure, bridgePartner1, bridgePartner2, sheetName,
+                    acc, nho1, ohn1, nho2, ohn2, tco, kappa, alpha,
+                    phi, psi, xca, yca, zca);
+        }
     }
     
     private List<Line> lines;
@@ -120,6 +129,14 @@ public class DsspModel {
     
     public void addLine(Line line) {
         this.lines.add(line);
+    }
+    
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        for (Line line : lines) {
+            buffer.append(line).append("\n");
+        }
+        return buffer.toString();
     }
 
 }
