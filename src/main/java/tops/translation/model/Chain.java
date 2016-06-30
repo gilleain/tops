@@ -51,7 +51,7 @@ public class Chain implements Iterable<BackboneSegment> {
     }
 
     public boolean isDNA() {
-        return ((Residue) this.residues.get(0)).isDNA();
+        return this.residues.get(0).isDNA();
     }
 
     public Residue createResidue(int pdbNumber, String residueType) {
@@ -502,27 +502,26 @@ public class Chain implements Iterable<BackboneSegment> {
 
         Iterator<Residue> itr = this.residues.iterator();
         while (itr.hasNext()) {
-            Residue r = (Residue) itr.next();
+            Residue r = itr.next();
             s.append(r.toFullString());
             s.append("\n");
         }
 
         Iterator<HBond> hbondItr = this.hbonds.iterator();
         while (hbondItr.hasNext()) {
-            HBond nextBond = (HBond) hbondItr.next();
+            HBond nextBond = hbondItr.next();
             s.append(nextBond + "\n");
         }
 
         Iterator<BackboneSegment> backboneSegmentIterator = this.backboneSegments.iterator();
         while (backboneSegmentIterator.hasNext()) {
-            BackboneSegment nextBackboneSegment = (BackboneSegment) backboneSegmentIterator
-                    .next();
+            BackboneSegment nextBackboneSegment = backboneSegmentIterator.next();
             s.append(nextBackboneSegment.toFullString() + "\n");
         }
 
         Iterator<Sheet> sheetIterator = this.sheets.iterator();
         while (sheetIterator.hasNext()) {
-            Sheet sheet = (Sheet) sheetIterator.next();
+            Sheet sheet = sheetIterator.next();
             s.append(sheet + "\n");
         }
 
@@ -542,5 +541,9 @@ public class Chain implements Iterable<BackboneSegment> {
     public void addHBondSets(List<HBondSet> makeHBondSets) {
         // TODO Auto-generated method stub
         
+    }
+
+    public void setResidues(List<Residue> residues) {
+        this.residues = residues;
     }
 }

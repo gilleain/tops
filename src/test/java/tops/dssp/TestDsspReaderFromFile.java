@@ -67,7 +67,7 @@ public class TestDsspReaderFromFile {
     
     @Test
     public void test2BOP() throws FileNotFoundException, IOException {
-       test("2bop", SSEType.EXTENDED, -0.9);
+       test("2bop", null, -0.9);
     }
     
     private void test(String name) throws FileNotFoundException, IOException {
@@ -122,8 +122,8 @@ public class TestDsspReaderFromFile {
         System.out.print("[ ");
         for (BackboneSegment sse : sses) {
             if (type == null || hasType(sse, type)) {
-                System.out.print(sse);
-                System.out.print(" ");
+                System.out.println(sse);
+//                System.out.print(" ");
             }
         }
         System.out.println(" ]");

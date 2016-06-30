@@ -56,16 +56,18 @@ public class DSSPReader {
         Chain currentChain = null;
         
         Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
-        List<Residue> residues = parseResidues(dsspModel);
+        Map<String, List<Residue>> residueMap = parseResidues(dsspModel);
         int index = 0;
+        List<Residue> residues = new ArrayList<Residue>();
         for (DsspModel.Line line : dsspModel.getLines()) {
             if (currentChain == null) {
+                index = 0;  // start a new chain index
                 currentChain = new Chain(line.chainName);
 //                System.out.println("Making new chain " + line.chainName);
             }
             if (!currentChain.getLabel().equals(line.chainName)) {
 //                System.out.println("finishing chain " + line.chainName + " " + sseToHBondMap);
-                finishChain(protein, currentChain, sseToHBondMap);
+                finishChain(protein, currentChain, residues, sseToHBondMap);
                 sseToHBondMap.clear();
                 currentChain = new Chain(line.chainName);
             }
@@ -76,6 +78,7 @@ public class DSSPReader {
                 currentSSEType = line.sseType;
             }
             Point3d caPosition = parsePosition(line.xca, line.yca, line.zca);
+            residues = residueMap.get(line.chainName);
             Residue residue = residues.get(index);
             residue.setAtom("CA", caPosition);
             currentSSE.expandBy(residue);
@@ -95,22 +98,31 @@ public class DSSPReader {
             index++;
         }
 //        System.out.println("finishing chain " + currentChain.getName() + " " + sseToHBondMap);
-        finishChain(protein, currentChain, sseToHBondMap);
+        finishChain(protein, currentChain, residues, sseToHBondMap);
         return protein;
     }
     
-    private List<Residue> parseResidues(DsspModel dsspModel) {
-        List<Residue> residues = new ArrayList<Residue>();
+    private Map<String, List<Residue>> parseResidues(DsspModel dsspModel) {
+        Map<String, List<Residue>> residueMap = new HashMap<String, List<Residue>>();
         for (DsspModel.Line line : dsspModel.getLines()) {
             int pdbIndex = parsePdbIndex(line.pdbNumber);
             int dsspNumber = Integer.valueOf(line.dsspNumber);
+            String chainName = line.chainName;
+            List<Residue> residues;
+            if (residueMap.containsKey(chainName)) {
+                residues = residueMap.get(chainName);
+            } else {
+                residues = new ArrayList<Residue>();
+                residueMap.put(chainName, residues);
+            }
             residues.add(new Residue(dsspNumber, pdbIndex, line.aminoAcidName));
         }
-        return residues;
+        return residueMap;
     }
     
-    private void finishChain(Protein protein, Chain currentChain, Map<BackboneSegment, List<HBond>> sseToHBondMap) {
+    private void finishChain(Protein protein, Chain currentChain, List<Residue> residues, Map<BackboneSegment, List<HBond>> sseToHBondMap) {
         currentChain.addHBondSets(HBondHelper.makeHBondSets(sseToHBondMap));
+        currentChain.setResidues(residues);
         protein.addChain(currentChain);
     }
 
@@ -161,6 +173,7 @@ public class DSSPReader {
         SSEType type = SSEType.fromCode(sseTypeString);
         switch (type) {
             case ALPHA_HELIX: return new Helix();
+            case HELIX_310: return new Helix();
             case EXTENDED: return new Strand();
             default: return new UnstructuredSegment();
         }

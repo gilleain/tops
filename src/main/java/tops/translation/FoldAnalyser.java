@@ -21,10 +21,23 @@ import tops.translation.model.Strand;
 import tops.translation.model.Terminus;
 
 public class FoldAnalyser {
+    
+    private boolean findHBonds;
 
     private HBondAnalyser hBondAnalyser;
 
     public FoldAnalyser() {
+        this(true);
+    }
+        
+    public FoldAnalyser(boolean findHBonds) {
+        this.findHBonds = findHBonds;
+        if (findHBonds) {
+            setupDefaultHBondAnalyser();
+        }
+    }
+    
+    private void setupDefaultHBondAnalyser() {
         this.hBondAnalyser = new HBondAnalyser();
 
         // set some default properties
@@ -35,11 +48,13 @@ public class FoldAnalyser {
 
     public Protein analyse(Protein protein) throws PropertyError {
         for (Chain chain : protein) {
-            if (chain.isDNA()) {
+            if (chain.length() == 0 || chain.isDNA()) {
                 continue;
             }
 
-            this.hBondAnalyser.analyse(chain);
+            if (findHBonds) {
+                this.hBondAnalyser.analyse(chain);
+            }
             this.findSheets(chain);
             this.assignOrientationsDependingOnArchitecture(chain);
             this.determineChiralities(chain);
@@ -65,16 +80,13 @@ public class FoldAnalyser {
             ListIterator<BackboneSegment> secondSegments = 
             		chain.backboneSegmentListIterator(firstSegment);
             while (secondSegments.hasNext()) {
-                BackboneSegment secondSegment = (BackboneSegment) secondSegments
-                        .next();
-                if ((secondSegment != firstSegment)
-                        && (secondSegment instanceof Strand)) {
+                BackboneSegment secondSegment = secondSegments.next();
+                if ((secondSegment != firstSegment) && (secondSegment instanceof Strand)) {
                     // make a crude distance check
                     if (this.closeApproach(firstSegment, secondSegment)) {
                         // if this passes, make a finer bonding check
                         if (this.bonded(firstSegment, secondSegment)) {
-                            this.addStrandPair(firstSegment, secondSegment,
-                                    chain);
+                            this.addStrandPair(firstSegment, secondSegment, chain);
                         }
                     }
                 }
