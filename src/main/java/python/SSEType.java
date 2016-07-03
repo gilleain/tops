@@ -1,0 +1,5 @@
+package python;
+
+public enum SSEType {
+    HELIX, EXTENDED, COIL, RIGHT_ALPHA_HELIX, HELIX_310, PI_HELIX, TURN, ISO_BRIDGE, LEFT_ALPHA_HELIX;
+}
