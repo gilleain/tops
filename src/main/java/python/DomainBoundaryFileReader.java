@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import python.model.DomainDefinition;
+import python.model.Protein;
+
 public class DomainBoundaryFileReader {
 
     public void readDomBoundaryFile(String DomBoundaryFile, Protein protein) throws IOException {

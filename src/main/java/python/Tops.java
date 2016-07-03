@@ -12,6 +12,15 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
+import python.model.BridgePartner;
+import python.model.Cartoon;
+import python.model.DomainDefinition;
+import python.model.DsspReader;
+import python.model.Neighbour;
+import python.model.PlotFragInformation;
+import python.model.Protein;
+import python.model.SSE;
+
 /*
 	Program:         TOPS
 	Description: Program to automatically generate protein topology cartoons

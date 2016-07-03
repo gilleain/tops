@@ -9,6 +9,13 @@ import java.util.Random;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
+import python.model.Cartoon;
+import python.model.Chain;
+import python.model.FixedType;
+import python.model.Hand;
+import python.model.Neighbour;
+import python.model.SSE;
+
 public class Optimise {
     
 
@@ -207,7 +214,7 @@ public class Optimise {
         double energy = 0;
         for (SSE sse : chain.getSSEs()) {
             SSE foundFixedStart = chain.FindFixedStart(sse);
-            if (foundFixedStart != FixedStart && sse.IsInCircle(boundingCircle.centerX, boundingCircle.centerY, boundingCircle.radius)) {
+            if (foundFixedStart != FixedStart && sse.IsInCircle(boundingCircle)) {
                 energy += Penalty;
             }
         }

@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 import javax.vecmath.Vector3d;
 

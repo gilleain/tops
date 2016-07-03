@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -12,7 +12,7 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-class Chain {
+public class Chain {
     
     private char name;
     private List<SSE> sses;

@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 public enum DomainBreakType {
     NOT_DOM_BREAK,

@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -7,7 +7,7 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector3d;
 
-class SSE {
+public class SSE {
     
     private int MAXBP = 6;
 
@@ -693,6 +693,11 @@ class SSE {
     public void flip() {
         // TODO Auto-generated method stub
         
+    }
+    
+    public boolean IsInCircle(Chain.Circle circle) {
+        // TODO
+        return false;
     }
 
     public boolean IsInCircle(double centerX, double centerY, double radius) {

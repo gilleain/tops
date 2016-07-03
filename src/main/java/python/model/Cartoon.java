@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 public class Cartoon extends Chain {
 

@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Integer.parseInt;

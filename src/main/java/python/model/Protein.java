@@ -1,19 +1,19 @@
-package python;
+package python.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import python.DomainDefinition.DomainType;
-import python.Protein.DomainId;
+import python.model.DomainDefinition.DomainType;
+import python.model.Protein.DomainId;
 
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-class Protein {
+public class Protein {
 
     public enum ErrorType {
         NO_DOMAIN_ERRORS, DOMAIN_CHAIN_ERROR, DOMAIN_RESIDUE_ERROR, DOMAIN_RANGE_OVERLAP_ERROR
@@ -664,7 +664,7 @@ class Protein {
      * Function to set up a new linked list corresponding to a given domain XXX
      * now returns the new root
      */
-    Cartoon SetDomain(SSE OriginalRoot, DomainDefinition domain) {
+    public Cartoon SetDomain(SSE OriginalRoot, DomainDefinition domain) {
 
         int numberStructures;
         int domBreakNum = 0;
@@ -800,7 +800,7 @@ class Protein {
     /*
      * Function to set up DomainBreakNumbers in the master linked list
      */
-    void setDomBreaks(SSE Root, PlotFragInformation PlotFragInf) {
+    public void setDomBreaks(SSE Root, PlotFragInformation PlotFragInf) {
 
         int Count = 0;
         int nf = 0;

@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 public enum Hand {
     _unk_hand,

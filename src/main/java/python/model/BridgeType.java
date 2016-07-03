@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 public enum BridgeType {
     ANTI_PARALLEL_BRIDGE,

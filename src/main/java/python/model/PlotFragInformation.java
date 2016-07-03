@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 public class PlotFragInformation {
     public static final int MAX_PLOT_FRAGS = 100; // XXX remove

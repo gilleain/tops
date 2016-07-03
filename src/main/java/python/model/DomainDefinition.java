@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 public class DomainDefinition {
     int MAX_SEGMENTS = 50;

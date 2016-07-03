@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
-class Axis {
+public class Axis {
     
     private char SSEType;
     private Vector2d start;

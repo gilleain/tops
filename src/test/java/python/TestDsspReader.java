@@ -9,6 +9,9 @@ import java.io.Reader;
 
 import org.junit.Test;
 
+import python.model.DsspReader;
+import python.model.Protein;
+
 public class TestDsspReader {
 
     @Test

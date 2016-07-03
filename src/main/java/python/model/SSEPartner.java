@@ -1,4 +1,4 @@
-package python;
+package python.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

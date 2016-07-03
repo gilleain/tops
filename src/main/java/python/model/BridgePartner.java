@@ -1,6 +1,6 @@
-package python;
+package python.model;
 
-class BridgePartner {
+public class BridgePartner {
     
     public enum Side { LEFT, RIGHT, UNKNOWN }
     
