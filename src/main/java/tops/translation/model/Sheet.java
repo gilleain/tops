@@ -204,12 +204,12 @@ public class Sheet implements Iterable<BackboneSegment> {
     public List<Edge> toTopsEdges(Domain domain) {
         List<Edge> edges = new ArrayList<Edge>();
         for (int i = 0; i < this.size() - 1; i++) {
-            BackboneSegment strand = (BackboneSegment) this.strands.get(i);
+            BackboneSegment strand = this.strands.get(i);
             if (!domain.isEmpty() && !domain.contains(strand)) {
                 continue;
             }
 
-            BackboneSegment partner = (BackboneSegment) this.strands.get(i + 1);
+            BackboneSegment partner = this.strands.get(i + 1);
             if (!domain.isEmpty() && !domain.contains(partner)) {
                 continue;
             }

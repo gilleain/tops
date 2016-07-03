@@ -43,7 +43,8 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public String toString() {
-        return this.first.getNumber() + ":" + this.second.getNumber()
-                + this.type;
+        int i = this.first.getNumber() + 1;
+        int j = this.second.getNumber() + 1;
+        return i + ":" + j + this.type;
     }
 }

@@ -64,8 +64,7 @@ public class FoldAnalyser {
     }
 
     public void findSheets(Chain chain) {
-        // for each strand, examine all strands in front (so we don't do the
-        // same comparison twice)
+        // for each strand, examine all strands in front (so we don't do the same comparison twice)
         // each examination is a simple centroid-centroid distance
         ListIterator<BackboneSegment> firstSegments = chain.backboneSegmentListIterator();
 
@@ -96,11 +95,9 @@ public class FoldAnalyser {
 
     public boolean closeApproach(BackboneSegment a, BackboneSegment b) {
         Vector3d distanceVector = new Vector3d();
-        distanceVector
-                .sub(a.getAxis().getCentroid(), b.getAxis().getCentroid());
+        distanceVector.sub(a.getAxis().getCentroid(), b.getAxis().getCentroid());
         double length = distanceVector.length();
-        // System.out.println("Distance between " + a + " and " + b + " = " +
-        // Math.rint(length));
+        System.out.println("Distance between " + a + " and " + b + " = " + Math.rint(length));
         return length < 10.0;
     }
 
@@ -113,6 +110,7 @@ public class FoldAnalyser {
                 numberOfHBonds++;
             }
         }
+        System.out.println(strand + " hbonds = " + numberOfHBonds);
 
         // all we want to know is, are there enough hbonds for these strands to
         // qualify as bonded
@@ -131,26 +129,21 @@ public class FoldAnalyser {
 
         if (firstSheet == null && secondSheet == null) {
             chain.createSheet(first, second);
-            // System.out.println("Adding " + first + " and " + second + " to
-            // new sheet");
+            // System.out.println("Adding " + first + " and " + second + " to new sheet");
         } else {
             if (firstSheet == null) {
-                // System.out.println("Adding " + first + " and " + second + "
-                // to " + secondSheet);
+                // System.out.println("Adding " + first + " and " + second + to " + secondSheet);
                 secondSheet.insert(second, first);
             } else if (secondSheet == null) {
-                // System.out.println("Adding " + first + " and " + second + "
-                // to " + firstSheet);
+                // System.out.println("Adding " + first + " and " + second + to " + firstSheet);
                 firstSheet.insert(first, second);
             } else {
-                // one possibility is that both sheets are the same, and this
-                // edge closes a barrel
+                // one possibility is that both sheets are the same, and this edge closes a barrel
                 if (firstSheet == secondSheet) {
                     firstSheet.closeBarrel(first, second);
                 } else {
                     // otherwise, we have to join the sheets
-                    this.joinSheets(first, second, firstSheet, secondSheet,
-                            chain);
+                    this.joinSheets(first, second, firstSheet, secondSheet, chain);
                 }
             }
         }

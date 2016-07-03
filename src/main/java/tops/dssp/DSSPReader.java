@@ -146,7 +146,10 @@ public class DSSPReader {
         if (offset < 0 && isEnergySignificant(energy)) {
             int partnerIndex = residue.getAbsoluteNumber() + offset;
             Residue partner = residues.get(partnerIndex);
-            return new HBond(residue, partner, energy);
+            HBond hbond = new HBond(residue, partner, energy); 
+            residue.addHBond(hbond);
+            partner.addHBond(hbond);
+            return hbond;
         } else {
             return null;
         }

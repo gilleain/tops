@@ -200,10 +200,8 @@ public class Chain implements Iterable<BackboneSegment> {
         if (this.sheets.size() == 0) {
             this.sheets.add(new Sheet(1, strand, otherStrand));
         } else {
-            int lastSheetNumber = ((Sheet) this.sheets
-                    .get(this.sheets.size() - 1)).getNumber();
-            this.sheets
-                    .add(new Sheet(lastSheetNumber + 1, strand, otherStrand));
+            int lastSheetNumber = this.sheets.get(this.sheets.size() - 1).getNumber();
+            this.sheets.add(new Sheet(lastSheetNumber + 1, strand, otherStrand));
         }
     }
 
@@ -214,7 +212,7 @@ public class Chain implements Iterable<BackboneSegment> {
     public Sheet getSheetContaining(BackboneSegment strand) {
         Iterator<Sheet> sheetIterator = this.sheets.iterator();
         while (sheetIterator.hasNext()) {
-            Sheet sheet = (Sheet) sheetIterator.next();
+            Sheet sheet = sheetIterator.next();
             if (sheet.contains(strand)) {
                 return sheet;
             }
@@ -230,8 +228,7 @@ public class Chain implements Iterable<BackboneSegment> {
         return this.sheets.size();
     }
 
-    public void addChirality(BackboneSegment first, BackboneSegment second,
-            char chirality) {
+    public void addChirality(BackboneSegment first, BackboneSegment second, char chirality) {
         this.chiralities.add(new Edge(first, second, chirality));
     }
 
@@ -239,8 +236,7 @@ public class Chain implements Iterable<BackboneSegment> {
         Iterator<BackboneSegment> backboneSegmentIterator = this.backboneSegments.iterator();
         ArrayList<Point3d> centroids = new ArrayList<Point3d>();
         while (backboneSegmentIterator.hasNext()) {
-            BackboneSegment nextBackboneSegment = (BackboneSegment) backboneSegmentIterator
-                    .next();
+            BackboneSegment nextBackboneSegment = backboneSegmentIterator.next();
             Axis a = nextBackboneSegment.getAxis();
             // System.out.println("Centroid for BS " + nextBackboneSegment + "
             // is " + a.getCentroid());
