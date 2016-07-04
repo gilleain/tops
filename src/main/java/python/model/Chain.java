@@ -1,7 +1,6 @@
 package python.model;
 
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +12,10 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 public class Chain {
+
+    public enum SSEType {
+        HELIX, EXTENDED, COIL, RIGHT_ALPHA_HELIX, HELIX_310, PI_HELIX, TURN, ISO_BRIDGE, LEFT_ALPHA_HELIX;
+    }
     
     private char name;
     private List<SSE> sses;
@@ -51,6 +54,36 @@ public class Chain {
         this.acceptedHBonds = new HashMap<Integer, List<Integer>>();
         this.acceptedHBondEnergy = new HashMap<Integer, List<Double>>();
         this.donatedHBondEnergy = new HashMap<Integer, List<Double>>();
+    }
+    
+    public void ForceConsistent(Protein protein) {
+        for (int i = 0; i < SequenceLength(); i++) {
+
+            if ( IsSSelement(i) ) {
+                int start = i;
+                SSEType thissstype = getSSEType(i);
+                int Dom = protein.ResidueDomain(i);
+                int DBreak = -1;
+                int LastDom = -1;
+                while ( IsSSelement(i) && getSSEType(i) == thissstype ) {
+                    i++;
+                    LastDom = Dom;
+                    Dom = protein.ResidueDomain(i);
+                    if ( Dom != LastDom ) DBreak = i;
+                }
+
+                int finish = --i;
+
+                if ( DBreak > -1 ) {
+
+                    if ( (DBreak-start) > (finish-DBreak) ) {
+                        for (int j=DBreak ; j<=finish ; j++) setSSEType(i, SSEType.COIL);
+                    } else {
+                        for (int j=start ; j<DBreak ; j++) setSSEType(j, SSEType.COIL);
+                    }
+                }
+            }
+        }
     }
     
     /**

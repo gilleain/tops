@@ -1,6 +1,6 @@
 package python.model;
 
-public enum DomainBreakType {
+enum DomainBreakType {
     NOT_DOM_BREAK,
     N_DOM_BREAK,
     C_DOM_BREAK,

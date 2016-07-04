@@ -183,33 +183,7 @@ public class Protein {
         }
 
         for (Chain chain : this.chains) {
-            for (int i = 0; i < chain.SequenceLength(); i++) {
-
-                if ( chain.IsSSelement(i) ) {
-                    int start = i;
-                    SSEType thissstype = chain.getSSEType(i);
-                    int Dom = ResidueDomain(i);
-                    int DBreak = -1;
-                    int LastDom = -1;
-                    while ( chain.IsSSelement(i) && chain.getSSEType(i) == thissstype ) {
-                        i++;
-                        LastDom = Dom;
-                        Dom = ResidueDomain(i);
-                        if ( Dom != LastDom ) DBreak = i;
-                    }
-
-                    int finish = --i;
-
-                    if ( DBreak > -1 ) {
-
-                        if ( (DBreak-start) > (finish-DBreak) ) {
-                            for (int j=DBreak ; j<=finish ; j++) chain.setSSEType(i, SSEType.COIL);
-                        } else {
-                            for (int j=start ; j<DBreak ; j++) chain.setSSEType(j, SSEType.COIL);
-                        }
-                    }
-                }
-            }
+            chain.ForceConsistent(p);
         }
     }
 
