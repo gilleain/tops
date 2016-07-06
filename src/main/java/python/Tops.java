@@ -10,8 +10,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Point2d;
-
 import python.model.BridgePartner;
 import python.model.Cartoon;
 import python.model.DomainDefinition;
@@ -1306,23 +1304,25 @@ public class Tops {
         print("The linked list follows\n\n");
 
         for (; q != null; q = q.To) {
-            print("\nSS %x %d\n", q, q.SymbolNumber);
+            print("\nSS %x %d\n", q, q.getSymbolNumber());
             print("SS type %c\n", q.getSSEType());
-            print("Seq. Start Finish %d %d\n", q.SeqStartResidue,
-                    q.SeqFinishResidue);
-            print("PDB Start Finish %d %d\n", q.PDBStartResidue,
-                    q.PDBFinishResidue);
+            print("Seq. Start Finish %d %d\n", 
+                    q.sseData.SeqStartResidue,
+                    q.sseData.SeqFinishResidue);
+            print("PDB Start Finish %d %d\n", 
+                    q.sseData.PDBStartResidue,
+                    q.sseData.PDBFinishResidue);
             print("Chain %c\n", q.Chain);
             print("DomainBreakType %d DomainBreakNumber %d\n",
                     q.domainBreakType, q.DomainBreakNumber);
-            print("Radius %d\n", q.SymbolRadius);
-            print("To %d From %d\n", (q.To != null ? q.To.SymbolNumber : 0),
-                    (q.From != null ? q.From.SymbolNumber : 0));
+            print("Radius %d\n", q.getSymbolRadius());
+            print("To %d From %d\n", (q.To != null ? q.To.getSymbolNumber() : 0),
+                    (q.From != null ? q.From.getSymbolNumber() : 0));
             print("Next %x %d\n", q.Next,
-                    (q.Next != null ? q.Next.SymbolNumber : 0));
+                    (q.Next != null ? q.Next.getSymbolNumber() : 0));
             print("FixedType %d\n", q.FixedType);
             print("Fixed %x %d\n", q.Fixed,
-                    (q.Fixed != null ? q.Fixed.SymbolNumber : 0));
+                    (q.Fixed != null ? q.Fixed.getSymbolNumber() : 0));
             print("Position %d %d\n", q.getCartoonX(), q.getCartoonY());
             print("Direction %c\n", q.getDirection());
             print("Chirality %d\n", q.Chirality);
@@ -1330,7 +1330,7 @@ public class Tops {
                 int i = 0;
                 for (BridgePartner bp : q.getBridgePartners()) {
                     print("BridgePartner %d is %d side %c range %d %d type %d\n",
-                            i, bp.partner.SymbolNumber, bp.side, bp.rangeMin,
+                            i, bp.partner.getSymbolNumber(), bp.side, bp.rangeMin,
                             bp.rangeMax, bp.bridgeType);
                     i++;
                 }
@@ -1339,7 +1339,7 @@ public class Tops {
             int i = 0;
             for (Neighbour n : q.Neighbours) {
                 print("Neighbour %d is %d distance %10.5f\n", i,
-                        n.sse.SymbolNumber, n.distance);
+                        n.sse.getSymbolNumber(), n.distance);
                 i++;
             }
 
@@ -1388,7 +1388,7 @@ public class Tops {
 
         for (; p != null; p = p.To) {
             print(out, "\n");
-            WriteSecStr(out, p);
+            p.WriteSecStr(out);
         }
 
         return;
@@ -1403,131 +1403,7 @@ public class Tops {
         out.print(String.format(s, args));
     }
 
-    void WriteSecStr(PrintStream out, SSE p) {
-
-        char ch;
-
-        print(out, "SecondaryStructureType %c\n", p.getSSEType());
-        print(out, "Direction %c\n", p.getDirection());
-        print(out, "Label %s\n", p.getLabel());
-        print(out, "Colour %d %d %d\n", p.Colour[0], p.Colour[1], p.Colour[2]);
-
-        if (p.Next != null) {
-            print(out, "Next %d\n", p.Next.SymbolNumber);
-        } else {
-            print(out, "Next -1\n");
-        }
-
-        if (p.Fixed != null) {
-            print(out, "Fixed %d\n", p.Fixed.SymbolNumber);
-        } else {
-            print(out, "Fixed -1\n");
-        }
-
-        switch (p.FixedType) {
-        case FT_BARREL:
-            print(out, "FixedType BARREL\n");
-            break;
-        case FT_SHEET:
-            print(out, "FixedType SHEET\n");
-            break;
-        case FT_CURVED_SHEET:
-            print(out, "FixedType CURVED_SHEET\n");
-            break;
-        case FT_V_CURVED_SHEET:
-            print(out, "FixedType V_CURVED_SHEET\n");
-            break;
-        case FT_SANDWICH:
-            print(out, "FixedType SANDWICH\n");
-            break;
-        case FT_TEMPLATE:
-            print(out, "FixedType TEMPLATE\n");
-            break;
-        case FT_UNKNOWN:
-            print(out, "FixedType UNKNOWN\n");
-            break;
-        default:
-            print(out, "FixedType UNKNOWN\n");
-            break;
-        }
-
-        print(out, "BridgePartner");
-        for (BridgePartner BridgePartner : p.getBridgePartners())
-            print(out, " %d", BridgePartner.partner.SymbolNumber);
-        print(out, "\n");
-
-        print(out, "BridgePartnerSide");
-        for (BridgePartner BridgePartner : p.getBridgePartners())
-            print(out, " %c", BridgePartner.side);
-        print(out, "\n");
-
-        print(out, "BridgePartnerType");
-        for (BridgePartner BridgePartner : p.getBridgePartners()) {
-            switch (BridgePartner.bridgeType) {
-            case ANTI_PARALLEL_BRIDGE:
-                print(out, " %c", 'A');
-                break;
-            case PARALLEL_BRIDGE:
-                print(out, " %c", 'P');
-                break;
-            case UNK_BRIDGE_TYPE:
-                print(out, " %c", 'U');
-                break;
-            default:
-                print(out, " %c", 'U');
-                break;
-            }
-        }
-        print(out, "\n");
-
-        print(out, "Neighbour");
-        for (Neighbour neighbour : p.Neighbours) {
-            print(out, " %d", neighbour.sse.SymbolNumber);
-        }
-        print(out, "\n");
-
-        print(out, "SeqStartResidue %d\n", p.SeqStartResidue);
-        print(out, "SeqFinishResidue %d\n", p.SeqFinishResidue);
-
-        print(out, "PDBStartResidue %d\n", p.PDBStartResidue);
-        print(out, "PDBFinishResidue %d\n", p.PDBFinishResidue);
-
-        print(out, "SymbolNumber %d\n", p.SymbolNumber);
-
-        ch = p.Chain;
-        if (ch == '\0')
-            ch = ' ';
-        print(out, "Chain %c\n", ch);
-
-        print(out, "Chirality %d\n", p.Chirality);
-
-        print(out, "CartoonX %d\n", p.getCartoonX());
-        print(out, "CartoonY %d\n", p.getCartoonY());
-
-        print(out, "AxesStartPoint");
-        print(out, " %s", p.axis.AxisStartPoint);
-        print(out, "\n");
-
-        print(out, "AxesFinishPoint");
-        print(out, " %s", p.axis.AxisFinishPoint);
-        print(out, "\n");
-
-        print(out, "SymbolRadius %d\n", p.SymbolRadius);
-
-        print(out, "AxisLength %f\n", p.axis.getLength());
-
-        print(out, "NConnectionPoints %d\n", p.NConnectionPoints);
-
-        print(out, "ConnectionTo");
-        for (Point2d point : p.ConnectionTo)
-            print(out, " %f %f", point.x, point.y);
-        print(out, "\n");
-
-        print(out, "Fill %d\n", p.getFill());
-
-        return;
-
-    }
+    
 
     void PrintMoveFixedError(String funct, PrintStream out) {
 

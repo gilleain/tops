@@ -71,7 +71,7 @@ public class Optimise {
                         for (SSE sseD : chain.iterFixed(sseB)) {
                             if (sseC == sseD) continue;
                             double d = Chain.distance2D(sseC, sseD);
-                            double D = sseC.SymbolRadius + sseD.SymbolRadius;
+                            double D = sseC.getSymbolRadius() + sseD.getSymbolRadius();
                             if (d < D) {
                                 double DHard = 3 * D / 4;
                                 double Ce;
@@ -91,7 +91,7 @@ public class Optimise {
                 SSE sseB = sseA.To;
                 if (sseB == null || (sseA.isTerminus() && sseB.isTerminus())) continue;
                 double d = Chain.distance2D(sseA, sseB);
-                double D = sseA.SymbolRadius + sseB.SymbolRadius;
+                double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
                 if (d > D) {
                     double penalty = (d - D) / GridUnitSize;
                     double Ce = Math.pow(penalty , 2) * ChainPenalty;
@@ -111,7 +111,7 @@ public class Optimise {
                     Neighbour neighbour = sseA.Neighbours.get(i); 
                     SSE sseB = neighbour.sse;
                     double d = Chain.distance2D(sseA, sseB);
-                    double D = sseA.SymbolRadius + sseB.SymbolRadius;
+                    double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
                     double ratio = first.distance / neighbour.distance;
                     double Ce = Math.pow((d - D) / GridUnitSize, 2) * NeighbourPenalty * Math.pow(ratio, 2);
                     TotalEnergy += Ce;
@@ -252,13 +252,13 @@ public class Optimise {
             sseA.setCartoonY((int) (i * GridSize));
             sseA.setCartoonX(0);
 
-            sseA.SymbolPlaced = true;
+            sseA.setSymbolPlaced(true);
 
             for (SSE sseB : cartoon.iterFixed(sseA)) {
                 if (sseB == null) break;
                 sseB.setCartoonX((int)(sseB.getCartoonX() + MoveX));
                 sseB.setCartoonY((int) (sseB.getCartoonY() + MoveY));
-                sseB.SymbolPlaced = true;
+                sseB.setSymbolPlaced(true);
             }
             i++;
         }

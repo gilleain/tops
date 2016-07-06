@@ -7,28 +7,66 @@ import java.util.List;
 public class CartoonSymbol {
 
     private int symbolNumber;
-    public double CartoonX;
-    public double CartoonY;
+    private double cartoonX;
+    private double cartoonY;
     private String sseType;
     private char direction;
     private int radius;
-    private Object colour;
+    private int[] colour;
     private boolean fill;
     private char label;
     private List<Integer> connections;
-    public double SymbolRadius;
+    private double SymbolRadius;
+    private boolean symbolPlaced;
 
+    public CartoonSymbol() {
+        // TODO
+    }
+    
     public CartoonSymbol(int symbolNumber, String sseType, char direction) {
         this.symbolNumber = symbolNumber;
-        this.CartoonX = 0;
-        this.CartoonY = 0;
+        this.cartoonX = 0;
+        this.cartoonY = 0;
         this.sseType = sseType;
         this.direction = direction;
         this.radius = 20;
-        this.colour = Color.BLACK;
+        this.colour = new int[] { Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue() };
         this.fill = false;
         this.label = ' ';
         this.connections = new ArrayList<Integer>();
+    }
+    
+    public int getSymbolNumber() {
+        return this.symbolNumber;
+    }
+    
+    public void setSymbolNumber(int symbolNumber) {
+        this.symbolNumber  = symbolNumber;
+    }
+    
+    
+    public double getSymbolRadius() {
+        return SymbolRadius;
+    }
+    
+    public int[] getColor() {
+        return this.colour;
+    }
+    
+    public double getCartoonX() {
+        return cartoonX;
+    }
+    
+    public void setCartoonX(double cartoonX) {
+        this.cartoonX = cartoonX;
+    }
+    
+    public double getCartoonY() {
+        return cartoonY;
+    }
+    
+    public void setCartoonY(double cartoonY) {
+        this.cartoonY = cartoonY;
     }
 
     public void flip() {
@@ -37,22 +75,30 @@ public class CartoonSymbol {
     }
 
     public boolean SamePosition(CartoonSymbol q) {
-        return (this.CartoonX == q.CartoonX) && (this.CartoonY == q.CartoonY);
+        return (this.cartoonX == q.cartoonX) && (this.cartoonY == q.cartoonY);
     }
 
     public boolean IsInCircle(double centerX, double centerY, double radius) {
-        double separation = distance2D(CartoonX, CartoonY, centerX, centerY);
+        double separation = distance2D(cartoonX, cartoonY, centerX, centerY);
         if (separation <= radius) return true;
         else return false;
     }
     
     public double distance2D(CartoonSymbol other) {
-        return distance2D(CartoonX, CartoonY, other.CartoonX, other.CartoonY);
+        return distance2D(cartoonX, cartoonY, other.cartoonX, other.cartoonY);
     }
     
     private double distance2D(double x1, double y1, double x2, double y2) {
         double dX = x1 - x2;
         double dY = y1 - y2;
         return Math.sqrt((dX * dX) + (dY * dY)); 
+    }
+
+    public void setSymbolPlaced(boolean symbolPlaced) {
+        this.symbolPlaced = symbolPlaced;
+    }
+
+    public boolean isSymbolPlaced() {
+        return this.symbolPlaced;
     }
 }

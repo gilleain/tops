@@ -179,25 +179,26 @@ public class DsspReader {
     					if (!firstChain) {
     						// finish off the list //
     						if (open) {
-    							p.SeqFinishResidue = currentResidue - 1;
-    							p.PDBFinishResidue = LastResidue;
+    							p.sseData.SeqFinishResidue = currentResidue - 1;
+    							p.sseData.PDBFinishResidue = LastResidue;
     							q = p;
     						}
     						SSE cTerm = new SSE('C');
     
     						q.To = q.Next = cTerm;
-    						cTerm.SeqStartResidue = cTerm.SeqFinishResidue = currentResidue;
-    						cTerm.PDBStartResidue = cTerm.PDBFinishResidue = LastResidue + 1;
+    						cTerm.sseData.SeqStartResidue = cTerm.sseData.SeqFinishResidue = currentResidue;
+    						cTerm.sseData.PDBStartResidue = cTerm.sseData.PDBFinishResidue = LastResidue + 1;
     						cTerm.From = q;
     						numberOfStructures += 1;
-    						cTerm.SymbolNumber = numberOfStructures;
+    						cTerm.setSymbolNumber(numberOfStructures);
     						chain.addSSE(cTerm);
     					}
     
     					chain = new Chain(r.ChainId.charAt(0));
     					
     					SSE nTerminus = new SSE('N');
-    					nTerminus.SymbolNumber = numberOfStructures = 0;
+    					numberOfStructures = 0;
+    					nTerminus.setSymbolNumber(numberOfStructures);
     					chain.addSSE(nTerminus);
     					protein.addChain(chain);
     
@@ -243,8 +244,8 @@ public class DsspReader {
     					if (open) {
     						// End Structure //
     						open = false;
-    						p.SeqFinishResidue = currentResidue - 1;
-    						p.PDBFinishResidue = LastResidue;
+    						p.sseData.SeqFinishResidue = currentResidue - 1;
+    						p.sseData.PDBFinishResidue = LastResidue;
     						q = p;
     					}
     					if (secondaryStructure != SSEType.COIL) {
@@ -255,9 +256,9 @@ public class DsspReader {
     						q.To = q.Next = p;
     						p.From = q;
     						numberOfStructures += 1;
-    						p.SymbolNumber = numberOfStructures;
-    						p.SeqStartResidue = currentResidue;
-    						p.PDBStartResidue = Id;
+    						p.setSymbolNumber(numberOfStructures);
+    						p.sseData.SeqStartResidue = currentResidue;
+    						p.sseData.PDBStartResidue = Id;
     						
     						p.Chain = chainID;
     					}
@@ -291,18 +292,18 @@ public class DsspReader {
     
     		// finish off the list //
     		if (open) {
-    			p.SeqFinishResidue = currentResidue - 1;
-    			p.PDBFinishResidue = LastResidue;
+    			p.sseData.SeqFinishResidue = currentResidue - 1;
+    			p.sseData.PDBFinishResidue = LastResidue;
     			q = p;
     		}
     		SSE cTerm = new SSE('C');
     
     		q.To = q.Next = cTerm;
-    		cTerm.SeqStartResidue = cTerm.SeqFinishResidue = currentResidue;
-    		cTerm.PDBStartResidue = cTerm.PDBFinishResidue = LastResidue + 1;
+    		cTerm.sseData.SeqStartResidue = cTerm.sseData.SeqFinishResidue = currentResidue;
+    		cTerm.sseData.PDBStartResidue = cTerm.sseData.PDBFinishResidue = LastResidue + 1;
     		cTerm.From = q;
     		numberOfStructures += 1;
-    		cTerm.SymbolNumber = numberOfStructures;
+    		cTerm.setSymbolNumber(numberOfStructures);
     		chain.addSSE(cTerm);
     
     		return protein;

@@ -455,8 +455,8 @@ public class Protein {
 
         int i;
         char chain = p.Chain;
-        int PDBStart = p.PDBStartResidue;
-        int PDBFinish = p.PDBFinishResidue;
+        int PDBStart = p.sseData.PDBStartResidue;
+        int PDBFinish = p.sseData.PDBFinishResidue;
 
         for (i = 0; i < Domain.numberOfSegments; i++) {
 
@@ -674,8 +674,8 @@ public class Protein {
                         newRoot = q;
                         FIRST = false;
                     }
-                    q.SymbolPlaced = true;
-                    q.SymbolNumber = numberStructures;
+                    q.setSymbolPlaced(true);
+                    q.setSymbolNumber(numberStructures);
 
                     q.setLabel("N" + domBreakNum);
 
@@ -693,7 +693,7 @@ public class Protein {
                 /* add an ss element equivalent of r */
                 numberStructures++;
                 SSE q = new SSE(r);
-                q.SymbolNumber = numberStructures;
+                q.setSymbolNumber(numberStructures);
                 copyTable.put(q, r);
 
                 /* special action for the Next pointer */
@@ -733,8 +733,8 @@ public class Protein {
                     numberStructures++;
                     domBreakNum++;
                     q = new SSE('C');
-                    q.SymbolPlaced = true;
-                    q.SymbolNumber = numberStructures;
+                    q.setSymbolPlaced(true);
+                    q.setSymbolNumber(numberStructures);
                     q.setLabel("C" + domBreakNum);
 
                     /* special action for Next pointer */
@@ -814,7 +814,7 @@ public class Protein {
         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
             PlotFragInf.NFrags = nf;
             PlotFragInf.FragChainLims[nf - 1][0] = sse.Chain;
-            PlotFragInf.FragResLims[nf - 1][0] = sse.PDBStartResidue;
+            PlotFragInf.FragResLims[nf - 1][0] = sse.sseData.PDBStartResidue;
             PlotFragInf.FragDomain[nf - 1] = LastDom + 1;
             /*
              * this will be done later in a Protein.c func. it is easier here
@@ -846,8 +846,7 @@ public class Protein {
                     }
 
                     PlotFragInf.FragChainLims[nf - 1][1] = LastCTerm.Chain;
-                    PlotFragInf.FragResLims[nf
-                            - 1][1] = LastCTerm.PDBFinishResidue;
+                    PlotFragInf.FragResLims[nf - 1][1] = LastCTerm.sseData.PDBFinishResidue;
 
                     Dom = -1;
                     while (sse != null && Dom < 0) {
@@ -863,8 +862,7 @@ public class Protein {
                         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
                             PlotFragInf.NFrags = nf;
                             PlotFragInf.FragChainLims[nf - 1][0] = sse.Chain;
-                            PlotFragInf.FragResLims[nf
-                                    - 1][0] = sse.PDBStartResidue;
+                            PlotFragInf.FragResLims[nf - 1][0] = sse.sseData.PDBStartResidue;
                             PlotFragInf.FragDomain[nf - 1] = Dom + 1;
                             domains.get(Dom).segmentStartIndex[segment] = nf;
                         }

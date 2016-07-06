@@ -245,7 +245,7 @@ public class Chain {
     public void mergeStrands(int MergeStrands) {
         System.out.println("Searching for strand merges");
         for (SSE p : this.sses.subList(1, this.sses.size())) {
-            int ConnectLoopLen = p.SeqStartResidue - p.From.SeqFinishResidue - 1;;
+            int ConnectLoopLen = p.sseData.SeqStartResidue - p.From.sseData.SeqFinishResidue - 1;;
             if (p.isStrand() && p.From != null && p.From.isStrand() && ConnectLoopLen < MergeStrands) {
                 int VShortLoop = 1;
                 int cbpd = this.ConnectBPDistance(p, p.From);
@@ -253,7 +253,7 @@ public class Chain {
                 if ((cbpd == 2 && p.sameBPSide(p.From)) || (cbpd > 5) ||sheetMerge ) {
                     TorsionResult result = p.ClosestApproach(p.From);
                     if (Math.abs(result.torsion) < 90.0) { 
-                        System.out.println(String.format("Merging Strands %d %d\n", p.From.SymbolNumber, p.SymbolNumber));
+                        System.out.println(String.format("Merging Strands %d %d\n", p.From.getSymbolNumber(), p.getSymbolNumber()));
                         this.joinToLast(p);
                         p.sortBridgePartners(); // XXX not sure why we have to sort
                     }
@@ -335,7 +335,7 @@ public class Chain {
 
         List<SSE> Barrel;
         for (SSE p : this.sses) { 
-            if (!p.SymbolPlaced && p.isStrand()) {
+            if (!p.isSymbolPlaced() && p.isStrand()) {
                 Barrel = this.DetectBarrel(p);
                 if (Barrel.size() > 0) {
                     System.out.println("Barrel detected");
@@ -343,7 +343,7 @@ public class Chain {
                 } else {
                     System.out.println("Sheet detected");
                     SSE q = p.FindEdgeStrand(null);
-                    if (!q.SymbolPlaced) {
+                    if (!q.isSymbolPlaced()) {
                         this.makeSheet(q, null, GridUnitSize);
                         if (q.FixedType == FixedType.FT_SHEET) {
                             this.SheetCurvature(q);
@@ -389,7 +389,8 @@ public class Chain {
 
     public SSE FindSecStr(int residue) {
         for (SSE sse : this.sses) {
-            if (residue >= sse.SeqStartResidue && residue <= sse.SeqFinishResidue) return sse;
+            if (residue >= sse.sseData.SeqStartResidue 
+                    && residue <= sse.sseData.SeqFinishResidue) return sse;
         }
         return null;
       }
@@ -589,7 +590,7 @@ public class Chain {
     }
 
     public void ClearPlaced() {
-        for (SSE p : this.sses) p.SymbolPlaced = false;
+        for (SSE p : this.sses) p.setSymbolPlaced(false);
     }
 
     public void ClearFixedPlaced() {
@@ -1392,14 +1393,14 @@ public class Chain {
     **/
     public void SetFixedHand(SSE p) {
         if (allowedTypes.contains(p.fixedType)) {
-            System.out.println(String.format("Checking fixed structure chirality for fixed start %d", p.SymbolNumber));
+            System.out.println(String.format("Checking fixed structure chirality for fixed start %d", p.getSymbolNumber()));
             SSE q = find(p);
             if (q != null) {
                 System.out.println("Found suitable motif for fixed chirality check");
                 SSE r = null;   // XXX FIXME XXX
                 Hand chir = Chiral2d(q, r);
                 if (chir != Hand._unk_hand) {
-                    System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.SymbolNumber));
+                    System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.getSymbolNumber()));
                     this.ReflectFixedXY(p);
                 }
             } else {
@@ -1509,7 +1510,7 @@ public class Chain {
             if (separation > rim) rim = separation;
         }
 
-        double radius = rim - (0.5 * FixedStart.SymbolRadius);
+        double radius = rim - (0.5 * FixedStart.getSymbolRadius());
         return new Circle(centerX, centerY, radius);
     }
 
@@ -1527,7 +1528,7 @@ public class Chain {
         if (q == null) {
             p.setCartoonX(0);
             p.setCartoonY(0);
-            p.SymbolPlaced = true;
+            p.setSymbolPlaced(true);
         } else {
 
             // Have any of q's neighbours already been placed?
@@ -1535,7 +1536,7 @@ public class Chain {
             for (BridgePartner bp : q.getBridgePartners()) {
                 SSE r = bp.partner;
                 if (r == null) continue;
-                if (r.SymbolPlaced) break;
+                if (r.isSymbolPlaced()) break;
                 int rindex = i;
                 double incr = GridUnitSize;
                 if (r != null) {
@@ -1554,7 +1555,7 @@ public class Chain {
                 }
                 p.setCartoonX((int) (q.getCartoonX() + incr));
                 p.setCartoonY(q.getCartoonY());
-                p.SymbolPlaced = true;
+                p.setSymbolPlaced(true);
 
                 // Add this to the fixed list
                 this.moveFixed(q, p);
@@ -1662,10 +1663,10 @@ public class Chain {
 
         int span = 0;
         for (int i = 1; i < n; i++) {
-            span += sseList.get(i-1).SymbolRadius;
-            span += sseList.get(i).SymbolRadius;
+            span += sseList.get(i-1).getSymbolRadius();
+            span += sseList.get(i).getSymbolRadius();
             if (sseList.get(i-1).getDirection() == sseList.get(i).getDirection()) {
-                span -= (sseList.get(i).SymbolRadius) / 2;
+                span -= (sseList.get(i).getSymbolRadius()) / 2;
             }
         }
 
@@ -1679,10 +1680,10 @@ public class Chain {
         for (int i = 0; i < n; i++) {
             sseList.get(i).setCartoonY(sseList.get(i).getCartoonY() + span);
             if ((i + 1) < n) {
-                span -= directionMultiplier * sseList.get(i).SymbolRadius;
-                span -= directionMultiplier * sseList.get(i+1).SymbolRadius;
+                span -= directionMultiplier * sseList.get(i).getSymbolRadius();
+                span -= directionMultiplier * sseList.get(i+1).getSymbolRadius();
                 if (sseList.get(i).getDirection() == sseList.get(i+1).getDirection()) {
-                    span += directionMultiplier * (sseList.get(i+1).SymbolRadius / 2);
+                    span += directionMultiplier * (sseList.get(i+1).getSymbolRadius() / 2);
                 }
             }
         }
@@ -1790,7 +1791,7 @@ public class Chain {
 
         double sep = this.SecStrucSeparation(left, right);
 
-        System.out.println(String.format("SheetCurvature %d %d %f %f", left.SymbolNumber, right.SymbolNumber, sep, MaxSep));
+        System.out.println(String.format("SheetCurvature %d %d %f %f", left.getSymbolNumber(), right.getSymbolNumber(), sep, MaxSep));
 
         if (span >= MinSpan && sep<MaxSep) {
 
@@ -1827,7 +1828,7 @@ public class Chain {
                 for (SSE sse : sseList) {
                     sse.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
                     sse.setCartoonY((int) ((Y * Math.cos(X) - Z) * GridUnitSize));
-                    sse.SymbolPlaced = true;
+                    sse.setSymbolPlaced(true);
                     Y += YEF;
                 }
 
@@ -1871,7 +1872,7 @@ public class Chain {
             else curr = null;
 
             if (curr != null && prev != null && curr.getDirection() == prev.getDirection()) {
-                if (curr.SymbolNumber > prev.SymbolNumber) sdir = 1;
+                if (curr.getSymbolNumber() > prev.getSymbolNumber()) sdir = 1;
                 else sdir = -1;
                 dir = curr.getDirection();
                 if (sdir == lastsdir && dir == lastdir) {
@@ -1910,7 +1911,7 @@ public class Chain {
         // this bit ensures that TIM barrels get the correct chirality """
         int start = 0;
         int increment = 0;
-        if (Barrel.get(1).SymbolNumber < Barrel.get(Barrel.size() - 1).SymbolNumber) {
+        if (Barrel.get(1).getSymbolNumber() < Barrel.get(Barrel.size() - 1).getSymbolNumber()) {
             start = 0;
             increment = 1;
         } else {
@@ -1938,7 +1939,7 @@ public class Chain {
             LastInBarrel = q;
             q.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
             q.setCartoonY((int) ((Y * Math.cos(X) - Z) * GridUnitSize));
-            q.SymbolPlaced = true;
+            q.setSymbolPlaced(true);
 
             double Y1 = Y+1;
             for (BridgePartner bridgePartner : q.getBridgePartners()) {
@@ -1948,7 +1949,7 @@ public class Chain {
                     r.AssignRelDirection(q);
                     r.setCartoonX((int) ((Y1 * Math.sin(X) - 0.5) * GridUnitSize));
                     r.setCartoonY((int) ((Y1 * Math.cos(X) - Z) * GridUnitSize));
-                    r.SymbolPlaced = true;
+                    r.setSymbolPlaced(true);
 
                     Y1 += 1;
 
@@ -2166,7 +2167,7 @@ public class Chain {
                     }
                     a  = Math.acos(a);
 
-                    if (2 * pr * Math.tan(a) <= r.SymbolRadius) return r;
+                    if (2 * pr * Math.tan(a) <= r.getSymbolRadius()) return r;
                 }
             }
         }

@@ -1,5 +1,6 @@
 package python.model;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -15,10 +16,7 @@ public class SSE {
     private char SSEType;                       // H, E, N, C, D 
     private List<BridgePartner> BridgePartners;    // Bridge partners
     private List<BridgeRange> BridgeRange;
-    public int SeqStartResidue = 0;
-    public int SeqFinishResidue = 0;           // Number of starting and finishing residues in DSSP file 
-    public int PDBStartResidue = 0;
-    public int PDBFinishResidue = 0;           // Number of starting and finishing residues in PDB file 
+    
     public int Merges = 0;                     // The number of merges made in creation 
     public int[][] MergeRanges;            // The start and end of the Merged structures 
     public int DomainBreakNumber;             // Number identifying possible domain breaks (0 -> No break) 
@@ -27,22 +25,17 @@ public class SSE {
     public Axis axis;
     public FixedType fixedType;
     
-    public boolean SymbolPlaced;
-    public int SymbolNumber;
-    
     // XXX TODO don't like these linked-list pointers, but have them for now...
     public SSE From;
     public SSE To;
     public SSE Next;        // difference from 'To'?
     
     // XXX TODO these need to be split off somewhere!
-    private int CartoonX;
-    private int CartoonY;
-    public int[] Colour;
-    public double SymbolRadius;
     public int NConnectionPoints;
     public FixedType FixedType;
     
+    private CartoonSymbol cartoonSymbol;
+    public SSEData sseData;
     
     // XXX TODO Gah, upwards pointers!
     public char Chain;
@@ -61,8 +54,9 @@ public class SSE {
         this.Neighbours = new ArrayList<Neighbour>();                    
         this.ConnectionTo = new ArrayList<Point2d>();
         this.MergeRanges = new int[10][];   // XXX FIXME  
-        this.Colour = new int[] {0, 0, 0};
         this.axis = null;
+        this.cartoonSymbol = new CartoonSymbol();
+        this.sseData = new SSEData();
     }
     
     /**
@@ -72,12 +66,33 @@ public class SSE {
         
     }
     
+    public void setSymbolNumber(int symbolNumber) {
+        this.cartoonSymbol.setSymbolNumber(symbolNumber);
+    }
+    
+    public int getSymbolNumber() {
+        return cartoonSymbol.getSymbolNumber();
+    }
+    
     public int getCartoonX() {
-        return CartoonX;
+        return (int) cartoonSymbol.getCartoonX();
     }
     
     public void setCartoonX(int x) {
-        this.CartoonX = x;
+        cartoonSymbol.setCartoonX(x);
+    }
+    
+    public void setPosition(int x, int y) {
+        cartoonSymbol.setCartoonX(x);
+        cartoonSymbol.setCartoonY(y);
+    }
+
+    public int getCartoonY() {
+        return (int) cartoonSymbol.getCartoonY();
+    }
+
+    public void setCartoonY(int cartoonY) {
+        cartoonSymbol.setCartoonY(cartoonY);
     }
     
     public BridgePartner getBridgePartner(int index) {
@@ -120,13 +135,13 @@ public class SSE {
     public void getEdgeString(StringBuffer edges) {
         for (BridgePartner bridgePartner : BridgePartners) {
             BridgeType edgeType = bridgePartner.bridgeType;
-            if (SeqStartResidue < bridgePartner.partner.SeqStartResidue) {
-                int partnerSymbolNumber = bridgePartner.partner.SymbolNumber;
+            if (sseData.SeqStartResidue < bridgePartner.partner.sseData.SeqStartResidue) {
+                int partnerSymbolNumber = bridgePartner.partner.getSymbolNumber();
                 char edgeTypeChar;
                 if (edgeType == BridgeType.ANTI_PARALLEL_BRIDGE) edgeTypeChar = 'A';
                 else if (edgeType == BridgeType.PARALLEL_BRIDGE) edgeTypeChar = 'P';
                 else edgeTypeChar = '!';
-                String edge = String.format("%i:%i%s", SymbolNumber, partnerSymbolNumber, edgeTypeChar);
+                String edge = String.format("%i:%i%s", getSymbolNumber(), partnerSymbolNumber, edgeTypeChar);
                 edges.append(edge).append(" ");
             }
         }
@@ -213,8 +228,8 @@ public class SSE {
         lastSSE.axis.AxisFinishPoint = (Vector3d)this.axis.AxisFinishPoint.clone();
 
         // Merge residues - don't include fixed 
-        lastSSE.SeqFinishResidue = this.SeqFinishResidue;
-        lastSSE.PDBFinishResidue = this.PDBFinishResidue;
+        lastSSE.sseData.SeqFinishResidue = this.sseData.SeqFinishResidue;
+        lastSSE.sseData.PDBFinishResidue = this.sseData.PDBFinishResidue;
         lastSSE.To = this.To;
         if (lastSSE.To != null) lastSSE.To.From = lastSSE;
         lastSSE.Next = this.Next;
@@ -353,7 +368,7 @@ public class SSE {
     }
 
     public void SecondaryStructureAxis(Chain chain) {
-        this.axis = chain.secondaryStructureAxis(SeqStartResidue, SeqFinishResidue);
+        this.axis = chain.secondaryStructureAxis(sseData.SeqStartResidue, sseData.SeqFinishResidue);
     }
 
     public TorsionResult ClosestApproach(SSE other) {
@@ -479,16 +494,16 @@ public class SSE {
             a1s = this.MergeRanges[this.Merges - 1][0];
             a1f = this.MergeRanges[this.Merges - 1][1];
         } else {
-            a1s = this.SeqStartResidue;
-            a1f = this.SeqFinishResidue;
+            a1s = this.sseData.SeqStartResidue;
+            a1f = this.sseData.SeqFinishResidue;
         }
 
         if (other.Merges > 0) {
             a2s = other.MergeRanges[0][0];
             a2f = other.MergeRanges[0][1];
         } else {
-            a2s = other.SeqStartResidue;
-            a2f = other.SeqFinishResidue;
+            a2s = other.sseData.SeqStartResidue;
+            a2f = other.sseData.SeqFinishResidue;
         }
 
         return this.motifChirality(a1s, a1f, a2s, a2f);
@@ -507,7 +522,7 @@ public class SSE {
     }
 
     public int SecStrucLength() {
-        return this.PDBFinishResidue - this.PDBStartResidue + 1;
+        return this.sseData.PDBFinishResidue - this.sseData.PDBStartResidue + 1;
     }
 
     public SSE getFirstCommonBP(SSE other) {
@@ -583,7 +598,7 @@ public class SSE {
         StringBuffer numbers = new StringBuffer();
         for (BridgePartner partner : this.BridgePartners) {
             if (partner == null) break;
-            numbers.append(String.valueOf(partner.partner.SymbolNumber)).append(" ");
+            numbers.append(String.valueOf(partner.partner.getSymbolNumber())).append(" ");
         }
         return numbers.toString();
     }
@@ -596,7 +611,7 @@ public class SSE {
         StringBuffer numbers = new StringBuffer();
         for (Neighbour neighbour : this.Neighbours) {
             if (neighbour == null) break;
-            numbers.append(neighbour.sse.SymbolNumber);
+            numbers.append(neighbour.sse.getSymbolNumber());
             numbers.append(" ");
         }
         return numbers.toString();
@@ -639,7 +654,7 @@ public class SSE {
         if (sse == null) {
             return "-1";
         } else {
-            return String.valueOf(sse.SymbolNumber);
+            return String.valueOf(sse.getSymbolNumber());
         }
     }
 
@@ -659,7 +674,7 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "SecondaryStructureType", this.SSEType));
         stringRepr.append(String.format("%s %s\n", "Direction", this.Direction));
         stringRepr.append(String.format("%s %s\n", "Label", this.getLabel()));
-        stringRepr.append(String.format("%s %s %s %s\n", "Colour", this.Colour[0], this.Colour[1], this.Colour[2]));
+        stringRepr.append(String.format("%s %s %s %s\n", "Colour", cartoonSymbol.getColor()[0], cartoonSymbol.getColor()[1], cartoonSymbol.getColor()[2]));
         stringRepr.append(String.format("%s %s\n", "Next", this.getSymbolNumber(this.Next)));
         stringRepr.append(String.format("%s %s\n", "Fixed", this.getSymbolNumber(this.Fixed)));
         stringRepr.append(String.format("%s %s\n", "FixedType", this.getFixedType()));
@@ -667,17 +682,17 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "BridgePartnerSide", this.BridgePartnerSides()));
         stringRepr.append(String.format("%s %s\n", "BridgePartnerType", this.BridgePartnerTypes()));
         stringRepr.append(String.format("%s %s\n", "Neighbour", this.NeighbourNumbers()));
-        stringRepr.append(String.format("%s %s\n", "SeqStartResidue", this.SeqStartResidue));
-        stringRepr.append(String.format("%s %s\n", "SeqFinishResidue", this.SeqFinishResidue));
-        stringRepr.append(String.format("%s %s\n", "PDBStartResidue", this.PDBStartResidue));
-        stringRepr.append(String.format("%s %s\n", "PDBFinishResidue", this.PDBFinishResidue));
-        stringRepr.append(String.format("%s %s\n", "SymbolNumber", this.SymbolNumber));
+        stringRepr.append(String.format("%s %s\n", "SeqStartResidue", this.sseData.SeqStartResidue));
+        stringRepr.append(String.format("%s %s\n", "SeqFinishResidue", this.sseData.SeqFinishResidue));
+        stringRepr.append(String.format("%s %s\n", "PDBStartResidue", this.sseData.PDBStartResidue));
+        stringRepr.append(String.format("%s %s\n", "PDBFinishResidue", this.sseData.PDBFinishResidue));
+        stringRepr.append(String.format("%s %s\n", "SymbolNumber", this.getSymbolNumber()));
         stringRepr.append(String.format("%s %s\n", "Chain", this.getChain()));
         stringRepr.append(String.format("%s %s\n", "Chirality", this.Chirality));
-        stringRepr.append(String.format("%s %s\n", "CartoonX", this.CartoonX));
+        stringRepr.append(String.format("%s %s\n", "CartoonX", this.getCartoonX()));
         stringRepr.append(String.format("%s %s\n", "CartoonY", this.getCartoonY()));
 //        stringRepr.append(this.AxisRepr());
-        stringRepr.append(String.format("%s %s\n", "SymbolRadius", this.SymbolRadius));
+        stringRepr.append(String.format("%s %s\n", "SymbolRadius", cartoonSymbol.getSymbolRadius()));
         stringRepr.append(String.format("%s %2f\n", "AxisLength", this.AxisLength));
         stringRepr.append(String.format("%s %s\n", "NConnectionPoints", this.NConnectionPoints));
         stringRepr.append(String.format("%s %s\n", "ConnectionTo", this.Connections()));
@@ -765,16 +780,154 @@ public class SSE {
         return Fill;
     }
 
-    public void setPosition(int x, int y) {
-        this.CartoonX = x;
-        this.setCartoonY(y);
+    public double getSymbolRadius() {
+        return cartoonSymbol.getSymbolRadius();
+    }
+    
+    public void WriteSecStr(PrintStream out) {
+
+        char ch;
+
+        print(out, "SecondaryStructureType %c\n", getSSEType());
+        print(out, "Direction %c\n", getDirection());
+        print(out, "Label %s\n", getLabel());
+        print(out, "Colour %d %d %d\n", 
+                cartoonSymbol.getColor()[0], 
+                cartoonSymbol.getColor()[1], 
+                cartoonSymbol.getColor()[2]);
+
+        if (Next != null) {
+            print(out, "Next %d\n", Next.getSymbolNumber());
+        } else {
+            print(out, "Next -1\n");
+        }
+
+        if (Fixed != null) {
+            print(out, "Fixed %d\n", Fixed.getSymbolNumber());
+        } else {
+            print(out, "Fixed -1\n");
+        }
+
+        switch (FixedType) {
+        case FT_BARREL:
+            print(out, "FixedType BARREL\n");
+            break;
+        case FT_SHEET:
+            print(out, "FixedType SHEET\n");
+            break;
+        case FT_CURVED_SHEET:
+            print(out, "FixedType CURVED_SHEET\n");
+            break;
+        case FT_V_CURVED_SHEET:
+            print(out, "FixedType V_CURVED_SHEET\n");
+            break;
+        case FT_SANDWICH:
+            print(out, "FixedType SANDWICH\n");
+            break;
+        case FT_TEMPLATE:
+            print(out, "FixedType TEMPLATE\n");
+            break;
+        case FT_UNKNOWN:
+            print(out, "FixedType UNKNOWN\n");
+            break;
+        default:
+            print(out, "FixedType UNKNOWN\n");
+            break;
+        }
+
+        print(out, "BridgePartner");
+        for (BridgePartner BridgePartner : getBridgePartners())
+            print(out, " %d", BridgePartner.partner.getSymbolNumber());
+        print(out, "\n");
+
+        print(out, "BridgePartnerSide");
+        for (BridgePartner BridgePartner : getBridgePartners())
+            print(out, " %c", BridgePartner.side);
+        print(out, "\n");
+
+        print(out, "BridgePartnerType");
+        for (BridgePartner BridgePartner : getBridgePartners()) {
+            switch (BridgePartner.bridgeType) {
+            case ANTI_PARALLEL_BRIDGE:
+                print(out, " %c", 'A');
+                break;
+            case PARALLEL_BRIDGE:
+                print(out, " %c", 'P');
+                break;
+            case UNK_BRIDGE_TYPE:
+                print(out, " %c", 'U');
+                break;
+            default:
+                print(out, " %c", 'U');
+                break;
+            }
+        }
+        print(out, "\n");
+
+        print(out, "Neighbour");
+        for (Neighbour neighbour : Neighbours) {
+            print(out, " %d", neighbour.sse.getSymbolNumber());
+        }
+        print(out, "\n");
+
+        print(out, "SeqStartResidue %d\n", sseData.SeqStartResidue);
+        print(out, "SeqFinishResidue %d\n", sseData.SeqFinishResidue);
+
+        print(out, "PDBStartResidue %d\n", sseData.PDBStartResidue);
+        print(out, "PDBFinishResidue %d\n", sseData.PDBFinishResidue);
+
+        print(out, "SymbolNumber %d\n", getSymbolNumber());
+
+        ch = Chain;
+        if (ch == '\0')
+            ch = ' ';
+        print(out, "Chain %c\n", ch);
+
+        print(out, "Chirality %d\n", Chirality);
+
+        print(out, "CartoonX %d\n", getCartoonX());
+        print(out, "CartoonY %d\n", getCartoonY());
+
+        print(out, "AxesStartPoint");
+        print(out, " %s", axis.AxisStartPoint);
+        print(out, "\n");
+
+        print(out, "AxesFinishPoint");
+        print(out, " %s", axis.AxisFinishPoint);
+        print(out, "\n");
+
+        print(out, "SymbolRadius %d\n", cartoonSymbol.getSymbolRadius());
+
+        print(out, "AxisLength %f\n", axis.getLength());
+
+        print(out, "NConnectionPoints %d\n", NConnectionPoints);
+
+        print(out, "ConnectionTo");
+        for (Point2d point : ConnectionTo)
+            print(out, " %f %f", point.x, point.y);
+        print(out, "\n");
+
+        print(out, "Fill %d\n", getFill());
+
+        return;
+
     }
 
-    public int getCartoonY() {
-        return CartoonY;
+    private void print(String s, Object... vars) {
+        print(System.out, s, vars);
     }
 
-    public void setCartoonY(int cartoonY) {
-        CartoonY = cartoonY;
+    private void print(PrintStream out, String s, Object... args) {
+        out.print(String.format(s, args));
     }
+
+    public void setSymbolPlaced(boolean b) {
+        cartoonSymbol.setSymbolPlaced(b);
+    }
+
+    public boolean isSymbolPlaced() {
+        return cartoonSymbol.isSymbolPlaced();
+    }
+
+    
 }
