@@ -1323,7 +1323,7 @@ public class Tops {
             print("FixedType %d\n", q.FixedType);
             print("Fixed %x %d\n", q.Fixed,
                     (q.Fixed != null ? q.Fixed.SymbolNumber : 0));
-            print("Position %d %d\n", q.getCartoonX(), q.CartoonY);
+            print("Position %d %d\n", q.getCartoonX(), q.getCartoonY());
             print("Direction %c\n", q.getDirection());
             print("Chirality %d\n", q.Chirality);
             if (q.isStrand()) {
@@ -1502,7 +1502,7 @@ public class Tops {
         print(out, "Chirality %d\n", p.Chirality);
 
         print(out, "CartoonX %d\n", p.getCartoonX());
-        print(out, "CartoonY %d\n", p.CartoonY);
+        print(out, "CartoonY %d\n", p.getCartoonY());
 
         print(out, "AxesStartPoint");
         print(out, " %s", p.axis.AxisStartPoint);

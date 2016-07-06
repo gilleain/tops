@@ -37,7 +37,7 @@ public class SSE {
     
     // XXX TODO these need to be split off somewhere!
     private int CartoonX;
-    public int CartoonY;
+    private int CartoonY;
     public int[] Colour;
     public double SymbolRadius;
     public int NConnectionPoints;
@@ -675,7 +675,7 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "Chain", this.getChain()));
         stringRepr.append(String.format("%s %s\n", "Chirality", this.Chirality));
         stringRepr.append(String.format("%s %s\n", "CartoonX", this.CartoonX));
-        stringRepr.append(String.format("%s %s\n", "CartoonY", this.CartoonY));
+        stringRepr.append(String.format("%s %s\n", "CartoonY", this.getCartoonY()));
 //        stringRepr.append(this.AxisRepr());
         stringRepr.append(String.format("%s %s\n", "SymbolRadius", this.SymbolRadius));
         stringRepr.append(String.format("%s %2f\n", "AxisLength", this.AxisLength));
@@ -767,6 +767,14 @@ public class SSE {
 
     public void setPosition(int x, int y) {
         this.CartoonX = x;
-        this.CartoonY = y;
+        this.setCartoonY(y);
+    }
+
+    public int getCartoonY() {
+        return CartoonY;
+    }
+
+    public void setCartoonY(int cartoonY) {
+        CartoonY = cartoonY;
     }
 }

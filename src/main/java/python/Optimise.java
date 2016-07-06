@@ -195,13 +195,13 @@ public class Optimise {
 
     private double angle( SSE p, SSE q, SSE r ) {
 
-        double l1 = Math.sqrt( SQR(p.getCartoonX() - q.getCartoonX()) + SQR( p.CartoonY - q.CartoonY) );
-        double l2 = Math.sqrt( SQR(r.getCartoonX() - q.getCartoonX()) + SQR( r.CartoonY - q.CartoonY) );
+        double l1 = Math.sqrt( SQR(p.getCartoonX() - q.getCartoonX()) + SQR( p.getCartoonY() - q.getCartoonY()) );
+        double l2 = Math.sqrt( SQR(r.getCartoonX() - q.getCartoonX()) + SQR( r.getCartoonY() - q.getCartoonY()) );
         if ( l1==0.0 || l2==0.0 ){
             return 0.0;
         }
         l1 = ( (p.getCartoonX() - q.getCartoonX())*(r.getCartoonX() - q.getCartoonX()) 
-                + (p.CartoonY - q.CartoonY)*(r.CartoonY - q.CartoonY) ) / (l1 * l2);
+                + (p.getCartoonY() - q.getCartoonY())*(r.getCartoonY() - q.getCartoonY()) ) / (l1 * l2);
         if (l1 < -1.0) l1 = -1.0;
         if (l1 > 1.0) l1 = 1.0;
         return Math.acos(l1);
@@ -247,9 +247,9 @@ public class Optimise {
         int i = 0;
         for (SSE sseA : cartoon.iterNext(root)) {
             if (sseA == null) break;
-            double MoveY = i * GridSize - sseA.CartoonY;
+            double MoveY = i * GridSize - sseA.getCartoonY();
             double MoveX = - sseA.getCartoonX();
-            sseA.CartoonY = (int) (i * GridSize);
+            sseA.setCartoonY((int) (i * GridSize));
             sseA.setCartoonX(0);
 
             sseA.SymbolPlaced = true;
@@ -257,7 +257,7 @@ public class Optimise {
             for (SSE sseB : cartoon.iterFixed(sseA)) {
                 if (sseB == null) break;
                 sseB.setCartoonX((int)(sseB.getCartoonX() + MoveX));
-                sseB.CartoonY += MoveY;
+                sseB.setCartoonY((int) (sseB.getCartoonY() + MoveY));
                 sseB.SymbolPlaced = true;
             }
             i++;
@@ -267,7 +267,7 @@ public class Optimise {
         int j = 0;
         for (SSE sse : cartoon.getSSEs()) {
             X[j] = sse.getCartoonX();
-            Y[j] = sse.CartoonY;
+            Y[j] = sse.getCartoonY();
             j++;
         }
 
@@ -309,7 +309,7 @@ public class Optimise {
                     else  		rx += -lx + MaxXMove;
                 }
 
-                double ly = sse.CartoonY + ry - CenterFixed.CartoonY;
+                double ly = sse.getCartoonY() + ry - CenterFixed.getCartoonY();
                 if (Math.abs(lx) > MaxYMove) {
                     if (ly < 0) 	ry += -ly - MaxYMove;
                     else  		ry += -ly + MaxYMove;
@@ -358,7 +358,7 @@ public class Optimise {
                     int k = 0;
                     for (SSE sseZ : cartoon.getSSEs()) {
                         X[k] = sseZ.getCartoonX();
-                        Y[k] = sseZ.CartoonY;
+                        Y[k] = sseZ.getCartoonY();
                         k++;
                     }
                 }
@@ -375,7 +375,7 @@ public class Optimise {
         int z = 0;
         for (SSE sse : cartoon.getSSEs()) {
             sse.setCartoonX((int) X[z]);
-            sse.CartoonY = (int) Y[z];
+            sse.setCartoonY((int) Y[z]);
             z++;
         }
 
@@ -406,13 +406,13 @@ public class Optimise {
                 randomNumber = random.nextDouble();
                 randomNumber *= randomNumber;
                 rx += randomNumber * (sse.From.getCartoonX() - sse.getCartoonX());
-                ry += randomNumber * (sse.From.CartoonY - sse.CartoonY);
+                ry += randomNumber * (sse.From.getCartoonY() - sse.getCartoonY());
             }
             if (sse.To != null) {
                 randomNumber = random.nextDouble();
                 randomNumber *= randomNumber;
                 rx += randomNumber * (sse.To.getCartoonX() - sse.getCartoonX());
-                ry += randomNumber * (sse.To.CartoonY - sse.CartoonY);
+                ry += randomNumber * (sse.To.getCartoonY() - sse.getCartoonY());
             }
             rx = gridFix(rx);
             ry = gridFix(ry);
@@ -431,12 +431,12 @@ public class Optimise {
             double rv = 0;
             if (random.nextDouble() <= ArcsSample / 100.0) {
                 if (random.nextDouble() < 0.5) {
-                    lx = sse.To.getCartoonX() - sse.CartoonY;
-                    ly = sse.To.CartoonY - sse.CartoonY;
+                    lx = sse.To.getCartoonX() - sse.getCartoonY();
+                    ly = sse.To.getCartoonY() - sse.getCartoonY();
                     rv = Math.sqrt((lx * lx) + (ly * ly));
                 } else {
-                    lx = sse.From.getCartoonX() - sse.CartoonY;
-                    ly = sse.From.CartoonY - sse.CartoonY;
+                    lx = sse.From.getCartoonX() - sse.getCartoonY();
+                    ly = sse.From.getCartoonY() - sse.getCartoonY();
                     rv = Math.sqrt((lx * lx) + (ly * ly));
                 }
             }
@@ -519,13 +519,13 @@ public class Optimise {
     private Intersection lineCross(SSE p, SSE q, SSE r, SSE s) {
         double TOL = 0.01;
         double px = p.getCartoonX();
-        double py = p.CartoonY;
+        double py = p.getCartoonY();
         double qx = q.getCartoonX();
-        double qy = q.CartoonY;
+        double qy = q.getCartoonY();
         double rx = r.getCartoonX();
-        double ry = r.CartoonY;
+        double ry = r.getCartoonY();
         double sx = s.getCartoonX();
-        double sy = s.CartoonY;
+        double sy = s.getCartoonY();
 
         Intersection intersection = simpleIntersection(px, py, qx, qy, rx, ry, sx, sy);
         if (intersection.type == CROSSING) {

@@ -1162,16 +1162,16 @@ public class Chain {
         Hand lasthand = Hand._unk_hand;
 
         Vector3d a, b, c, d;
-        if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.CartoonY, 1.0);
-        else a = new Vector3d(p.getCartoonX(), p.CartoonY, 0.0);
+        if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
+        else a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
 
-        b = new Vector3d(p.getCartoonX(), p.CartoonY, 0.0);
+        b = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
 
-        c = new Vector3d(q.getCartoonX(), q.CartoonY, 0.0);
+        c = new Vector3d(q.getCartoonX(), q.getCartoonY(), 0.0);
 
         int i = 0;
         for (SSE r : this.range(p.To, q)) {
-            d = new Vector3d(r.getCartoonX(), r.CartoonY, 0.0);
+            d = new Vector3d(r.getCartoonX(), r.getCartoonY(), 0.0);
             lasthand = hand;
             double theta = this.AngleBetweenLines(b, c, d);
             if (theta < 0.5 || theta > 179.5) {
@@ -1310,7 +1310,7 @@ public class Chain {
     public List<SSE> GetListAtPosition(SSE startSSE, double XPosition, double YPosition) {
         List<SSE> filtered = new ArrayList<SSE>();
         for (SSE p : this.iterFixed(startSSE)) {
-            if (p.getCartoonX() == XPosition && p.CartoonY == YPosition) {
+            if (p.getCartoonX() == XPosition && p.getCartoonY() == YPosition) {
                 filtered.add(p);
             }
         }
@@ -1361,17 +1361,17 @@ public class Chain {
     }
 
     public double LowestPos(SSE p) {
-        double BottomMost = p.CartoonY;
+        double BottomMost = p.getCartoonY();
         for (SSE q : this.iterFixed(p)) {
-            if (q.CartoonY < BottomMost) BottomMost = q.getCartoonX();
+            if (q.getCartoonY() < BottomMost) BottomMost = q.getCartoonX();
         }
         return BottomMost;
     }
 
     public double HighestPos(SSE p) {
-        double TopMost = p.CartoonY;
+        double TopMost = p.getCartoonY();
         for (SSE q : this.iterFixed(p)) {
-            if (q.CartoonY > TopMost) TopMost = q.getCartoonX();
+            if (q.getCartoonY() > TopMost) TopMost = q.getCartoonX();
         }
         return TopMost;
     }
@@ -1491,7 +1491,7 @@ public class Chain {
         double centerY = 0.0;
         for (SSE p : this.iterFixed(FixedStart)) {
             centerX += p.getCartoonX();
-            centerY += p.CartoonY;
+            centerY += p.getCartoonY();
             n +=1;
         }
         if (n > 0) {
@@ -1502,7 +1502,7 @@ public class Chain {
         double rim = 0.0;
         for (SSE p : this.iterFixed(FixedStart)) {
             double x = p.getCartoonX();
-            double y = p.CartoonY;
+            double y = p.getCartoonY();
 
             //FIXME : distance2D method needs a class home!
             double separation = distance2D(x, y, centerX, centerY);
@@ -1526,7 +1526,7 @@ public class Chain {
         // If this is the first strand place it based on the last strand
         if (q == null) {
             p.setCartoonX(0);
-            p.CartoonY = 0;
+            p.setCartoonY(0);
             p.SymbolPlaced = true;
         } else {
 
@@ -1553,7 +1553,7 @@ public class Chain {
                     }
                 }
                 p.setCartoonX((int) (q.getCartoonX() + incr));
-                p.CartoonY = q.CartoonY;
+                p.setCartoonY(q.getCartoonY());
                 p.SymbolPlaced = true;
 
                 // Add this to the fixed list
@@ -1633,7 +1633,7 @@ public class Chain {
 
         // divide at the point of splitting identified above
         for (SSE k : StartLowerList) {
-            k.CartoonY -= GridUnitSize;
+            k.setCartoonY((int) (k.getCartoonY() - GridUnitSize));
         }
         
 
@@ -1645,7 +1645,7 @@ public class Chain {
     private void splitStrands(SSE p, int MaxListLen) {
         for (SSE r : this.iterFixed(p)) {
             
-            List<SSE> CurrentList = this.GetListAtPosition(p, r.getCartoonX(), r.CartoonY);
+            List<SSE> CurrentList = this.GetListAtPosition(p, r.getCartoonX(), r.getCartoonY());
 
             if (CurrentList.size() > 1) { 
                 SSE bp = this.getCommonBP(CurrentList, MaxListLen);
@@ -1677,7 +1677,7 @@ public class Chain {
         }
         
         for (int i = 0; i < n; i++) {
-            sseList.get(i).CartoonY += span;
+            sseList.get(i).setCartoonY(sseList.get(i).getCartoonY() + span);
             if ((i + 1) < n) {
                 span -= directionMultiplier * sseList.get(i).SymbolRadius;
                 span -= directionMultiplier * sseList.get(i+1).SymbolRadius;
@@ -1751,9 +1751,9 @@ public class Chain {
                 if (Layer.get(k) == UPPER_LAYER) {
                     UpperList.add(r);
                 } else if (Layer.get(k) == MIDDLE_LAYER) {
-                    r.CartoonY -= (GridUnitSize / 2);
+                    r.setCartoonY((int) (r.getCartoonY() - (GridUnitSize / 2)));
                 } else if (Layer.get(k) == LOWER_LAYER) {
-                    r.CartoonY -= GridUnitSize;
+                    r.setCartoonY((int) (r.getCartoonY() - GridUnitSize));
                     LowerList.add(r);
                 }
             }
@@ -1826,7 +1826,7 @@ public class Chain {
                 double Y = YStart;
                 for (SSE sse : sseList) {
                     sse.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
-                    sse.CartoonY = (int) ((Y * Math.cos(X) - Z) * GridUnitSize);
+                    sse.setCartoonY((int) ((Y * Math.cos(X) - Z) * GridUnitSize));
                     sse.SymbolPlaced = true;
                     Y += YEF;
                 }
@@ -1937,7 +1937,7 @@ public class Chain {
             }
             LastInBarrel = q;
             q.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
-            q.CartoonY = (int) ((Y * Math.cos(X) - Z) * GridUnitSize);
+            q.setCartoonY((int) ((Y * Math.cos(X) - Z) * GridUnitSize));
             q.SymbolPlaced = true;
 
             double Y1 = Y+1;
@@ -1947,7 +1947,7 @@ public class Chain {
                     r.FixedType = FixedType.FT_BARREL;
                     r.AssignRelDirection(q);
                     r.setCartoonX((int) ((Y1 * Math.sin(X) - 0.5) * GridUnitSize));
-                    r.CartoonY = (int) ((Y1 * Math.cos(X) - Z) * GridUnitSize);
+                    r.setCartoonY((int) ((Y1 * Math.cos(X) - Z) * GridUnitSize));
                     r.SymbolPlaced = true;
 
                     Y1 += 1;
@@ -2037,11 +2037,11 @@ public class Chain {
         if (loff > 0) xmove += loff;
         if (roff > 0) xmove -= roff;
 
-        double ymove = LowestPos(longSheetStart) - this.GridUnitSize - shortSheetLeftMost.CartoonY;
+        double ymove = LowestPos(longSheetStart) - this.GridUnitSize - shortSheetLeftMost.getCartoonY();
 
         for (SSE sse : this.iterFixed(shortSheetStart)) {
             sse.setCartoonX((int)(sse.getCartoonX() + xmove));
-            sse.CartoonY += ymove;
+            sse.setCartoonY((int) (sse.getCartoonY() + ymove));
         }
         
 
@@ -2083,14 +2083,14 @@ public class Chain {
     public void moveBy(double dx, double dy) {
         for (SSE sse : this.sses) {
             sse.setCartoonX((int)(sse.getCartoonX() + dx));
-            sse.CartoonY += dy;
+            sse.setCartoonY((int)(sse.getCartoonY() + dy));
         }
     }
 
     public void scaleBy(double scaleFactorX, double scaleFactorY) {
         for (SSE sse : this.sses) {
             sse.setCartoonX((int) (sse.getCartoonX() * scaleFactorX));
-            sse.CartoonY *= scaleFactorY;
+            sse.setCartoonY((int) (sse.getCartoonY() * scaleFactorY));
         }
     }
     
@@ -2112,7 +2112,7 @@ public class Chain {
         double maxY = Double.MIN_VALUE;
         for (SSE sse : this.sses) {
             double x = sse.getCartoonX();
-            double y = sse.CartoonY;
+            double y = sse.getCartoonY();
             if (x < minX) minX = x;
             if (y < minY) minY = y;
             if (x > maxX) maxX = x;
@@ -2134,13 +2134,13 @@ public class Chain {
         double TOL = 0.001;
 
         double px = p.getCartoonX();
-        double py = p.CartoonY;
+        double py = p.getCartoonY();
         double qx = q.getCartoonX();
-        double qy = q.CartoonY;
+        double qy = q.getCartoonY();
 
         for (SSE r : chain.getSSEs()) {
             double rx = r.getCartoonX();
-            double ry = r.CartoonY;
+            double ry = r.getCartoonY();
 
             double dprx = Math.abs(px - rx);
             double dpry = Math.abs(py - ry);
@@ -2186,13 +2186,13 @@ public class Chain {
         int pX = p.getCartoonX();
         int qX = q.getCartoonX();
         int rX = q.getCartoonX();
-        double l1 = distance2D(pX, p.CartoonY, qX, q.CartoonY);
-        double l2 = distance2D(rX, r.CartoonY, qX, q.CartoonY);
+        double l1 = distance2D(pX, p.getCartoonY(), qX, q.getCartoonY());
+        double l2 = distance2D(rX, r.getCartoonY(), qX, q.getCartoonY());
         if (l1 == 0.0 || l2 == 0.0) return 0.0;
         double pqX = pX - qX;
-        double pqY = p.CartoonY - q.CartoonY;
+        double pqY = p.getCartoonY() - q.getCartoonY();
         double rqX = rX - qX;
-        double rqY = r.CartoonY - q.CartoonY;
+        double rqY = r.getCartoonY() - q.getCartoonY();
         double l = ((pqX * rqX) + (pqY * rqY)) / (l1 * l2);
         if (l < -1.0) l = -1.0;
         if (l > 1.0) l = 1.0 ;
@@ -2204,9 +2204,9 @@ public class Chain {
     //
     public static double distance2D(SSE a, SSE b) {
         double x1 = a.getCartoonX();
-        double y1 = a.CartoonY;
+        double y1 = a.getCartoonY();
         double x2 = b.getCartoonX();
-        double y2 = b.CartoonY;
+        double y2 = b.getCartoonY();
         return distance2D(x1, y1, x2, y2);
     }
     
@@ -2245,17 +2245,17 @@ public class Chain {
         SSE q = sse.To;
         if (q == null) return;
         SSE r = LineHitSymbol(this, sse, q);
-        if (r != null && sse.CartoonY == sse.To.CartoonY) {
+        if (r != null && sse.getCartoonY() == sse.To.getCartoonY()) {
 
             // we are guaranteed horizontal lines 
             double px = sse.getCartoonX();
-            double py = sse.CartoonY;
+            double py = sse.getCartoonY();
             double qx = sse.To.getCartoonX();
-            double qy = sse.To.CartoonY;
+            double qy = sse.To.getCartoonY();
 
             double d1 = (sse.getDirection() == 'U')? -1.0 : 1.0;
         
-            double my = r.CartoonY + ( d1 * ( PSMALL * Math.abs(px - qx) + radius + NextExtension(ExtensionIndex, Extensions) ));
+            double my = r.getCartoonY() + ( d1 * ( PSMALL * Math.abs(px - qx) + radius + NextExtension(ExtensionIndex, Extensions) ));
             double ny = my;
             
             double d2, d3;
