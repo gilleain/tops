@@ -1162,16 +1162,16 @@ public class Chain {
         Hand lasthand = Hand._unk_hand;
 
         Vector3d a, b, c, d;
-        if (p.getDirection() == 'U') a = new Vector3d(p.CartoonX, p.CartoonY, 1.0);
-        else a = new Vector3d(p.CartoonX, p.CartoonY, 0.0);
+        if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.CartoonY, 1.0);
+        else a = new Vector3d(p.getCartoonX(), p.CartoonY, 0.0);
 
-        b = new Vector3d(p.CartoonX, p.CartoonY, 0.0);
+        b = new Vector3d(p.getCartoonX(), p.CartoonY, 0.0);
 
-        c = new Vector3d(q.CartoonX, q.CartoonY, 0.0);
+        c = new Vector3d(q.getCartoonX(), q.CartoonY, 0.0);
 
         int i = 0;
         for (SSE r : this.range(p.To, q)) {
-            d = new Vector3d(r.CartoonX, r.CartoonY, 0.0);
+            d = new Vector3d(r.getCartoonX(), r.CartoonY, 0.0);
             lasthand = hand;
             double theta = this.AngleBetweenLines(b, c, d);
             if (theta < 0.5 || theta > 179.5) {
@@ -1196,12 +1196,13 @@ public class Chain {
         double maxx = 0;
         SSE q = this.FindFixedStart(p);
         if (q != null) {
-            minx = q.CartoonX;
-            maxx = q.CartoonX;
+            minx = q.getCartoonX();
+            maxx = q.getCartoonX();
 
             for (SSE r : this.iterFixed(q)) {
-                if (r.CartoonX > maxx) maxx = r.CartoonX;
-                if (r.CartoonX < minx) minx = r.CartoonX;
+                int rx = r.getCartoonX();
+                if (rx > maxx) maxx = rx;
+                if (rx < minx) minx = rx;
             }
         }
 
@@ -1261,8 +1262,9 @@ public class Chain {
             for (SSE q1 : this.iterFixedInclusive(q)) {
                 if (p1.separation(q1) <= MaxContactSeparation || q1.separation(p1) <= MaxContactSeparation) {
                     ncontacts += 1;
-                    if (p1.CartoonX < LeftOverlap) LeftOverlap = p1.CartoonX;
-                    if (p1.CartoonX > RightOverlap) RightOverlap = p1.CartoonX;
+                    int p1x = p1.getCartoonX();
+                    if (p1x < LeftOverlap) LeftOverlap = p1x;
+                    if (p1x > RightOverlap) RightOverlap = p1x;
                 }
             }
         }
@@ -1282,7 +1284,7 @@ public class Chain {
         double cen = 0;
         int i = 0;
         for (SSE q : this.iterFixed(p)) {
-            cen += q.CartoonX;
+            cen += q.getCartoonX();
             i += 1;
         }
 
@@ -1290,7 +1292,7 @@ public class Chain {
 
         //TODO : separate centering and flipping functions!
         for (SSE q : this.iterFixed(p)) {
-            q.CartoonX = (int) (cen - q.CartoonX);
+            q.setCartoonX((int) (cen - q.getCartoonX()));
             q.flip();
          }
      }
@@ -1298,7 +1300,7 @@ public class Chain {
     public List<SSE> GetListAtXPosition(SSE startSSE, double XPosition) {
         List<SSE> filtered = new ArrayList<SSE>();
         for (SSE p : this.iterFixed(startSSE)) {
-            if (p.CartoonX == XPosition) {
+            if (p.getCartoonX() == XPosition) {
                 filtered.add(p);
             }
         }
@@ -1308,7 +1310,7 @@ public class Chain {
     public List<SSE> GetListAtPosition(SSE startSSE, double XPosition, double YPosition) {
         List<SSE> filtered = new ArrayList<SSE>();
         for (SSE p : this.iterFixed(startSSE)) {
-            if (p.CartoonX == XPosition && p.CartoonY == YPosition) {
+            if (p.getCartoonX() == XPosition && p.CartoonY == YPosition) {
                 filtered.add(p);
             }
         }
@@ -1316,19 +1318,19 @@ public class Chain {
     }
 
     public double LeftMostPos(SSE p) {
-        double LeftMost = p.CartoonX;
+        double LeftMost = p.getCartoonX();
         for (SSE q : this.iterFixed(p)) {
-            if (q.CartoonX < LeftMost) LeftMost = q.CartoonX;
+            if (q.getCartoonX() < LeftMost) LeftMost = q.getCartoonX();
         }
         return LeftMost;
     }
 
     public SSE LeftMost(SSE p) {
-        double LeftMost = p.CartoonX;
+        double LeftMost = p.getCartoonX();
         SSE leftMostSymbol = p;
         for (SSE q : this.iterFixed(p)) {
-            if (q.CartoonX < LeftMost) {
-                LeftMost = p.CartoonX;
+            if (q.getCartoonX() < LeftMost) {
+                LeftMost = p.getCartoonX();
                 q = p;
                 leftMostSymbol = q;
             }
@@ -1337,20 +1339,20 @@ public class Chain {
     }
     
     public double RightMostPos(SSE p) {
-        double RightMost = p.CartoonX;
+        double RightMost = p.getCartoonX();
         for (SSE q : this.iterFixed(p)) {
-            if (q.CartoonX > RightMost) RightMost = q.CartoonX;
+            if (q.getCartoonX() > RightMost) RightMost = q.getCartoonX();
         }
         return RightMost;
     }
    
 
     public SSE RightMost(SSE p) {
-        double RightMost = p.CartoonX;
+        double RightMost = p.getCartoonX();
         SSE r = p;
         for (SSE q : this.iterFixed(p)) {
-            if (p.CartoonX < RightMost) {
-                RightMost = p.CartoonX;
+            if (p.getCartoonX() < RightMost) {
+                RightMost = p.getCartoonX();
                 q = p;
             }
             r = q;
@@ -1361,7 +1363,7 @@ public class Chain {
     public double LowestPos(SSE p) {
         double BottomMost = p.CartoonY;
         for (SSE q : this.iterFixed(p)) {
-            if (q.CartoonY < BottomMost) BottomMost = q.CartoonX;
+            if (q.CartoonY < BottomMost) BottomMost = q.getCartoonX();
         }
         return BottomMost;
     }
@@ -1369,7 +1371,7 @@ public class Chain {
     public double HighestPos(SSE p) {
         double TopMost = p.CartoonY;
         for (SSE q : this.iterFixed(p)) {
-            if (q.CartoonY > TopMost) TopMost = q.CartoonX;
+            if (q.CartoonY > TopMost) TopMost = q.getCartoonX();
         }
         return TopMost;
     }
@@ -1488,7 +1490,7 @@ public class Chain {
         double centerX = 0.0;
         double centerY = 0.0;
         for (SSE p : this.iterFixed(FixedStart)) {
-            centerX += p.CartoonX;
+            centerX += p.getCartoonX();
             centerY += p.CartoonY;
             n +=1;
         }
@@ -1499,7 +1501,7 @@ public class Chain {
 
         double rim = 0.0;
         for (SSE p : this.iterFixed(FixedStart)) {
-            double x = p.CartoonX;
+            double x = p.getCartoonX();
             double y = p.CartoonY;
 
             //FIXME : distance2D method needs a class home!
@@ -1523,7 +1525,7 @@ public class Chain {
 
         // If this is the first strand place it based on the last strand
         if (q == null) {
-            p.CartoonX = 0;
+            p.setCartoonX(0);
             p.CartoonY = 0;
             p.SymbolPlaced = true;
         } else {
@@ -1540,17 +1542,17 @@ public class Chain {
                     int pindex = q.FindBPIndex(p);
 
                     if (q.getBridgePartner(pindex).side == q.getBridgePartner(rindex).side) {
-                        incr = (r.CartoonX < q.CartoonX)? -GridUnitSize : +GridUnitSize; 
+                        incr = (r.getCartoonX() < q.getCartoonX())? -GridUnitSize : +GridUnitSize; 
                     } else {
-                        incr = (r.CartoonX < q.CartoonX)? +GridUnitSize : -GridUnitSize;
-                        if (r.CartoonX < q.CartoonX) {
+                        incr = (r.getCartoonX() < q.getCartoonX())? +GridUnitSize : -GridUnitSize;
+                        if (r.getCartoonX() < q.getCartoonX()) {
                             incr = GridUnitSize;
                         } else {
                             incr = -GridUnitSize;
                         }
                     }
                 }
-                p.CartoonX = (int) (q.CartoonX + incr);
+                p.setCartoonX((int) (q.getCartoonX() + incr));
                 p.CartoonY = q.CartoonY;
                 p.SymbolPlaced = true;
 
@@ -1643,7 +1645,7 @@ public class Chain {
     private void splitStrands(SSE p, int MaxListLen) {
         for (SSE r : this.iterFixed(p)) {
             
-            List<SSE> CurrentList = this.GetListAtPosition(p, r.CartoonX, r.CartoonY);
+            List<SSE> CurrentList = this.GetListAtPosition(p, r.getCartoonX(), r.CartoonY);
 
             if (CurrentList.size() > 1) { 
                 SSE bp = this.getCommonBP(CurrentList, MaxListLen);
@@ -1823,7 +1825,7 @@ public class Chain {
             while (sseList.size() > 0) {
                 double Y = YStart;
                 for (SSE sse : sseList) {
-                    sse.CartoonX = (int) ((Y * Math.sin(X) - 0.5) * GridUnitSize);
+                    sse.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
                     sse.CartoonY = (int) ((Y * Math.cos(X) - Z) * GridUnitSize);
                     sse.SymbolPlaced = true;
                     Y += YEF;
@@ -1934,7 +1936,7 @@ public class Chain {
                 q.AssignRelDirection(LastInBarrel);
             }
             LastInBarrel = q;
-            q.CartoonX = (int) ((Y * Math.sin(X) - 0.5) * GridUnitSize);
+            q.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
             q.CartoonY = (int) ((Y * Math.cos(X) - Z) * GridUnitSize);
             q.SymbolPlaced = true;
 
@@ -1944,7 +1946,7 @@ public class Chain {
                 if (!Barrel.contains(r)) {
                     r.FixedType = FixedType.FT_BARREL;
                     r.AssignRelDirection(q);
-                    r.CartoonX = (int) ((Y1 * Math.sin(X) - 0.5) * GridUnitSize);
+                    r.setCartoonX((int) ((Y1 * Math.sin(X) - 0.5) * GridUnitSize));
                     r.CartoonY = (int) ((Y1 * Math.cos(X) - Z) * GridUnitSize);
                     r.SymbolPlaced = true;
 
@@ -2029,16 +2031,16 @@ public class Chain {
         //   short sheet subject with the constraint that the short sheet must lie within the x range of the long sheet  """
         SSE closestLongShortLeft = this.ClosestInFixed(longSheetStart, shortSheetLeftMost);
         SSE closestLongShortRight = this.ClosestInFixed(longSheetStart, shortSheetRightMost);
-        double xmove = (closestLongShortLeft.CartoonX - shortSheetLeftMost.CartoonX + closestLongShortRight.CartoonX - shortSheetRightMost.CartoonX) / 2;
-        double loff = longSheetLeftMost.CartoonX - shortSheetLeftMost.CartoonX - xmove;
-        double roff = shortSheetRightMost.CartoonX + xmove - longSheetRightMost.CartoonX;
+        double xmove = (closestLongShortLeft.getCartoonX() - shortSheetLeftMost.getCartoonX() + closestLongShortRight.getCartoonX() - shortSheetRightMost.getCartoonX()) / 2;
+        double loff = longSheetLeftMost.getCartoonX() - shortSheetLeftMost.getCartoonX() - xmove;
+        double roff = shortSheetRightMost.getCartoonX() + xmove - longSheetRightMost.getCartoonX();
         if (loff > 0) xmove += loff;
         if (roff > 0) xmove -= roff;
 
         double ymove = LowestPos(longSheetStart) - this.GridUnitSize - shortSheetLeftMost.CartoonY;
 
         for (SSE sse : this.iterFixed(shortSheetStart)) {
-            sse.CartoonX += xmove;
+            sse.setCartoonX((int)(sse.getCartoonX() + xmove));
             sse.CartoonY += ymove;
         }
         
@@ -2080,14 +2082,14 @@ public class Chain {
 
     public void moveBy(double dx, double dy) {
         for (SSE sse : this.sses) {
-            sse.CartoonX += dx;
+            sse.setCartoonX((int)(sse.getCartoonX() + dx));
             sse.CartoonY += dy;
         }
     }
 
     public void scaleBy(double scaleFactorX, double scaleFactorY) {
         for (SSE sse : this.sses) {
-            sse.CartoonX *= scaleFactorX;
+            sse.setCartoonX((int) (sse.getCartoonX() * scaleFactorX));
             sse.CartoonY *= scaleFactorY;
         }
     }
@@ -2109,7 +2111,7 @@ public class Chain {
         double maxX = Double.MIN_VALUE;
         double maxY = Double.MIN_VALUE;
         for (SSE sse : this.sses) {
-            double x = sse.CartoonX;
+            double x = sse.getCartoonX();
             double y = sse.CartoonY;
             if (x < minX) minX = x;
             if (y < minY) minY = y;
@@ -2131,13 +2133,13 @@ public class Chain {
     public static SSE LineHitSymbol(Chain chain, SSE p,SSE q) {
         double TOL = 0.001;
 
-        double px = p.CartoonX;
+        double px = p.getCartoonX();
         double py = p.CartoonY;
-        double qx = q.CartoonX;
+        double qx = q.getCartoonX();
         double qy = q.CartoonY;
 
         for (SSE r : chain.getSSEs()) {
-            double rx = r.CartoonX;
+            double rx = r.getCartoonX();
             double ry = r.CartoonY;
 
             double dprx = Math.abs(px - rx);
@@ -2181,12 +2183,15 @@ public class Chain {
     */
 
     public double Angle(SSE p, SSE q, SSE r) {
-        double l1 = distance2D(p.CartoonX, p.CartoonY, q.CartoonX, q.CartoonY);
-        double l2 = distance2D(r.CartoonX, r.CartoonY, q.CartoonX, q.CartoonY);
+        int pX = p.getCartoonX();
+        int qX = q.getCartoonX();
+        int rX = q.getCartoonX();
+        double l1 = distance2D(pX, p.CartoonY, qX, q.CartoonY);
+        double l2 = distance2D(rX, r.CartoonY, qX, q.CartoonY);
         if (l1 == 0.0 || l2 == 0.0) return 0.0;
-        double pqX = p.CartoonX - q.CartoonX;
+        double pqX = pX - qX;
         double pqY = p.CartoonY - q.CartoonY;
-        double rqX = r.CartoonX - q.CartoonX;
+        double rqX = rX - qX;
         double rqY = r.CartoonY - q.CartoonY;
         double l = ((pqX * rqX) + (pqY * rqY)) / (l1 * l2);
         if (l < -1.0) l = -1.0;
@@ -2198,9 +2203,9 @@ public class Chain {
     //really an sse method
     //
     public static double distance2D(SSE a, SSE b) {
-        double x1 = a.CartoonX;
+        double x1 = a.getCartoonX();
         double y1 = a.CartoonY;
-        double x2 = b.CartoonX;
+        double x2 = b.getCartoonX();
         double y2 = b.CartoonY;
         return distance2D(x1, y1, x2, y2);
     }
@@ -2243,9 +2248,9 @@ public class Chain {
         if (r != null && sse.CartoonY == sse.To.CartoonY) {
 
             // we are guaranteed horizontal lines 
-            double px = sse.CartoonX;
+            double px = sse.getCartoonX();
             double py = sse.CartoonY;
-            double qx = sse.To.CartoonX;
+            double qx = sse.To.getCartoonX();
             double qy = sse.To.CartoonY;
 
             double d1 = (sse.getDirection() == 'U')? -1.0 : 1.0;

@@ -258,9 +258,6 @@ public class DsspReader {
     						p.SymbolNumber = numberOfStructures;
     						p.SeqStartResidue = currentResidue;
     						p.PDBStartResidue = Id;
-    				
-    						p.CartoonX = numberOfStructures * 50;
-    						p.CartoonY = 50;
     						
     						p.Chain = chainID;
     					}

@@ -36,7 +36,7 @@ public class SSE {
     public SSE Next;        // difference from 'To'?
     
     // XXX TODO these need to be split off somewhere!
-    public int CartoonX;
+    private int CartoonX;
     public int CartoonY;
     public int[] Colour;
     public double SymbolRadius;
@@ -70,6 +70,14 @@ public class SSE {
      */
     public SSE(SSE other) {
         
+    }
+    
+    public int getCartoonX() {
+        return CartoonX;
+    }
+    
+    public void setCartoonX(int x) {
+        this.CartoonX = x;
     }
     
     public BridgePartner getBridgePartner(int index) {
@@ -755,5 +763,10 @@ public class SSE {
 
     public boolean getFill() {
         return Fill;
+    }
+
+    public void setPosition(int x, int y) {
+        this.CartoonX = x;
+        this.CartoonY = y;
     }
 }
