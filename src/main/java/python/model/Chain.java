@@ -272,11 +272,11 @@ public class Chain {
         // detect and form sandwiches //
         List<SSE[]> sandwiches = new ArrayList<SSE[]>();
         for (SSE r : this.iterNext(this.sses.get(0))) {
-            if (r.isStrand() && r.FixedType == FixedType.FT_SHEET) {
+            if (r.isStrand() && r.hasFixedType(FixedType.FT_SHEET)) {
                 String rDomain = this.FindDomain(r);
                 for (SSE s : this.iterNext(r)) {
                     String sDomain = this.FindDomain(s);
-                    if (s.isStrand() && s.FixedType == FixedType.FT_SHEET && sDomain == rDomain) { 
+                    if (s.isStrand() && s.hasFixedType(FixedType.FT_SHEET) && sDomain == rDomain) { 
                         if (this.IsSandwich(r, s)) {
                             System.out.println(String.format("Sandwich detected between %s and %s" , r, s));
                             sandwiches.add(new SSE[] {r, s});
@@ -345,7 +345,7 @@ public class Chain {
                     SSE q = p.FindEdgeStrand(null);
                     if (!q.isSymbolPlaced()) {
                         this.makeSheet(q, null, GridUnitSize);
-                        if (q.FixedType == FixedType.FT_SHEET) {
+                        if (q.hasFixedType(FixedType.FT_SHEET)) {
                             this.SheetCurvature(q);
                         }
                     }
@@ -1253,7 +1253,9 @@ public class Chain {
             MinContacts = s2;
         }
 
-        if ((p == q) || (s1 < 3) || (s2 < 3) || (p.fixedType != FixedType.FT_SHEET) || (q.fixedType != FixedType.FT_SHEET)) {
+        if ((p == q) || (s1 < 3) || (s2 < 3) 
+                || (!p.hasFixedType(FixedType.FT_SHEET) 
+                || (!q.hasFixedType(FixedType.FT_SHEET)))) {
             return false;
         }
 
@@ -1392,7 +1394,7 @@ public class Chain {
       in this category but are already drawn with correct chirality.
     **/
     public void SetFixedHand(SSE p) {
-        if (allowedTypes.contains(p.fixedType)) {
+        if (allowedTypes.contains(p.getFixedType())) {
             System.out.println(String.format("Checking fixed structure chirality for fixed start %d", p.getSymbolNumber()));
             SSE q = find(p);
             if (q != null) {
@@ -1522,7 +1524,7 @@ public class Chain {
         List<SSE> StartLowerList = new ArrayList<SSE>();
         List<SSE> Layer = new ArrayList<SSE>();
 
-        p.FixedType = FixedType.FT_SHEET;
+        p.setFixedType(FixedType.FT_SHEET);
 
         // If this is the first strand place it based on the last strand
         if (q == null) {
@@ -1629,7 +1631,7 @@ public class Chain {
     private void twoLayers(SSE p, int StartXPos, List<SSE> StartLowerList, List<SSE> StartUpperList) {
         System.out.println("Sheet configured as V_CURVED_SHEET");
         for (SSE t : this.iterFixed(p)) {
-            t.FixedType = FixedType.FT_V_CURVED_SHEET;
+            t.setFixedType(FixedType.FT_V_CURVED_SHEET);
         }
 
         // divide at the point of splitting identified above
@@ -1778,7 +1780,7 @@ public class Chain {
 
         SSE Start = this.FindFixedStart(p);
 
-        if (Start == null || Start.FixedType != FixedType.FT_SHEET) return;
+        if (Start == null || !Start.hasFixedType(FixedType.FT_SHEET)) return;
 
         // first determine left and right most strands in the sheet """
         SSE left = this.GetListAtXPosition(Start, this.LeftMostPos(Start)).get(0);
@@ -1797,7 +1799,7 @@ public class Chain {
 
             System.out.println("Sheet configured as CURVED_SHEET");
 
-            for (SSE q : this.iterFixed(Start)) q.FixedType = FixedType.FT_CURVED_SHEET;
+            for (SSE q : this.iterFixed(Start)) q.setFixedType(FixedType.FT_CURVED_SHEET);
 
             // this direction calculation is to ensure that sheets from AB barrels are plotted with the correct chirality """
             SeqDirResult result = this.FindSheetSeqDir(Start);
@@ -1930,7 +1932,7 @@ public class Chain {
             X = Rads + 2.0 * count * Rads;
 
             SSE q = Barrel.get(i);
-            q.FixedType = FixedType.FT_BARREL;
+            q.setFixedType(FixedType.FT_BARREL);
 
             if (count != 0) {
                 this.moveFixed(p, q);
@@ -1945,7 +1947,7 @@ public class Chain {
             for (BridgePartner bridgePartner : q.getBridgePartners()) {
                 SSE r = bridgePartner.partner;
                 if (!Barrel.contains(r)) {
-                    r.FixedType = FixedType.FT_BARREL;
+                    r.setFixedType(FixedType.FT_BARREL);
                     r.AssignRelDirection(q);
                     r.setCartoonX((int) ((Y1 * Math.sin(X) - 0.5) * GridUnitSize));
                     r.setCartoonY((int) ((Y1 * Math.cos(X) - Z) * GridUnitSize));
@@ -2048,10 +2050,10 @@ public class Chain {
 
         // set type of fixed structure """
         for (SSE sse : this.iterFixed(shortSheetStart)) {
-            sse.FixedType = FixedType.FT_SANDWICH;
+            sse.setFixedType(FixedType.FT_SANDWICH);
         }
         for (SSE sse : this.iterFixed(longSheetStart)) {
-            sse.FixedType = FixedType.FT_SANDWICH;
+            sse.setFixedType(FixedType.FT_SANDWICH);
         }
     }
 
@@ -2237,12 +2239,10 @@ public class Chain {
         double PSMALL = 0.001;
         if (sse.To == null) return;
 
-        sse.NConnectionPoints = 0;
-
         // these are the condition under which the code generates a bent connection,
         // rather than the usual straight line joining symbols 
         if (this.FindFixedStart(sse) != this.FindFixedStart(sse.To)) return;
-        if (sse.FixedType != FixedType.FT_SHEET && sse.To.FixedType != FixedType.FT_SANDWICH) return;
+        if (sse.hasFixedType(FixedType.FT_SHEET) && !sse.To.hasFixedType(FixedType.FT_SANDWICH)) return;
         SSE q = sse.To;
         if (q == null) return;
         SSE r = LineHitSymbol(this, sse, q);
@@ -2271,9 +2271,8 @@ public class Chain {
             double mx = px + (d2 * (PSMALL * Math.abs(px - qx) + radius));
             double nx = qx + (d3 * (PSMALL * Math.abs(px - qx) + radius));
 
-            sse.NConnectionPoints = 2;
-            sse.ConnectionTo.add(new Point2d(mx, my));
-            sse.ConnectionTo.add(new Point2d(nx, ny));
+            sse.addConnection(new Point2d(mx, my));
+            sse.addConnection(new Point2d(nx, ny));
         }
     }
   

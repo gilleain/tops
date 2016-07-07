@@ -20,10 +20,11 @@ public class SSE {
     public int Merges = 0;                     // The number of merges made in creation 
     public int[][] MergeRanges;            // The start and end of the Merged structures 
     public int DomainBreakNumber;             // Number identifying possible domain breaks (0 -> No break) 
-    public DomainBreakType domainBreakType;                // Number identifying domain break type (Nterm, Cterm or both) 
+    public DomainBreakType domainBreakType;                // Number identifying domain break type (Nterm, Cterm or both)
+    
     public Hand Chirality;                      // Local structure hand 
     public Axis axis;
-    public FixedType fixedType;
+    private FixedType fixedType;
     
     // XXX TODO don't like these linked-list pointers, but have them for now...
     public SSE From;
@@ -31,8 +32,7 @@ public class SSE {
     public SSE Next;        // difference from 'To'?
     
     // XXX TODO these need to be split off somewhere!
-    public int NConnectionPoints;
-    public FixedType FixedType;
+    private int NConnectionPoints;
     
     private CartoonSymbol cartoonSymbol;
     public SSEData sseData;
@@ -41,10 +41,9 @@ public class SSE {
     public char Chain;
     
     public SSE Fixed;
-    private String Label;
     private boolean Fill;
     public List<Neighbour> Neighbours;
-    public List<Point2d> ConnectionTo;
+    private List<Point2d> ConnectionTo;
     private Object AxisLength;
 
 
@@ -64,6 +63,27 @@ public class SSE {
      */
     public SSE(SSE other) {
         
+    }
+    
+    public void setFixedType(FixedType fixedType) {
+        this.fixedType = fixedType;
+    }
+    
+    /**
+     * @return true if the SSE has any of these types
+     */
+    public boolean hasFixedType(FixedType... types) {
+        for (FixedType type : types) {
+            if (fixedType == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void addConnection(Point2d point) {
+        this.NConnectionPoints++;   // TODO convert to getConnections().size()?
+        this.ConnectionTo.add(point);
     }
     
     public void setSymbolNumber(int symbolNumber) {
@@ -659,8 +679,7 @@ public class SSE {
     }
 
     public String getLabel() {
-        if (this.Label == null) return "";
-        else return this.Label;
+        return cartoonSymbol.getLabel();
     }
 
     public String getChain() {
@@ -773,7 +792,7 @@ public class SSE {
     }
 
     public void setLabel(String label) {
-        this.Label = label;
+        cartoonSymbol.setLabel(label);
     }
 
     public boolean getFill() {
@@ -808,7 +827,7 @@ public class SSE {
             print(out, "Fixed -1\n");
         }
 
-        switch (FixedType) {
+        switch (fixedType) {
         case FT_BARREL:
             print(out, "FixedType BARREL\n");
             break;

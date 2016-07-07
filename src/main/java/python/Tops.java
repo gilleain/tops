@@ -1299,56 +1299,6 @@ public class Tops {
         return ErrorStatus;
     }
 
-    void WriteLinkedList(SSE q) {
-
-        print("The linked list follows\n\n");
-
-        for (; q != null; q = q.To) {
-            print("\nSS %x %d\n", q, q.getSymbolNumber());
-            print("SS type %c\n", q.getSSEType());
-            print("Seq. Start Finish %d %d\n", 
-                    q.sseData.SeqStartResidue,
-                    q.sseData.SeqFinishResidue);
-            print("PDB Start Finish %d %d\n", 
-                    q.sseData.PDBStartResidue,
-                    q.sseData.PDBFinishResidue);
-            print("Chain %c\n", q.Chain);
-            print("DomainBreakType %d DomainBreakNumber %d\n",
-                    q.domainBreakType, q.DomainBreakNumber);
-            print("Radius %d\n", q.getSymbolRadius());
-            print("To %d From %d\n", (q.To != null ? q.To.getSymbolNumber() : 0),
-                    (q.From != null ? q.From.getSymbolNumber() : 0));
-            print("Next %x %d\n", q.Next,
-                    (q.Next != null ? q.Next.getSymbolNumber() : 0));
-            print("FixedType %d\n", q.FixedType);
-            print("Fixed %x %d\n", q.Fixed,
-                    (q.Fixed != null ? q.Fixed.getSymbolNumber() : 0));
-            print("Position %d %d\n", q.getCartoonX(), q.getCartoonY());
-            print("Direction %c\n", q.getDirection());
-            print("Chirality %d\n", q.Chirality);
-            if (q.isStrand()) {
-                int i = 0;
-                for (BridgePartner bp : q.getBridgePartners()) {
-                    print("BridgePartner %d is %d side %c range %d %d type %d\n",
-                            i, bp.partner.getSymbolNumber(), bp.side, bp.rangeMin,
-                            bp.rangeMax, bp.bridgeType);
-                    i++;
-                }
-            }
-
-            int i = 0;
-            for (Neighbour n : q.Neighbours) {
-                print("Neighbour %d is %d distance %10.5f\n", i,
-                        n.sse.getSymbolNumber(), n.distance);
-                i++;
-            }
-
-        }
-
-        return;
-
-    }
-
     void WriteTOPSFile(String Filename, List<Cartoon> cartoonPtrs,
             String pcode, Protein protein, List<Integer> domainsToPlot) throws FileNotFoundException {
 

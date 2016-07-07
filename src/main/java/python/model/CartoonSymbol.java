@@ -14,7 +14,7 @@ public class CartoonSymbol {
     private int radius;
     private int[] colour;
     private boolean fill;
-    private char label;
+    private String label;
     private List<Integer> connections;
     private double SymbolRadius;
     private boolean symbolPlaced;
@@ -32,8 +32,16 @@ public class CartoonSymbol {
         this.radius = 20;
         this.colour = new int[] { Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue() };
         this.fill = false;
-        this.label = ' ';
+        this.label = " ";
         this.connections = new ArrayList<Integer>();
+    }
+    
+    public String getLabel() {
+        return this.label;
+    }
+    
+    public void setLabel(String label) { 
+        this.label = label;
     }
     
     public int getSymbolNumber() {
