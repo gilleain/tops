@@ -440,7 +440,7 @@ public class Protein {
         }
 
         /* Now check the whole associated fixed list */
-        for (p = chain.FindFixedStart(p); p != null; p = p.Fixed) {
+        for (p = chain.FindFixedStart(p); p != null; p = p.getFixed()) {
             Segment = SingleSSIsInDomain(p, Domain);
             if (Segment > 0) {
                 ExclusionType = 1;
@@ -756,8 +756,8 @@ public class Protein {
          */
         if (newRoot != null) {
             for (SSE q = newRoot; q != null; q = q.To) {
-                if (q.Fixed != null)
-                    q.Fixed = copyTable.get(q.Fixed);
+                if (q.hasFixed())
+                    q.setFixed(copyTable.get(q.getFixed()));
                 for (BridgePartner bridgePartner : q.getBridgePartners()) {
                     bridgePartner.partner = copyTable.get(bridgePartner.partner);
                 }

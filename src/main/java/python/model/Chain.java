@@ -301,7 +301,7 @@ public class Chain {
 
     public void calculateFixedHands() {
         for (SSE sse : this.iterNext(this.sses.get(0))) {
-            if (sse.Fixed != null) this.SetFixedHand(sse);
+            if (sse.hasFixed()) this.SetFixedHand(sse);
         }
     }
 
@@ -462,7 +462,7 @@ public class Chain {
                     lastSSE = sse;
                 }
                 System.out.println("setting" + lastSSE + " fixed to " + q);
-                lastSSE.Fixed = q;
+                lastSSE.setFixed(q);
                 this.LinkOver(q);
             }
         }
@@ -705,8 +705,8 @@ public class Chain {
         List<SSE> fixed = new ArrayList<SSE>();
         SSE sse = sseStart;
         while (sse != null) {
-            if (sse.Fixed != null) fixed.add(sse.Fixed);
-            sse = sse.Fixed;
+            if (sse.hasFixed()) fixed.add(sse.getFixed());
+            sse = sse.getFixed();
         }
         return fixed;
     }
@@ -1464,7 +1464,7 @@ public class Chain {
           DW 5/9/96
         */
         for (SSE p : this.iterNext(Root)) {
-            if (p != Root && p != Root.To && p.Fixed != null) {
+            if (p != Root && p != Root.To && p.hasFixed()) {
                 q = p.From;
                 if (q.isParallel(p)) {
                     if (q.getDirection() == 'U') {

@@ -401,7 +401,7 @@ public class Optimise {
         double ry = 0;
 
         double randomNumber = random.nextDouble();
-        if (randomNumber <= LineSample / 100.0 && sse.Fixed != null) {
+        if (randomNumber <= LineSample / 100.0 && sse.hasFixed()) {
             if (sse.From != null) {
                 randomNumber = random.nextDouble();
                 randomNumber *= randomNumber;

@@ -40,7 +40,7 @@ public class SSE {
     // XXX TODO Gah, upwards pointers!
     public char Chain;
     
-    public SSE Fixed;
+    private SSE fixed;
     private boolean Fill;
     public List<Neighbour> Neighbours;
     private List<Point2d> ConnectionTo;
@@ -63,6 +63,18 @@ public class SSE {
      */
     public SSE(SSE other) {
         
+    }
+    
+    public void setFixed(SSE fixed) {
+        this.fixed = fixed;
+    }
+    
+    public SSE getFixed() {
+        return this.fixed;
+    }
+    
+    public boolean hasFixed() {
+        return fixed != null;
     }
     
     public void setFixedType(FixedType fixedType) {
@@ -695,7 +707,7 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "Label", this.getLabel()));
         stringRepr.append(String.format("%s %s %s %s\n", "Colour", cartoonSymbol.getColor()[0], cartoonSymbol.getColor()[1], cartoonSymbol.getColor()[2]));
         stringRepr.append(String.format("%s %s\n", "Next", this.getSymbolNumber(this.Next)));
-        stringRepr.append(String.format("%s %s\n", "Fixed", this.getSymbolNumber(this.Fixed)));
+        stringRepr.append(String.format("%s %s\n", "Fixed", this.getSymbolNumber(this.fixed)));
         stringRepr.append(String.format("%s %s\n", "FixedType", this.getFixedType()));
         stringRepr.append(String.format("%s %s\n", "BridgePartner", this.BridgePartnerNumbers()));
         stringRepr.append(String.format("%s %s\n", "BridgePartnerSide", this.BridgePartnerSides()));
@@ -821,8 +833,8 @@ public class SSE {
             print(out, "Next -1\n");
         }
 
-        if (Fixed != null) {
-            print(out, "Fixed %d\n", Fixed.getSymbolNumber());
+        if (fixed != null) {
+            print(out, "Fixed %d\n", fixed.getSymbolNumber());
         } else {
             print(out, "Fixed -1\n");
         }
