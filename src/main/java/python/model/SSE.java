@@ -17,8 +17,8 @@ public class SSE {
     private List<BridgePartner> BridgePartners;    // Bridge partners
     private List<BridgeRange> BridgeRange;
     
-    public int Merges = 0;                     // The number of merges made in creation 
-    public int[][] MergeRanges;            // The start and end of the Merged structures 
+    private int Merges = 0;                     // The number of merges made in creation 
+    private int[][] MergeRanges;            // The start and end of the Merged structures 
     public int DomainBreakNumber;             // Number identifying possible domain breaks (0 -> No break) 
     public DomainBreakType domainBreakType;                // Number identifying domain break type (Nterm, Cterm or both)
     
