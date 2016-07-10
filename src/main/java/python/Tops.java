@@ -431,7 +431,7 @@ public class Tops {
             Cartoon cartoon = protein.SetDomain(Root, protein.getDomain(domainToPlot));
 
             new Optimise().optimise(cartoon);
-            cartoon.CalculateConnections(Radius);
+            cartoon.calculateConnections(Radius);
             cartoons.add(cartoon);
         }
 

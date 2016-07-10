@@ -56,16 +56,16 @@ public class Chain {
         this.donatedHBondEnergy = new HashMap<Integer, List<Double>>();
     }
     
-    public void ForceConsistent(Protein protein) {
-        for (int i = 0; i < SequenceLength(); i++) {
+    public void forceConsistent(Protein protein) {
+        for (int i = 0; i < sequenceLength(); i++) {
 
-            if ( IsSSelement(i) ) {
+            if ( isSSelement(i) ) {
                 int start = i;
                 SSEType thissstype = getSSEType(i);
                 int Dom = protein.ResidueDomain(i);
                 int DBreak = -1;
                 int LastDom = -1;
-                while ( IsSSelement(i) && getSSEType(i) == thissstype ) {
+                while ( isSSelement(i) && getSSEType(i) == thissstype ) {
                     i++;
                     LastDom = Dom;
                     Dom = protein.ResidueDomain(i);
@@ -196,7 +196,7 @@ public class Chain {
         }
     }
 
-    public int NumberFixed() {
+    public int numberFixed() {
         return this.iterFixed(sses.get(0)).size();
     }
 
@@ -209,7 +209,7 @@ public class Chain {
         returns NULL if residues is not found in previously stored values
     */
 
-    public SSE FindSecStr(int residue) {
+    public SSE findSecStr(int residue) {
         for (SSE sse : this.sses) {
             if (residue >= sse.sseData.SeqStartResidue 
                     && residue <= sse.sseData.SeqFinishResidue) return sse;
@@ -221,7 +221,7 @@ public class Chain {
     /*
     sure this is not right!
     */
-    public  void LinkOver(SSE p) {
+    public  void linkOver(SSE p) {
         for (SSE q : this.sses) {
             if (q.Next == p) { 
                 q.Next = p.Next;
@@ -233,7 +233,7 @@ public class Chain {
     /*
     used in TopsOptimise for unknown purpose
     */
-    public int NumberLink(SSE p) {
+    public int numberLink(SSE p) {
         int Number = 0;
         int i = 0;
         for (SSE q : this.iterNext(this.sses.get(0))) {
@@ -262,7 +262,7 @@ public class Chain {
     public void moveFixed(SSE p, SSE q) {
         System.out.println("moving fixed...");
         if (p != null) {
-            if (!this.CheckFixedList(p)) {
+            if (!this.checkFixedList(p)) {
                 System.out.println("movefixed error!");
                 return;
             }
@@ -275,7 +275,7 @@ public class Chain {
                 }
                 System.out.println("setting" + lastSSE + " fixed to " + q);
                 lastSSE.setFixed(q);
-                this.LinkOver(q);
+                this.linkOver(q);
             }
         }
     }
@@ -284,7 +284,7 @@ public class Chain {
     // This function checks the integrity of the fixed list - 
     // returns an error (0) if a cycle is found
     //
-    public boolean CheckFixedList(SSE p) {
+    public boolean checkFixedList(SSE p) {
         int CheckLen = 0;
         for (SSE q : this.iterFixed(p)) {
             CheckLen += 1;
@@ -299,9 +299,9 @@ public class Chain {
             }
         }
         return true;
-      }
+    }
 
-    public SSE FindFixedStart(SSE p) {
+    public SSE findFixedStart(SSE p) {
         for (SSE q : this.sses) {
             for (SSE r : this.iterFixed(q)) {
                 if (r == p) return q;
@@ -311,13 +311,13 @@ public class Chain {
     }
 
 
-    public void DeleteBPRelation(SSE p, SSE q) {
+    public void deleteBPRelation(SSE p, SSE q) {
 //        p.RemoveBP(q);
 //        q.RemoveBP(p);
         //XXX
     }
 
-    public int FixedNumber() {
+    public int fixedNumber() {
 //        return this.fixed.size();
         return -1;  /// XXX 
     }
@@ -345,25 +345,25 @@ public class Chain {
     }
 
 
-    public int FixedSize(SSE sse) {
+    public int fixedSize(SSE sse) {
         System.out.println("finding size of fixed structure from " + sse);
         return this.iterFixed(sse).size();
     }
 
-    public SSE ChainStart() {
+    public SSE chainStart() {
         return this.sses.get(0);
     }
 
-    public SSE ChainEnd() {
+    public SSE chainEnd() {
         return this.sses.get(this.sses.size() - 1);
     }
 
-    public SSE LargestFixed() {
+    public SSE largestFixed() {
         int largestSize = 0;
         SSE largest = null;
         for (SSE sse : this.sses) {
             for (SSE fixedStart : this.iterFixed(sse)) {
-                int i = this.FixedSize(fixedStart);
+                int i = this.fixedSize(fixedStart);
                 if (i > largestSize) {
                     largestSize = i;
                     largest = sse;
@@ -373,11 +373,11 @@ public class Chain {
         return largest;
     }
 
-    public void ClearPlaced() {
+    public void clearPlaced() {
         for (SSE p : this.sses) p.setSymbolPlaced(false);
     }
 
-    public void ClearFixedPlaced() {
+    public void clearFixedPlaced() {
 //        for (SSE p : this.fixed) p.SymbolPlaced = false;
     }
 
@@ -396,7 +396,7 @@ public class Chain {
                 SSE q;
                 if (i >= this.sses.size()) return null;
                 else q = this.sses.get(i);
-                if ((q.isStrand()) && (this.FindFixedStart(q) == this.FindFixedStart(p))) {
+                if ((q.isStrand()) && (this.findFixedStart(q) == this.findFixedStart(p))) {
                     if (q.getDirection() == p.getDirection()) return q;
                     else return null;
                 }
@@ -414,7 +414,7 @@ public class Chain {
         return null;    // XXX added to satisfy compiler
     }
 
-    public int CountStructures() {
+    public int countStructures() {
         return this.sses.size();
     }
     
@@ -423,16 +423,16 @@ public class Chain {
     }
 
     public SSEType getSSEType(int i) {
-        if (this.IsGenHelix(i)) {
+        if (this.isGenHelix(i)) {
             return SSEType.HELIX;
-        } else if (this.IsExtended(i)) {
+        } else if (this.isExtended(i)) {
             return SSEType.EXTENDED;
         } else {
             return SSEType.COIL;
         }
     }
 
-    public void AddDonatedBond(Integer a, Integer b, double energy) {
+    public void addDonatedBond(Integer a, Integer b, double energy) {
         List<Integer> bonds;
         if (this.donatedHBonds.containsKey(a)) {
             bonds = this.donatedHBonds.get(a);
@@ -452,7 +452,7 @@ public class Chain {
         energies.add(energy);
     }
 
-    public void AddAcceptedBond(Integer a, Integer b, double energy) {
+    public void addAcceptedBond(Integer a, Integer b, double energy) {
         //
         List<Integer> bonds;
         if (this.acceptedHBonds.containsKey(a)) {
@@ -511,12 +511,12 @@ public class Chain {
         return fixed;
     }
 
-    public int SequenceLength() {
+    public int sequenceLength() {
         return this.sequence.size();
     }
     
-    public boolean IsExtended(int i) {
-        if (i < 0 || i >= this.SequenceLength()) return false;
+    public boolean isExtended(int i) {
+        if (i < 0 || i >= this.sequenceLength()) return false;
         return this.secondaryStruc.get(i) == SSEType.EXTENDED;
     }
 
@@ -528,36 +528,36 @@ public class Chain {
         add(SSEType.LEFT_ALPHA_HELIX);
     }};
     
-    public boolean IsGenHelix(int i) {
-        if (i < 0 || i >= this.SequenceLength()) return false;
+    public boolean isGenHelix(int i) {
+        if (i < 0 || i >= this.sequenceLength()) return false;
         return helixTypes.contains(this.secondaryStruc.get(i));
     }
 
-    public boolean IsSSelement(int i) {
-        if (i < 0 || i >= this.SequenceLength()) return false;
-        return this.IsGenHelix(i) || this.IsExtended(i);
+    public boolean isSSelement(int i) {
+        if (i < 0 || i >= this.sequenceLength()) return false;
+        return this.isGenHelix(i) || this.isExtended(i);
     }
 
 
-    public List<SSE> ListBPGroup(SSE p, List<SSE> sseList) {
-        List<SSE> GroupList = new ArrayList<SSE>();
-        GroupList.add(p);
+    public List<SSE> listBPGroup(SSE p, List<SSE> sseList) {
+        List<SSE> groupList = new ArrayList<SSE>();
+        groupList.add(p);
         for (SSE q : sseList){
             if (p.getFirstCommonBP(q) != null) {
-                GroupList.add(p);
+                groupList.add(p);
             }
         }
-        return GroupList;
+        return groupList;
     }
  
     public SSE getCommonBP(List<SSE> CurrentList, int MaxListLen) {
-        SSE Start = CurrentList.get(0);
-        if (Start == null) return null;
-        return SSE.getCommonBP(Start, CurrentList);
+        SSE start = CurrentList.get(0);
+        if (start == null) return null;
+        return SSE.getCommonBP(start, CurrentList);
     }
 
 
-    public void SortListByBridgeRange(SSE bp, List<SSE> sseList) {
+    public void sortListByBridgeRange(SSE bp, List<SSE> sseList) {
         int n = sseList.size();
         if (n < 1) return;
         boolean test = true;
@@ -585,12 +585,12 @@ public class Chain {
     // alternatively, an sse method 'separation(this, other)'
     // where you would call:
     //
-    public SSE ClosestInFixed(SSE FixedStart, SSE p) {
+    public SSE closestInFixed(SSE FixedStart, SSE p) {
         SSE closest = null;
 
         double minsep = Double.MIN_VALUE;
         for (SSE q : this.iterFixed(FixedStart)) {
-            double sep = this.SecStrucSeparation(p, q);
+            double sep = this.secStrucSeparation(p, q);
             if (sep < minsep) {
                 minsep = sep;
                 closest = q;
@@ -599,7 +599,7 @@ public class Chain {
         return closest;
     }
 
-    public SSE LongestInFixed(SSE FixedStart) {
+    public SSE longestInFixed(SSE FixedStart) {
         SSE longest = null;
 
         int maxlen = 0;
@@ -634,7 +634,7 @@ public class Chain {
         return Math.abs(values.torsion) < 90.0;
     }
         
-    public double SimpleSSESeparation(SSE p, SSE q) {
+    public double simpleSSESeparation(SSE p, SSE q) {
         Vector3d pk = plus(p.axis.AxisStartPoint, p.axis.AxisFinishPoint);
         Vector3d pj = plus(q.axis.AxisStartPoint, q.axis.AxisFinishPoint);
         pk.scale(1/2.0);
@@ -648,7 +648,7 @@ public class Chain {
         return c; 
     }
 
-    public double SecStrucSeparation(SSE p, SSE q) {
+    public double secStrucSeparation(SSE p, SSE q) {
 //        pk, pj, sk, sj, torsion
         TorsionResult result = p.ClosestApproach(q);
         double sk = result.sk;
@@ -687,7 +687,7 @@ public class Chain {
     }
 
     //might not be as accurate as the original
-    public double AngleBetweenLines(Vector3d a, Vector3d b, Vector3d c) {
+    public double angleBetweenLines(Vector3d a, Vector3d b, Vector3d c) {
         Vector3d ba = diff(b, a);
         Vector3d bc = diff(b, c);
         if (ba.length() == 0.0 || bc.length() == 0.0) return 0.0;
@@ -698,15 +698,15 @@ public class Chain {
         function to obtain bridge partners from main chain H bond information
         assumes that DonatedHBonds and AcceptedHBonds are fully redundant
     */
-    public void BridgePartFromHBonds() {
-        int SequenceLength = this.SequenceLength();
+    public void bridgePartFromHBonds() {
+        int SequenceLength = this.sequenceLength();
         for (int i = 0; i < SequenceLength; i++) {
 //            this.BridgeEnergy.add(new int[] {LARGE, LARGE});
         }
 
         //conditions for an anti-parallel bridge: first is another residue to which there are both donor and acceptor HBonds//
         for (int i = 0; i < SequenceLength; i++) {
-            if (this.IsExtended(i)) {
+            if (this.isExtended(i)) {
 
 //                for (int j = 0; j < this.DonatedHBonds[i]; j++) {
 //                    for (int k = 0; k < this.AcceptedHBonds[i]; k++) {
@@ -764,8 +764,8 @@ public class Chain {
     }
 
 
-    public boolean AddBridge(int SeqRes1, int SeqRes2, int Type, double Energy) {
-        int SequenceLength = this.SequenceLength();
+    public boolean addBridge(int SeqRes1, int SeqRes2, int Type, double Energy) {
+        int SequenceLength = this.sequenceLength();
         if ((SeqRes1 >= SequenceLength) || (SeqRes1 < 0) || (SeqRes2 >= SequenceLength) || (SeqRes2 < 0)) return false;
 
         int i;
@@ -799,18 +799,18 @@ public class Chain {
     }
 
 
-    public void AddBridgeByEnergy(int SeqRes1, int SeqRes2, int Type, double Energy) {
+    public void addBridgeByEnergy(int SeqRes1, int SeqRes2, int Type, double Energy) {
 
-        if ((SeqRes1 >= this.SequenceLength()) || (SeqRes1 < 0) || (SeqRes2 >= this.SequenceLength()) || (SeqRes2 < 0)) return;
+        if ((SeqRes1 >= this.sequenceLength()) || (SeqRes1 < 0) || (SeqRes2 >= this.sequenceLength()) || (SeqRes2 < 0)) return;
 
-        if (!this.AddBridge(SeqRes1, SeqRes2, Type, Energy)) {
-            this.ReplaceBridgeByEnergy(SeqRes1, SeqRes2, Type, Energy);
+        if (!this.addBridge(SeqRes1, SeqRes2, Type, Energy)) {
+            this.replaceBridgeByEnergy(SeqRes1, SeqRes2, Type, Energy);
         }
     }
 
-    public void ReplaceBridgeByEnergy(int SeqRes1, int SeqRes2, int Type, double Energy) {
+    public void replaceBridgeByEnergy(int SeqRes1, int SeqRes2, int Type, double Energy) {
 
-        if ((SeqRes1 >= this.SequenceLength()) || (SeqRes1 < 0) || (SeqRes2 >= this.SequenceLength()) || (SeqRes2 < 0)) return;
+        if ((SeqRes1 >= this.sequenceLength()) || (SeqRes1 < 0) || (SeqRes2 >= this.sequenceLength()) || (SeqRes2 < 0)) return;
 
 //        int hep1 = this.HighestEnergyBridge(SeqRes1);
 //        double he1 = this.BridgeEnergy[SeqRes1][hep1];
@@ -825,7 +825,7 @@ public class Chain {
     }
 
 
-    public void ReplaceBridge(int SeqRes, int BridgePos, int NewBridgeRes, int NewType, double NewEnergy) {
+    public void replaceBridge(int SeqRes, int BridgePos, int NewBridgeRes, int NewType, double NewEnergy) {
 
 //        int OldBridgeRes = this.BridgePartners[SeqRes][BridgePos];
 //        this.BridgePartners[SeqRes][BridgePos] = NewBridgeRes;
@@ -842,7 +842,7 @@ public class Chain {
 //        }
     }
 
-    public int HighestEnergyBridge(int SeqRes) {
+    public int highestEnergyBridge(int SeqRes) {
         int heb = 0;
         double he = Double.MIN_VALUE;
 
@@ -920,7 +920,7 @@ public class Chain {
         for (SSE r : this.range(p.To, q)) {
             d = new Vector3d(r.getCartoonX(), r.getCartoonY(), 0.0);
             lasthand = hand;
-            double theta = this.AngleBetweenLines(b, c, d);
+            double theta = this.angleBetweenLines(b, c, d);
             if (theta < 0.5 || theta > 179.5) {
                 hand = Hand._unk_hand;
             } else {
@@ -938,10 +938,10 @@ public class Chain {
         return hand;
     }
 
-    public double FixedSpan(SSE p, double GridUnitSize) {
+    public double fixedSpan(SSE p, double GridUnitSize) {
         double minx = 0;
         double maxx = 0;
-        SSE q = this.FindFixedStart(p);
+        SSE q = this.findFixedStart(p);
         if (q != null) {
             minx = q.getCartoonX();
             maxx = q.getCartoonX();
@@ -963,7 +963,7 @@ public class Chain {
         return span;
     }
 
-    public void ReflectFixedXY(SSE p) {
+    public void reflectFixedXY(SSE p) {
         for (SSE q : this.iterFixed(p)) {
             q.flip();
         }
@@ -973,7 +973,7 @@ public class Chain {
     /**
         function to flip all symbols in a fixed list AND CENTER!
     **/
-    public void FlipSymbols(SSE p) {
+    public void flipSymbols(SSE p) {
         double cen = 0;
         int i = 0;
         for (SSE q : this.iterFixed(p)) {
@@ -990,7 +990,7 @@ public class Chain {
          }
      }
 
-    public List<SSE> GetListAtXPosition(SSE startSSE, double XPosition) {
+    public List<SSE> getListAtXPosition(SSE startSSE, double XPosition) {
         List<SSE> filtered = new ArrayList<SSE>();
         for (SSE p : this.iterFixed(startSSE)) {
             if (p.getCartoonX() == XPosition) {
@@ -1000,7 +1000,7 @@ public class Chain {
         return filtered;
     }
 
-    public List<SSE> GetListAtPosition(SSE startSSE, double XPosition, double YPosition) {
+    public List<SSE> getListAtPosition(SSE startSSE, double XPosition, double YPosition) {
         List<SSE> filtered = new ArrayList<SSE>();
         for (SSE p : this.iterFixed(startSSE)) {
             if (p.getCartoonX() == XPosition && p.getCartoonY() == YPosition) {
@@ -1010,7 +1010,7 @@ public class Chain {
         return filtered;
     }
 
-    public double LeftMostPos(SSE p) {
+    public double leftMostPos(SSE p) {
         double LeftMost = p.getCartoonX();
         for (SSE q : this.iterFixed(p)) {
             if (q.getCartoonX() < LeftMost) LeftMost = q.getCartoonX();
@@ -1018,7 +1018,7 @@ public class Chain {
         return LeftMost;
     }
 
-    public SSE LeftMost(SSE p) {
+    public SSE leftMost(SSE p) {
         double LeftMost = p.getCartoonX();
         SSE leftMostSymbol = p;
         for (SSE q : this.iterFixed(p)) {
@@ -1031,7 +1031,7 @@ public class Chain {
         return leftMostSymbol;
     }
     
-    public double RightMostPos(SSE p) {
+    public double rightMostPos(SSE p) {
         double RightMost = p.getCartoonX();
         for (SSE q : this.iterFixed(p)) {
             if (q.getCartoonX() > RightMost) RightMost = q.getCartoonX();
@@ -1040,7 +1040,7 @@ public class Chain {
     }
    
 
-    public SSE RightMost(SSE p) {
+    public SSE rightMost(SSE p) {
         double RightMost = p.getCartoonX();
         SSE r = p;
         for (SSE q : this.iterFixed(p)) {
@@ -1053,7 +1053,7 @@ public class Chain {
         return r;
     }
 
-    public double LowestPos(SSE p) {
+    public double lowestPos(SSE p) {
         double BottomMost = p.getCartoonY();
         for (SSE q : this.iterFixed(p)) {
             if (q.getCartoonY() < BottomMost) BottomMost = q.getCartoonX();
@@ -1061,7 +1061,7 @@ public class Chain {
         return BottomMost;
     }
 
-    public double HighestPos(SSE p) {
+    public double highestPos(SSE p) {
         double TopMost = p.getCartoonY();
         for (SSE q : this.iterFixed(p)) {
             if (q.getCartoonY() > TopMost) TopMost = q.getCartoonX();
@@ -1074,7 +1074,7 @@ public class Chain {
     /**
     returns center and radius
     **/
-    public Circle FixedBoundingCircle(SSE FixedStart) {
+    public Circle fixedBoundingCircle(SSE FixedStart) {
 
         int n = 0;
         double centerX = 0.0;
@@ -1231,7 +1231,7 @@ public class Chain {
         Function to return the angle between two 2D vectors
     */
 
-    public double Angle(SSE p, SSE q, SSE r) {
+    public double angle(SSE p, SSE q, SSE r) {
         int pX = p.getCartoonX();
         int qX = q.getCartoonX();
         int rX = q.getCartoonX();
@@ -1265,29 +1265,29 @@ public class Chain {
         return Math.sqrt((dX * dX) + (dY * dY));
     }
 
-    public void CalculateConnections(double radius) {
+    public void calculateConnections(double radius) {
         int ExtensionIndex = 0;
         double[] Extensions = new double[] { 2.7, 7.7, 12.7, 17.7, 22.7 };
 
         for (SSE sse : this.sses) {
-            MakeConnection(radius, sse, ExtensionIndex, Extensions);
+            makeConnection(radius, sse, ExtensionIndex, Extensions);
         }
     }
 
-    public double NextExtension(int ExtensionIndex, double[] Extensions) {
+    public double nextExtension(int ExtensionIndex, double[] Extensions) {
         if (ExtensionIndex >= Extensions.length) ExtensionIndex = 0;
         double extension = Extensions[ExtensionIndex];
         ExtensionIndex += 1;    // XXX incrementing a scope-local variable FIXME 
         return extension;
     }
 
-    public void MakeConnection(double radius, SSE sse, int ExtensionIndex, double[] Extensions) {
+    public void makeConnection(double radius, SSE sse, int ExtensionIndex, double[] Extensions) {
         double PSMALL = 0.001;
         if (sse.To == null) return;
 
         // these are the condition under which the code generates a bent connection,
         // rather than the usual straight line joining symbols 
-        if (this.FindFixedStart(sse) != this.FindFixedStart(sse.To)) return;
+        if (this.findFixedStart(sse) != this.findFixedStart(sse.To)) return;
         if (sse.hasFixedType(FixedType.FT_SHEET) && !sse.To.hasFixedType(FixedType.FT_SANDWICH)) return;
         SSE q = sse.To;
         if (q == null) return;
@@ -1302,7 +1302,7 @@ public class Chain {
 
             double d1 = (sse.getDirection() == 'U')? -1.0 : 1.0;
         
-            double my = r.getCartoonY() + ( d1 * ( PSMALL * Math.abs(px - qx) + radius + NextExtension(ExtensionIndex, Extensions) ));
+            double my = r.getCartoonY() + ( d1 * ( PSMALL * Math.abs(px - qx) + radius + nextExtension(ExtensionIndex, Extensions) ));
             double ny = my;
             
             double d2, d3;

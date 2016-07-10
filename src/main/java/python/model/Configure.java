@@ -27,7 +27,7 @@ public class Configure {
         this.calculateFixedHands(chain);
         this.CalculateDirection(chain);
         this.calculateHands(chain);
-        chain.ClearPlaced();
+        chain.clearPlaced();
     }
 
     public void calculateStructureAxes(Chain chain) {
@@ -137,7 +137,7 @@ public class Configure {
             for (SSE q : chain.rangeFrom(p.To)) {
                 if (!q.isStrand() && !q.isHelix()) continue;
                 if (p.hasBridgePartner(q)) continue;
-                double shdis = chain.SimpleSSESeparation(p, q);
+                double shdis = chain.simpleSSESeparation(p, q);
                 if (shdis > CutoffDistance) continue;
 
                 // Update first secondary structure //
@@ -358,8 +358,8 @@ public class Configure {
             // a start point for dividing the structures. There are two layers if there exists an x 
             // position with two strands which have no common bridge partner
             boolean TwoLayers = false;
-            double CurrentXPos = chain.LeftMostPos(p);
-            List<SSE> CurrentList = chain.GetListAtXPosition(p, CurrentXPos);
+            double CurrentXPos = chain.leftMostPos(p);
+            List<SSE> CurrentList = chain.getListAtXPosition(p, CurrentXPos);
             while (!CurrentList.isEmpty()) {
                 for (int i = 0; i < CurrentList.size(); i++) {
                     SSE r = CurrentList.get(i);
@@ -368,7 +368,7 @@ public class Configure {
                         if (r.getFirstCommonBP(s) == null) {
                             TwoLayers = true;
                             StartXPos = (int) CurrentXPos;
-                            StartUpperList = chain.ListBPGroup(r, CurrentList);
+                            StartUpperList = chain.listBPGroup(r, CurrentList);
                             for (SSE t : CurrentList) {
                                 if (!StartUpperList.contains(t)) {
                                     StartLowerList.add(t);
@@ -382,7 +382,7 @@ public class Configure {
                 }
 
                 CurrentXPos += GridUnitSize;
-                CurrentList = chain.GetListAtXPosition(p, CurrentXPos);
+                CurrentList = chain.getListAtXPosition(p, CurrentXPos);
             }
 
             // divide layers if necessary
@@ -416,12 +416,12 @@ public class Configure {
     private void splitStrands(Chain chain, SSE p, int MaxListLen) {
         for (SSE r : chain.iterFixed(p)) {
             
-            List<SSE> CurrentList = chain.GetListAtPosition(p, r.getCartoonX(), r.getCartoonY());
+            List<SSE> CurrentList = chain.getListAtPosition(p, r.getCartoonX(), r.getCartoonY());
 
             if (CurrentList.size() > 1) { 
                 SSE bp = chain.getCommonBP(CurrentList, MaxListLen);
                 if (bp != null) {
-                    chain.SortListByBridgeRange(bp, CurrentList);
+                    chain.sortListByBridgeRange(bp, CurrentList);
                     this.SpreadList(CurrentList, bp.getDirection());
                 }
             }
@@ -467,7 +467,7 @@ public class Configure {
         int UNK_LAYER = 0;
 
         double CurrentXPos = StartXPos + Direction * GridUnitSize;
-        List<SSE> CurrentList = chain.GetListAtXPosition(p, CurrentXPos);
+        List<SSE> CurrentList = chain.getListAtXPosition(p, CurrentXPos);
         List<SSE> UpperList = StartUpperList;
         List<SSE> LowerList = StartLowerList;
 
@@ -528,7 +528,7 @@ public class Configure {
             }
                 
             CurrentXPos += Direction * GridUnitSize;
-            CurrentList = chain.GetListAtXPosition(p, CurrentXPos);
+            CurrentList = chain.getListAtXPosition(p, CurrentXPos);
         }
     }
     
@@ -543,20 +543,20 @@ public class Configure {
         double MinSpan = 5;
         double MaxSep = 10.0;
 
-        SSE Start = chain.FindFixedStart(p);
+        SSE Start = chain.findFixedStart(p);
 
         if (Start == null || !Start.hasFixedType(FixedType.FT_SHEET)) return;
 
         // first determine left and right most strands in the sheet """
-        SSE left = chain.GetListAtXPosition(Start, chain.LeftMostPos(Start)).get(0);
-        SSE right = chain.GetListAtXPosition(Start, chain.RightMostPos(Start)).get(0);
+        SSE left = chain.getListAtXPosition(Start, chain.leftMostPos(Start)).get(0);
+        SSE right = chain.getListAtXPosition(Start, chain.rightMostPos(Start)).get(0);
         
-        double span = chain.FixedSpan(Start, GridUnitSize);
+        double span = chain.fixedSpan(Start, GridUnitSize);
 
         // MaxSep is 0.65 of the separation if the sheet were flat with 4.5A between each pair of strands """
         MaxSep = 4.5 * (span - 1.0) * 0.65;
 
-        double sep = chain.SecStrucSeparation(left, right);
+        double sep = chain.secStrucSeparation(left, right);
 
         System.out.println(String.format("SheetCurvature %d %d %f %f", left.getSymbolNumber(), right.getSymbolNumber(), sep, MaxSep));
 
@@ -586,8 +586,8 @@ public class Configure {
             double YStart = 0.5 / Math.sin(Rads);
             double Z = 0.5 / Math.tan(Rads);
 
-            int CurrXPos = (int) chain.LeftMostPos(Start);
-            List<SSE> sseList = chain.GetListAtXPosition(Start, CurrXPos);
+            int CurrXPos = (int) chain.leftMostPos(Start);
+            List<SSE> sseList = chain.getListAtXPosition(Start, CurrXPos);
 
             double YEF = 0.75;
             while (sseList.size() > 0) {
@@ -600,7 +600,7 @@ public class Configure {
                 }
 
                 CurrXPos += GridUnitSize;
-                sseList = chain.GetListAtXPosition(Start, CurrXPos);
+                sseList = chain.getListAtXPosition(Start, CurrXPos);
 
                 X += AddDir * 2.0 * Rads;
            }
@@ -621,8 +621,8 @@ public class Configure {
         SSE prev = null;
         SSE curr = null;
 
-        double CurrXPos = chain.LeftMostPos(Start);
-        List<SSE> sseList = chain.GetListAtXPosition(Start, CurrXPos);
+        double CurrXPos = chain.leftMostPos(Start);
+        List<SSE> sseList = chain.getListAtXPosition(Start, CurrXPos);
         if (sseList.size() == 1) prev = sseList.get(0);
 
         char lastdir = 'X';
@@ -634,7 +634,7 @@ public class Configure {
         while (sseList.size() > 0) {
 
             CurrXPos += GridUnitSize;
-            sseList = chain.GetListAtXPosition(Start, CurrXPos);
+            sseList = chain.getListAtXPosition(Start, CurrXPos);
 
             if (sseList.size() == 1) curr = sseList.get(0);
             else curr = null;
@@ -713,11 +713,11 @@ public class Configure {
         double MaxContactSeparation = 13.0;
         double MinOverLap = 2 * this.GridUnitSize;
 
-        SSE p = chain.FindFixedStart(r);
-        SSE q = chain.FindFixedStart(s);
+        SSE p = chain.findFixedStart(r);
+        SSE q = chain.findFixedStart(s);
 
-        double s1 = chain.FixedSpan(p, this.GridUnitSize);
-        double s2 = chain.FixedSpan(q, this.GridUnitSize);
+        double s1 = chain.fixedSpan(p, this.GridUnitSize);
+        double s2 = chain.fixedSpan(q, this.GridUnitSize);
 
         double MinContacts = 0;
         if (s1 < s2) {
@@ -761,11 +761,11 @@ public class Configure {
 
     public void makeSandwich(Chain chain, SSE r, SSE s) {
         // determine relative sizes of sheets """
-        SSE rSheetStart = chain.FindFixedStart(r);
-        SSE sSheetStart = chain.FindFixedStart(s);
+        SSE rSheetStart = chain.findFixedStart(r);
+        SSE sSheetStart = chain.findFixedStart(s);
 
-        double spanR = chain.FixedSpan(rSheetStart, this.GridUnitSize);
-        double spanS = chain.FixedSpan(sSheetStart, this.GridUnitSize);
+        double spanR = chain.fixedSpan(rSheetStart, this.GridUnitSize);
+        double spanS = chain.fixedSpan(sSheetStart, this.GridUnitSize);
 
         SSE longSheetStart, shortSheetStart;
         if (spanR > spanS) {
@@ -779,18 +779,18 @@ public class Configure {
         // leave the longest alone and move the shortest """
 
         // first determine left and right most strands in the short sheet """
-        SSE shortSheetLeftMost = chain.LeftMost(shortSheetStart);
-        SSE shortSheetRightMost = chain.RightMost(shortSheetStart);
+        SSE shortSheetLeftMost = chain.leftMost(shortSheetStart);
+        SSE shortSheetRightMost = chain.rightMost(shortSheetStart);
 
         // determine the left most and right most strands in the long sheet """
-        SSE longSheetLeftMost = chain.LeftMost(longSheetStart);
-        SSE longSheetRightMost = chain.RightMost(longSheetStart);
+        SSE longSheetLeftMost = chain.leftMost(longSheetStart);
+        SSE longSheetRightMost = chain.rightMost(longSheetStart);
 
         // is the short sheet the right way round?, if not turn it """
-        double leftSeparation = chain.SecStrucSeparation(shortSheetLeftMost, longSheetLeftMost);
-        double rightSeparation = chain.SecStrucSeparation(shortSheetRightMost, longSheetLeftMost);
+        double leftSeparation = chain.secStrucSeparation(shortSheetLeftMost, longSheetLeftMost);
+        double rightSeparation = chain.secStrucSeparation(shortSheetRightMost, longSheetLeftMost);
         if (leftSeparation > rightSeparation) {
-            chain.FlipSymbols(shortSheetStart);
+            chain.flipSymbols(shortSheetStart);
             SSE tmp = shortSheetRightMost;
             shortSheetRightMost = shortSheetLeftMost;
             shortSheetLeftMost = tmp;
@@ -798,8 +798,8 @@ public class Configure {
 
         // now check directions of symbols """
         // this is done geometrically using the longest strand in each sheet """
-        SSE longestStrandInShortSheet = chain.LongestInFixed(rSheetStart);
-        SSE longestStrandInLongSheet = chain.LongestInFixed(sSheetStart);
+        SSE longestStrandInShortSheet = chain.longestInFixed(rSheetStart);
+        SSE longestStrandInLongSheet = chain.longestInFixed(sSheetStart);
         TorsionResult torsionResult = longestStrandInLongSheet.ClosestApproach(longestStrandInShortSheet);
         if (Math.abs(torsionResult.torsion) > 90.0) {
             if (longestStrandInShortSheet.getDirection() == longestStrandInLongSheet.getDirection()) {
@@ -817,15 +817,15 @@ public class Configure {
         
         // now reposition the short sheet, x direction try to get best position of left and right most strands in the
         //   short sheet subject with the constraint that the short sheet must lie within the x range of the long sheet  """
-        SSE closestLongShortLeft = chain.ClosestInFixed(longSheetStart, shortSheetLeftMost);
-        SSE closestLongShortRight = chain.ClosestInFixed(longSheetStart, shortSheetRightMost);
+        SSE closestLongShortLeft = chain.closestInFixed(longSheetStart, shortSheetLeftMost);
+        SSE closestLongShortRight = chain.closestInFixed(longSheetStart, shortSheetRightMost);
         double xmove = (closestLongShortLeft.getCartoonX() - shortSheetLeftMost.getCartoonX() + closestLongShortRight.getCartoonX() - shortSheetRightMost.getCartoonX()) / 2;
         double loff = longSheetLeftMost.getCartoonX() - shortSheetLeftMost.getCartoonX() - xmove;
         double roff = shortSheetRightMost.getCartoonX() + xmove - longSheetRightMost.getCartoonX();
         if (loff > 0) xmove += loff;
         if (roff > 0) xmove -= roff;
 
-        double ymove = chain.LowestPos(longSheetStart) - this.GridUnitSize - shortSheetLeftMost.getCartoonY();
+        double ymove = chain.lowestPos(longSheetStart) - this.GridUnitSize - shortSheetLeftMost.getCartoonY();
 
         for (SSE sse : chain.iterFixed(shortSheetStart)) {
             sse.setCartoonX((int)(sse.getCartoonX() + xmove));
@@ -872,7 +872,7 @@ public class Configure {
                 Hand chir = Chiral2d(chain, q, r);
                 if (chir != Hand._unk_hand) {
                     System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.getSymbolNumber()));
-                    chain.ReflectFixedXY(p);
+                    chain.reflectFixedXY(p);
                 }
             } else {
                 System.out.println("No suitable motif found for fixed chirality check");
@@ -884,11 +884,11 @@ public class Configure {
     private SSE find(Chain chain, SSE p) {
         // TODO : FIXME - see SetFixedHand!! XXX
         for (SSE q : chain.getSSEs()) {
-            if (chain.FindFixedStart(q) == p) {
+            if (chain.findFixedStart(q) == p) {
                 boolean found = false;
                 int n = 0;
                 for (SSE r : chain.rangeFrom(q.To)) {
-                    if (chain.FindFixedStart(r) != p) break;
+                    if (chain.findFixedStart(r) != p) break;
                     n += 1;
                     if (r.getDirection() == q.getDirection()) {
                         Hand chir = Chiral2d(chain, q, r);
@@ -970,9 +970,9 @@ public class Configure {
         for (SSE p : chain.iterNext(Root)) {
             if (p != Root) {
                 if (q.isParallel(p)) {
-                    if (p.getDirection() != q.getDirection()) chain.FlipSymbols(p);
+                    if (p.getDirection() != q.getDirection()) chain.flipSymbols(p);
                 } else {
-                    if (p.getDirection() == q.getDirection()) chain.FlipSymbols(p);
+                    if (p.getDirection() == q.getDirection()) chain.flipSymbols(p);
                 }
                 q = p;
             }
@@ -1049,7 +1049,7 @@ public class Configure {
                 SSE q;
                 if (i >= chain.getSSEs().size()) return null;
                 else q = chain.getSSEs().get(i);
-                if ((q.isStrand()) && (chain.FindFixedStart(q) == chain.FindFixedStart(p))) {
+                if ((q.isStrand()) && (chain.findFixedStart(q) == chain.findFixedStart(p))) {
                     if (q.getDirection() == p.getDirection()) return q;
                     else return null;
                 }

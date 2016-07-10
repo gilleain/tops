@@ -269,7 +269,7 @@ public class DsspReader {
     					int leftBridgeRes = chain.getLeftBridgePartner(currentResidue);
     					BridgeType leftBridgeType = chain.getLeftBridgeType(currentResidue);
     
-    					SSE leftBridge = chain.FindSecStr(leftBridgeRes);
+    					SSE leftBridge = chain.findSecStr(leftBridgeRes);
     					if ((leftBridgeRes < index) && (leftBridge != null) && (leftBridge.isStrand())) {
     						leftBridge.updateSecStr(p, index, BridgePartner.Side.LEFT, leftBridgeType);
     						BridgePartner.Side bridgeSide = this.findBridgeSide(chain, leftBridgeRes, index);
@@ -279,7 +279,7 @@ public class DsspReader {
     					int rightBridgeRes = chain.getRightBridgePartner(currentResidue);
     					BridgeType rightBridgeType = chain.getRightBridgeType(currentResidue);
     
-    					SSE rightBridge = chain.FindSecStr(rightBridgeRes);
+    					SSE rightBridge = chain.findSecStr(rightBridgeRes);
     					if ((rightBridgeRes < index) && (rightBridge != null) && (rightBridge.isStrand())) {
     						rightBridge.updateSecStr(p, index, BridgePartner.Side.RIGHT, rightBridgeType);
     						BridgePartner.Side bridgeSide = this.findBridgeSide(chain, rightBridgeRes, index);
@@ -339,7 +339,7 @@ public class DsspReader {
 		a small utility function to find the side for a bridge partner residue 
 	*/
 	private BridgePartner.Side findBridgeSide(Chain chain, int residue, int bridge) {
-		if (residue < chain.SequenceLength()) {
+		if (residue < chain.sequenceLength()) {
 			if (chain.getRightBridgePartner(residue) == bridge) { 
 				return BridgePartner.Side.LEFT;
 			} else if (chain.getLeftBridgePartner(residue) == bridge) {
@@ -417,7 +417,7 @@ public class DsspReader {
 		int mappedPos = IndexMapping[index];
 		System.out.println("Mapping " + CountRes + " to " + mappedPos + " NRG " + energy);
 		if (check(mappedPos, nDsspRes, bond, energy, HBondECutoff)) {
-			chain.AddDonatedBond(CountRes, mappedPos, energy);
+			chain.addDonatedBond(CountRes, mappedPos, energy);
 		}
 	}
 
@@ -427,7 +427,7 @@ public class DsspReader {
 		int mappedPos = IndexMapping[index];
 		System.out.println("Mapping " + CountRes + " to " + mappedPos + " NRG " + energy);
 		if (check(mappedPos, nDsspRes, bond, energy, HBondECutoff)) {
-			chain.AddAcceptedBond(CountRes, mappedPos, energy);
+			chain.addAcceptedBond(CountRes, mappedPos, energy);
 		}
     }
 	

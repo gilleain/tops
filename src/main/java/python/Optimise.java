@@ -210,10 +210,10 @@ public class Optimise {
     private double SQR(double x) { return x * x; }
 
     private double insideBarrelEnergy(Chain chain, SSE FixedStart, double Penalty) {
-        Chain.Circle boundingCircle = chain.FixedBoundingCircle(FixedStart);
+        Chain.Circle boundingCircle = chain.fixedBoundingCircle(FixedStart);
         double energy = 0;
         for (SSE sse : chain.getSSEs()) {
-            SSE foundFixedStart = chain.FindFixedStart(sse);
+            SSE foundFixedStart = chain.findFixedStart(sse);
             if (foundFixedStart != FixedStart && sse.IsInCircle(boundingCircle)) {
                 energy += Penalty;
             }
@@ -232,7 +232,7 @@ public class Optimise {
         if (NumberSymbols < 3) return;
 
 
-        int NumberFixed = cartoon.NumberFixed();
+        int NumberFixed = cartoon.numberFixed();
 
         double[] X = new double[NumberSymbols];
         double[] Y = new double[NumberSymbols];
@@ -272,9 +272,9 @@ public class Optimise {
         }
 
         //optimize
-        SSE CenterFixed = cartoon.LargestFixed();
+        SSE CenterFixed = cartoon.largestFixed();
         // print "CenterFixed =", CenterFixed
-        int NoMove = cartoon.NumberLink(CenterFixed);
+        int NoMove = cartoon.numberLink(CenterFixed);
 
         double LowestEnergy = calculateEnergy(cartoon);
         double StartingEnergy = LowestEnergy;

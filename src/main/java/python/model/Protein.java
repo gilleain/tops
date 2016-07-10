@@ -163,8 +163,8 @@ public class Protein {
     public void ForceConsistent( Protein p ) {
 
         for (Chain chain : this.chains) {
-            for (int i = 0; i < chain.SequenceLength(); i++) {
-                if ( chain.IsExtended(i) ) {
+            for (int i = 0; i < chain.sequenceLength(); i++) {
+                if ( chain.isExtended(i) ) {
     
                     int Dom = ResidueDomain(i);
     
@@ -183,7 +183,7 @@ public class Protein {
         }
 
         for (Chain chain : this.chains) {
-            chain.ForceConsistent(p);
+            chain.forceConsistent(p);
         }
     }
 
@@ -380,7 +380,7 @@ public class Protein {
 
     public int ResidueDomain(int Residue) {
         for (Chain chain : chains) {
-            if ((Residue >= chain.SequenceLength()) || (Residue < 0)) {
+            if ((Residue >= chain.sequenceLength()) || (Residue < 0)) {
                 return -1;
             }
     
@@ -440,7 +440,7 @@ public class Protein {
         }
 
         /* Now check the whole associated fixed list */
-        for (p = chain.FindFixedStart(p); p != null; p = p.getFixed()) {
+        for (p = chain.findFixedStart(p); p != null; p = p.getFixed()) {
             Segment = SingleSSIsInDomain(p, Domain);
             if (Segment > 0) {
                 ExclusionType = 1;
@@ -878,7 +878,7 @@ public class Protein {
 
     public void BridgePartFromHBonds() {
         for (Chain chain : chains) {
-            chain.BridgePartFromHBonds();
+            chain.bridgePartFromHBonds();
         }
     }
 
