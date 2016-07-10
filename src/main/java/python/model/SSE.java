@@ -960,5 +960,9 @@ public class SSE {
         return cartoonSymbol.isSymbolPlaced();
     }
 
+    public void setAxis(Axis axis) {
+        this.axis = axis;
+    }
+
     
 }
