@@ -317,11 +317,6 @@ public class Chain {
         //XXX
     }
 
-    public int fixedNumber() {
-//        return this.fixed.size();
-        return -1;  /// XXX 
-    }
-
     /*
         Hand calculator
         Updated to call T. Slidel's chirality calculation by D. Westhead 20/5/97
