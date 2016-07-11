@@ -1,4 +1,4 @@
-package python.model;
+package tops.port.model;
 
 public class DomainDefinition {
     int MAX_SEGMENTS = 50;

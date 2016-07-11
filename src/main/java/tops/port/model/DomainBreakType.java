@@ -1,4 +1,4 @@
-package python.model;
+package tops.port.model;
 
 enum DomainBreakType {
     NOT_DOM_BREAK,

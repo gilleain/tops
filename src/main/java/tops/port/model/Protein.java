@@ -1,12 +1,12 @@
-package python.model;
+package tops.port.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import python.model.DomainDefinition.DomainType;
-import python.model.Protein.DomainId;
+import tops.port.model.DomainDefinition.DomainType;
+import tops.port.model.Protein.DomainId;
 
 import java.io.File;
 import java.io.BufferedReader;

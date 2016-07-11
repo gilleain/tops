@@ -1,4 +1,4 @@
-package python.model;
+package tops.port.model;
 
 public enum Hand {
     _unk_hand,

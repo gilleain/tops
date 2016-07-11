@@ -1,4 +1,4 @@
-package python.model;
+package tops.port.model;
 
 public enum BridgeType {
     ANTI_PARALLEL_BRIDGE,

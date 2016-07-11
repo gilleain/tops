@@ -1,4 +1,4 @@
-package python;
+package tops.port;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -9,12 +9,12 @@ import java.util.Random;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
-import python.model.Cartoon;
-import python.model.Chain;
-import python.model.FixedType;
-import python.model.Hand;
-import python.model.Neighbour;
-import python.model.SSE;
+import tops.port.model.Cartoon;
+import tops.port.model.Chain;
+import tops.port.model.FixedType;
+import tops.port.model.Hand;
+import tops.port.model.Neighbour;
+import tops.port.model.SSE;
 
 public class Optimise {
     

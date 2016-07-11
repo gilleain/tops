@@ -1,4 +1,4 @@
-package python;
+package tops.port;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import python.model.DomainDefinition;
-import python.model.Protein;
+import tops.port.model.DomainDefinition;
+import tops.port.model.Protein;
 
 public class DomainBoundaryFileReader {
 

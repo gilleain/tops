@@ -1,4 +1,4 @@
-package python.model;
+package tops.port.model;
 
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Integer.parseInt;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import javax.vecmath.Point3d;
 
-import python.model.Chain.SSEType;
+import tops.port.model.Chain.SSEType;
 
 public class DsspReader {
     

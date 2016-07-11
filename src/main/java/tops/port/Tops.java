@@ -1,4 +1,4 @@
-package python;
+package tops.port;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,14 +10,14 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import python.model.BridgePartner;
-import python.model.Cartoon;
-import python.model.DomainDefinition;
-import python.model.DsspReader;
-import python.model.Neighbour;
-import python.model.PlotFragInformation;
-import python.model.Protein;
-import python.model.SSE;
+import tops.port.model.BridgePartner;
+import tops.port.model.Cartoon;
+import tops.port.model.DomainDefinition;
+import tops.port.model.DsspReader;
+import tops.port.model.Neighbour;
+import tops.port.model.PlotFragInformation;
+import tops.port.model.Protein;
+import tops.port.model.SSE;
 
 /*
 	Program:         TOPS
