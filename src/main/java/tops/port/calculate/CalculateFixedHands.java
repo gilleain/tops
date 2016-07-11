@@ -23,7 +23,7 @@ public class CalculateFixedHands implements Calculation {
     
     public void calculate(Chain chain) {
         for (SSE sse : chain.getSSEs()) {
-            if (sse.hasFixed()) this.SetFixedHand(chain, sse);
+            if (sse.hasFixed()) this.setFixedHand(chain, sse);
         }
     }
     
@@ -34,14 +34,14 @@ public class CalculateFixedHands implements Calculation {
      * Beta-x-Beta unit. Note that TIM barrels do not lie in this category but
      * are already drawn with correct chirality.
      **/
-    public void SetFixedHand(Chain chain, SSE p) {
+    public void setFixedHand(Chain chain, SSE p) {
         if (allowedTypes.contains(p.getFixedType())) {
             System.out.println(String.format("Checking fixed structure chirality for fixed start %d", p.getSymbolNumber()));
             SSE q = find(chain, p);
             if (q != null) {
                 System.out.println("Found suitable motif for fixed chirality check");
                 SSE r = null;   // XXX FIXME XXX
-                Hand chir = Chiral2d(chain, q, r);
+                Hand chir = chiral2d(chain, q, r);
                 if (chir != Hand._unk_hand) {
                     System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.getSymbolNumber()));
                     chain.reflectFixedXY(p);
@@ -63,7 +63,7 @@ public class CalculateFixedHands implements Calculation {
                     if (chain.findFixedStart(r) != p) break;
                     n += 1;
                     if (r.getDirection() == q.getDirection()) {
-                        Hand chir = Chiral2d(chain, q, r);
+                        Hand chir = chiral2d(chain, q, r);
                         if (n > 1 && chir != Hand._unk_hand) {
                             found = true;
                         } else {
@@ -83,7 +83,7 @@ public class CalculateFixedHands implements Calculation {
      * the determinant of the matrix of course, this would mean not re-using the
      * Torsion method so cunningly, but hey.
      */
-    public Hand Chiral2d(Chain chain, SSE p, SSE q) {
+    public Hand chiral2d(Chain chain, SSE p, SSE q) {
         Hand hand = Hand._unk_hand;
         Hand lasthand = Hand._unk_hand;
 

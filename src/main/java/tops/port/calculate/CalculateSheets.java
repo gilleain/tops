@@ -24,20 +24,20 @@ public class CalculateSheets implements Calculation {
     public void calculate(Chain chain) {
         System.out.println("Calculating sheets and barrels");
 
-        List<SSE> Barrel;
+        List<SSE> barrel;
         for (SSE p : chain.getSSEs()) { 
             if (!p.isSymbolPlaced() && p.isStrand()) {
-                Barrel = this.DetectBarrel(p);
-                if (Barrel.size() > 0) {
+                barrel = this.detectBarrel(p);
+                if (barrel.size() > 0) {
                     System.out.println("Barrel detected");
-                    this.makeBarrel(chain, Barrel, GridUnitSize);
+                    this.makeBarrel(chain, barrel, GridUnitSize);
                 } else {
                     System.out.println("Sheet detected");
                     SSE q = p.FindEdgeStrand(null);
                     if (!q.isSymbolPlaced()) {
                         this.makeSheet(chain, q, null, GridUnitSize);
                         if (q.hasFixedType(FixedType.FT_SHEET)) {
-                            this.SheetCurvature(chain, q);
+                            this.sheetCurvature(chain, q);
                         }
                     }
                 }
@@ -50,10 +50,10 @@ public class CalculateSheets implements Calculation {
      * cycle of strands but with the possibility of some strands also
      * participating in another sheet a chain method
      */
-    public List<SSE> DetectBarrel(SSE p) {
+    public List<SSE> detectBarrel(SSE p) {
         List<SSE> barrel = new ArrayList<SSE>();
         List<SSE> visited = new ArrayList<SSE>();
-        this.FindBarrel(p, barrel, visited, null);
+        this.findBarrel(p, barrel, visited, null);
         return barrel;
     }
     
@@ -61,7 +61,7 @@ public class CalculateSheets implements Calculation {
      * This function detects and enumerates the first cycle found in a set of
      * strands connected by BridgePartner relationships
      */
-    public boolean FindBarrel(SSE p, List<SSE> barrel, List<SSE> visited, SSE AddFrom) {
+    public boolean findBarrel(SSE p, List<SSE> barrel, List<SSE> visited, SSE AddFrom) {
 
         if (visited.contains(p)) {
             //If we've been to this node before then we've detected a barrel - return true//
@@ -74,7 +74,7 @@ public class CalculateSheets implements Calculation {
             for (SSE bridgePartner : p.getPartners()) {
                 if (bridgePartner == AddFrom) continue;
 
-                if (this.FindBarrel(bridgePartner, barrel, visited, p)) {
+                if (this.findBarrel(bridgePartner, barrel, visited, p)) {
                     if (barrel.get(0) != p) barrel.add(p);
                     return true;
                 }
@@ -83,10 +83,10 @@ public class CalculateSheets implements Calculation {
         return false;
     }
     
-    public void makeBarrel(Chain chain, List<SSE> Barrel, double GridUnitSize) {
+    public void makeBarrel(Chain chain, List<SSE> barrel, double GridUnitSize) {
         System.out.println("making barrel...");
 
-        int NStrands = Barrel.size();
+        int NStrands = barrel.size();
 
         double Rads = Math.PI / (double) NStrands;
         double X = Rads;
@@ -96,7 +96,7 @@ public class CalculateSheets implements Calculation {
         // this bit ensures that TIM barrels get the correct chirality """
         int start = 0;
         int increment = 0;
-        if (Barrel.get(1).getSymbolNumber() < Barrel.get(Barrel.size() - 1).getSymbolNumber()) {
+        if (barrel.get(1).getSymbolNumber() < barrel.get(barrel.size() - 1).getSymbolNumber()) {
             start = 0;
             increment = 1;
         } else {
@@ -104,8 +104,8 @@ public class CalculateSheets implements Calculation {
             increment = -1;
         }
 
-        SSE p = Barrel.get(start);
-        SSE LastInBarrel = p;
+        SSE p = barrel.get(start);
+        SSE lastInBarrel = p;
         p.setDirection('D');
         
         System.out.println(String.format("make barrel start, nstrands, increment= %s %s %s", start, NStrands, increment));
@@ -114,14 +114,14 @@ public class CalculateSheets implements Calculation {
             System.out.println("make barrel count= " + count);
             X = Rads + 2.0 * count * Rads;
 
-            SSE q = Barrel.get(i);
+            SSE q = barrel.get(i);
             q.setFixedType(FixedType.FT_BARREL);
 
             if (count != 0) {
                 chain.moveFixed(p, q);
-                q.AssignRelDirection(LastInBarrel);
+                q.AssignRelDirection(lastInBarrel);
             }
-            LastInBarrel = q;
+            lastInBarrel = q;
             q.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
             q.setCartoonY((int) ((Y * Math.cos(X) - Z) * GridUnitSize));
             q.setSymbolPlaced(true);
@@ -129,7 +129,7 @@ public class CalculateSheets implements Calculation {
             double Y1 = Y+1;
             for (BridgePartner bridgePartner : q.getBridgePartners()) {
                 SSE r = bridgePartner.partner;
-                if (!Barrel.contains(r)) {
+                if (!barrel.contains(r)) {
                     r.setFixedType(FixedType.FT_BARREL);
                     r.AssignRelDirection(q);
                     r.setCartoonX((int) ((Y1 * Math.sin(X) - 0.5) * GridUnitSize));
@@ -204,7 +204,7 @@ public class CalculateSheets implements Calculation {
                 chain.moveFixed(q, p);
                 p.AssignRelDirection(q);
             }
-      }
+        }
         
 
         // For all bridge partners except q repeat
@@ -281,8 +281,8 @@ public class CalculateSheets implements Calculation {
         
 
         // divide to right, then left
-        this.SplitSheet(chain, p, StartUpperList, StartLowerList, StartXPos, 1);
-        this.SplitSheet(chain, p, StartUpperList, StartLowerList, StartXPos, -1);
+        this.splitSheet(chain, p, StartUpperList, StartLowerList, StartXPos, 1);
+        this.splitSheet(chain, p, StartUpperList, StartLowerList, StartXPos, -1);
     }
     
     private void splitStrands(Chain chain, SSE p, int MaxListLen) {
@@ -294,13 +294,13 @@ public class CalculateSheets implements Calculation {
                 SSE bp = chain.getCommonBP(CurrentList, MaxListLen);
                 if (bp != null) {
                     chain.sortListByBridgeRange(bp, CurrentList);
-                    this.SpreadList(CurrentList, bp.getDirection());
+                    this.spreadList(CurrentList, bp.getDirection());
                 }
             }
         }
     }
     
-    public void SpreadList(List<SSE> sseList, char Direction) {
+    public void spreadList(List<SSE> sseList, char Direction) {
         int n = sseList.size();
 
         int span = 0;
@@ -331,7 +331,7 @@ public class CalculateSheets implements Calculation {
         }
     }
     
-    public void SplitSheet(Chain chain, SSE p, List<SSE> StartUpperList, List<SSE> StartLowerList, int StartXPos, int Direction) {
+    public void splitSheet(Chain chain, SSE p, List<SSE> StartUpperList, List<SSE> StartLowerList, int StartXPos, int Direction) {
 
         int UPPER_LAYER = 3;
         int MIDDLE_LAYER = 2;
@@ -411,7 +411,7 @@ public class CalculateSheets implements Calculation {
      * as FT_SHEET, and the former type should not be examined by SheetCurvature
      * 
      */
-    public void SheetCurvature(Chain chain, SSE p) {
+    public void sheetCurvature(Chain chain, SSE p) {
 
         double MinSpan = 5;
         double MaxSep = 10.0;
@@ -440,7 +440,7 @@ public class CalculateSheets implements Calculation {
             for (SSE q : chain.iterFixed(Start)) q.setFixedType(FixedType.FT_CURVED_SHEET);
 
             // this direction calculation is to ensure that sheets from AB barrels are plotted with the correct chirality """
-            SeqDirResult result = this.FindSheetSeqDir(chain, Start);
+            SeqDirResult result = this.findSheetSeqDir(chain, Start);
             double AddDir;
             if (result.SeqDir == 1) {
                 if (result.Dir == 'D') AddDir = 1.0;
@@ -480,7 +480,7 @@ public class CalculateSheets implements Calculation {
         }
     }
     
-    public SeqDirResult FindSheetSeqDir(Chain chain, SSE Start) {
+    public SeqDirResult findSheetSeqDir(Chain chain, SSE Start) {
         SSE prev = null;
         SSE curr = null;
 

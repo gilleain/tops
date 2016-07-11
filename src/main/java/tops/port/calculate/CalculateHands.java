@@ -9,7 +9,7 @@ public class CalculateHands implements Calculation {
     public void calculate(Chain chain) {
         System.out.println("Calculating chiralities");
         for (SSE p : chain.getSSEs()) {
-            p.Chirality = this.Hand3D(chain, p);
+            p.Chirality = this.hand3D(chain, p);
         }
     }
     
@@ -18,7 +18,7 @@ public class CalculateHands implements Calculation {
      * Westhead 20/5/97 If handedness is uncertain, or an error occurrs, right
      * handed is assumed an sse method
      */
-    public Hand Hand3D(Chain chain, SSE p) {
+    public Hand hand3D(Chain chain, SSE p) {
 
         SSE q = this.topsChiralPartner(chain, p);
         if (q != null) {

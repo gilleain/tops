@@ -18,7 +18,7 @@ public class CalculateStructureAxes implements Calculation {
         System.out.println("Calculating secondary structure vectors");
         for (SSE sse : chain.getSSEs()) {
             if (!sse.isStrand() && !sse.isHelix()) continue;
-            SecondaryStructureAxis(chain, sse);
+            secondaryStructureAxis(chain, sse);
         }
 
         /* 
@@ -36,7 +36,7 @@ public class CalculateStructureAxes implements Calculation {
     }
     
 
-    public void SecondaryStructureAxis(Chain chain, SSE sse) {
+    public void secondaryStructureAxis(Chain chain, SSE sse) {
         sse.setAxis(
                 chain.secondaryStructureAxis(
                         sse.sseData.SeqStartResidue, sse.sseData.SeqFinishResidue));
@@ -56,7 +56,7 @@ public class CalculateStructureAxes implements Calculation {
             int ConnectLoopLen = p.sseData.SeqStartResidue - p.From.sseData.SeqFinishResidue - 1;
             if (p.isStrand() && p.From != null && p.From.isStrand() && ConnectLoopLen < MergeStrands) {
                 int VShortLoop = 1;
-                int cbpd = this.ConnectBPDistance(p, p.From);
+                int cbpd = this.connectBPDistance(p, p.From);
                 boolean sheetMerge = this.MergeBetweenSheets != 0 && ConnectLoopLen <= VShortLoop;
                 if ((cbpd == 2 && p.sameBPSide(p.From)) || (cbpd > 5) ||sheetMerge ) {
                     TorsionResult result = p.ClosestApproach(p.From);
@@ -71,10 +71,10 @@ public class CalculateStructureAxes implements Calculation {
     }
     
 
-    public int ConnectBPDistance(SSE p, SSE q) {
+    public int connectBPDistance(SSE p, SSE q) {
         List<SSE> connectList = new ArrayList<SSE>();
         List<Integer> distances = new ArrayList<Integer>();
-        this.ListBPConnected(p, 0, connectList, distances);
+        this.listBPConnected(p, 0, connectList, distances);
         if (connectList.contains(q)) {
             return distances.get(connectList.indexOf(q));
         } else {
@@ -82,7 +82,7 @@ public class CalculateStructureAxes implements Calculation {
         }
     }
 
-    public void ListBPConnected(SSE p, int currentDistance, List<SSE> connectList, List<Integer> distances) {
+    public void listBPConnected(SSE p, int currentDistance, List<SSE> connectList, List<Integer> distances) {
         if (connectList.contains(p)) {
             int listPos = connectList.indexOf(p);
             if (currentDistance < distances.get(listPos)) {
@@ -95,7 +95,7 @@ public class CalculateStructureAxes implements Calculation {
             currentDistance += 1;
             for (SSE q : p.getPartners()) {
                 if (q == null) break;
-                this.ListBPConnected(q, currentDistance, connectList, distances);
+                this.listBPConnected(q, currentDistance, connectList, distances);
             }
         }
     }

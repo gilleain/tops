@@ -25,7 +25,7 @@ public class CalculateSandwiches implements Calculation {
                 for (SSE s : chain.iterNext(r)) {
                     String sDomain = this.FindDomain(s);
                     if (s.isStrand() && s.hasFixedType(FixedType.FT_SHEET) && sDomain == rDomain) { 
-                        if (this.IsSandwich(chain, r, s)) {
+                        if (this.isSandwich(chain, r, s)) {
                             System.out.println(String.format("Sandwich detected between %s and %s" , r, s));
                             sandwiches.add(new SSE[] {r, s});
                             this.makeSandwich(chain, r, s);
@@ -54,7 +54,7 @@ public class CalculateSandwiches implements Calculation {
     pairwise contacts - this number is the the number of strands in the smallest sheet - ,
     and these contacts must span at least two strands of the larger sheet 
     **/
-    public boolean IsSandwich(Chain chain, SSE r, SSE s) {
+    public boolean isSandwich(Chain chain, SSE r, SSE s) {
         int ncontacts = 0;
         double MaxContactSeparation = 13.0;
         double MinOverLap = 2 * this.GridUnitSize;
