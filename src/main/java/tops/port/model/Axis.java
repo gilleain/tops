@@ -46,6 +46,21 @@ public class Axis {
 //        this.AxisLength = chain.distance3D(start, finish);
     }
     
+    public Vector3d getVector() {
+        // return vector(end - start)
+        Vector3d v = new Vector3d(AxisFinishPoint);
+        v.sub(AxisStartPoint);
+        return v;
+    }
+    
+    public Point3d getCentroid() {  // XXX is 'centroid' the right word?
+        // return sum(start, end) / 2
+        Point3d p = new Point3d(AxisStartPoint);
+        p.add(AxisFinishPoint);
+        p.scale(0.5);
+        return p;
+    }
+    
     public double getLength() {
         return this.length;
     }

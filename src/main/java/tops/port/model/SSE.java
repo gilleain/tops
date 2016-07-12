@@ -127,6 +127,10 @@ public class SSE {
         cartoonSymbol.setCartoonY(cartoonY);
     }
     
+    public BridgeRange getBridgeRange(int i) {
+        return this.BridgeRange.get(i);
+    }
+    
     public BridgePartner getBridgePartner(int index) {
         return this.BridgePartners.get(index);
     }
@@ -271,106 +275,11 @@ public class SSE {
         // FIXME - merge ranges only seem to be needed for chiral
         //        p.MergeRanges.append(new int[] {q.SeqStartResidue, q.SeqFinishResidue});
     }
-    
-    public void assignRelativeSides() {
-        if (isStrand()) {
-            for (BridgePartner bp : BridgePartners) {
-                bp.side = BridgePartner.Side.UNKNOWN;
-            }
-            int RefBP = LongestBridgeRange();
-            BridgePartner BP1 = BridgePartners.get(RefBP);
-            if (RefBP >= 0 && BP1 != null) {
-                BP1.side = BridgePartner.Side.LEFT;
-                // Assign side for those 'BridgeOverlap'ing with the RefBP //
-                for (int j = 0; j < BridgePartners.size(); j++) {
-                    BridgePartner BP2 = BridgePartners.get(j);
-                    if (j != RefBP && BP2 != null) {
-                        if (bridgeOverlap(this, BP1.partner, BP2.partner)) {
-                            BP2.side = BridgePartner.Side.RIGHT;
-                        }
-                    }
-                }
-                // Sort out any other sides which can be calculated by BridgeOverlaps with other than the RefBP //
-                for (int j = 0; j < BridgePartners.size(); j++) {
-                    BridgePartner BP2 = BridgePartners.get(j);
-                    if (BP2 != null && BP2.side == BridgePartner.Side.UNKNOWN) {
-                        for (int k = 0; k < BridgePartners.size(); k++) {
-                            BridgePartner BP3 = BridgePartners.get(k);
-                            if (k != j && BP3 != null && BP3.side == BridgePartner.Side.UNKNOWN) {
-                                if (bridgeOverlap(this, BP2.partner, BP3.partner)) {
-                                    if (BP3.side == BridgePartner.Side.LEFT)
-                                        BP2.side = BridgePartner.Side.RIGHT;
-                                    } else {
-                                        BP2.side = BridgePartner.Side.LEFT;
-                                    }
-                                }
-                            }
-                        }
-                    }
 
-                // The rest have to be done geometrically //
-                for (int j = 0; j < BridgePartners.size(); j++) {
-                    BridgePartner BP2 = BridgePartners.get(j);
-                    if (BP2 != null && BP2.side == BridgePartner.Side.UNKNOWN) {
-                        if (GeometricSameSide(this, BP1.partner, BP2.partner)) {
-                            BP2.side = BridgePartner.Side.LEFT;
-                        } else {
-                            BP2.side = BridgePartner.Side.RIGHT;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    /*
-    Function to determine whether the bridge partners of p overlap.
-    ie. are the same residues hydrogen bonding to q and r?
-     */
-    public boolean bridgeOverlap(SSE p, SSE q, SSE r) {
-
-        // Find the index to q //
-        int i = p.FindBPIndex(q);
-
-        // Find the index to r //
-        int j = p.FindBPIndex(r);
-
-        // Compare ranges //
-        int a = p.BridgeRange.get(i).start;
-        int b = p.BridgeRange.get(i).end;
-        int x = p.BridgeRange.get(j).start;
-        int y = p.BridgeRange.get(j).end;
-
-        // Not a---b x---y or x---y a---b //
-        return !(b < x || y < a);  
+    public char getSSEType() {
+        return this.SSEType;
     }
 
-    
-    /*
-    A function to decide geometrically whether strand p lies on the same or opposite side 
-    of strand q as strand r
-  */
-  public boolean GeometricSameSide(SSE q, SSE r, SSE p) {
-
-//      v1[i] = q.AxisFinishPoint[i] - q.AxisStartPoint[i];
-//      midr[i] = (r.AxisFinishPoint[i] + r.AxisStartPoint[i]) / 2.0;
-//      midp[i] = (p.AxisFinishPoint[i] + p.AxisStartPoint[i]) / 2.0;
-//      v2[i] = midr[i] - q.AxisStartPoint[i];
-//      v3[i] = midp[i] - q.AxisStartPoint[i];
-//
-//      double normal2 = v2.cross(v1).normal();
-//      double normal1 = v1.cross(v3).normal();
-//
-//      double costheta = -(normal1 * normal2);
-//
-//      return costheta > 0.0;
-      return false;
-  }
-    
-  public char getSSEType() {
-      return this.SSEType;
-  }
-  
     public boolean isStrand() {
         return this.SSEType == 'E';
     }
