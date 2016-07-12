@@ -33,7 +33,7 @@ public class CalculateSheets implements Calculation {
                     this.makeBarrel(chain, barrel, GridUnitSize);
                 } else {
                     System.out.println("Sheet detected");
-                    SSE q = p.FindEdgeStrand(null);
+                    SSE q = findEdgeStrand(p, null);
                     if (!q.isSymbolPlaced()) {
                         this.makeSheet(chain, q, null, GridUnitSize);
                         if (q.hasFixedType(FixedType.FT_SHEET)) {
@@ -41,6 +41,24 @@ public class CalculateSheets implements Calculation {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    //FIXME 
+    //recursive and unidirectional!//
+    public SSE findEdgeStrand(SSE current, SSE last) {
+        SSE partner0 = current.getBridgePartners().get(0).partner;
+        SSE partner1 = current.getBridgePartners().get(1).partner;
+        System.out.println(String.format(
+                "find edge strand at %s bridge partners %s and %s", this, partner0, partner1));
+        if (partner0 == null || partner1 == null) {
+            return current;
+        } else {
+            if (partner0 != last) {
+                return this.findEdgeStrand(partner0, current);
+            } else {
+                return this.findEdgeStrand(partner1, current);
             }
         }
     }

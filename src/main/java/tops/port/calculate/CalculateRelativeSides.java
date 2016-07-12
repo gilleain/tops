@@ -1,7 +1,9 @@
 package tops.port.calculate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -71,30 +73,25 @@ public class CalculateRelativeSides implements Calculation {
     }
 
     public int connectBPDistance(SSE p, SSE q) {
-        List<SSE> connectList = new ArrayList<SSE>();
-        List<Integer> distances = new ArrayList<Integer>();
-        this.listBPConnected(p, 0, connectList, distances);
-        if (connectList.contains(q)) {
-            return distances.get(connectList.indexOf(q));
+        Map<SSE, Integer> distanceMap = new HashMap<SSE, Integer>();
+        this.listBPConnected(p, 0, distanceMap);
+        if (distanceMap.containsKey(q)) {
+            return distanceMap.get(q);
         } else {
             return -1;
         }
     }
 
-    public void listBPConnected(SSE p, int currentDistance, List<SSE> connectList, List<Integer> distances) {
-        if (connectList.contains(p)) {
-            int listPos = connectList.indexOf(p);
-            if (currentDistance < distances.get(listPos)) {
-                distances.set(listPos, currentDistance);
+    public void listBPConnected(SSE p, int currentDistance, Map<SSE, Integer> distances) {
+        if (distances.containsKey(p)) {
+            if (currentDistance < distances.get(p)) {
+                distances.put(p, currentDistance);
             }
-            return;
         } else {
-            connectList.add(p);
-            distances.add(currentDistance);
-            currentDistance += 1;
+            distances.put(p, currentDistance);
             for (SSE q : p.getPartners()) {
                 if (q == null) break;
-                this.listBPConnected(q, currentDistance, connectList, distances);
+                this.listBPConnected(q, currentDistance + 1, distances);
             }
         }
     }
@@ -178,20 +175,13 @@ public class CalculateRelativeSides implements Calculation {
      */
     public boolean geometricSameSide(SSE q, SSE r, SSE p) {
 
-        //      v1[i] = q.AxisFinishPoint[i] - q.AxisStartPoint[i];
         Vector3d v1 = q.axis.getVector();
-
-        //      midr[i] = (r.AxisFinishPoint[i] + r.AxisStartPoint[i]) / 2.0;
         Point3d midr = r.axis.getCentroid();
-
-        //      midp[i] = (p.AxisFinishPoint[i] + p.AxisStartPoint[i]) / 2.0;
         Point3d midp = p.axis.getCentroid();
 
-        //      v2[i] = midr[i] - q.AxisStartPoint[i];
         Vector3d v2 = new Vector3d(midr);
         v2.sub(q.axis.AxisStartPoint);
 
-        //      v3[i] = midp[i] - q.AxisStartPoint[i];
         Vector3d v3 = new Vector3d(midp);
         v3.sub(q.axis.AxisStartPoint);
 

@@ -191,24 +191,6 @@ public class SSE {
         return sses;
     }
     
-    //FIXME 
-    //recursive and unidirectional!//
-    public SSE FindEdgeStrand(SSE last) {
-        SSE partner0 = BridgePartners.get(0).partner;
-        SSE partner1 = BridgePartners.get(1).partner;
-        System.out.println(String.format(
-                "find edge strand at %s bridge partners %s and %s", this, partner0, partner1));
-        if (partner0 == null || partner1 == null) {
-            return this;
-        } else {
-            if (partner0 != last) {
-                return this.FindEdgeStrand(partner0);
-            } else {
-                return this.FindEdgeStrand(partner1);
-            }
-        }
-    }
-    
     /*
     function join_to_last
 
