@@ -101,12 +101,12 @@ public class Chain {
         this.CACoords.add(point);
     }
     
-    public Axis secondaryStructureAxis(int seqStartResidue, int seqFinishResidue) {
+    public List<Point3d> secondaryStructureAxis(int seqStartResidue, int seqFinishResidue) {
         List<Point3d> coords = new ArrayList<Point3d>();
         for (int index = seqStartResidue - 1; index < seqFinishResidue; index++) {
             coords.add(CACoords.get(index));
         }
-        return new Axis(coords);
+        return coords;
     }
     
     public char getName() {

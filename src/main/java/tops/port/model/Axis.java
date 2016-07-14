@@ -2,49 +2,275 @@ package tops.port.model;
 
 import java.util.List;
 
-import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 public class Axis {
     
     private char SSEType;
-    private Vector2d start;
-    private Vector2d finish;
     private double length;
     public Vector3d AxisStartPoint;
     public Vector3d AxisFinishPoint;
 
     public Axis(List<Point3d> coords) { 
-//        int n = coords.size();
-//        boolean isE = (this.SSEType == 'E');
-//        if ((n < 3 && isE) || (n < 5 && !isE)) {
-//            //print "len, start, end = ", len(chain.CACoords), this.SeqStartResidue, this.SeqFinishResidue
-//            this.start  = x[0];
-//            this.finish= x[-1];
-//            this.length = 0.0;
-//        }
-//
-//        // Calculate centroid of secondary structure, and eigenvalues
-//        centroid = new Vector2d(average(coords));
-//        coords = array([array(xi - centroid) for xi in coords]);
-//        B = matrixmultiply(transpose(coords), coords);
-//        eigenvalues, eigenvectors = la.eigenvectors(B);
-//
-//        // Store unit vector of axis 
-//        axis = new Vector2d(eigenvectors[eigenvalues.argmax()])l
+        int n = coords.size();
+        boolean isE = (this.SSEType == 'E');
+        if ((n < 3 && isE) || (n < 5 && !isE)) {
+            this.AxisStartPoint = new Vector3d(coords.get(0));
+            this.AxisFinishPoint = new Vector3d(coords.get(n - 1));
+            this.length = 0.0;
+        }
         
-//        start = new Vector2d(coords[0]);
-//        finish = new Vector2d(coords[n - 1]);
-//
-//        // Calculate beginning and end 
-//        this.AxisStartPoint = centroid + ((axis * start) * axis);
-//        this.AxisFinishPoint = centroid + ((axis * finish) * axis);
-//
-//        // return start, finish, and length of axis 
-//        this.AxisLength = chain.distance3D(start, finish);
+        calculate(toDoubleArr(coords), isE, n);
     }
+    
+    private double[][] toDoubleArr(List<Point3d> coords) {  // unpleasant, but still
+        double[][] x = new double[coords.size()][3];
+        for (int i = 0; i < coords.size(); i++) {
+            x[i][0] = coords.get(i).x;
+            x[i][1] = coords.get(i).y;
+            x[i][2] = coords.get(i).z;
+        }
+        return x;
+    }
+    
+    private double calculate(double[][] x, boolean isE, int n) {
+        /* Calculate vectors orthogonal to the helix axis */
+        int l=n-2;
+        double[] ap = new double[] {0.0, 0.0, 0.0};
+        double[][] p = new double[n][3];
+        
+        for (int j=0;j<3;j++) {
+            
+                for (int i=0;i<l;i++) {
+                        p[i][j] = x[i][j] + x[i+2][j] - 2.0*x[i+1][j];
+                        if (isE) p[i][j] = x[i+1][j] + p[i][j] / 4.0;
+                        ap[j] += p[i][j];
+                }
+
+         /* Additional vectors for strands:
+            add vector on beginning and end
+            helices:
+                use 0.0, 0.0, 0.0 as additional point */
+                if (isE) {
+                        ap[j] += p[l][j]   = x[0][j]   + ( 2.0*x[1][j]   - x[0][j]   - x[2][j] )   / 4.0;
+                        ap[j] += p[l+1][j] = x[n-1][j] + ( 2.0*x[n-2][j] - x[n-3][j] - x[n-1][j] ) / 4.0;
+                } else {
+                        p[l][j] = 0.0;
+                }
+
+                ap[j]/=(float) (l + ((isE)?2:1));
+            for (int i = 0; i < (l + ((isE) ? 2 : 1)); i++) {
+                p[i][j] -= ap[j];
+            }
+        }
+
+        /* Calculate covariance matrix */
+        l += ((isE)?2:1);
+        double[][] m = new double[3][3];
+        for (int j=0;j<3;j++) {
+                for (int k=0;k<3;k++) {
+                    ap[j] = 0.0;
+                        for (int i=0;i<l;i++) {
+                                ap[j] += p[i][j] * p[i][k];
+                        }
+                        m[j][k] = ap[j] / (float) l;
+                }
+        }
+
+        /* Diagonalise matrix and sort eigen values */
+        double[] v = new double[n];
+        double[][] e = new double[n][n];
+        int njr = Jacobi( m, 3, v, e);    // TODO - try/catch?
+        
+        Eigsrt( v, e, 3 );
+
+        /* Store unit vector of axis */
+        int j=((isE)?0:2);
+        for (int i=0;i<3;i++) {
+                ap[i] = e[i][j];
+        }
+        
+        /* Calculate centroid of secondary structure */
+        double[] st = {0, 0, 0};
+        double[] fn = {0, 0, 0};
+        double[] c =  {0, 0, 0};
+        for (j=0;j<3;j++) {
+                for (int i=0;i<n;i++) {
+                        c[j] += x[i][j];
+                }
+                c[j] /= (float) n;
+                st[j] = x[0][j] - c[j];
+                fn[j] = x[n-1][j] - c[j];
+        }
+
+        /* Calculate beginning and end */
+        double sb = DotProduct( ap, st );
+        double se = DotProduct( ap, fn );
+        for (int i=0;i<3;i++) {
+                st[i] = c[i] + sb * ap[i];
+                fn[i] = c[i] + se * ap[i];
+        }
+
+        /* return length of axis */
+        return Math.sqrt(SQR(st[0]-fn[0])+SQR(st[1]-fn[1])+SQR(st[2]-fn[2]));
+    }
+    
+    private double SQR(double x) { return x * x; }
+    
+    /*
+        Function to calculate dot product.
+    
+        Written by Tom Flores, Laboratory of Molecular Biology,
+        Department of Crystallography, Birkbeck, Malet Street,
+        London. WC1E 7HX.
+    
+        Version 1: 21st November 1991.
+     */
+    private double DotProduct(double[] a, double[] b) {
+        int i;
+        double dotp = 0.0;
+
+        for (i = 0; i < 3; i++) {
+            dotp += a[i] * b[i];
+        }
+
+        return dotp;
+    }
+    
+
+    /* 
+        function eigsrt
+
+        Given the eigenvalues d[n] and eigenvectors v[n][n] as output from jacobi
+        this routine sorts the eigenvalues into descending order and rearranges
+        the columns of v correspondingly
+     */
+    private void Eigsrt(double[] d, double[][] v, int n) {
+
+        for (int i=0;i<n-1;i++) {
+            int k = i;
+            double p=d[k];
+            for (int j=i+1;j<n;j++) {
+                if (d[j] >= p) {
+                    k = j;
+                    p=d[k];
+                }
+            }
+            if (k != i) {
+                d[k]=d[i];
+                d[i]=p;
+                for (int l =0;l<n;l++) {
+                    p=v[l][i];
+                    v[l][i]=v[l][k];
+                    v[l][k]=p;
+                }
+            }
+        }
+    }
+    
+    /* 
+    function jacobi
+
+    Computes all eignevalues and eigenvectors of a real symmetric matrix a[n][n].
+    On output, elements of a above diagonal are destroyed. d[n] returns the
+    eigenvalues of a. v[n][n] is a matrix whose columns contain, on output, the
+    normalised eigenvectors of a, nrot returns the number of jacobi rotations that
+    were required.
+
+    From Numerical Recipes by Press et al.
+
+    Updated to remove error message and return non zero on failure.
+
+    Tom F. July 1992.
+*/
+    private void ROTATE(double s, double tau, double[][] a, int i, int j, int k, int l) {
+        double g = a[i][j];
+        double h = a[k][l];
+        a[i][j] = g-s*(h+g*tau);
+        a[k][l] = h+s*(g-h*tau);
+    }
+
+    private int Jacobi(double[][] a, int n, double[] d, double[][] v) {
+        double tresh,theta,tau,t,s,h,g,c;
+        double[] b = new double[n];
+        double[] z = new double[n];
+        
+        for (int ip=0;ip<n;ip++) {
+            for (int iq=0;iq<n;iq++) {
+                v[ip][iq]=0.0;
+            }
+            v[ip][ip]=1.0;
+        }
+        for (int ip=0;ip<n;ip++) {
+            b[ip]=d[ip]=a[ip][ip];
+            z[ip]=0.0;
+        }
+        
+        int nrot=0;
+        for (int i=0;i<50;i++) {
+            double sm=0.0;
+            for (int ip=0;ip<n-1;ip++) {
+                for (int iq=ip+1;iq<n;iq++) {
+                    sm += Math.abs(a[ip][iq]);
+                }
+            }
+            if (sm == 0.0) {
+                return nrot;
+            }
+            if (i < 3) {
+                tresh=0.2*sm/(n*n);
+            } else {
+                tresh=0.0;
+            }
+            for (int ip=0;ip<n-1;ip++) {
+                for (int iq=ip+1;iq<n;iq++) {
+                    g=100.0*Math.abs(a[ip][iq]);
+                    if (i > 3 && Math.abs(d[ip])+g == Math.abs(d[ip]) && Math.abs(d[iq])+g == Math.abs(d[iq]))
+                        a[ip][iq]=0.0;
+                    else if (Math.abs(a[ip][iq]) > tresh) {
+                        h=d[iq]-d[ip];
+                        if (Math.abs(h)+g == Math.abs(h))
+                            t=(a[ip][iq])/h;
+                        else {
+                            theta=0.5*h/(a[ip][iq]);
+                            t=1.0/(Math.abs(theta)+Math.sqrt(1.0+theta*theta));
+                            if (theta < 0.0) t = -t;
+                        }
+                        c=1.0/Math.sqrt(1+t*t);
+                        s=t*c;
+                        tau=s/(1.0+c);
+                        h=t*a[ip][iq];
+                        z[ip] -= h;
+                        z[iq] += h;
+                        d[ip] -= h;
+                        d[iq] += h;
+                        a[ip][iq]=0.0;
+                        for (int j=0;j<=ip-1;j++) {
+                            ROTATE(s, tau, a,j,ip,j,iq);
+                        }
+                        for (int j=ip+1;j<=iq-1;j++) {
+                            ROTATE(s, tau, a,ip,j,j,iq);
+                        }
+                        for (int j=iq+1;j<n;j++) {
+                            ROTATE(s, tau, a,ip,j,iq,j);
+                        }
+                        for (int j=0;j<n;j++) {
+                            ROTATE(s, tau, v,j,ip,j,iq);
+                        }
+                        ++nrot;
+                    }
+                }
+            }
+            for (int ip=0;ip<n;ip++) {
+                b[ip] += z[ip];
+                d[ip]=b[ip];
+                z[ip]=0.0;
+            }
+        }
+        return nrot;
+    }
+
     
     public Vector3d getVector() {
         // return vector(end - start)

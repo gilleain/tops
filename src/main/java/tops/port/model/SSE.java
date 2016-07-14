@@ -290,10 +290,6 @@ public class SSE {
         return Math.abs(ClosestApproach(other).torsion) > 90;
     }
 
-    public void SecondaryStructureAxis(Chain chain) {
-        this.axis = chain.secondaryStructureAxis(sseData.SeqStartResidue, sseData.SeqFinishResidue);
-    }
-
     public TorsionResult ClosestApproach(SSE other) {
         return this.axis.ClosestApproach(other.axis);
     }
