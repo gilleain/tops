@@ -21,7 +21,7 @@ public class Axis {
             this.length = 0.0;
         }
         
-        calculate(toDoubleArr(coords), isE, n);
+        this.length = calculate(toDoubleArr(coords), isE, n);
     }
     
     private double[][] toDoubleArr(List<Point3d> coords) {  // unpleasant, but still
@@ -111,6 +111,9 @@ public class Axis {
                 st[i] = c[i] + sb * ap[i];
                 fn[i] = c[i] + se * ap[i];
         }
+        
+        AxisStartPoint = new Vector3d(st[0], st[1], st[2]);
+        AxisFinishPoint = new Vector3d(fn[0], fn[1], fn[2]);
 
         /* return length of axis */
         return Math.sqrt(SQR(st[0]-fn[0])+SQR(st[1]-fn[1])+SQR(st[2]-fn[2]));
@@ -425,9 +428,12 @@ public class Axis {
      }
 
     public String toString() {
-        if (this.AxisStartPoint == null) return new String[] {"AxisStartPoint", "AxisEndPoint"}.toString();
-        String s = String.format("%s %0.2f %0.2f %0.2f", "AxisStartPoint", this.AxisStartPoint.x, this.AxisStartPoint.y, this.AxisStartPoint.z);
-        String e = String.format("%s %0.2f %0.2f %0.2f", "AxisFinishPoint", this.AxisFinishPoint.x, this.AxisFinishPoint.y, this.AxisFinishPoint.z);
-        return new String[] {s, e}.toString();  // FIXME
+        if (this.AxisStartPoint == null) {
+            return "[AxisStartPoint, AxisEndPoint]";
+        } else {
+            String s = String.format("%s %2.2f %2.2f %2.2f", "AxisStartPoint", this.AxisStartPoint.x, this.AxisStartPoint.y, this.AxisStartPoint.z);
+            String e = String.format("%s %2.2f %2.2f %2.2f", "AxisFinishPoint", this.AxisFinishPoint.x, this.AxisFinishPoint.y, this.AxisFinishPoint.z);
+            return String.format("[%s, %s]", s, e);
+        }
     }
 }
