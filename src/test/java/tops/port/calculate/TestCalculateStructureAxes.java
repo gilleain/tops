@@ -1,10 +1,14 @@
 package tops.port.calculate;
 
+import java.io.IOException;
+
 import javax.vecmath.Point3d;
 
 import org.junit.Test;
 
 import tops.port.model.Chain;
+import tops.port.model.DsspReader;
+import tops.port.model.Protein;
 import tops.port.model.SSE;
 
 public class TestCalculateStructureAxes {
@@ -28,6 +32,21 @@ public class TestCalculateStructureAxes {
         sse.sseData.SeqFinishResidue = 10;
         chain.addSSE(sse);
         return chain;
+    }
+    
+    @Test
+    public void test1IFC() throws IOException {
+        DsspReader dsspReader = new DsspReader();
+        Protein protein = 
+                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+        Chain chain = protein.getChains().get(0);
+        CalculateStructureAxes calculation = new CalculateStructureAxes();
+        calculation.calculate(chain);
+        for (SSE sse : chain.getSSEs()) {
+            System.out.println("[" + 
+                    sse.sseData.PDBStartResidue + "-" + sse.sseData.PDBFinishResidue
+                    + " " + sse.axis);
+        }
     }
     
     @Test

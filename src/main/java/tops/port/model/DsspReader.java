@@ -9,7 +9,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,8 @@ public class DsspReader {
 	        }};
 
     public Protein readDsspFile(String filename) throws IOException {
-        String pdbid = filename.split("/")[-1].substring(0, 4);
+        String[] parts = filename.split("/");
+        String pdbid = parts[parts.length - 1].substring(0, 4);
         return readDsspFile(pdbid, new FileReader(new File(filename)));
     }
 
@@ -49,8 +49,8 @@ public class DsspReader {
     		List<String> lines = getLines(reader);
     		// skip header
     		String[] headerbits = lines.get(6).split("\\s+");
-    		System.out.println(lines.get(6));
-    		System.out.println(Arrays.toString(headerbits));
+//    		System.out.println(lines.get(6));
+//    		System.out.println(Arrays.toString(headerbits));
     		// crude way to deal with leading spaces...
     		int x = 0;
     		for (; x < headerbits.length; x++) { if (!headerbits[x].equals("")) break; }
@@ -94,27 +94,25 @@ public class DsspReader {
     			// bridge partners - again not ness separated by white space so use tempbuff //
     			String bridgePartString = bits.get("bridge_partners");
     			String[] bps = bridgePartString.split("\\s+");    // TODO 
-    			System.out.println(bridgePartString + Arrays.toString(bps));
+//    			System.out.println(bridgePartString + Arrays.toString(bps));
     			record.LeftBridgePartner = parseResidueNumber(bps[0]);
     			record.RightBridgePartner = parseResidueNumber(bps[1]);
     
     			// Hydrogen bonds (just skip read errors as some dssp files have **** in place of integer here) //
     			// d1, d1e, a1, a1e, d2, d2e, a2, a2e
-    //			Matcher m = hbond_pattern.matcher(bits.get("hbonds"));
-    //			List<String> matches = new ArrayList<String>();
-    //			while (m.find()) {
-    //			    matches.add(m.group());
-    //			}
-    //			assert matches.size() == 8;  // hmmmm....
-    			String[] parts = bits.get("hbonds").split("\\s{3}");
     			List<String> matches = new ArrayList<String>();
-    			for (String match : parts) {
-    			    System.out.print(String.format("[%s]", match));
+//    			System.out.print("Matches ");
+    			int start = 0;
+    			String hbondString = bits.get("hbonds");
+    			for (int p = 0; p < 4; p++) {
+    			    String match = hbondString.substring(start, start+ 11);
+//    			    System.out.print(String.format("[%s]", match));
     			    String[] pairs = match.split(",");
     			    matches.add(pairs[0].trim());
     			    matches.add(pairs[1].trim());
+    			    start += 11;
     			}
-    			System.out.println();
+//    			System.out.println();
     
     			record.DonatedHBond1 = Integer.parseInt(matches.get(0));
     			record.DonatedHBondEn1 = Float.parseFloat(matches.get(1));
@@ -363,7 +361,7 @@ public class DsspReader {
 			bits.put("sse_type",line.substring(16, 17));
 			bits.put("structure",line.substring(16, 25).trim());
 			bits.put("bridge_partners",line.substring(26, 33).trim());
-			bits.put("hbonds",line.substring(39, 83).trim());
+			bits.put("hbonds",line.substring(39, 83));
 			bits.put("tco",line.substring(83, 91));
 			bits.put("kappa",line.substring(92, 97));
 			bits.put("alpha",line.substring(97, 103));
@@ -415,7 +413,7 @@ public class DsspReader {
 		double HBondECutoff = -0.5;
 		int index = bond + i;
 		int mappedPos = IndexMapping[index];
-		System.out.println("Mapping " + CountRes + " to " + mappedPos + " NRG " + energy);
+//		System.out.println("Mapping " + CountRes + " to " + mappedPos + " NRG " + energy);
 		if (check(mappedPos, nDsspRes, bond, energy, HBondECutoff)) {
 			chain.addDonatedBond(CountRes, mappedPos, energy);
 		}
@@ -425,7 +423,7 @@ public class DsspReader {
 	    double HBondECutoff = -0.5;
 	    int index = bond + i;
 		int mappedPos = IndexMapping[index];
-		System.out.println("Mapping " + CountRes + " to " + mappedPos + " NRG " + energy);
+//		System.out.println("Mapping " + CountRes + " to " + mappedPos + " NRG " + energy);
 		if (check(mappedPos, nDsspRes, bond, energy, HBondECutoff)) {
 			chain.addAcceptedBond(CountRes, mappedPos, energy);
 		}

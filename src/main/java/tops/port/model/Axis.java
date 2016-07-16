@@ -19,9 +19,9 @@ public class Axis {
             this.AxisStartPoint = new Vector3d(coords.get(0));
             this.AxisFinishPoint = new Vector3d(coords.get(n - 1));
             this.length = 0.0;
+        } else {
+            this.length = calculate(toDoubleArr(coords), isE, n);
         }
-        
-        this.length = calculate(toDoubleArr(coords), isE, n);
     }
     
     private double[][] toDoubleArr(List<Point3d> coords) {  // unpleasant, but still
