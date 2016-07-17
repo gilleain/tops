@@ -7,16 +7,16 @@ import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
 import tops.port.model.SSE;
 
+/**
+ * At this point we assign relative position of bridge partner strands  
+ * Although this is already set from the dssp file it is reset here since the latter is unreliable
+ * 
+ */
 public class CalculateRelativeSides implements Calculation {
 
 
     @Override
     public void calculate(Chain chain) {
-        /* 
-         * At this point we assign relative position of bridge partner strands  
-         * Although this is already set from the dssp file it is reset here since the latter is unreliable
-         */
-
         System.out.println("Assigning relative sides to bridge partner strands");
         for (SSE p : chain.getSSEs()) {
             assignRelativeSides(p);
@@ -27,33 +27,35 @@ public class CalculateRelativeSides implements Calculation {
     public void assignRelativeSides(SSE sse) {
         if (sse.isStrand()) {
             for (BridgePartner bp : sse.getBridgePartners()) {
-                bp.side = BridgePartner.Side.UNKNOWN;
+                bp.setUnknown();
             }
-            int RefBP = sse.LongestBridgeRange();
-            BridgePartner BP1 = sse.getBridgePartners().get(RefBP);
-            if (RefBP >= 0 && BP1 != null) {
-                BP1.side = BridgePartner.Side.LEFT;
+            int referenceBP = sse.longestBridgeRange();
+            BridgePartner bridgePartner1 = sse.getBridgePartners().get(referenceBP);
+            if (referenceBP >= 0 && bridgePartner1 != null) {
+                bridgePartner1.setLeft();
                 // Assign side for those 'BridgeOverlap'ing with the RefBP //
                 for (int j = 0; j < sse.getBridgePartners().size(); j++) {
-                    BridgePartner BP2 = sse.getBridgePartners().get(j);
-                    if (j != RefBP && BP2 != null) {
-                        if (bridgeOverlap(sse, BP1.partner, BP2.partner)) {
-                            BP2.side = BridgePartner.Side.RIGHT;
+                    BridgePartner bridgePartner2 = sse.getBridgePartners().get(j);
+                    if (j != referenceBP && bridgePartner2 != null) {
+                        if (bridgeOverlap(sse, bridgePartner1, bridgePartner2)) {
+                            bridgePartner2.setRight();
                         }
                     }
                 }
-                // Sort out any other sides which can be calculated by BridgeOverlaps with other than the RefBP //
+                // Sort out any other sides which can be calculated by 
+                // BridgeOverlaps with other than the RefBP
                 for (int j = 0; j < sse.getBridgePartners().size(); j++) {
-                    BridgePartner BP2 = sse.getBridgePartner(j);
-                    if (BP2 != null && BP2.side == BridgePartner.Side.UNKNOWN) {
+                    BridgePartner bridgePartner2 = sse.getBridgePartner(j);
+                    if (bridgePartner2 != null && bridgePartner2.isUnknownSide()) {
                         for (int k = 0; k < sse.getBridgePartners().size(); k++) {
-                            BridgePartner BP3 = sse.getBridgePartners().get(k);
-                            if (k != j && BP3 != null && BP3.side == BridgePartner.Side.UNKNOWN) {
-                                if (bridgeOverlap(sse, BP2.partner, BP3.partner)) {
-                                    if (BP3.side == BridgePartner.Side.LEFT)
-                                        BP2.side = BridgePartner.Side.RIGHT;
+                            BridgePartner bridgePartner3 = sse.getBridgePartners().get(k);
+                            if (k != j && bridgePartner3 != null && bridgePartner3.isUnknownSide()) {
+                                if (bridgeOverlap(sse, bridgePartner2, bridgePartner3)) {
+                                    if (bridgePartner3.isLeft()) {
+                                        bridgePartner2.setRight();
+                                    }
                                 } else {
-                                    BP2.side = BridgePartner.Side.LEFT;
+                                    bridgePartner2.setLeft();
                                 }
                             }
                         }
@@ -62,25 +64,27 @@ public class CalculateRelativeSides implements Calculation {
 
                 // The rest have to be done geometrically //
                 for (int j = 0; j < sse.getBridgePartners().size(); j++) {
-                    BridgePartner BP2 = sse.getBridgePartners().get(j);
-                    if (BP2 != null && BP2.side == BridgePartner.Side.UNKNOWN) {
-                        if (geometricSameSide(sse, BP1.partner, BP2.partner)) {
-                            BP2.side = BridgePartner.Side.LEFT;
+                    BridgePartner bridgePartner2 = sse.getBridgePartners().get(j);
+                    if (bridgePartner2 != null && bridgePartner2.isUnknownSide()) {
+                        if (geometricSameSide(sse, bridgePartner1, bridgePartner2)) {
+                            bridgePartner2.setLeft();
                         } else {
-                            BP2.side = BridgePartner.Side.RIGHT;
+                            bridgePartner2.setRight();
                         }
                     }
                 }
             }
         }
     }
-
+    
     /*
     Function to determine whether the bridge partners of p overlap.
     ie. are the same residues hydrogen bonding to q and r?
      */
-    public boolean bridgeOverlap(SSE p, SSE q, SSE r) {
-
+    public boolean bridgeOverlap(SSE p, BridgePartner bpQ, BridgePartner bpR) {
+        SSE q = bpQ.partner;
+        SSE r = bpR.partner;
+        
         // Find the index to q //
         int i = p.FindBPIndex(q);
 
@@ -101,8 +105,10 @@ public class CalculateRelativeSides implements Calculation {
      * A function to decide geometrically whether strand p lies on the same or
      * opposite side of strand q as strand r
      */
-    public boolean geometricSameSide(SSE q, SSE r, SSE p) {
-
+    public boolean geometricSameSide(SSE q, BridgePartner bpR, BridgePartner bpP) {
+        SSE r = bpR.partner;
+        SSE p = bpP.partner;
+        
         Vector3d v1 = q.axis.getVector();
         Point3d midr = r.axis.getCentroid();
         Point3d midp = p.axis.getCentroid();

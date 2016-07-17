@@ -29,6 +29,26 @@ public class BridgePartner {
         this.NumberBridgePartners = 1;
     }
     
+    public boolean isLeft() {
+        return this.side == Side.LEFT;
+    }
+    
+    public void setUnknown() {
+        this.side = Side.UNKNOWN;
+    }
+    
+    public void setLeft() {
+        this.side = Side.LEFT;
+    }
+    
+    public void setRight() {
+        this.side = Side.RIGHT;
+    }
+    
+    public boolean isUnknownSide() {
+        return this.side == Side.UNKNOWN;
+    }
+    
     public void update(int residueNumber) {
         if (residueNumber < rangeMin) rangeMin = residueNumber;
         if (residueNumber > rangeMax) rangeMax = residueNumber;

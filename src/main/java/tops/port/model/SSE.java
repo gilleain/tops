@@ -93,6 +93,14 @@ public class SSE {
         return false;
     }
     
+    public void addBridgePartner(BridgePartner bridgePartner) {
+        this.BridgePartners.add(bridgePartner);
+    }
+    
+    public void incrementMerges() {
+        this.Merges++;  // hmmm
+    }
+    
     public void addConnection(Point2d point) {
         this.NConnectionPoints++;   // TODO convert to getConnections().size()?
         this.ConnectionTo.add(point);
@@ -191,72 +199,7 @@ public class SSE {
         return sses;
     }
     
-    /*
-    function join_to_last
-
-    Tom F. August 1992
-
-    Function to join an sse to the previous one. returns if the
-    secondary structures are different or the vectors are less than
-    ninety degrees ie. antiparallel.
-     */
-    public void joinToLast() {
-
-        SSE lastSSE = this.From;
-        if (!lastSSE.isSameType(this)) return;
-
-        // Merge bridge partners 
-        for (BridgePartner bridgePartner : this.BridgePartners) {
-            SSE toJoinPartner = bridgePartner.partner;
-            BridgePartner common = null;
-            for (BridgePartner other : toJoinPartner.BridgePartners) {
-                // Does the bridge partner already have a bond to lastSSE */
-                if (other.partner == lastSSE) {
-                    common = other;
-                    break;
-                }
-            }
-
-            // If Bridge partner doesn't already exist create it */
-            if (common == null) {
-                for (BridgePartner bp : toJoinPartner.BridgePartners) {
-                    if (bp.partner == this) {
-                        bp.partner = lastSSE;
-                        BridgeType type = bridgePartner.bridgeType; 
-                        lastSSE.BridgePartners.add(
-                                new BridgePartner(toJoinPartner, bridgePartner.rangeMin, bridgePartner.rangeMax, type, null));
-                        break;
-                    }
-                }
-            } else {
-
-                // Coalesce common bridge partner 
-                for (BridgePartner lastBridgePartner : lastSSE.BridgePartners) {
-                    if (lastBridgePartner.partner == toJoinPartner) {
-                        lastBridgePartner.NumberBridgePartners += bridgePartner.NumberBridgePartners;
-                        common.NumberBridgePartners = lastBridgePartner.NumberBridgePartners;
-                        lastBridgePartner.rangeMax = bridgePartner.rangeMax;
-                        toJoinPartner.removeBridgePartner(this);
-                    }
-                }
-            }
-        }
-
-        // Switch ends 
-        lastSSE.axis.AxisFinishPoint = (Vector3d)this.axis.AxisFinishPoint.clone();
-
-        // Merge residues - don't include fixed 
-        lastSSE.sseData.SeqFinishResidue = this.sseData.SeqFinishResidue;
-        lastSSE.sseData.PDBFinishResidue = this.sseData.PDBFinishResidue;
-        lastSSE.To = this.To;
-        if (lastSSE.To != null) lastSSE.To.From = lastSSE;
-        lastSSE.Next = this.Next;
-
-        lastSSE.Merges += 1;
-
-        // FIXME - merge ranges only seem to be needed for chiral
-        //        p.MergeRanges.append(new int[] {q.SeqStartResidue, q.SeqFinishResidue});
-    }
+   
 
     public char getSSEType() {
         return this.SSEType;
@@ -483,7 +426,7 @@ public class SSE {
         return -1;
     }
 
-    public int LongestBridgeRange() {
+    public int longestBridgeRange() {
         int longest = -1;
         double maxlen = -1.0;
         for (int i = 0; i < MAXBP; i++) {
