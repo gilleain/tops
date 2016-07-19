@@ -441,7 +441,7 @@ public class SSE {
         return longest;
     }
 
-    public boolean HasBPonList(List<SSE> sseList) {
+    public boolean hasBPonList(List<SSE> sseList) {
         for (BridgePartner q : this.BridgePartners) {
             if (sseList.contains(q.partner)) return true;   // XXX is this right?
         }

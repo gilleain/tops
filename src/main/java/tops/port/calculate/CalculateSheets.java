@@ -10,7 +10,7 @@ import tops.port.model.SSE;
 
 public class CalculateSheets implements Calculation {
     
-    private double GridUnitSize = 50;
+    private double gridUnitSize = 50;
 
     private class SeqDirResult {
         public int SeqDir;
@@ -30,12 +30,12 @@ public class CalculateSheets implements Calculation {
                 barrel = this.detectBarrel(p);
                 if (barrel.size() > 0) {
                     System.out.println("Barrel detected");
-                    this.makeBarrel(chain, barrel, GridUnitSize);
+                    this.makeBarrel(chain, barrel, gridUnitSize);
                 } else {
                     System.out.println("Sheet detected");
                     SSE q = findEdgeStrand(p, null);
                     if (!q.isSymbolPlaced()) {
-                        this.makeSheet(chain, q, null, GridUnitSize);
+                        this.makeSheet(chain, q, null, gridUnitSize);
                         if (q.hasFixedType(FixedType.FT_SHEET)) {
                             this.sheetCurvature(chain, q);
                         }
@@ -79,7 +79,7 @@ public class CalculateSheets implements Calculation {
      * This function detects and enumerates the first cycle found in a set of
      * strands connected by BridgePartner relationships
      */
-    public boolean findBarrel(SSE p, List<SSE> barrel, List<SSE> visited, SSE AddFrom) {
+    public boolean findBarrel(SSE p, List<SSE> barrel, List<SSE> visited, SSE addFrom) {
 
         if (visited.contains(p)) {
             //If we've been to this node before then we've detected a barrel - return true//
@@ -90,7 +90,7 @@ public class CalculateSheets implements Calculation {
             visited.add(p);
 
             for (SSE bridgePartner : p.getPartners()) {
-                if (bridgePartner == AddFrom) continue;
+                if (bridgePartner == addFrom) continue;
 
                 if (this.findBarrel(bridgePartner, barrel, visited, p)) {
                     if (barrel.get(0) != p) barrel.add(p);
@@ -104,12 +104,12 @@ public class CalculateSheets implements Calculation {
     public void makeBarrel(Chain chain, List<SSE> barrel, double GridUnitSize) {
         System.out.println("making barrel...");
 
-        int NStrands = barrel.size();
+        int numberOfStrands = barrel.size();
 
-        double Rads = Math.PI / (double) NStrands;
-        double X = Rads;
-        double Y = 0.5 / Math.sin(Rads);
-        double Z = 0.5 / Math.tan(Rads);
+        double rads = Math.PI / (double) numberOfStrands;
+        double X = rads;
+        double Y = 0.5 / Math.sin(rads);
+        double Z = 0.5 / Math.tan(rads);
 
         // this bit ensures that TIM barrels get the correct chirality """
         int start = 0;
@@ -118,7 +118,7 @@ public class CalculateSheets implements Calculation {
             start = 0;
             increment = 1;
         } else {
-            start = NStrands - 1;
+            start = numberOfStrands - 1;
             increment = -1;
         }
 
@@ -126,11 +126,11 @@ public class CalculateSheets implements Calculation {
         SSE lastInBarrel = p;
         p.setDirection('D');
         
-        System.out.println(String.format("make barrel start, nstrands, increment= %s %s %s", start, NStrands, increment));
+        System.out.println(String.format("make barrel start, nstrands, increment= %s %s %s", start, numberOfStrands, increment));
         int i = start;
-        for (int count = 0; count < NStrands; count++) { 
+        for (int count = 0; count < numberOfStrands; count++) { 
             System.out.println("make barrel count= " + count);
-            X = Rads + 2.0 * count * Rads;
+            X = rads + 2.0 * count * rads;
 
             SSE q = barrel.get(i);
             q.setFixedType(FixedType.FT_BARREL);
@@ -176,11 +176,11 @@ public class CalculateSheets implements Calculation {
     }
     
     
-    public void makeSheet(Chain chain, SSE p, SSE q, double GridUnitSize) {
+    public void makeSheet(Chain chain, SSE p, SSE q, double gridUnitSize) {
 
         List<SSE> CurrentList = new ArrayList<SSE>();
-        List<SSE> StartUpperList = new ArrayList<SSE>();
-        List<SSE> StartLowerList = new ArrayList<SSE>();
+        List<SSE> startUpperList = new ArrayList<SSE>();
+        List<SSE> startLowerList = new ArrayList<SSE>();
         List<SSE> Layer = new ArrayList<SSE>();
 
         p.setFixedType(FixedType.FT_SHEET);
@@ -199,18 +199,18 @@ public class CalculateSheets implements Calculation {
                 if (r == null) continue;
                 if (r.isSymbolPlaced()) break;
                 int rindex = i;
-                double incr = GridUnitSize;
+                double incr = gridUnitSize;
                 if (r != null) {
                     int pindex = q.FindBPIndex(p);
 
                     if (q.getBridgePartner(pindex).side == q.getBridgePartner(rindex).side) {
-                        incr = (r.getCartoonX() < q.getCartoonX())? -GridUnitSize : +GridUnitSize; 
+                        incr = (r.getCartoonX() < q.getCartoonX())? -gridUnitSize : +gridUnitSize; 
                     } else {
-                        incr = (r.getCartoonX() < q.getCartoonX())? +GridUnitSize : -GridUnitSize;
+                        incr = (r.getCartoonX() < q.getCartoonX())? +gridUnitSize : -gridUnitSize;
                         if (r.getCartoonX() < q.getCartoonX()) {
-                            incr = GridUnitSize;
+                            incr = gridUnitSize;
                         } else {
-                            incr = -GridUnitSize;
+                            incr = -gridUnitSize;
                         }
                     }
                 }
@@ -228,14 +228,14 @@ public class CalculateSheets implements Calculation {
         // For all bridge partners except q repeat
         for (BridgePartner bridgePartner : p.getBridgePartners()) {
             if (bridgePartner.partner != q) { 
-                this.makeSheet(chain, bridgePartner.partner, p, GridUnitSize);
+                this.makeSheet(chain, bridgePartner.partner, p, gridUnitSize);
             }
         }
 
-        sortStacking(chain, q, q, 0, Layer, Layer, 0); // XXX args!
+        sortStacking(chain, q, q, 0, startLowerList, startUpperList, 0);
     }
     
-    private void sortStacking(Chain chain, SSE p, SSE q, int StartXPos, List<SSE> StartLowerList, List<SSE> StartUpperList, int MaxListLen) {
+    private void sortStacking(Chain chain, SSE p, SSE q, int startXPos, List<SSE> startLowerList, List<SSE> startUpperList, int maxListLen) {
         /*
         This bit sorts out stacking ( ie. y positions ) 
         Serious changes to this code done by DW (30/1/97) to deal with sheets that fold back onto themselves
@@ -247,78 +247,77 @@ public class CalculateSheets implements Calculation {
             // first decide if we have a single layer or two layers, and in the case of two determine 
             // a start point for dividing the structures. There are two layers if there exists an x 
             // position with two strands which have no common bridge partner
-            boolean TwoLayers = false;
-            double CurrentXPos = chain.leftMostPos(p);
-            List<SSE> CurrentList = chain.getListAtXPosition(p, CurrentXPos);
-            while (!CurrentList.isEmpty()) {
-                for (int i = 0; i < CurrentList.size(); i++) {
-                    SSE r = CurrentList.get(i);
-                    for (int j = i + 1; j < CurrentList.size(); j++) {
-                        SSE s = CurrentList.get(j);
+            boolean twoLayers = false;
+            double currentXPos = chain.leftMostPos(p);
+            List<SSE> currentList = chain.getListAtXPosition(p, currentXPos);
+            while (!currentList.isEmpty()) {
+                for (int i = 0; i < currentList.size(); i++) {
+                    SSE r = currentList.get(i);
+                    for (int j = i + 1; j < currentList.size(); j++) {
+                        SSE s = currentList.get(j);
                         if (r.getFirstCommonBP(s) == null) {
-                            TwoLayers = true;
-                            StartXPos = (int) CurrentXPos;
-                            StartUpperList = chain.listBPGroup(r, CurrentList);
-                            for (SSE t : CurrentList) {
-                                if (!StartUpperList.contains(t)) {
-                                    StartLowerList.add(t);
+                            twoLayers = true;
+                            startXPos = (int) currentXPos;
+                            startUpperList = chain.listBPGroup(r, currentList);
+                            for (SSE t : currentList) {
+                                if (!startUpperList.contains(t)) {
+                                    startLowerList.add(t);
                                 }
                             }
                             break;
                         }
-                        if (TwoLayers) break;
+                        if (twoLayers) break;
                     }
-                    if (TwoLayers) break;
+                    if (twoLayers) break;
                 }
 
-                CurrentXPos += GridUnitSize;
-                CurrentList = chain.getListAtXPosition(p, CurrentXPos);
+                currentXPos += gridUnitSize;
+                currentList = chain.getListAtXPosition(p, currentXPos);
             }
 
             // divide layers if necessary
-            if (TwoLayers) {
+            if (twoLayers) {
 
-              twoLayers(chain, p, StartXPos, StartLowerList, StartUpperList);  
+              divideLayers(chain, p, startXPos, startLowerList, startUpperList);  
             }
 
             // deal with cases where there are split strands
-            splitStrands(chain, p, MaxListLen);
+            splitStrands(chain, p, maxListLen);
         }
     }
     
-    private void twoLayers(Chain chain, SSE p, int StartXPos, List<SSE> StartLowerList, List<SSE> StartUpperList) {
+    private void divideLayers(Chain chain, SSE p, int startXPos, List<SSE> startLowerList, List<SSE> startUpperList) {
         System.out.println("Sheet configured as V_CURVED_SHEET");
         for (SSE t : chain.iterFixed(p)) {
             t.setFixedType(FixedType.FT_V_CURVED_SHEET);
         }
 
         // divide at the point of splitting identified above
-        for (SSE k : StartLowerList) {
-            k.setCartoonY((int) (k.getCartoonY() - GridUnitSize));
+        for (SSE k : startLowerList) {
+            k.setCartoonY((int) (k.getCartoonY() - gridUnitSize));
         }
-        
 
         // divide to right, then left
-        this.splitSheet(chain, p, StartUpperList, StartLowerList, StartXPos, 1);
-        this.splitSheet(chain, p, StartUpperList, StartLowerList, StartXPos, -1);
+        this.splitSheet(chain, p, startUpperList, startLowerList, startXPos, 1);
+        this.splitSheet(chain, p, startUpperList, startLowerList, startXPos, -1);
     }
     
-    private void splitStrands(Chain chain, SSE p, int MaxListLen) {
+    private void splitStrands(Chain chain, SSE p, int maxListLen) {
         for (SSE r : chain.iterFixed(p)) {
             
-            List<SSE> CurrentList = chain.getListAtPosition(p, r.getCartoonX(), r.getCartoonY());
+            List<SSE> currentList = chain.getListAtPosition(p, r.getCartoonX(), r.getCartoonY());
 
-            if (CurrentList.size() > 1) { 
-                SSE bp = chain.getCommonBP(CurrentList, MaxListLen);
+            if (currentList.size() > 1) { 
+                SSE bp = chain.getCommonBP(currentList, maxListLen);
                 if (bp != null) {
-                    chain.sortListByBridgeRange(bp, CurrentList);
-                    this.spreadList(CurrentList, bp.getDirection());
+                    chain.sortListByBridgeRange(bp, currentList);
+                    this.spreadList(currentList, bp.getDirection());
                 }
             }
         }
     }
     
-    public void spreadList(List<SSE> sseList, char Direction) {
+    public void spreadList(List<SSE> sseList, char direction) {
         int n = sseList.size();
 
         int span = 0;
@@ -332,7 +331,7 @@ public class CalculateSheets implements Calculation {
 
         span /= 2;
         int directionMultiplier = 1;
-        if (Direction == 'U') {
+        if (direction == 'U') {
             span = -1;
             directionMultiplier = -1;
         }
@@ -349,76 +348,76 @@ public class CalculateSheets implements Calculation {
         }
     }
     
-    public void splitSheet(Chain chain, SSE p, List<SSE> StartUpperList, List<SSE> StartLowerList, int StartXPos, int Direction) {
+    public void splitSheet(Chain chain, SSE p, List<SSE> startUpperList, List<SSE> startLowerList, int startXPos, int direction) {
 
         int UPPER_LAYER = 3;
         int MIDDLE_LAYER = 2;
         int LOWER_LAYER = 1;
         int UNK_LAYER = 0;
 
-        double CurrentXPos = StartXPos + Direction * GridUnitSize;
-        List<SSE> CurrentList = chain.getListAtXPosition(p, CurrentXPos);
-        List<SSE> UpperList = StartUpperList;
-        List<SSE> LowerList = StartLowerList;
+        double currentXPos = startXPos + direction * gridUnitSize;
+        List<SSE> currentList = chain.getListAtXPosition(p, currentXPos);
+        List<SSE> upperList = startUpperList;
+        List<SSE> lowerList = startLowerList;
 
-        List<Integer> Layer = new ArrayList<Integer>();
-        while (CurrentList.size() != 0) {
-            for (SSE r : CurrentList) {
+        List<Integer> layer = new ArrayList<Integer>();
+        while (currentList.size() != 0) {
+            for (SSE r : currentList) {
                 if (r == null) break; 
-                boolean onUpperList = r.HasBPonList(UpperList);
-                boolean onLowerList = r.HasBPonList(LowerList);
+                boolean onUpperList = r.hasBPonList(upperList);
+                boolean onLowerList = r.hasBPonList(lowerList);
                 if (onUpperList && onLowerList) {
-                    Layer.add(MIDDLE_LAYER);
+                    layer.add(MIDDLE_LAYER);
                 } else if (onUpperList) {
-                    Layer.add(UPPER_LAYER);
+                    layer.add(UPPER_LAYER);
                 } else if (onLowerList) {
-                    Layer.add(LOWER_LAYER);
+                    layer.add(LOWER_LAYER);
                 } else {
-                    Layer.add(UNK_LAYER);
+                    layer.add(UNK_LAYER);
                 }
             }
 
             int i = 0;
-            for (int layer : Layer) {
-                if (layer == UNK_LAYER) {
-                    for (SSE j : UpperList) {
+            for (int layerValue : layer) {
+                if (layerValue == UNK_LAYER) {
+                    for (SSE j : upperList) {
                         if (j == null) break;
-                        SSE bp = CurrentList.get(i).getFirstCommonBP(j); 
+                        SSE bp = currentList.get(i).getFirstCommonBP(j); 
                         if (bp != null) { 
-                            layer = UPPER_LAYER;
+                            layerValue = UPPER_LAYER;
                         }
                     }
                     
-                    for (SSE j : LowerList) {
+                    for (SSE j : lowerList) {
                         if (j == null) break;
-                        if (CurrentList.get(i).getFirstCommonBP(j) != null) {
-                            if (layer == UPPER_LAYER) {
-                                layer = MIDDLE_LAYER;
+                        if (currentList.get(i).getFirstCommonBP(j) != null) {
+                            if (layerValue == UPPER_LAYER) {
+                                layerValue = MIDDLE_LAYER;
                             } else {
-                                layer = LOWER_LAYER;
+                                layerValue = LOWER_LAYER;
                             }
                         }
                     }
                 }
                 i++;
             }
-            UpperList = new ArrayList<SSE>();
-            LowerList = new ArrayList<SSE>();
+            upperList = new ArrayList<SSE>();
+            lowerList = new ArrayList<SSE>();
 
             int k = 0;
-            for (SSE r : CurrentList) {
-                if (Layer.get(k) == UPPER_LAYER) {
-                    UpperList.add(r);
-                } else if (Layer.get(k) == MIDDLE_LAYER) {
-                    r.setCartoonY((int) (r.getCartoonY() - (GridUnitSize / 2)));
-                } else if (Layer.get(k) == LOWER_LAYER) {
-                    r.setCartoonY((int) (r.getCartoonY() - GridUnitSize));
-                    LowerList.add(r);
+            for (SSE r : currentList) {
+                if (layer.get(k) == UPPER_LAYER) {
+                    upperList.add(r);
+                } else if (layer.get(k) == MIDDLE_LAYER) {
+                    r.setCartoonY((int) (r.getCartoonY() - (gridUnitSize / 2)));
+                } else if (layer.get(k) == LOWER_LAYER) {
+                    r.setCartoonY((int) (r.getCartoonY() - gridUnitSize));
+                    lowerList.add(r);
                 }
             }
                 
-            CurrentXPos += Direction * GridUnitSize;
-            CurrentList = chain.getListAtXPosition(p, CurrentXPos);
+            currentXPos += direction * gridUnitSize;
+            currentList = chain.getListAtXPosition(p, currentXPos);
         }
     }
 
@@ -442,7 +441,7 @@ public class CalculateSheets implements Calculation {
         SSE left = chain.getListAtXPosition(Start, chain.leftMostPos(Start)).get(0);
         SSE right = chain.getListAtXPosition(Start, chain.rightMostPos(Start)).get(0);
         
-        double span = chain.fixedSpan(Start, GridUnitSize);
+        double span = chain.fixedSpan(Start, gridUnitSize);
 
         // MaxSep is 0.65 of the separation if the sheet were flat with 4.5A between each pair of strands """
         MaxSep = 4.5 * (span - 1.0) * 0.65;
@@ -484,13 +483,13 @@ public class CalculateSheets implements Calculation {
             while (sseList.size() > 0) {
                 double Y = YStart;
                 for (SSE sse : sseList) {
-                    sse.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * GridUnitSize));
-                    sse.setCartoonY((int) ((Y * Math.cos(X) - Z) * GridUnitSize));
+                    sse.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * gridUnitSize));
+                    sse.setCartoonY((int) ((Y * Math.cos(X) - Z) * gridUnitSize));
                     sse.setSymbolPlaced(true);
                     Y += YEF;
                 }
 
-                CurrXPos += GridUnitSize;
+                CurrXPos += gridUnitSize;
                 sseList = chain.getListAtXPosition(Start, CurrXPos);
 
                 X += AddDir * 2.0 * Rads;
@@ -514,7 +513,7 @@ public class CalculateSheets implements Calculation {
 
         while (sseList.size() > 0) {
 
-            CurrXPos += GridUnitSize;
+            CurrXPos += gridUnitSize;
             sseList = chain.getListAtXPosition(Start, CurrXPos);
 
             if (sseList.size() == 1) curr = sseList.get(0);
@@ -549,7 +548,7 @@ public class CalculateSheets implements Calculation {
     @Override
     public void setParameter(String key, double value) {
         if (key.equals("gridUnitSize")) {
-            GridUnitSize = value;
+            gridUnitSize = value;
         }
     }
 
