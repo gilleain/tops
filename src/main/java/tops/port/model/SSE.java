@@ -14,7 +14,7 @@ public class SSE {
 
     private char Direction;
     private char SSEType;                       // H, E, N, C, D 
-    private List<BridgePartner> BridgePartners;    // Bridge partners
+    private List<BridgePartner> bridgePartners;    // Bridge partners
     private List<BridgeRange> BridgeRange;
     
     private int Merges = 0;                     // The number of merges made in creation 
@@ -49,7 +49,7 @@ public class SSE {
 
     public SSE(char SSEType) {
         this.SSEType = SSEType;                  
-        this.BridgePartners = new ArrayList<BridgePartner>();   
+        this.bridgePartners = new ArrayList<BridgePartner>();   
         this.Neighbours = new ArrayList<Neighbour>();                    
         this.ConnectionTo = new ArrayList<Point2d>();
         this.MergeRanges = new int[10][];   // XXX FIXME  
@@ -94,7 +94,7 @@ public class SSE {
     }
     
     public void addBridgePartner(BridgePartner bridgePartner) {
-        this.BridgePartners.add(bridgePartner);
+        this.bridgePartners.add(bridgePartner);
     }
     
     public void incrementMerges() {
@@ -140,15 +140,15 @@ public class SSE {
     }
     
     public BridgePartner getBridgePartner(int index) {
-        return this.BridgePartners.get(index);
+        return this.bridgePartners.get(index);
     }
     
     public List<BridgePartner> getBridgePartners() {
-        return this.BridgePartners;
+        return this.bridgePartners;
     }
     
     public void sortBridgePartners() {
-        this.BridgePartners.sort(new Comparator<BridgePartner>() {
+        this.bridgePartners.sort(new Comparator<BridgePartner>() {
 
             @Override
             public int compare(BridgePartner o1, BridgePartner o2) {
@@ -160,8 +160,8 @@ public class SSE {
     }
     
     public static SSE getCommonBP(SSE Start, List<SSE> CurrentList) {
-        for (int i = 0; i < Start.BridgePartners.size(); i++) {
-            BridgePartner commonBridgePartner = Start.BridgePartners.get(i);
+        for (int i = 0; i < Start.bridgePartners.size(); i++) {
+            BridgePartner commonBridgePartner = Start.bridgePartners.get(i);
             boolean IsCommonBP = true;
             for (int j = 1; j < CurrentList.size(); j++) {
                 if (!commonBridgePartner.partner.hasBridgePartner(CurrentList.get(j))) {
@@ -177,7 +177,7 @@ public class SSE {
     }
     
     public void getEdgeString(StringBuffer edges) {
-        for (BridgePartner bridgePartner : BridgePartners) {
+        for (BridgePartner bridgePartner : bridgePartners) {
             BridgeType edgeType = bridgePartner.bridgeType;
             if (sseData.SeqStartResidue < bridgePartner.partner.sseData.SeqStartResidue) {
                 int partnerSymbolNumber = bridgePartner.partner.getSymbolNumber();
@@ -193,7 +193,7 @@ public class SSE {
     
     public List<SSE> getPartners() {
         List<SSE> sses = new ArrayList<SSE>();
-        for (BridgePartner bp : BridgePartners) {
+        for (BridgePartner bp : bridgePartners) {
             sses.add(bp.partner);
         }
         return sses;
@@ -250,7 +250,7 @@ public class SSE {
         BridgeType ConnectType = BridgeType.UNK_BRIDGE_TYPE;
 
         // is this a bridge partner of other with a defined connection type
-        for (BridgePartner partner : other.BridgePartners) {   // TODO XXX
+        for (BridgePartner partner : other.bridgePartners) {   // TODO XXX
             if (partner.partner == this) {
                 ConnectType = partner.bridgeType;
                 break;
@@ -273,17 +273,17 @@ public class SSE {
     // XXX TODO FIXME - this only works for non-forked sheets!!
     public SSE NextStrand(SSE other) {
         System.out.println("next strand of " + this + " and " + other);
-        if (this.BridgePartners.get(1).partner == other) {
-            return this.BridgePartners.get(0).partner;
+        if (this.bridgePartners.get(1).partner == other) {
+            return this.bridgePartners.get(0).partner;
         } else {
-            return this.BridgePartners.get(1).partner;
+            return this.bridgePartners.get(1).partner;
         }
     }
 
     public void swapBridgePartners(int a, int b) {
-        BridgePartner tmp = this.BridgePartners.get(a);
-        this.BridgePartners.set(a, this.BridgePartners.get(b));
-        this.BridgePartners.set(b, tmp);
+        BridgePartner tmp = this.bridgePartners.get(a);
+        this.bridgePartners.set(a, this.bridgePartners.get(b));
+        this.bridgePartners.set(b, tmp);
     }
 
     // XXX following method was surely intended for removing BP, which is not really necessary
@@ -346,7 +346,7 @@ public class SSE {
 //    }
 
     public void RemoveBP(BridgePartner bp) {
-        this.BridgePartners.remove(bp);
+        this.bridgePartners.remove(bp);
     }
 
     public Hand Chiral3d(SSE other) {
@@ -377,10 +377,10 @@ public class SSE {
     }
 
     public int FindBPIndex(SSE bp) {
-        for (int i = 0; i < this.BridgePartners.size(); i++) {
-            if (this.BridgePartners.get(i).partner == bp) return i;
+        for (int i = 0; i < this.bridgePartners.size(); i++) {
+            if (this.bridgePartners.get(i).partner == bp) return i;
         }
-        return this.BridgePartners.size();
+        return this.bridgePartners.size();
     }
 
     public int SecStrucLength() {
@@ -388,8 +388,8 @@ public class SSE {
     }
 
     public SSE getFirstCommonBP(SSE other) {
-        for (BridgePartner bridgePartner : this.BridgePartners) {
-            for (BridgePartner otherBridgePartner : other.BridgePartners) {
+        for (BridgePartner bridgePartner : this.bridgePartners) {
+            for (BridgePartner otherBridgePartner : other.bridgePartners) {
                 if (bridgePartner.partner == otherBridgePartner.partner) {
                     return bridgePartner.partner;
                 }
@@ -406,14 +406,14 @@ public class SSE {
 
     public String bridgePartnerSide(SSE sse) {
         if (sse == null)  return "";
-        for (BridgePartner other : sse.BridgePartners) {
+        for (BridgePartner other : sse.bridgePartners) {
             if (other.partner == this) return other.side.name();    // XXX is name correct here?
         }
         return "";
     }
 
     public int NumberPartners() {
-        return this.BridgePartners.size();
+        return this.bridgePartners.size();
     }
 
     public double separation(SSE q) {
@@ -430,7 +430,7 @@ public class SSE {
         int longest = -1;
         double maxlen = -1.0;
         for (int i = 0; i < MAXBP; i++) {
-            if (this.BridgePartners.get(i) != null) {
+            if (this.bridgePartners.get(i) != null) {
                 int len = this.BridgeRange.get(i).length();
                 if (len > maxlen) {
                     maxlen = len;
@@ -442,7 +442,7 @@ public class SSE {
     }
 
     public boolean hasBPonList(List<SSE> sseList) {
-        for (BridgePartner q : this.BridgePartners) {
+        for (BridgePartner q : this.bridgePartners) {
             if (sseList.contains(q.partner)) return true;   // XXX is this right?
         }
         return false;
@@ -458,7 +458,7 @@ public class SSE {
 
     public String BridgePartnerNumbers() {
         StringBuffer numbers = new StringBuffer();
-        for (BridgePartner partner : this.BridgePartners) {
+        for (BridgePartner partner : this.bridgePartners) {
             if (partner == null) break;
             numbers.append(String.valueOf(partner.partner.getSymbolNumber())).append(" ");
         }
@@ -481,7 +481,7 @@ public class SSE {
 
     public String BridgePartnerSides() {
         StringBuffer sides  = new StringBuffer();
-        for (BridgePartner partner : this.BridgePartners) {
+        for (BridgePartner partner : this.bridgePartners) {
             if (partner.side == BridgePartner.Side.UNKNOWN) break;
             sides.append(partner.side.toString().charAt(0));    // XXX ugh!
             sides.append(" ");
@@ -491,7 +491,7 @@ public class SSE {
 
     public String BridgePartnerTypes() {
         StringBuffer types = new StringBuffer();
-        for (BridgePartner partner : this.BridgePartners ) {
+        for (BridgePartner partner : this.bridgePartners ) {
             if (partner.bridgeType == BridgeType.UNK_BRIDGE_TYPE) {
                 break;
             } else if (partner.bridgeType == BridgeType.ANTI_PARALLEL_BRIDGE) {
@@ -590,7 +590,7 @@ public class SSE {
     }
 
     public boolean hasBridgePartner(SSE p) {
-        for (BridgePartner partner : this.BridgePartners) {
+        for (BridgePartner partner : this.bridgePartners) {
             if (partner.partner == p) {
                 return true;
             }
@@ -600,14 +600,14 @@ public class SSE {
     
     public void removeBridgePartner(SSE targetPartner) {
         BridgePartner toRemove = null;
-        for (BridgePartner bp : this.BridgePartners) {
+        for (BridgePartner bp : this.bridgePartners) {
             if (bp.partner == targetPartner) {
                 toRemove = bp;
                 break;
             }
         }
         if (toRemove != null) {
-            this.BridgePartners.remove(toRemove);
+            this.bridgePartners.remove(toRemove);
         }
     }
 
@@ -620,14 +620,14 @@ public class SSE {
      */
     public void updateSecStr(SSE partner, int residueNumber, BridgePartner.Side side, BridgeType bridgeType) {
         BridgePartner commonBridgePartner = null;
-        for (BridgePartner bridgePartner : this.BridgePartners) {
+        for (BridgePartner bridgePartner : this.bridgePartners) {
             if (bridgePartner.partner == partner) {
                 commonBridgePartner = bridgePartner;
                 break;
             }
         }
         if (commonBridgePartner == null) {
-            this.BridgePartners.add(new BridgePartner(partner, residueNumber, bridgeType, side));
+            this.bridgePartners.add(new BridgePartner(partner, residueNumber, bridgeType, side));
         } else {
             commonBridgePartner.update(residueNumber);
         }
