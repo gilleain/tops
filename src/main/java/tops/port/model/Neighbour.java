@@ -10,5 +10,9 @@ public class Neighbour {
         this.sse = sse;
         this.distance = distance;
     }
+    
+    public String toString() {
+        return String.format("%s (%s)", sse.getSymbolNumber(), distance);
+    }
 
 }

@@ -104,11 +104,11 @@ public class Optimise {
 
         if (NeighbourPenalty > 0) {
             for (SSE sseA : chain.getSSEs()) {
-                Neighbour first = sseA.Neighbours.get(0);   // assumes sorted...
+                Neighbour first = sseA.getNeighbours().get(0);   // assumes sorted...
                 //NOTE: tops files do not contain neighbour distances!
                 if (first.distance == -1) break;	
-                for (int i = 0; i < sseA.Neighbours.size(); i++) {
-                    Neighbour neighbour = sseA.Neighbours.get(i); 
+                for (int i = 0; i < sseA.getNeighbours().size(); i++) {
+                    Neighbour neighbour = sseA.getNeighbours().get(i); 
                     SSE sseB = neighbour.sse;
                     double d = Chain.distance2D(sseA, sseB);
                     double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();

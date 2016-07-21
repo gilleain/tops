@@ -38,7 +38,7 @@ public class SSE {
     
     private SSE fixed;
     private boolean Fill;
-    public List<Neighbour> Neighbours;
+    private List<Neighbour> neighbours;
     private List<Point2d> ConnectionTo;
     private Object AxisLength;
 
@@ -46,7 +46,7 @@ public class SSE {
     public SSE(char SSEType) {
         this.SSEType = SSEType;                  
         this.bridgePartners = new ArrayList<BridgePartner>();   
-        this.Neighbours = new ArrayList<Neighbour>();                    
+        this.neighbours = new ArrayList<Neighbour>();                    
         this.ConnectionTo = new ArrayList<Point2d>();
         this.MergeRanges = new int[10][];   // XXX FIXME  
         this.axis = null;
@@ -59,6 +59,10 @@ public class SSE {
      */
     public SSE(SSE other) {
         
+    }
+    
+    public List<Neighbour> getNeighbours() {
+        return this.neighbours;
     }
     
     public void setFixed(SSE fixed) {
@@ -377,8 +381,8 @@ public class SSE {
     }
 
     public double separation(SSE q) {
-        for (int i = 0; i < this.Neighbours.size(); i++) {
-            Neighbour neighbour = this.Neighbours.get(i); 
+        for (int i = 0; i < this.neighbours.size(); i++) {
+            Neighbour neighbour = this.neighbours.get(i); 
             if (neighbour.sse == q) {
                 return neighbour.distance;
             }
@@ -424,12 +428,12 @@ public class SSE {
     }
     
     public void addNeighbour(SSE sse, int distance) {
-        this.Neighbours.add(new Neighbour(sse, distance));
+        this.neighbours.add(new Neighbour(sse, distance));
     }
 
     public String NeighbourNumbers() {
         StringBuffer numbers = new StringBuffer();
-        for (Neighbour neighbour : this.Neighbours) {
+        for (Neighbour neighbour : this.neighbours) {
             if (neighbour == null) break;
             numbers.append(neighbour.sse.getSymbolNumber());
             numbers.append(" ");
@@ -684,7 +688,7 @@ public class SSE {
         print(out, "\n");
 
         print(out, "Neighbour");
-        for (Neighbour neighbour : Neighbours) {
+        for (Neighbour neighbour : neighbours) {
             print(out, " %d", neighbour.sse.getSymbolNumber());
         }
         print(out, "\n");
