@@ -29,15 +29,14 @@ public class CalculateRelativeSides implements Calculation {
             for (BridgePartner bp : sse.getBridgePartners()) {
                 bp.setUnknown();
             }
-            int referenceBP = sse.longestBridgeRange();
-            BridgePartner bridgePartner1 = sse.getBridgePartners().get(referenceBP);
-            if (referenceBP >= 0 && bridgePartner1 != null) {
+            BridgePartner bridgePartner1 = sse.longestBridgeRange();
+            if (bridgePartner1 != null) {
                 bridgePartner1.setLeft();
                 // Assign side for those 'BridgeOverlap'ing with the RefBP //
                 for (int j = 0; j < sse.getBridgePartners().size(); j++) {
                     BridgePartner bridgePartner2 = sse.getBridgePartners().get(j);
-                    if (j != referenceBP && bridgePartner2 != null) {
-                        if (bridgeOverlap(sse, bridgePartner1, bridgePartner2)) {
+                    if (bridgePartner2 != null && !bridgePartner2.equals(bridgePartner1)) {
+                        if (bridgeOverlap(bridgePartner1, bridgePartner2)) {
                             bridgePartner2.setRight();
                         }
                     }
@@ -50,7 +49,7 @@ public class CalculateRelativeSides implements Calculation {
                         for (int k = 0; k < sse.getBridgePartners().size(); k++) {
                             BridgePartner bridgePartner3 = sse.getBridgePartners().get(k);
                             if (k != j && bridgePartner3 != null && bridgePartner3.isUnknownSide()) {
-                                if (bridgeOverlap(sse, bridgePartner2, bridgePartner3)) {
+                                if (bridgeOverlap(bridgePartner2, bridgePartner3)) {
                                     if (bridgePartner3.isLeft()) {
                                         bridgePartner2.setRight();
                                     }
@@ -81,21 +80,11 @@ public class CalculateRelativeSides implements Calculation {
     Function to determine whether the bridge partners of p overlap.
     ie. are the same residues hydrogen bonding to q and r?
      */
-    public boolean bridgeOverlap(SSE p, BridgePartner bpQ, BridgePartner bpR) {
-        SSE q = bpQ.partner;
-        SSE r = bpR.partner;
-        
-        // Find the index to q //
-        int i = p.FindBPIndex(q);
-
-        // Find the index to r //
-        int j = p.FindBPIndex(r);
-
-        // Compare ranges //
-        int a = p.getBridgeRange(i).start;
-        int b = p.getBridgeRange(i).end;
-        int x = p.getBridgeRange(j).start;
-        int y = p.getBridgeRange(j).end;
+    public boolean bridgeOverlap(BridgePartner bpQ, BridgePartner bpR) {
+        int a = bpQ.rangeMin;
+        int b = bpQ.rangeMax;
+        int x = bpR.rangeMin;
+        int y = bpR.rangeMax;
 
         // Not a---b x---y or x---y a---b //
         return !(b < x || y < a);  

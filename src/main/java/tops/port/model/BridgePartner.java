@@ -49,9 +49,28 @@ public class BridgePartner {
         return this.side == Side.UNKNOWN;
     }
     
+    public int getBridgeLength() {
+        return Math.abs(rangeMax - rangeMin);
+    }
+    
     public void update(int residueNumber) {
         if (residueNumber < rangeMin) rangeMin = residueNumber;
         if (residueNumber > rangeMax) rangeMax = residueNumber;
         NumberBridgePartners++;
+    }
+    
+    public boolean equals(Object other) {
+        if (other instanceof BridgePartner) {
+            BridgePartner oBridgePartner = (BridgePartner) other;
+            // TODO
+            return this.bridgeType == oBridgePartner.bridgeType
+                    && this.partner.equals(oBridgePartner.partner);
+        }
+        return false;
+    }
+    
+    public String toString() {
+        return String.format("%s %s %s %s %s", 
+                partner.getSymbolNumber(), side, bridgeType, rangeMin, rangeMax);
     }
 }

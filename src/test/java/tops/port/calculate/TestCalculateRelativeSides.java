@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
+import tops.port.model.SSE;
 
 public class TestCalculateRelativeSides {
     
@@ -20,6 +22,11 @@ public class TestCalculateRelativeSides {
         calculationA.calculate(chain);
         CalculateRelativeSides calculationB = new CalculateRelativeSides();
         calculationB.calculate(chain);
+        for (SSE sse : chain.getSSEs()) {
+            for (BridgePartner bp : sse.getBridgePartners()) {
+                System.out.println(sse.getSymbolNumber() + " ->" + bp);
+            }
+        }
     }
 
 }

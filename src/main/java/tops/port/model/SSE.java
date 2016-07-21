@@ -6,16 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.vecmath.Point2d;
-import javax.vecmath.Vector3d;
 
 public class SSE {
     
-    private int MAXBP = 6;
-
     private char Direction;
     private char SSEType;                       // H, E, N, C, D 
     private List<BridgePartner> bridgePartners;    // Bridge partners
-    private List<BridgeRange> BridgeRange;
     
     private int Merges = 0;                     // The number of merges made in creation 
     private int[][] MergeRanges;            // The start and end of the Merged structures 
@@ -133,10 +129,6 @@ public class SSE {
 
     public void setCartoonY(int cartoonY) {
         cartoonSymbol.setCartoonY(cartoonY);
-    }
-    
-    public BridgeRange getBridgeRange(int i) {
-        return this.BridgeRange.get(i);
     }
     
     public BridgePartner getBridgePartner(int index) {
@@ -286,38 +278,6 @@ public class SSE {
         this.bridgePartners.set(b, tmp);
     }
 
-    // XXX following method was surely intended for removing BP, which is not really necessary
-    // when you have arraylists ...
-//    public void ShuffleDownBPs() {
-//        for (int i = 0; i < this.BridgePartners.size(); i++) {
-//            if (this.BridgePartners.get(i) == null) {
-//                int j = i;
-//                while ((j < MAXBP) && (this.BridgePartners.get(j) == null)) j += 1;
-//                if (j < MAXBP) {
-//                    this.MoveBridgePartner(j, i);
-//                }
-//            }
-//        }
-//    }
-    // XXX similarly, this method is only called from above (ShuffleDownBPs). Delete it!
-//    public void MoveBridgePartner(int j, int i) {
-//        int MAXNB = this.Neighbours.size();
-//        if ((i < 0) || (i >= MAXNB)) return;
-//        if ((j < 0) || (j >= MAXNB)) return;
-//
-//        this.BridgePartner[i] = this.BridgePartner[j];
-//        this.BridgeRange[i][0] = this.BridgeRange[j][0];
-//        this.BridgeRange[i][1] = this.BridgeRange[j][1];
-//        this.BridgePartnerSide[i] = this.BridgePartnerSide[j];
-//        this.BridgePartnerType[i] = this.BridgePartnerType[j];
-//
-//        //the following is equivalent to a call to 'RemoveBP(p.BridgePartner[j])'
-//        this.BridgePartner[j] = null;
-//        this.BridgeRange[j][0] = 0;
-//        this.BridgeRange[j][1] = 0;
-//        this.BridgePartnerSide[j] = ' ';
-//        this.BridgePartnerType[j] = UNK_BRIDGE_TYPE;
-//    }
 
 //    public void ShuffleDownNeighbours() {
 //        int MAXNB = this.Neighbours.size();
@@ -426,16 +386,14 @@ public class SSE {
         return -1;
     }
 
-    public int longestBridgeRange() {
-        int longest = -1;
+    public BridgePartner longestBridgeRange() {
         double maxlen = -1.0;
-        for (int i = 0; i < MAXBP; i++) {
-            if (this.bridgePartners.get(i) != null) {
-                int len = this.BridgeRange.get(i).length();
-                if (len > maxlen) {
-                    maxlen = len;
-                    longest = i;
-                }
+        BridgePartner longest = null;
+        for (BridgePartner bridgePartner : this.bridgePartners) {
+            int len = bridgePartner.getBridgeLength();
+            if (len > maxlen) {
+                maxlen = len;
+                longest = bridgePartner;
             }
         }
         return longest;
@@ -792,6 +750,15 @@ public class SSE {
 
     public void setAxis(Axis axis) {
         this.axis = axis;
+    }
+    
+    public boolean equals(Object other) {
+        if (other instanceof SSE) {
+            SSE o = (SSE) other;
+            // TODO very much TODO
+            return this.cartoonSymbol == o.cartoonSymbol;
+        }
+        return false;
     }
 
     
