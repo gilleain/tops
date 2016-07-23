@@ -1,6 +1,8 @@
 package tops.port.calculate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import tops.port.model.BridgePartner;
@@ -48,17 +50,20 @@ public class CalculateSheets implements Calculation {
     //FIXME 
     //recursive and unidirectional!//
     public SSE findEdgeStrand(SSE current, SSE last) {
-        SSE partner0 = current.getBridgePartners().get(0).partner;
-        SSE partner1 = current.getBridgePartners().get(1).partner;
+        if (current == null) return last;
+        
+        List<BridgePartner> partners = current.getBridgePartners(); 
+        BridgePartner partner0 = partners.size() > 0? partners.get(0) : null;
+        BridgePartner partner1 = partners.size() > 1? partners.get(1) : null;
         System.out.println(String.format(
-                "find edge strand at %s bridge partners %s and %s", this, partner0, partner1));
+                "find edge strand at %s bridge partners %s and %s", current, partner0, partner1));
         if (partner0 == null || partner1 == null) {
             return current;
         } else {
-            if (partner0 != last) {
-                return this.findEdgeStrand(partner0, current);
+            if (partner0.partner != last) {
+                return this.findEdgeStrand(partner0.partner, current);
             } else {
-                return this.findEdgeStrand(partner1, current);
+                return this.findEdgeStrand(partner1.partner, current);
             }
         }
     }
@@ -201,9 +206,9 @@ public class CalculateSheets implements Calculation {
                 int rindex = i;
                 double incr = gridUnitSize;
                 if (r != null) {
-                    int pindex = q.FindBPIndex(p);
+                    BridgePartner qPartner = q.findBridgePartner(p);
 
-                    if (q.getBridgePartner(pindex).side == q.getBridgePartner(rindex).side) {
+                    if (qPartner.side == q.getBridgePartner(rindex).side) {
                         incr = (r.getCartoonX() < q.getCartoonX())? -gridUnitSize : +gridUnitSize; 
                     } else {
                         incr = (r.getCartoonX() < q.getCartoonX())? +gridUnitSize : -gridUnitSize;
@@ -232,7 +237,7 @@ public class CalculateSheets implements Calculation {
             }
         }
 
-        sortStacking(chain, q, q, 0, startLowerList, startUpperList, 0);
+        sortStacking(chain, p, q, 0, startLowerList, startUpperList, 0);
     }
     
     private void sortStacking(Chain chain, SSE p, SSE q, int startXPos, List<SSE> startLowerList, List<SSE> startUpperList, int maxListLen) {
@@ -308,13 +313,33 @@ public class CalculateSheets implements Calculation {
             List<SSE> currentList = chain.getListAtPosition(p, r.getCartoonX(), r.getCartoonY());
 
             if (currentList.size() > 1) { 
-                SSE bp = chain.getCommonBP(currentList, maxListLen);
+                SSE bp = getCommonBP(currentList, maxListLen);
                 if (bp != null) {
-                    chain.sortListByBridgeRange(bp, currentList);
+                    sortListByBridgeRange(bp, currentList);
                     this.spreadList(currentList, bp.getDirection());
                 }
             }
         }
+    }
+    
+    public void sortListByBridgeRange(final SSE bp, List<SSE> sseList) {
+        Comparator<SSE> sorter = new Comparator<SSE>() {
+
+            @Override
+            public int compare(SSE o1, SSE o2) {
+                BridgePartner bp1 = bp.findBridgePartner(o1);
+                BridgePartner bp2 = bp.findBridgePartner(o2);
+                return bp2.rangeMin - bp1.rangeMin;
+            }
+            
+        };
+        Collections.sort(sseList, sorter);
+    }
+    
+    private SSE getCommonBP(List<SSE> currentList, int MaxListLen) {
+        SSE start = currentList.get(0);
+        if (start == null) return null;
+        return SSE.getCommonBP(start, currentList);
     }
     
     public void spreadList(List<SSE> sseList, char direction) {

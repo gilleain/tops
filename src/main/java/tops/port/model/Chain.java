@@ -3,6 +3,8 @@ package tops.port.model;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -545,36 +547,6 @@ public class Chain {
         return groupList;
     }
  
-    public SSE getCommonBP(List<SSE> CurrentList, int MaxListLen) {
-        SSE start = CurrentList.get(0);
-        if (start == null) return null;
-        return SSE.getCommonBP(start, CurrentList);
-    }
-
-
-    public void sortListByBridgeRange(SSE bp, List<SSE> sseList) {
-        int n = sseList.size();
-        if (n < 1) return;
-        boolean test = true;
-        while (test) {
-            test = false;
-            for (int i = 0; i < n; i++) {
-                int bpind1 = bp.FindBPIndex(sseList.get(i-1));
-                int bpind2 = bp.FindBPIndex(sseList.get(i));
-//                if (bp.BridgeRange[bpind2][0] < bp.BridgeRange[bpind1][0]) {
-//                    swap(sseList, i, j);
-//                    test = true;
-//                }
-            }
-        }
-    }
-    
-    private void swap(List<SSE> sses, int i, int j) {
-        SSE tmp = sses.get(i);
-        sses.set(i, sses.get(j));
-        sses.set(j, tmp);
-    }
-
     //
     // a chain method
     // alternatively, an sse method 'separation(this, other)'

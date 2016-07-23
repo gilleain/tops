@@ -340,11 +340,11 @@ public class SSE {
         return Hand._unk_hand;
     }
 
-    public int FindBPIndex(SSE bp) {
-        for (int i = 0; i < this.bridgePartners.size(); i++) {
-            if (this.bridgePartners.get(i).partner == bp) return i;
+    public BridgePartner findBridgePartner(SSE sse) {
+        for (BridgePartner bridgePartner : this.bridgePartners) {
+            if (bridgePartner.partner == sse) return bridgePartner;
         }
-        return this.bridgePartners.size();
+        return null;
     }
 
     public int SecStrucLength() {
