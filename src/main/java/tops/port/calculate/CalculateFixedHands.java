@@ -15,7 +15,8 @@ public class CalculateFixedHands implements Calculation {
     
     private List<FixedType> allowedTypes = new ArrayList<FixedType>() {{
         add(FixedType.FT_BARREL); 
-        add(FixedType.FT_SANDWICH); 
+        add(FixedType.FT_SANDWICH);
+        add(FixedType.FT_SHEET);    // XXX not in original code, not sure why?
         add(FixedType.FT_CURVED_SHEET); 
         add(FixedType.FT_V_CURVED_SHEET); 
     }};
@@ -64,6 +65,7 @@ public class CalculateFixedHands implements Calculation {
                     n += 1;
                     if (r.getDirection() == q.getDirection()) {
                         Hand chir = chiral2d(chain, q, r);
+                        System.out.println("chir " + chir);
                         if (n > 1 && chir != Hand._unk_hand) {
                             found = true;
                         } else {
