@@ -523,7 +523,7 @@ public class SSE {
         return stringRepr.toString();
     }
 
-    private String AxisRepr() {
+    private String AxisRepr() { // XXX see toTopsFile() above
         // TODO Auto-generated method stub
         return null;
     }

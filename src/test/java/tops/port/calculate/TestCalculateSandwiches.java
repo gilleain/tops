@@ -9,13 +9,13 @@ import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 
-public class TestCalculateSheets {
+public class TestCalculateSandwiches {
     
     @Test
-    public void test1IFC() throws IOException {
+    public void test1DLF() throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1dlf.dssp");
         Chain chain = protein.getChains().get(0);
         CalculateStructureAxes calculationA = new CalculateStructureAxes();
         calculationA.calculate(chain);
@@ -25,6 +25,8 @@ public class TestCalculateSheets {
         calculationC.calculate(chain);
         CalculateSheets calculationD = new CalculateSheets();
         calculationD.calculate(chain);
+        CalculateSandwiches calculationE = new CalculateSandwiches();
+        calculationE.calculate(chain);
         
         for (SSE sse : chain.getSSEs()) {
             System.out.println(sse.getSymbolNumber() + 
