@@ -10,7 +10,7 @@ public class CalculateDirection implements Calculation {
      * vectors.
      **/
     public void calculate(Chain chain) {
-        System.out.println("Assigning directions to secondary structures\n");
+        System.out.println("STEP : Assigning directions to secondary structures\n");
         SSE Root = chain.getSSEs().get(0);
         SSE q = Root;
         for (SSE p : chain.iterNext(Root)) {

@@ -24,7 +24,7 @@ public class CalculateSheets implements Calculation {
     }
     
     public void calculate(Chain chain) {
-        System.out.println("Calculating sheets and barrels");
+        System.out.println("STEP : Calculating sheets and barrels");
 
         List<SSE> barrel;
         for (SSE p : chain.getSSEs()) { 

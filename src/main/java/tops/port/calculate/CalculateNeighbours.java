@@ -11,7 +11,7 @@ public class CalculateNeighbours implements Calculation {
      * Function to assign spatial neighbours
      **/
      public void calculate(Chain chain) {
-         System.out.println("Calculating secondary structure neighbour lists");
+         System.out.println("STEP : Calculating secondary structure neighbour lists");
 
          for (SSE p : chain.getSSEs()) {
              if (!p.isStrand() && !p.isHelix()) continue;

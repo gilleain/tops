@@ -17,7 +17,7 @@ public class CalculateRelativeSides implements Calculation {
 
     @Override
     public void calculate(Chain chain) {
-        System.out.println("Assigning relative sides to bridge partner strands");
+        System.out.println("STEP : Assigning relative sides to bridge partner strands");
         for (SSE p : chain.getSSEs()) {
             assignRelativeSides(p);
         }

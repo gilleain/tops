@@ -23,6 +23,7 @@ public class CalculateFixedHands implements Calculation {
 
     
     public void calculate(Chain chain) {
+        System.out.println("STEP : calculating fixed hands");
         for (SSE sse : chain.getSSEs()) {
             if (sse.hasFixed()) this.setFixedHand(chain, sse);
         }

@@ -8,7 +8,7 @@ public class CalculateStructureAxes implements Calculation {
  
     public void calculate(Chain chain) {
         // Calculate axes //
-        System.out.println("Calculating secondary structure vectors");
+        System.out.println("STEP : Calculating secondary structure vectors");
         for (SSE sse : chain.getSSEs()) {
             if (!sse.isStrand() && !sse.isHelix()) continue;
             secondaryStructureAxis(chain, sse);

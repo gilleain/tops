@@ -226,7 +226,11 @@ public class SSE {
     }
     
     public boolean isParallel(SSE other) {
-        return Math.abs(ClosestApproach(other).torsion) > 90;
+        if (this.axis == null || other.axis == null) {
+            return false;   // XXX this probably should not be necessary?
+        } else {
+            return Math.abs(ClosestApproach(other).torsion) > 90;
+        }
     }
 
     public TorsionResult ClosestApproach(SSE other) {

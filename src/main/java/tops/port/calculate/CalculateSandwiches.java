@@ -15,7 +15,7 @@ public class CalculateSandwiches implements Calculation {
      * Function to detect beta sandwich structures re-written by DW 26/02/97
      */
     public void calculate(Chain chain) {
-        System.out.println("Searching for beta sandwiches");
+        System.out.println("STEP : Searching for beta sandwiches");
 
         // detect and form sandwiches //
         List<SSE[]> sandwiches = new ArrayList<SSE[]>();
