@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import tops.port.calculate.util.DistanceCalculator;
 import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
@@ -471,7 +472,7 @@ public class CalculateSheets implements Calculation {
         // MaxSep is 0.65 of the separation if the sheet were flat with 4.5A between each pair of strands """
         MaxSep = 4.5 * (span - 1.0) * 0.65;
 
-        double sep = chain.secStrucSeparation(left, right);
+        double sep = DistanceCalculator.secStrucSeparation(left, right);
 
         System.out.println(String.format("SheetCurvature %d %d %f %f", left.getSymbolNumber(), right.getSymbolNumber(), sep, MaxSep));
 

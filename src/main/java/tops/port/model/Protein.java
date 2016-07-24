@@ -1,17 +1,16 @@
 package tops.port.model;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tops.port.calculate.util.ChiralityCalculator;
 import tops.port.model.DomainDefinition.DomainType;
-import tops.port.model.Protein.DomainId;
-
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class Protein {
 
@@ -712,7 +711,7 @@ public class Protein {
                  * partner by a domain break
                  */
                 for (Chain chain : getChains()) {
-                    SSE cp = chain.topsChiralPartner(r);
+                    SSE cp = ChiralityCalculator.topsChiralPartner(chain, r);
                     if ((r.Chirality != Hand._no_hand) && (cp != null)) {
                         for (s = r; s != cp; s = s.To) {
                             if ((s.domainBreakType == DomainBreakType.C_DOM_BREAK)

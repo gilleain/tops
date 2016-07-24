@@ -13,6 +13,8 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import tops.port.calculate.util.DistanceCalculator;
+
 public class Chain {
 
     public enum SSEType {
@@ -319,28 +321,7 @@ public class Chain {
         //XXX
     }
 
-    /*
-        Hand calculator
-        Updated to call T. Slidel's chirality calculation by D. Westhead 20/5/97
-        If handedness is uncertain, or an error occurrs, right handed is assumed
-        an sse method
-    */
-    public Hand Hand3D(SSE p) {
-
-        SSE q = this.topsChiralPartner(p);
-        if (q != null) {
-            Hand chir = p.Chiral3d(q);
-            if (chir == Hand._unk_hand) {
-                if (p.isStrand()) chir = Hand._Right;
-                else if (p.isHelix()) chir = Hand._no_hand;
-                else chir = Hand._no_hand;
-            }
-            return chir;
-        } else {
-            return Hand._no_hand;
-        }
-    }
-
+   
 
     public int fixedSize(SSE sse) {
         System.out.println("finding size of fixed structure from " + sse);
@@ -376,39 +357,6 @@ public class Chain {
 
     public void clearFixedPlaced() {
 //        for (SSE p : this.fixed) p.SymbolPlaced = false;
-    }
-
-    public SSE topsChiralPartner(SSE p) {
-        /*
-        this piece of code finds sequences of ss elements to which a chirality should be attached
-        for TOPS this is two parallel strands in the same fixed structure with a connection of at least one and no 
-        more than five ss elements, none of which should be in the same sheet,
-        OR two parallel helices each of more than 12 residues connected by at least one and no more than 2 other helices.
-        */
-        int startIndex = this.sses.indexOf(p) + 1;
-
-        if (p.isStrand()) {
-            int endIndex = startIndex + 5;
-            for (int i = startIndex; i < endIndex; i++) {
-                SSE q;
-                if (i >= this.sses.size()) return null;
-                else q = this.sses.get(i);
-                if ((q.isStrand()) && (this.findFixedStart(q) == this.findFixedStart(p))) {
-                    if (q.getDirection() == p.getDirection()) return q;
-                    else return null;
-                }
-            }
-        } else if ((p.isHelix()) && (p.SecStrucLength() > 12)) {
-            int endIndex = startIndex + 2;
-            for (int i = startIndex; i < endIndex; i++) {
-                SSE q;
-                if (i >= this.sses.size()) return null;
-                else q = this.sses.get(i);
-                if (!q.isHelix()) return null;
-                if ((q.getDirection() == p.getDirection()) && (q.SecStrucLength() > 12)) return q;
-            }
-        }
-        return null;    // XXX added to satisfy compiler
     }
 
     public int countStructures() {
@@ -557,7 +505,7 @@ public class Chain {
 
         double minsep = Double.MIN_VALUE;
         for (SSE q : this.iterFixed(FixedStart)) {
-            double sep = this.secStrucSeparation(p, q);
+            double sep = DistanceCalculator.secStrucSeparation(p, q);
             if (sep < minsep) {
                 minsep = sep;
                 closest = q;
@@ -601,65 +549,7 @@ public class Chain {
         return Math.abs(values.torsion) < 90.0;
     }
         
-    public double simpleSSESeparation(SSE p, SSE q) {
-        Vector3d pk = plus(p.axis.AxisStartPoint, p.axis.AxisFinishPoint);
-        Vector3d pj = plus(q.axis.AxisStartPoint, q.axis.AxisFinishPoint);
-        pk.scale(1/2.0);
-        pj.scale(1/2.0);
-        return this.distance3D(pk, pj);
-    }
     
-    private Vector3d plus(Vector3d a, Vector3d b) {
-        Vector3d c = new Vector3d(a);
-        c.add(b);
-        return c; 
-    }
-
-    public double secStrucSeparation(SSE p, SSE q) {
-//        pk, pj, sk, sj, torsion
-        TorsionResult result = p.ClosestApproach(q);
-        double sk = result.sk;
-        double sj = result.sj;
-        double torsion = result.torsion;
-
-        //check error
-        if (torsion < -990.0 ) return 0.0;
-
-        Vector3d pk = null;
-        if (sk < 0.0) pk = p.axis.AxisStartPoint;
-        else if (sk > 1.0) pk = p.axis.AxisFinishPoint;
-
-        Vector3d pj = null;
-        if (sj < 0.0) pj = q.axis.AxisStartPoint;
-        else if (sj > 1.0) pj = q.axis.AxisFinishPoint;
-
-        return this.distance3D(pk, pj);
-    }
-
-
-
-    //TODO : tie this to the prosec python code!
-    public Hand Chiral3d(SSE a, SSE b) {
-        return Hand._unk_hand;
-    }
-
-    public double distance3D(Vector3d a, Vector3d b) {
-        return diff(b, a).length();
-    }
-    
-    private Vector3d diff(Vector3d a, Vector3d b) {
-        Vector3d ab = a;
-        ab.sub(b);
-        return ab;
-    }
-
-    //might not be as accurate as the original
-    public double angleBetweenLines(Vector3d a, Vector3d b, Vector3d c) {
-        Vector3d ba = diff(b, a);
-        Vector3d bc = diff(b, c);
-        if (ba.length() == 0.0 || bc.length() == 0.0) return 0.0;
-        return Math.toDegrees(ba.angle(bc));
-    }
 
     /*
         function to obtain bridge partners from main chain H bond information
@@ -856,54 +746,7 @@ public class Chain {
      */
     
 
-    /**
-     * Calculates chiralities for 2D TOPS cartoon
-     */
-    public Hand Hand2D(SSE p) {
-        if (p.Chirality != Hand._no_hand) {
-            SSE q = this.topsChiralPartner(p);
-            if (q != null) return this.Chiral2d(p, q);
-        }
-        return Hand._no_hand;
-    }
-
-    /**
-     * This could be a Cartoon method if it was recast as finding the sign of the determinant of the matrix
-     *   of course, this would mean not re-using the Torsion method so cunningly, but hey.
-     */
-    public Hand Chiral2d(SSE p, SSE q) {
-        Hand hand = Hand._unk_hand;
-        Hand lasthand = Hand._unk_hand;
-
-        Vector3d a, b, c, d;
-        if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
-        else a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
-
-        b = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
-
-        c = new Vector3d(q.getCartoonX(), q.getCartoonY(), 0.0);
-
-        int i = 0;
-        for (SSE r : this.range(p.To, q)) {
-            d = new Vector3d(r.getCartoonX(), r.getCartoonY(), 0.0);
-            lasthand = hand;
-            double theta = this.angleBetweenLines(b, c, d);
-            if (theta < 0.5 || theta > 179.5) {
-                hand = Hand._unk_hand;
-            } else {
-                double torsion = Axis.Torsion(a, b, c, d);
-                if (torsion < 0.0) {
-                    hand = Hand._Left;
-                } else {
-                    hand = Hand._Right;
-                }
-            }
-            if (i > 0 && hand != lasthand) { 
-                return Hand._unk_hand;
-            }
-        }
-        return hand;
-    }
+   
 
     public double fixedSpan(SSE p, double GridUnitSize) {
         double minx = 0;

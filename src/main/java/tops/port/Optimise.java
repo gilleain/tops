@@ -9,6 +9,7 @@ import java.util.Random;
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
+import tops.port.calculate.util.ChiralityCalculator;
 import tops.port.model.Cartoon;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
@@ -142,7 +143,8 @@ public class Optimise {
 
         if (HandPenalty > 0 && chain.numberOfSSEs() > 4) {
             for (SSE sse : chain.getSSEs()) {
-                if (sse.Chirality != Hand._no_hand && chain.Hand2D(sse) != sse.Chirality) {
+                if (sse.Chirality != Hand._no_hand && 
+                        ChiralityCalculator.hand2D(chain, sse) != sse.Chirality) {
                     TotalEnergy += HandPenalty;
                     EnergyComps[4] += HandPenalty;
                 }

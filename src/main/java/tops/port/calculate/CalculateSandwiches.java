@@ -3,6 +3,7 @@ package tops.port.calculate;
 import java.util.ArrayList;
 import java.util.List;
 
+import tops.port.calculate.util.DistanceCalculator;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
@@ -133,8 +134,8 @@ public class CalculateSandwiches implements Calculation {
         SSE longSheetRightMost = chain.rightMost(longSheetStart);
 
         // is the short sheet the right way round?, if not turn it """
-        double leftSeparation = chain.secStrucSeparation(shortSheetLeftMost, longSheetLeftMost);
-        double rightSeparation = chain.secStrucSeparation(shortSheetRightMost, longSheetLeftMost);
+        double leftSeparation = DistanceCalculator.secStrucSeparation(shortSheetLeftMost, longSheetLeftMost);
+        double rightSeparation = DistanceCalculator.secStrucSeparation(shortSheetRightMost, longSheetLeftMost);
         if (leftSeparation > rightSeparation) {
             chain.flipSymbols(shortSheetStart);
             SSE tmp = shortSheetRightMost;
