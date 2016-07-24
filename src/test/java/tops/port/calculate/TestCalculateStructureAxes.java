@@ -13,6 +13,11 @@ import tops.port.model.SSE;
 
 public class TestCalculateStructureAxes {
     
+    public void calculate(Chain chain) {
+        CalculateStructureAxes calculation = new CalculateStructureAxes();
+        calculation.calculate(chain);
+    }
+    
     private Chain makeChain() {
         Chain chain = new Chain('A');
         // Helix 20-30 from 1ecoA
@@ -40,8 +45,7 @@ public class TestCalculateStructureAxes {
         Protein protein = 
                 dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
         Chain chain = protein.getChains().get(0);
-        CalculateStructureAxes calculation = new CalculateStructureAxes();
-        calculation.calculate(chain);
+        calculate(chain);
         for (SSE sse : chain.getSSEs()) {
             System.out.println("[" + 
                     sse.sseData.PDBStartResidue + "-" + sse.sseData.PDBFinishResidue

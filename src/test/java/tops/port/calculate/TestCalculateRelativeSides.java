@@ -10,7 +10,13 @@ import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 
-public class TestCalculateRelativeSides {
+public class TestCalculateRelativeSides extends TestCalculateStructureAxes {
+    
+    public void calculate(Chain chain) {
+        super.calculate(chain);
+        CalculateRelativeSides calculation = new CalculateRelativeSides();
+        calculation.calculate(chain);
+    }
     
     @Test
     public void test1IFC() throws IOException {
@@ -18,10 +24,7 @@ public class TestCalculateRelativeSides {
         Protein protein = 
                 dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
         Chain chain = protein.getChains().get(0);
-        CalculateStructureAxes calculationA = new CalculateStructureAxes();
-        calculationA.calculate(chain);
-        CalculateRelativeSides calculationB = new CalculateRelativeSides();
-        calculationB.calculate(chain);
+        
         for (SSE sse : chain.getSSEs()) {
             for (BridgePartner bp : sse.getBridgePartners()) {
                 System.out.println(sse.getSymbolNumber() + " ->" + bp);
