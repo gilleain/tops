@@ -19,6 +19,7 @@ public class Configure {
     public Configure() {
         calculators.add(new CalculateStructureAxes());
         calculators.add(new CalculateRelativeSides());
+        calculators.add(new CalculateMergedStrands());
         calculators.add(new CalculateNeighbours());
         calculators.add(new CalculateSheets());
         calculators.add(new CalculateSandwiches());

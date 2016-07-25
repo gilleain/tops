@@ -1,6 +1,7 @@
 package tops.port.calculate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Vector3d;
@@ -28,8 +29,10 @@ public class CalculateMergedStrands implements Calculation {
         if (minMergeStrandSeparation <= 0) return;
         
         System.out.println("Searching for strand merges");
-        for (SSE p : chain.getSSEs()) {
-            int connectLoopLen = p.sseData.SeqStartResidue - p.From.sseData.SeqFinishResidue - 1;
+        List<SSE> sses = chain.getSSEs(); 
+        for (int index = 1; index < sses.size(); index++) {
+            SSE p = sses.get(index);
+            int connectLoopLen = getLoopLength(p);
             if (p.isStrand() && p.From != null && p.From.isStrand() && connectLoopLen < minMergeStrandSeparation) {
                 int shortLoop = 1;
                 int cbpd = this.connectBPDistance(p, p.From);
@@ -44,6 +47,10 @@ public class CalculateMergedStrands implements Calculation {
                 }
             }
         }
+    }
+    
+    private int getLoopLength(SSE p) {
+        return p.sseData.SeqStartResidue - p.From.sseData.SeqFinishResidue - 1;
     }
     
 
