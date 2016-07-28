@@ -1,5 +1,6 @@
 package tops.port.calculate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import tops.port.model.Chain;
@@ -17,6 +18,7 @@ public class Configure {
     private List<Calculation> calculators;
     
     public Configure() {
+        calculators = new ArrayList<Calculation>();
         calculators.add(new CalculateStructureAxes());
         calculators.add(new CalculateRelativeSides());
         calculators.add(new CalculateMergedStrands());
