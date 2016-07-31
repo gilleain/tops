@@ -27,6 +27,10 @@ public class Optimise {
             this.point = point;
             this.type = type;
         }
+        
+        public String toString() {
+            return String.format("%s at %s", type, point);
+        }
     }
     
     private enum IntersectionType {
@@ -107,6 +111,7 @@ public class Optimise {
 
         if (neighbourPenalty > 0) {
             for (SSE sseA : chain.getSSEs()) {
+                if (sseA.getNeighbours().size() == 0) continue;
                 Neighbour first = sseA.getNeighbours().get(0);   // assumes sorted...
                 //NOTE: tops files do not contain neighbour distances!
                 if (first.distance == -1) break;	
@@ -129,6 +134,8 @@ public class Optimise {
                 for (SSE sseB : chain.rangeFrom(sseA.To.To)) {
                     if (sseB.To == null || (sseB.isTerminus() && sseB.To.isTerminus())) continue;
                     Intersection intersection = lineCross(sseA, sseA.To, sseB, sseB.To);
+                    System.out.println("Intersection " + intersection);
+                    if (intersection == null) continue; // XXX FIXME
                     if (intersection.type == IntersectionType.CROSSING) {
                         //print "crossing between", sseA, "-", sseA.To, "&&", sseB, "-", sseB.To
                         TotalEnergy += crossPenalty;
@@ -375,7 +382,7 @@ public class Optimise {
             }
 
             double fraction = numberLow * 100 / locNoConfigs;
-            System.out.println(String.format("%10ld %12ld %17d", currentTemperature, lowestEnergy, fraction));
+            System.out.println(String.format("%10f %12f %17f", currentTemperature, lowestEnergy, fraction));
 
             // lower the temperature
             currentTemperature = currentTemperature * (100 - decrement) / 100;
@@ -390,7 +397,7 @@ public class Optimise {
         }
 
         calculateEnergy(cartoon);
-        printEnergy(Energy);
+//        printEnergy(Energy);
     }
 
     private void printEnergy(long[][] EnergyComps) {

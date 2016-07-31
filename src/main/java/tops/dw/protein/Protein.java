@@ -204,7 +204,9 @@ public class Protein {
         SecStrucElement LastSS = null, CurrentSS = null;
 
         int i;
-        for (i = 1; i < 5; i++) {
+//        int headerSize = 1;  // XXX tmp - was 5
+        int headerSize = 1;  
+        for (i = 1; i < headerSize; i++) {
             line = br.readLine();
             if (line == null)
                 throw new TopsFileFormatException();
@@ -215,15 +217,17 @@ public class Protein {
             }
             */
         }
-
+        line = br.readLine();
         while (line != null) {
 
             st = new StringTokenizer(line);
             nTokens = st.countTokens();
+//            System.out.println(st.countTokens() + " " + line);
 
             if (nTokens > 0) {
 
                 FirstToken = st.nextToken();
+//                System.out.println(line.trim() + " Token: " + FirstToken);
 
                 if (FirstToken.equals("DOMAIN_NUMBER")) {
                     if (nTokens < 3)

@@ -201,7 +201,18 @@ public class Chain {
     }
 
     public int numberFixed() {
-        return this.iterFixed(sses.get(0)).size();
+        SSE fixedStart = null;
+        for (SSE sse : sses) {
+            if (sse.hasFixed()) {
+                fixedStart = sse;
+                break;
+            }
+        }
+        if (fixedStart == null) {
+            return 0;
+        } else {
+            return this.iterFixed(fixedStart).size();
+        }
     }
 
     /*
@@ -324,7 +335,7 @@ public class Chain {
    
 
     public int fixedSize(SSE sse) {
-        System.out.println("finding size of fixed structure from " + sse);
+//        System.out.println("finding size of fixed structure from " + sse);
         return this.iterFixed(sse).size();
     }
 
@@ -720,7 +731,7 @@ public class Chain {
     public String toTopsFile() {
         StringBuffer sseStringList = new StringBuffer(); 
         for (SSE sse : this.sses) {
-            sseStringList.append(sse.toTopsFile()).append("\n\n");
+            sseStringList.append(sse.toTopsFile(this)).append("\n");
         }
         return sseStringList.toString();
     }

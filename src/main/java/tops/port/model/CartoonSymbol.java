@@ -20,7 +20,7 @@ public class CartoonSymbol {
     private boolean symbolPlaced;
 
     public CartoonSymbol() {
-        // TODO
+        this(0, "H", 'U');
     }
     
     public CartoonSymbol(int symbolNumber, String sseType, char direction) {

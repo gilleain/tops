@@ -58,7 +58,10 @@ public class SSE {
      * TODO : copy constructor
      */
     public SSE(SSE other) {
-        
+        this.SSEType = other.SSEType;
+        // TODO...
+        this.bridgePartners = new ArrayList<BridgePartner>();
+        this.cartoonSymbol = other.cartoonSymbol;
     }
     
     public List<Neighbour> getNeighbours() {
@@ -469,7 +472,7 @@ public class SSE {
         else return String.valueOf(this.Chain);
     }
 
-    public String toTopsFile() {
+    public String toTopsFile(Chain chain) {
         //sys.stderr.write(this.dump())
         StringBuffer stringRepr = new StringBuffer();
         stringRepr.append(String.format("%s %s\n", "SecondaryStructureType", this.SSEType));
@@ -488,22 +491,27 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "PDBStartResidue", this.sseData.PDBStartResidue));
         stringRepr.append(String.format("%s %s\n", "PDBFinishResidue", this.sseData.PDBFinishResidue));
         stringRepr.append(String.format("%s %s\n", "SymbolNumber", this.getSymbolNumber()));
-        stringRepr.append(String.format("%s %s\n", "Chain", this.getChain()));
-        stringRepr.append(String.format("%s %s\n", "Chirality", this.Chirality));
+        stringRepr.append(String.format("%s %s\n", "Chain", chain.getName()));
+        stringRepr.append(String.format("%s %s\n", "Chirality", chiralToString(this.Chirality)));
         stringRepr.append(String.format("%s %s\n", "CartoonX", this.getCartoonX()));
         stringRepr.append(String.format("%s %s\n", "CartoonY", this.getCartoonY()));
-//        stringRepr.append(this.AxisRepr());
-        stringRepr.append(String.format("%s %s\n", "SymbolRadius", cartoonSymbol.getSymbolRadius()));
-        stringRepr.append(String.format("%s %2f\n", "AxisLength", this.AxisLength));
+        stringRepr.append(this.AxisRepr());
+        stringRepr.append(String.format("%s %s\n", "SymbolRadius", (int)cartoonSymbol.getSymbolRadius()));
+        stringRepr.append(String.format("%s %s\n", "AxisLength", (this.AxisLength == null? "1" : this.AxisLength)));
         stringRepr.append(String.format("%s %s\n", "NConnectionPoints", this.NConnectionPoints));
         stringRepr.append(String.format("%s %s\n", "ConnectionTo", this.Connections()));
-        stringRepr.append(String.format("%s %sn", "Fill", this.Fill));
+        stringRepr.append(String.format("%s %s\n", "Fill", (this.Fill? "1" : "0")));
         return stringRepr.toString();
+    }
+    
+    private String chiralToString(Hand chirality) {
+        return (chirality == Hand._no_hand)? "0" : 
+            (chirality == Hand._Left? "1" : "-1");
     }
 
     private String AxisRepr() { // XXX see toTopsFile() above
-        // TODO Auto-generated method stub
-        return null;
+        return String.format("AxesStartPoint %s %s %s\n", 0.0, 0.0, 0.0) + 
+                String.format("AxesFinishPoint %s %s %s\n", 0.0, 0.0, 0.0);
     }
 
     public String toString() {
