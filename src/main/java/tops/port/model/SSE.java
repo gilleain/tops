@@ -496,12 +496,16 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "CartoonX", this.getCartoonX()));
         stringRepr.append(String.format("%s %s\n", "CartoonY", this.getCartoonY()));
         stringRepr.append(this.AxisRepr());
-        stringRepr.append(String.format("%s %s\n", "SymbolRadius", (int)cartoonSymbol.getSymbolRadius()));
+        stringRepr.append(String.format("%s %s\n", "SymbolRadius", getRadius()));
         stringRepr.append(String.format("%s %s\n", "AxisLength", (this.AxisLength == null? "1" : this.AxisLength)));
         stringRepr.append(String.format("%s %s\n", "NConnectionPoints", this.NConnectionPoints));
         stringRepr.append(String.format("%s %s\n", "ConnectionTo", this.Connections()));
         stringRepr.append(String.format("%s %s\n", "Fill", (this.Fill? "1" : "0")));
         return stringRepr.toString();
+    }
+    
+    public int getRadius() {
+        return cartoonSymbol.getSymbolRadius() > 1?  (int)cartoonSymbol.getSymbolRadius() : 10;
     }
     
     private String chiralToString(Hand chirality) {

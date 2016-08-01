@@ -16,6 +16,7 @@ import tops.port.calculate.Configure;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
+import tops.port.model.SSE;
 import tops.view.tops2D.cartoon.CartoonDrawer;
 
 public class TestOptimise {
@@ -24,20 +25,20 @@ public class TestOptimise {
     public void test1GSO() throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/2bop.dssp");
+                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
         Chain chain = protein.getChains().get(0);
         Configure configure = new Configure();
         configure.configure(chain);
-        draw("2bop", chain, "test.png");
         
         Optimise optimise = new Optimise();
-//        optimise.optimise(chain);
-//        for (SSE sse : chain.getSSEs()) {
-//            System.out.println(sse.getSymbolNumber() + 
-//                    String.format(" at (%s, %s) is %s", 
-//                            sse.getCartoonX(), sse.getCartoonY(), sse.getDirection()));
-//
-//        }
+        optimise.optimise(chain);
+        for (SSE sse : chain.getSSEs()) {
+            System.out.println(sse.getSymbolNumber() + 
+                    String.format(" at (%s, %s) is %s", 
+                            sse.getCartoonX(), sse.getCartoonY(), sse.getDirection()));
+
+        }
+        draw("1ifc", chain, "test.png");
 //        System.out.println(chain.toTopsFile());
     }
     
