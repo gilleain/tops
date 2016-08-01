@@ -52,10 +52,10 @@ public class Optimise {
     
     private Intersection lineCross(SSE p, SSE q, SSE r, SSE s) {
         return intersectionCalculator.lineCross(
-                p.getCartoonX(), p.getCartoonY(), 
-                q.getCartoonX(), q.getCartoonY(),
-                r.getCartoonX(), r.getCartoonY(),
-                s.getCartoonX(), s.getCartoonY());
+                p.getCartoonCenter(), 
+                q.getCartoonCenter(),
+                r.getCartoonCenter(),
+                s.getCartoonCenter());
     }
 
     private double calculateEnergy(Chain chain) {

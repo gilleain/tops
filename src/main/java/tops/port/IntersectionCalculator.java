@@ -3,6 +3,7 @@ package tops.port;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
 
 public class IntersectionCalculator {
@@ -27,33 +28,28 @@ public class IntersectionCalculator {
         SUPERIMPOSING;
     }
     
-    public Intersection lineCross(
-            double px, double py, 
-            double qx, double qy, 
-            double rx, double ry,
-            double sx, double sy) {
-        
+    public Intersection lineCross(Point2d p, Point2d q, Point2d r, Point2d s) {
         double TOL = 0.01;
 
-        Intersection intersection = simpleIntersection(px, py, qx, qy, rx, ry, sx, sy);
+        Intersection intersection = simpleIntersection(p.x, p.y, q.x, q.y, r.x, r.y, s.x, s.y);
         if (intersection.type == IntersectionType.CROSSING) {
             return intersection;
         }
 
         // Special cases 
-        double x = qx;
-        double y = qy;
+        double x = q.x;
+        double y = q.y;
 
         // - for superimposing condition require that the lines do not just overlap : a single point 
         //both lines are nearly vertical
-        if (Math.abs(px - qx) < TOL && Math.abs(rx - sx) < TOL) {
-            x = px;
-            y = parallel(py, qy, ry, sy);
-            py += 2.0 * TOL * signof(py, qy);
-            qy -= 2.0 * TOL * signof(py, qy);
-            ry += 2.0 * TOL * signof(ry, sy);
-            sy -= 2.0 * TOL * signof(ry, sy);
-            if (Math.abs(px - rx) < TOL && overlap(y, py, qy, ry, sy)) {
+        if (Math.abs(p.x - q.x) < TOL && Math.abs(r.x - s.x) < TOL) {
+            x = p.x;
+            y = parallel(p.y, q.y, r.y, s.y);
+            p.y += 2.0 * TOL * signof(p.y, q.y);
+            q.y -= 2.0 * TOL * signof(p.y, q.y);
+            r.y += 2.0 * TOL * signof(r.y, s.y);
+            s.y -= 2.0 * TOL * signof(r.y, s.y);
+            if (Math.abs(p.x - r.x) < TOL && overlap(y, p.y, q.y, r.y, s.y)) {
                 return new Intersection(new Vector2d(x, y), IntersectionType.SUPERIMPOSING);
             } else {
                 //print "not crossing, both vertical:", p, q, r, s
@@ -62,17 +58,17 @@ public class IntersectionCalculator {
         }
 
         //the first line is nearly vertical
-        if (Math.abs(px - qx) < TOL) {
-            double c1 = px;
-            double m2 = slope(rx, ry, sx, sy);
-            double c2 = constant(rx, ry, sx, sy);
+        if (Math.abs(p.x - q.x) < TOL) {
+            double c1 = p.x;
+            double m2 = slope(r.x, r.y, s.x, s.y);
+            double c2 = constant(r.x, r.y, s.x, s.y);
             y = m2 * c1 + c2;
             if (Math.abs(m2) > TOL) {
                 x = (y - c2) / m2;
             } else {
-                x = px;
+                x = p.x;
             }
-            if (overlap(x, px, qx, rx, sx) && overlap(y, py, qy, ry, sy)) {
+            if (overlap(x, p.x, q.x, r.x, s.x) && overlap(y, p.y, q.y, r.y, s.y)) {
                 return new Intersection(new Vector2d(x, y), IntersectionType.CROSSING);
             } else {
                 //print "not crossing, first vertical:", p, q, r, s
@@ -81,16 +77,16 @@ public class IntersectionCalculator {
         }
 
         //the second line is nearly vertical
-        if (Math.abs(rx - sx) < TOL) {
-            double m1 = slope(px, py, qx, qy);
-            double c1 = constant(px, py, qx, qy);
-            double c2 = rx;
+        if (Math.abs(r.x - s.x) < TOL) {
+            double m1 = slope(p.x, p.y, q.x, q.y);
+            double c1 = constant(p.x, p.y, q.x, q.y);
+            double c2 = r.x;
             y = m1 * c2 + c1;
             if (Math.abs(m1) > TOL) {
                 x = (y - c1) / m1;
             } else {
-                x = rx;
-                if (overlap(x, px, qx, rx, sx) && overlap(y, py, qy, ry, sy)) {
+                x = r.x;
+                if (overlap(x, p.x, q.x, r.x, s.x) && overlap(y, p.y, q.y, r.y, s.y)) {
                     return new Intersection(new Vector2d(x, y), IntersectionType.CROSSING);
                 } else {
                     //print "not crossing, second vertical:", p, q, r, s
@@ -99,20 +95,20 @@ public class IntersectionCalculator {
             }
 
             // Calculate slopes
-            m1 = slope(px, py, qx, qy);
-            c1 = constant(px, py, qx, qy);
-            double m2 = slope(rx, ry, sx, sy);
-            c2 = constant(rx, ry, sx, sy);
+            m1 = slope(p.x, p.y, q.x, q.y);
+            c1 = constant(p.x, p.y, q.x, q.y);
+            double m2 = slope(r.x, r.y, s.x, s.y);
+            c2 = constant(r.x, r.y, s.x, s.y);
 
             // Parallel case - for superimposing condition require that the lines do not just overlap : a single point */
             if (Math.abs(m1 - m2) < TOL) {
-                x = parallel(px, qx, rx, sx);
+                x = parallel(p.x, q.x, r.x, s.x);
                 y = x * m1 + c1;
-                px += 2.0 * TOL * signof(px, qx);
-                qx -= 2.0 * TOL * signof(px, qx);
-                rx += 2.0 * TOL * signof(rx, sx);
-                sx -= 2.0 * TOL * signof(rx, sx);
-                if (Math.abs(c1 - c2) < TOL && overlap(x, px, qx, rx, sx)) { 
+                p.x += 2.0 * TOL * signof(p.x, q.x);
+                q.x -= 2.0 * TOL * signof(p.x, q.x);
+                r.x += 2.0 * TOL * signof(r.x, s.x);
+                s.x -= 2.0 * TOL * signof(r.x, s.x);
+                if (Math.abs(c1 - c2) < TOL && overlap(x, p.x, q.x, r.x, s.x)) { 
                     return new Intersection(new Vector2d(x, y), IntersectionType.SUPERIMPOSING);
                 } else {
                     //print "not crossing, parallel :", p, q, r, s
@@ -125,7 +121,7 @@ public class IntersectionCalculator {
             y = constant(-m1, c1, -m2, c2) ;
 
             // Does crossing point lie inside either line (only need to test one)
-            if (overlap(x, px, qx, rx, sx) && overlap(y, py, qy, ry, sy)) {
+            if (overlap(x, p.x, q.x, r.x, s.x) && overlap(y, p.y, q.y, r.y, s.y)) {
                 return new Intersection(new Vector2d(x, y), IntersectionType.CROSSING);
             } else {
                 //print "not crossing other:", p, q, r, s

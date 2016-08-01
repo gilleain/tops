@@ -2,6 +2,8 @@ package tops.port;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.vecmath.Point2d;
+
 import org.junit.Test;
 
 import tops.port.IntersectionCalculator.Intersection;
@@ -12,16 +14,12 @@ public class TestIntersectionCalculator {
     @Test
     public void testCrossing() {
         IntersectionCalculator calc = new IntersectionCalculator();
-        double px = 10;
-        double py = 10;
-        double qx = 20;
-        double qy = 20;
-        double rx = 20;
-        double ry = 10;
-        double sx = 10;
-        double sy = 20;
+        Point2d p = new Point2d(10, 10);
+        Point2d q = new Point2d(20, 20);
+        Point2d r = new Point2d(20, 10);
+        Point2d s = new Point2d(10, 20);
         
-        Intersection result = calc.lineCross(px, py, qx, qy, rx, ry, sx, sy);
+        Intersection result = calc.lineCross(p, q, r, s);
         assertEquals(IntersectionType.CROSSING, result.type);
     }
 

@@ -113,8 +113,14 @@ public class SSE {
         this.cartoonSymbol.setSymbolNumber(symbolNumber);
     }
     
+    
     public int getSymbolNumber() {
         return cartoonSymbol.getSymbolNumber();
+    }
+    
+    public Point2d getCartoonCenter() {
+        // XXX note we are making a new instance here, as some methods alter the values  
+        return new Point2d(cartoonSymbol.getCartoonX(), cartoonSymbol.getCartoonY());
     }
     
     public int getCartoonX() {
