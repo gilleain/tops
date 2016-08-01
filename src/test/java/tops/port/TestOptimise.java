@@ -1,10 +1,12 @@
 package tops.port;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Vector;
 
 import org.junit.Test;
@@ -30,27 +32,22 @@ public class TestOptimise {
         Configure configure = new Configure();
         configure.configure(chain);
         
-        Optimise optimise = new Optimise();
-        optimise.optimise(chain);
-        for (SSE sse : chain.getSSEs()) {
-            System.out.println(sse.getSymbolNumber() + 
-                    String.format(" at (%s, %s) is %s", 
-                            sse.getCartoonX(), sse.getCartoonY(), sse.getDirection()));
-
-        }
         draw("1ifc", chain, "test.png");
+//        
+//        Optimise optimise = new Optimise();
+//        optimise.optimise(chain);
+//        for (SSE sse : chain.getSSEs()) {
+//            System.out.println(sse.getSymbolNumber() + 
+//                    String.format(" at (%s, %s) is %s", 
+//                            sse.getCartoonX(), sse.getCartoonY(), sse.getDirection()));
+//
+//        }
 //        System.out.println(chain.toTopsFile());
     }
     
     private void draw(String name, Chain chain, String outputFilepath) throws TopsFileFormatException, IOException {
-        String topsFile = chain.topsHeader(name) + "\n" + chain.toTopsFile();
-//        System.out.println(topsFile);
-        
-        BufferedWriter writer = new BufferedWriter(new FileWriter(new File("tmp.tops")));
-        writer.write(topsFile);
-        writer.close();
-        
-        tops.dw.protein.Protein dwProtein = new tops.dw.protein.Protein("tmp.tops");
+//        tops.dw.protein.Protein dwProtein = convertOnDisk(name, chain);
+        tops.dw.protein.Protein dwProtein = convertInMemory(name, chain);
         Vector<DomainDefinition> dd = dwProtein.getDomainDefs();
         Vector<SecStrucElement> ll = dwProtein.getLinkedLists();
         CartoonDrawer drawer = new CartoonDrawer();
@@ -63,6 +60,21 @@ public class TestOptimise {
             System.out.println("drawing");
             drawer.draw(name, "IMG", w, h, root, fos);
         }
+    }
+    
+    private tops.dw.protein.Protein convertOnDisk(String name, Chain chain) throws IOException {
+        String topsFile = chain.topsHeader(name) + "\n" + chain.toTopsFile();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(new File("tmp.tops")));
+        writer.write(topsFile);
+        writer.close();
+        
+        return new tops.dw.protein.Protein("tmp.tops");
+    }
+    
+    private tops.dw.protein.Protein convertInMemory(String name, Chain chain) throws TopsFileFormatException, IOException {
+        String topsFile = chain.topsHeader(name) + "\n" + chain.toTopsFile();
+        StringReader reader = new StringReader(topsFile);
+        return new tops.dw.protein.Protein(new BufferedReader(reader));
     }
 
 }
