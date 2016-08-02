@@ -30,6 +30,6 @@ public class ProsecCalculator implements ChiralityInterface {
 
     //FIXME!! : link in the slidel code!
     public static Hand motifChirality(int a, int b, int c, int d) { 
-        return Hand._unk_hand;
+        return Hand.UNKNOWN;
     }
 }

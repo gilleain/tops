@@ -515,8 +515,8 @@ public class SSE {
     }
     
     private String chiralToString(Hand chirality) {
-        return (chirality == Hand._no_hand)? "0" : 
-            (chirality == Hand._Left? "1" : "-1");
+        return (chirality == Hand.NONE)? "0" : 
+            (chirality == Hand.LEFT? "1" : "-1");
     }
 
     private String AxisRepr() { // XXX see toTopsFile() above

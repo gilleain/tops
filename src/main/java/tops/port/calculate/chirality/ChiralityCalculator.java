@@ -13,11 +13,11 @@ public class ChiralityCalculator {
      * Calculates chiralities for 2D TOPS cartoon
      */
     public static Hand hand2D(Chain chain, SSE p) {
-        if (p.Chirality != Hand._no_hand) {
+        if (p.Chirality != Hand.NONE) {
             SSE q = topsChiralPartner(chain, p);
             if (q != null) return chiral2d(chain, p, q);
         }
-        return Hand._no_hand;
+        return Hand.NONE;
     }
 
     /**
@@ -25,8 +25,8 @@ public class ChiralityCalculator {
      *   of course, this would mean not re-using the Torsion method so cunningly, but hey.
      */
     public static Hand chiral2d(Chain chain, SSE p, SSE q) {
-        Hand hand = Hand._unk_hand;
-        Hand lasthand = Hand._unk_hand;
+        Hand hand = Hand.UNKNOWN;
+        Hand lasthand = Hand.UNKNOWN;
 
         Vector3d a, b, c, d;
         if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
@@ -42,17 +42,17 @@ public class ChiralityCalculator {
             lasthand = hand;
             double theta = angleBetweenLines(b, c, d);
             if (theta < 0.5 || theta > 179.5) {
-                hand = Hand._unk_hand;
+                hand = Hand.UNKNOWN;
             } else {
                 double torsion = Axis.Torsion(a, b, c, d);
                 if (torsion < 0.0) {
-                    hand = Hand._Left;
+                    hand = Hand.LEFT;
                 } else {
-                    hand = Hand._Right;
+                    hand = Hand.RIGHT;
                 }
             }
             if (i > 0 && hand != lasthand) { 
-                return Hand._unk_hand;
+                return Hand.UNKNOWN;
             }
         }
         return hand;
@@ -86,14 +86,14 @@ public class ChiralityCalculator {
         SSE q = topsChiralPartner(chain, p);
         if (q != null) {
             Hand chir = chiral.chiral3d(p, q);
-            if (chir == Hand._unk_hand) {
-                if (p.isStrand()) chir = Hand._Right;
-                else if (p.isHelix()) chir = Hand._no_hand;
-                else chir = Hand._no_hand;
+            if (chir == Hand.UNKNOWN) {
+                if (p.isStrand()) chir = Hand.RIGHT;
+                else if (p.isHelix()) chir = Hand.NONE;
+                else chir = Hand.NONE;
             }
             return chir;
         } else {
-            return Hand._no_hand;
+            return Hand.NONE;
         }
     }
     

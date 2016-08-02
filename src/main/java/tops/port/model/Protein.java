@@ -712,11 +712,11 @@ public class Protein {
                  */
                 for (Chain chain : getChains()) {
                     SSE cp = ChiralityCalculator.topsChiralPartner(chain, r);
-                    if ((r.Chirality != Hand._no_hand) && (cp != null)) {
+                    if ((r.Chirality != Hand.NONE) && (cp != null)) {
                         for (s = r; s != cp; s = s.To) {
                             if ((s.domainBreakType == DomainBreakType.C_DOM_BREAK)
                                     || (s.domainBreakType == DomainBreakType.NC_DOM_BREAK)) {
-                                q.Chirality = Hand._no_hand;
+                                q.Chirality = Hand.NONE;
                                 break;
                             }
                         }

@@ -44,7 +44,7 @@ public class CalculateFixedHands implements Calculation {
                 System.out.println("Found suitable motif for fixed chirality check");
                 SSE r = null;   // XXX FIXME XXX
                 Hand chir = chiral2d(chain, q, r);
-                if (chir != Hand._unk_hand) {
+                if (chir != Hand.UNKNOWN) {
                     System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.getSymbolNumber()));
                     chain.reflectFixedXY(p);
                 }
@@ -67,7 +67,7 @@ public class CalculateFixedHands implements Calculation {
                     if (r.getDirection() == q.getDirection()) {
                         Hand chir = chiral2d(chain, q, r);
                         System.out.println("chir " + chir);
-                        if (n > 1 && chir != Hand._unk_hand) {
+                        if (n > 1 && chir != Hand.UNKNOWN) {
                             found = true;
                         } else {
                             found = false;
@@ -87,8 +87,8 @@ public class CalculateFixedHands implements Calculation {
      * Torsion method so cunningly, but hey.
      */
     public Hand chiral2d(Chain chain, SSE p, SSE q) {
-        Hand hand = Hand._unk_hand;
-        Hand lasthand = Hand._unk_hand;
+        Hand hand = Hand.UNKNOWN;
+        Hand lasthand = Hand.UNKNOWN;
 
         Vector3d a, b, c, d;
         if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
@@ -104,17 +104,17 @@ public class CalculateFixedHands implements Calculation {
             lasthand = hand;
             double theta = this.AngleBetweenLines(b, c, d);
             if (theta < 0.5 || theta > 179.5) {
-                hand = Hand._unk_hand;
+                hand = Hand.UNKNOWN;
             } else {
                 double torsion = Axis.Torsion(a, b, c, d);
                 if (torsion < 0.0) {
-                    hand = Hand._Left;
+                    hand = Hand.LEFT;
                 } else {
-                    hand = Hand._Right;
+                    hand = Hand.RIGHT;
                 }
             }
             if (i > 0 && hand != lasthand) { 
-                return Hand._unk_hand;
+                return Hand.UNKNOWN;
             }
         }
         return hand;
