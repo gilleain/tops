@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tops.port.calculate.util.ChiralityCalculator;
+import tops.port.calculate.chirality.ChiralityCalculator;
 import tops.port.model.DomainDefinition.DomainType;
 
 public class Protein {

@@ -1,6 +1,6 @@
 package tops.port.calculate;
 
-import tops.port.calculate.util.ChiralityCalculator;
+import tops.port.calculate.chirality.ChiralityCalculator;
 import tops.port.model.Chain;
 import tops.port.model.SSE;
 
