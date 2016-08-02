@@ -21,6 +21,19 @@ public class TestIntersectionCalculator {
         
         Intersection result = calc.lineCross(p, q, r, s);
         assertEquals(IntersectionType.CROSSING, result.type);
+        assertEquals(new Point2d(15, 15), result.point);
+    }
+    
+    @Test
+    public void testNonCrossing() {
+        IntersectionCalculator calc = new IntersectionCalculator();
+        Point2d p = new Point2d(10, 10);
+        Point2d q = new Point2d(10, 20);
+        Point2d r = new Point2d(20, 20);
+        Point2d s = new Point2d(10, 20);
+        
+        Intersection result = calc.lineCross(p, q, r, s);
+        assertEquals(IntersectionType.NOT_CROSSING, result.type);
     }
 
 }

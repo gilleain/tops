@@ -126,6 +126,10 @@ public class Optimise {
                 if (sseA.To == null || (sseA.isTerminus() && sseA.To.isTerminus())) continue;
                 for (SSE sseB : chain.rangeFrom(sseA.To.To)) {
                     if (sseB.To == null || (sseB.isTerminus() && sseB.To.isTerminus())) continue;
+                    System.out.print(sseA.getCartoonCenter() + " "
+                            + sseA.To.getCartoonCenter() + " "
+                            + sseB.getCartoonCenter() + " "
+                            + sseB.To.getCartoonCenter() + " ");
                     Intersection intersection = lineCross(sseA, sseA.To, sseB, sseB.To);
                     System.out.println("Intersection " + intersection);
                     if (intersection == null) continue; // XXX FIXME
@@ -227,6 +231,10 @@ public class Optimise {
 
     public void optimise(Chain cartoon) {
         System.out.println("Beginning optimization of cartoon");
+        for (SSE sse : cartoon.getSSEs()) {
+            System.out.println(sse.getSSEType() + " " + sse.getCartoonCenter());
+        }
+        
         System.out.println("Temperature   LowestEnergy   Acceptance ratio (%)");
 
         double seed = -randomSeed; // TODO : optionally pass in this seed?
@@ -261,7 +269,7 @@ public class Optimise {
             for (SSE sseB : cartoon.iterFixed(sseA)) {
                 if (sseB == null) break;
                 sseB.setCartoonX((int)(sseB.getCartoonX() + moveX));
-                sseB.setCartoonY((int) (sseB.getCartoonY() + moveY));
+                sseB.setCartoonY((int)(sseB.getCartoonY() + moveY));
                 sseB.setSymbolPlaced(true);
             }
             i++;
@@ -276,7 +284,7 @@ public class Optimise {
         }
 
         //optimize
-        SSE centerFixed = cartoon.largestFixed();
+        SSE centerFixed = largestFixed(cartoon);
         // print "CenterFixed =", CenterFixed
         int noMove = cartoon.numberLink(centerFixed);
 
@@ -403,6 +411,21 @@ public class Optimise {
         System.out.println(String.format("Line hit energy         %ld" , EnergyComps[6]));
         System.out.println(String.format("Inside barrel energy    %ld" , EnergyComps[7]));
         System.out.println(String.format("Total Energy            %ld" , EnergyComps[8]));
+    }
+    
+    public SSE largestFixed(Chain chain) {
+        int largestSize = 0;
+        SSE largest = null;
+        for (SSE sse : chain.getSSEs()) {
+            for (SSE fixedStart : chain.iterFixed(sse)) {
+                int i = chain.fixedSize(fixedStart);
+                if (i > largestSize) {
+                    largestSize = i;
+                    largest = sse;
+                }
+            }
+        }
+        return largest;
     }
 
 

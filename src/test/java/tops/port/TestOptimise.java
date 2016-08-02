@@ -32,10 +32,11 @@ public class TestOptimise {
         Configure configure = new Configure();
         configure.configure(chain);
         
-        draw("1ifc", chain, "test.png");
 //        
-//        Optimise optimise = new Optimise();
-//        optimise.optimise(chain);
+        Optimise optimise = new Optimise();
+        optimise.optimise(chain);
+        
+        draw("1ifc", chain, "test.png");
 //        for (SSE sse : chain.getSSEs()) {
 //            System.out.println(sse.getSymbolNumber() + 
 //                    String.format(" at (%s, %s) is %s", 

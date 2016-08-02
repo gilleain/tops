@@ -347,21 +347,6 @@ public class Chain {
         return this.sses.get(this.sses.size() - 1);
     }
 
-    public SSE largestFixed() {
-        int largestSize = 0;
-        SSE largest = null;
-        for (SSE sse : this.sses) {
-            for (SSE fixedStart : this.iterFixed(sse)) {
-                int i = this.fixedSize(fixedStart);
-                if (i > largestSize) {
-                    largestSize = i;
-                    largest = sse;
-                }
-            }
-        }
-        return largest;
-    }
-
     public void clearPlaced() {
         for (SSE p : this.sses) p.setSymbolPlaced(false);
     }
