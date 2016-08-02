@@ -1,5 +1,8 @@
 package tops.port;
 
+import static tops.port.IntersectionCalculator.IntersectionType.CROSSING;
+import static tops.port.IntersectionCalculator.IntersectionType.SUPERIMPOSING;
+
 import java.util.List;
 import java.util.Random;
 
@@ -7,11 +10,6 @@ import javax.vecmath.Point2d;
 
 import tops.port.IntersectionCalculator.Intersection;
 import tops.port.calculate.chirality.ChiralityCalculator;
-
-import static tops.port.IntersectionCalculator.IntersectionType.CROSSING;
-import static tops.port.IntersectionCalculator.IntersectionType.NOT_CROSSING;
-import static tops.port.IntersectionCalculator.IntersectionType.SUPERIMPOSING;
-
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.Hand;
