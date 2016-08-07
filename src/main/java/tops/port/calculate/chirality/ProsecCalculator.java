@@ -1,11 +1,12 @@
 package tops.port.calculate.chirality;
 
+import tops.port.model.Chain;
 import tops.port.model.Hand;
 import tops.port.model.SSE;
 
 public class ProsecCalculator implements ChiralityInterface {
 
-    public Hand chiral3d(SSE sse, SSE other) {
+    public Hand chiral3d(Chain chain, SSE sse, SSE other) {
 
         int a1s, a1f, a2s, a2f;
         // XXX TODO - what is this merge range stuff?

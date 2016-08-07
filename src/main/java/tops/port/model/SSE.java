@@ -190,7 +190,7 @@ public class SSE {
                 if (edgeType == BridgeType.ANTI_PARALLEL_BRIDGE) edgeTypeChar = 'A';
                 else if (edgeType == BridgeType.PARALLEL_BRIDGE) edgeTypeChar = 'P';
                 else edgeTypeChar = '!';
-                String edge = String.format("%i:%i%s", getSymbolNumber(), partnerSymbolNumber, edgeTypeChar);
+                String edge = String.format("%d:%d%s", getSymbolNumber(), partnerSymbolNumber, edgeTypeChar);
                 edges.append(edge).append(" ");
             }
         }

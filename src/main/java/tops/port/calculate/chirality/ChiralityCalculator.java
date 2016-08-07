@@ -85,7 +85,7 @@ public class ChiralityCalculator {
         
         SSE q = topsChiralPartner(chain, p);
         if (q != null) {
-            Hand chir = chiral.chiral3d(p, q);
+            Hand chir = chiral.chiral3d(chain, p, q);
             if (chir == Hand.UNKNOWN) {
                 if (p.isStrand()) chir = Hand.RIGHT;
                 else if (p.isHelix()) chir = Hand.NONE;
@@ -128,6 +128,6 @@ public class ChiralityCalculator {
                 if ((q.getDirection() == p.getDirection()) && (q.SecStrucLength() > 12)) return q;
             }
         }
-        return null;    // XXX added to satisfy compiler
+        return null; // none found
     }
 }

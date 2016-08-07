@@ -421,6 +421,12 @@ public class Chain {
         return this.sses.subList(startIndex, endIndex);
     }
 
+    /**
+     * Get a sublist of the SSEs including the start point.
+     * 
+     * @param sseFrom
+     * @return
+     */
     public List<SSE> rangeFrom(SSE sseFrom) {
         int startIndex = this.sses.indexOf(sseFrom);
         return this.sses.subList(startIndex, this.sses.size());
