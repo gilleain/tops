@@ -36,7 +36,7 @@ public class Configure {
     }
 
     public void configure(Chain chain) {
-        System.out.println("Beginning to configure the master linked list");
+//        System.out.println("Beginning to configure the master linked list");
         for (Calculation calculator : calculators) {
             calculator.calculate(chain);
         }

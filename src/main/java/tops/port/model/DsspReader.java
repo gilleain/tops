@@ -371,7 +371,8 @@ public class DsspReader {
 			bits.put("yca",line.substring(122, 129).trim());
 			bits.put("zca",line.substring(129).trim());
 		} catch (Exception e) {   // TODO
-			System.out.println(e.getMessage());
+//			System.out.println();
+//		    e.printStackTrace();
 		}
 		return bits;
 	}

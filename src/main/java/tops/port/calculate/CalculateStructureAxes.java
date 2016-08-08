@@ -1,14 +1,19 @@
 package tops.port.calculate;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import tops.port.model.Axis;
 import tops.port.model.Chain;
 import tops.port.model.SSE;
 
 public class CalculateStructureAxes implements Calculation {
+    
+    private static Logger log = Logger.getLogger(CalculateStructureAxes.class.getName());
  
     public void calculate(Chain chain) {
         // Calculate axes //
-        System.out.println("STEP : Calculating secondary structure vectors");
+        log.log(Level.INFO, "STEP : Calculating secondary structure vectors");
         for (SSE sse : chain.getSSEs()) {
             if (!sse.isStrand() && !sse.isHelix()) continue;
             secondaryStructureAxis(chain, sse);

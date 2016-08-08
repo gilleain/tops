@@ -2,6 +2,8 @@ package tops.port.calculate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Vector3d;
 
@@ -13,6 +15,8 @@ import tops.port.model.SSE;
 
 public class CalculateFixedHands implements Calculation {
     
+    private static Logger log = Logger.getLogger(CalculateFixedHands.class.getName());
+    
     private List<FixedType> allowedTypes = new ArrayList<FixedType>() {{
         add(FixedType.FT_BARREL); 
         add(FixedType.FT_SANDWICH);
@@ -23,7 +27,7 @@ public class CalculateFixedHands implements Calculation {
 
     
     public void calculate(Chain chain) {
-        System.out.println("STEP : calculating fixed hands");
+        log.log(Level.INFO, "STEP : calculating fixed hands");
         for (SSE sse : chain.getSSEs()) {
             if (sse.hasFixed()) this.setFixedHand(chain, sse);
         }
@@ -38,18 +42,18 @@ public class CalculateFixedHands implements Calculation {
      **/
     public void setFixedHand(Chain chain, SSE p) {
         if (allowedTypes.contains(p.getFixedType())) {
-            System.out.println(String.format("Checking fixed structure chirality for fixed start %d", p.getSymbolNumber()));
+//            System.out.println(String.format("Checking fixed structure chirality for fixed start %d", p.getSymbolNumber()));
             SSE q = find(chain, p);
             if (q != null) {
-                System.out.println("Found suitable motif for fixed chirality check");
+//                System.out.println("Found suitable motif for fixed chirality check");
                 SSE r = null;   // XXX FIXME XXX
                 Hand chir = chiral2d(chain, q, r);
                 if (chir != Hand.UNKNOWN) {
-                    System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.getSymbolNumber()));
+//                    System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.getSymbolNumber()));
                     chain.reflectFixedXY(p);
                 }
             } else {
-                System.out.println("No suitable motif found for fixed chirality check");
+//                System.out.println("No suitable motif found for fixed chirality check");
             }
 
         }
@@ -66,7 +70,7 @@ public class CalculateFixedHands implements Calculation {
                     n += 1;
                     if (r.getDirection() == q.getDirection()) {
                         Hand chir = chiral2d(chain, q, r);
-                        System.out.println("chir " + chir);
+//                        System.out.println("chir " + chir);
                         if (n > 1 && chir != Hand.UNKNOWN) {
                             found = true;
                         } else {

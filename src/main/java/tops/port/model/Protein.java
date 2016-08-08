@@ -139,10 +139,10 @@ public class Protein {
     }
         
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.proteinCode);
+        StringBuffer sb = new StringBuffer();
         sb.append("\n");
         for (Chain chain : this.chains) {
-            sb.append(chain.toString());
+            sb.append(this.proteinCode + chain.toString());
             sb.append("\n");
         }
         return sb.toString();

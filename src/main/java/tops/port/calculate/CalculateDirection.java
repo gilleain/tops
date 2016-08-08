@@ -1,16 +1,21 @@
 package tops.port.calculate;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import tops.port.model.Chain;
 import tops.port.model.SSE;
 
 public class CalculateDirection implements Calculation {
+    
+    private static Logger log = Logger.getLogger(CalculateDirection.class.getName());
     
     /**
      * Directions of cartoon symbols are binary, whereas SSEs have full blown
      * vectors.
      **/
     public void calculate(Chain chain) {
-        System.out.println("STEP : Assigning directions to secondary structures\n");
+        log.log(Level.INFO, "STEP : Assigning directions to secondary structures");
         SSE Root = chain.getSSEs().get(0);
         SSE q = Root;
         for (SSE p : chain.iterNext(Root)) {

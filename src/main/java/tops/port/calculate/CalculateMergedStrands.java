@@ -3,6 +3,8 @@ package tops.port.calculate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Vector3d;
 
@@ -21,6 +23,8 @@ import tops.port.model.TorsionResult;
  **/
 public class CalculateMergedStrands implements Calculation {
     
+    private static Logger log = Logger.getLogger(CalculateMergedStrands.class.getName());
+    
     private double minMergeStrandSeparation = 5;
     private boolean mergeBetweenSheets = false;
 
@@ -28,7 +32,7 @@ public class CalculateMergedStrands implements Calculation {
     public void calculate(Chain chain) {
         if (minMergeStrandSeparation <= 0) return;
         
-        System.out.println("Searching for strand merges");
+        log.log(Level.INFO, "STEP: Searching for strand merges");
         List<SSE> sses = chain.getSSEs(); 
         for (int index = 1; index < sses.size(); index++) {
             SSE p = sses.get(index);
@@ -40,7 +44,7 @@ public class CalculateMergedStrands implements Calculation {
                 if ((cbpd == 2 && p.sameBPSide(p.From)) || (cbpd > 5) ||sheetMerge ) {
                     TorsionResult result = p.ClosestApproach(p.From);
                     if (Math.abs(result.torsion) < 90.0) { 
-                        System.out.println(String.format("Merging Strands %d %d\n", p.From.getSymbolNumber(), p.getSymbolNumber()));
+//                        System.out.println(String.format("Merging Strands %d %d\n", p.From.getSymbolNumber(), p.getSymbolNumber()));
                         this.joinToLast(p, chain);
                         p.sortBridgePartners(); // XXX not sure why we have to sort
                     }

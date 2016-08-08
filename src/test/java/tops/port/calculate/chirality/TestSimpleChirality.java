@@ -1,13 +1,11 @@
 package tops.port.calculate.chirality;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
-import tops.port.calculate.CalculateStructureAxes;
 import tops.port.calculate.Configure;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;

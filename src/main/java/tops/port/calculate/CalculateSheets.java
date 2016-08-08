@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import tops.port.calculate.util.DistanceCalculator;
 import tops.port.model.BridgePartner;
@@ -12,6 +14,8 @@ import tops.port.model.FixedType;
 import tops.port.model.SSE;
 
 public class CalculateSheets implements Calculation {
+    
+    private static Logger log = Logger.getLogger(CalculateDirection.class.getName());
     
     private double gridUnitSize = 50;
 
@@ -25,17 +29,17 @@ public class CalculateSheets implements Calculation {
     }
     
     public void calculate(Chain chain) {
-        System.out.println("STEP : Calculating sheets and barrels");
+        log.log(Level.INFO, "STEP : Calculating sheets and barrels");
 
         List<SSE> barrel;
         for (SSE p : chain.getSSEs()) { 
             if (!p.isSymbolPlaced() && p.isStrand()) {
                 barrel = this.detectBarrel(p);
                 if (barrel.size() > 0) {
-                    System.out.println("Barrel detected");
+//                    System.out.println("Barrel detected");
                     this.makeBarrel(chain, barrel, gridUnitSize);
                 } else {
-                    System.out.println("Sheet detected");
+//                    System.out.println("Sheet detected");
                     SSE q = findEdgeStrand(p, null);
                     if (!q.isSymbolPlaced()) {
                         this.makeSheet(chain, q, null, gridUnitSize);
@@ -56,8 +60,8 @@ public class CalculateSheets implements Calculation {
         List<BridgePartner> partners = current.getBridgePartners(); 
         BridgePartner partner0 = partners.size() > 0? partners.get(0) : null;
         BridgePartner partner1 = partners.size() > 1? partners.get(1) : null;
-        System.out.println(String.format(
-                "find edge strand at %s bridge partners %s and %s", current, partner0, partner1));
+//        System.out.println(String.format(
+//                "find edge strand at %s bridge partners %s and %s", current, partner0, partner1));
         if (partner0 == null || partner1 == null) {
             return current;
         } else {
@@ -108,7 +112,7 @@ public class CalculateSheets implements Calculation {
     }
     
     public void makeBarrel(Chain chain, List<SSE> barrel, double GridUnitSize) {
-        System.out.println("making barrel...");
+//        System.out.println("making barrel...");
 
         int numberOfStrands = barrel.size();
 
@@ -132,10 +136,10 @@ public class CalculateSheets implements Calculation {
         SSE lastInBarrel = p;
         p.setDirection('D');
         
-        System.out.println(String.format("make barrel start, nstrands, increment= %s %s %s", start, numberOfStrands, increment));
+//        System.out.println(String.format("make barrel start, nstrands, increment= %s %s %s", start, numberOfStrands, increment));
         int i = start;
         for (int count = 0; count < numberOfStrands; count++) { 
-            System.out.println("make barrel count= " + count);
+//            System.out.println("make barrel count= " + count);
             X = rads + 2.0 * count * rads;
 
             SSE q = barrel.get(i);
@@ -293,7 +297,7 @@ public class CalculateSheets implements Calculation {
     }
     
     private void divideLayers(Chain chain, SSE p, int startXPos, List<SSE> startLowerList, List<SSE> startUpperList) {
-        System.out.println("Sheet configured as V_CURVED_SHEET");
+//        System.out.println("Sheet configured as V_CURVED_SHEET");
         for (SSE t : chain.iterFixed(p)) {
             t.setFixedType(FixedType.FT_V_CURVED_SHEET);
         }
@@ -474,11 +478,11 @@ public class CalculateSheets implements Calculation {
 
         double sep = DistanceCalculator.secStrucSeparation(left, right);
 
-        System.out.println(String.format("SheetCurvature %d %d %f %f", left.getSymbolNumber(), right.getSymbolNumber(), sep, MaxSep));
+//        System.out.println(String.format("SheetCurvature %d %d %f %f", left.getSymbolNumber(), right.getSymbolNumber(), sep, MaxSep));
 
         if (span >= MinSpan && sep<MaxSep) {
 
-            System.out.println("Sheet configured as CURVED_SHEET");
+//            System.out.println("Sheet configured as CURVED_SHEET");
 
             for (SSE q : chain.iterFixed(Start)) q.setFixedType(FixedType.FT_CURVED_SHEET);
 
@@ -566,7 +570,7 @@ public class CalculateSheets implements Calculation {
         if (done) {
             return new SeqDirResult(sdir, dir);
         } else {
-            System.out.println("find seq dir not done!");
+//            System.out.println("find seq dir not done!");
             return new SeqDirResult(0, ' ');
         }
     }

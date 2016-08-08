@@ -1,5 +1,8 @@
 package tops.port.calculate;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.vecmath.Vector3d;
 
 import tops.port.calculate.util.DistanceCalculator;
@@ -8,13 +11,15 @@ import tops.port.model.SSE;
 
 public class CalculateNeighbours implements Calculation {
     
+    private static Logger log = Logger.getLogger(CalculateNeighbours.class.getName());
+    
     private double CutoffDistance = 20;
     
     /**
      * Function to assign spatial neighbours
      **/
      public void calculate(Chain chain) {
-         System.out.println("STEP : Calculating secondary structure neighbour lists");
+         log.log(Level.INFO, "STEP : Calculating secondary structure neighbour lists");
 
          for (SSE p : chain.getSSEs()) {
              if (!p.isStrand() && !p.isHelix()) continue;

@@ -1,5 +1,8 @@
 package tops.port.calculate;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
@@ -13,11 +16,13 @@ import tops.port.model.SSE;
  * 
  */
 public class CalculateRelativeSides implements Calculation {
+    
+    private static Logger log = Logger.getLogger(CalculateRelativeSides.class.getName());
 
 
     @Override
     public void calculate(Chain chain) {
-        System.out.println("STEP : Assigning relative sides to bridge partner strands");
+        log.log(Level.INFO, "STEP : Assigning relative sides to bridge partner strands");
         for (SSE p : chain.getSSEs()) {
             assignRelativeSides(p);
         }

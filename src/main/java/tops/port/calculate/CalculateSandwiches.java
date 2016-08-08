@@ -2,6 +2,8 @@ package tops.port.calculate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import tops.port.calculate.util.DistanceCalculator;
 import tops.port.model.Chain;
@@ -10,13 +12,16 @@ import tops.port.model.SSE;
 import tops.port.model.TorsionResult;
 
 public class CalculateSandwiches implements Calculation {
+    
+    private static Logger log = Logger.getLogger(CalculateSandwiches.class.getName());
+    
     private double GridUnitSize = 50;
     
     /*
      * Function to detect beta sandwich structures re-written by DW 26/02/97
      */
     public void calculate(Chain chain) {
-        System.out.println("STEP : Searching for beta sandwiches");
+        log.log(Level.INFO, "STEP : Searching for beta sandwiches");
 
         // detect and form sandwiches //
         List<SSE[]> sandwiches = new ArrayList<SSE[]>();
@@ -27,7 +32,7 @@ public class CalculateSandwiches implements Calculation {
                     String sDomain = this.FindDomain(s);
                     if (s.isStrand() && s.hasFixedType(FixedType.FT_SHEET) && sDomain == rDomain) { 
                         if (this.isSandwich(chain, r, s)) {
-                            System.out.println(String.format("Sandwich detected between %s and %s" , r, s));
+//                            System.out.println(String.format("Sandwich detected between %s and %s" , r, s));
                             sandwiches.add(new SSE[] {r, s});
                             this.makeSandwich(chain, r, s);
                         }

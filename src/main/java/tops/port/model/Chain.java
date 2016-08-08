@@ -275,20 +275,20 @@ public class Chain {
       This function removes q from the Next list and adds it to the Fixed list beginning at p
     */
     public void moveFixed(SSE p, SSE q) {
-        System.out.println("moving fixed...");
+//        System.out.println("moving fixed...");
         if (p != null) {
             if (!this.checkFixedList(p)) {
-                System.out.println("movefixed error!");
+//                System.out.println("movefixed error!");
                 return;
             }
             if (q != null) {
-                System.out.println("searching...");
+//                System.out.println("searching...");
                 SSE lastSSE = p;
                 for (SSE sse : this.iterFixed(p)) {
                     System.out.println("iterating over" + sse);
                     lastSSE = sse;
                 }
-                System.out.println("setting" + lastSSE + " fixed to " + q);
+//                System.out.println("setting " + lastSSE + " fixed to " + q);
                 lastSSE.setFixed(q);
                 this.linkOver(q);
             }
@@ -305,10 +305,10 @@ public class Chain {
             CheckLen += 1;
             int i = 0;
             for (SSE r : this.iterFixed(p)) {
-                System.out.println(String.format("checking fixed list %s %s %s", i, r, CheckLen));
+//                System.out.println(String.format("checking fixed list %s %s %s", i, r, CheckLen));
                 if (i > CheckLen) break;
                 if (r == q) {
-                    System.out.println("cycle found! " +  r + "=" + q);
+//                    System.out.println("cycle found! " +  r + "=" + q);
                     return false;
                 }
             }
@@ -560,7 +560,7 @@ public class Chain {
     public void bridgePartFromHBonds() {
         int SequenceLength = this.sequenceLength();
         for (int i = 0; i < SequenceLength; i++) {
-//            this.BridgeEnergy.add(new int[] {LARGE, LARGE});
+            this.BridgeEnergy.add(new int[] {LARGE, LARGE});    // XXX do we need?
         }
 
         //conditions for an anti-parallel bridge: first is another residue to which there are both donor and acceptor HBonds//
