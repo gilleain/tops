@@ -10,11 +10,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import tops.port.model.BridgePartner;
 import tops.port.model.Cartoon;
 import tops.port.model.DomainDefinition;
 import tops.port.model.DsspReader;
-import tops.port.model.Neighbour;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
@@ -299,9 +297,6 @@ public class Tops {
                 Error = 7;
                 return Error;
             }
-
-            protein.BridgePartFromHBonds();
-
         } else if (FileType.equals("stride")) {
 //
 //            if (Verbose)

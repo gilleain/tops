@@ -6,6 +6,8 @@ public class BridgePartner {
     
     public SSE partner;
     
+    public int partnerResidue;
+    
     public Side side;
     
     public BridgeType bridgeType;
@@ -15,6 +17,12 @@ public class BridgePartner {
     public int rangeMax;
     
     public int NumberBridgePartners;
+    
+    public double energy;
+    
+    public BridgePartner() {
+        // TODO
+    }
     
     public BridgePartner(SSE partner, int residueNumber, BridgeType bridgeType, Side side) {
         this(partner, residueNumber, residueNumber, bridgeType, side);

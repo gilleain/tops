@@ -16,12 +16,11 @@ import java.util.regex.Pattern;
 
 import javax.vecmath.Point3d;
 
+import tops.port.model.BridgePartner.Side;
 import tops.port.model.Chain.SSEType;
 
 public class DsspReader {
     
-	private static final int UNSET_PDB = -1;
-
 	private HashMap<String, SSEType> codemap  = new HashMap<String, SSEType>() {{ 
 		put("H", SSEType.RIGHT_ALPHA_HELIX); 
 		put("G", SSEType.HELIX_310); 
@@ -212,14 +211,18 @@ public class DsspReader {
     				chain.addPDBIndex(r.PDBIndices);
     				chain.addSecondaryStructure(this.getDsspSSCode(r.SecStructure));
     				
-    				int[] bp = new int[] {UNSET_PDB, UNSET_PDB};
-    				BridgeType[] bt = new BridgeType[] {BridgeType.UNK_BRIDGE_TYPE, BridgeType.UNK_BRIDGE_TYPE};
-    
-    				if (r.LeftBridgePartner != 0) bp[0] = IndexMapping[r.LeftBridgePartner];
-    				if (r.RightBridgePartner != 0) bp[1] = IndexMapping[r.RightBridgePartner];
-    
-    				chain.addBridgePartners(bp);
-    				chain.addBridgeTypes(bt);
+    				if (r.LeftBridgePartner == 0) {
+    				    chain.addLeftBridgePartner(new BridgePartner());
+    				} else {
+    				    int mappedIndex = IndexMapping[r.LeftBridgePartner]; 
+    				    chain.addLeftBridgePartner(new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
+    				}
+    				if (r.RightBridgePartner == 0) {
+    				    chain.addLeftBridgePartner(new BridgePartner());
+    				} else {
+    				    int mappedIndex = IndexMapping[r.RightBridgePartner]; 
+    				    chain.addLeftBridgePartner(new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
+    				}
     
     				this.doDonatedHBond(chain, r.DonatedHBond1, r.DonatedHBondEn1, index, currentResidue, nDsspRes, IndexMapping);
     				this.doAcceptedHBond(chain, r.AcceptedHBond1, r.AcceptedHBondEn1, index, currentResidue, nDsspRes, IndexMapping);
@@ -261,29 +264,7 @@ public class DsspReader {
     						p.Chain = chainID;
     					}
     				}
-    
-    				// bridge partners //
-    				if (secondaryStructure == SSEType.EXTENDED) {
-    					int leftBridgeRes = chain.getLeftBridgePartner(currentResidue);
-    					BridgeType leftBridgeType = chain.getLeftBridgeType(currentResidue);
-    
-    					SSE leftBridge = chain.findSecStr(leftBridgeRes);
-    					if ((leftBridgeRes < index) && (leftBridge != null) && (leftBridge.isStrand())) {
-    						leftBridge.updateSecStr(p, index, BridgePartner.Side.LEFT, leftBridgeType);
-    						BridgePartner.Side bridgeSide = this.findBridgeSide(chain, leftBridgeRes, index);
-    						p.updateSecStr(leftBridge, leftBridgeRes, bridgeSide, leftBridgeType);
-    					}
-    					
-    					int rightBridgeRes = chain.getRightBridgePartner(currentResidue);
-    					BridgeType rightBridgeType = chain.getRightBridgeType(currentResidue);
-    
-    					SSE rightBridge = chain.findSecStr(rightBridgeRes);
-    					if ((rightBridgeRes < index) && (rightBridge != null) && (rightBridge.isStrand())) {
-    						rightBridge.updateSecStr(p, index, BridgePartner.Side.RIGHT, rightBridgeType);
-    						BridgePartner.Side bridgeSide = this.findBridgeSide(chain, rightBridgeRes, index);
-    						p.updateSecStr(rightBridge, rightBridgeRes, bridgeSide, rightBridgeType);
-    					}
-    				}
+    				
     				currentResidue += 1;
     			}
     		}
@@ -333,22 +314,7 @@ public class DsspReader {
 	    }
 	}
 
-	/* 
-		a small utility function to find the side for a bridge partner residue 
-	*/
-	private BridgePartner.Side findBridgeSide(Chain chain, int residue, int bridge) {
-		if (residue < chain.sequenceLength()) {
-			if (chain.getRightBridgePartner(residue) == bridge) { 
-				return BridgePartner.Side.LEFT;
-			} else if (chain.getLeftBridgePartner(residue) == bridge) {
-				return BridgePartner.Side.RIGHT;
-			} else {
-				return BridgePartner.Side.UNKNOWN;
-			}
-		} else {
-			return BridgePartner.Side.UNKNOWN;
-		}
-	}
+	
 
 	private Map<String, String> parseLine(String line) {
 	    
@@ -431,6 +397,7 @@ public class DsspReader {
     }
 	
 	private boolean check(int index, int nDsspRes, int bond, double energy, double HBondECutoff) {
+	    // XXX - why is bond checked here as a float greater than 2.5?? isn't it an index??!?
 	    return index > 0 && index <= nDsspRes && Math.abs((float) bond) > 2.5 && energy < HBondECutoff;
 	}
 

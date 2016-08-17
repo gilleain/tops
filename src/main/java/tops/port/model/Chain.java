@@ -3,15 +3,12 @@ package tops.port.model;
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 import tops.port.calculate.util.DistanceCalculator;
 
@@ -26,8 +23,8 @@ public class Chain {
     private List<String> sequence;
     private List<Integer> pdbIndices;
     private List<SSEType> secondaryStruc;
-    private List<int[]> bridgePartners;
-    private List<BridgeType[]> bridgeTypes;
+    private List<BridgePartner> leftBridgePartners;
+    private List<BridgePartner> rightBridgePartners;
     private List<Point3d> CACoords;
     
     private Map<Integer, List<Integer>> donatedHBonds;
@@ -50,8 +47,8 @@ public class Chain {
         this.sequence = new ArrayList<String>();
         this.pdbIndices = new ArrayList<Integer>();
         this.secondaryStruc = new ArrayList<SSEType>();
-        this.bridgePartners = new ArrayList<int[]>();
-        this.bridgeTypes = new ArrayList<BridgeType[]>();
+        this.leftBridgePartners = new ArrayList<BridgePartner>();
+        this.rightBridgePartners = new ArrayList<BridgePartner>();
         this.CACoords = new ArrayList<Point3d>();
         
         this.donatedHBonds = new HashMap<Integer, List<Integer>>();
@@ -132,38 +129,20 @@ public class Chain {
         return this.pdbIndices.get(residue);
     }
     
-    public BridgeType getLeftBridgeType(int index) {
-        return this.bridgeTypes.get(index)[0];
+    public BridgePartner getLeftBridgePartner(int index) {
+        return this.leftBridgePartners.get(index);
     }
     
-    public BridgeType getRightBridgeType(int index) {
-        return this.bridgeTypes.get(index)[1];
+    public BridgePartner getRightBridgePartner(int index) {
+        return this.rightBridgePartners.get(index);
     }
     
-    public void addBridgeTypes(BridgeType[] bridgeTypes) {
-        this.bridgeTypes.add(bridgeTypes);
+    public void addLeftBridgePartner(BridgePartner bridgePartner) {
+        this.leftBridgePartners.add(bridgePartner);
     }
     
-    public int getLeftBridgePartner(int index) {
-        return this.bridgePartners.get(index)[0];
-    }
-    
-    public int getRightBridgePartner(int index) {
-        return this.bridgePartners.get(index)[1];
-    }
-    
-    public void removeLeftBridge(int index) {
-        this.bridgePartners.get(index)[0] = -1;
-        this.bridgeTypes.get(index)[0] = BridgeType.UNK_BRIDGE_TYPE;
-    }
-    
-    public void removeRightBridge(int index) {
-        this.bridgePartners.get(index)[1] = -1;
-        this.bridgeTypes.get(index)[1] = BridgeType.UNK_BRIDGE_TYPE;
-    }
-    
-    public void addBridgePartners(int[] partners) {
-        this.bridgePartners.add(partners);
+    public void addRightBridgePartner(BridgePartner bridgePartner) {
+        this.leftBridgePartners.add(bridgePartner);
     }
     
     public void addSecondaryStructure(SSEType secondaryStructure) {
@@ -372,6 +351,24 @@ public class Chain {
             return SSEType.COIL;
         }
     }
+    
+    public List<Integer> getDonatedHBonds(int index) {
+        return donatedHBonds.get(index);
+    }
+    
+    public List<Integer> getAcceptedHBonds(int index) {
+        return acceptedHBonds.get(index);
+    }
+    
+    public double getDonatedHBondEnergy(int indexI, int indexJ) {
+        // XXX this could be better - are we storing a non-continuous list here?
+        return donatedHBondEnergy.get(indexI).get(indexJ);
+    }
+    
+    public double getAcceptedHBondEnergy(int indexI, int indexJ) {
+        // XXX this could be better - are we storing a non-continuous list here?
+        return acceptedHBondEnergy.get(indexI).get(indexJ);
+    }
 
     public void addDonatedBond(Integer a, Integer b, double energy) {
         List<Integer> bonds;
@@ -552,168 +549,6 @@ public class Chain {
     }
         
     
-
-    /*
-        function to obtain bridge partners from main chain H bond information
-        assumes that DonatedHBonds and AcceptedHBonds are fully redundant
-    */
-    public void bridgePartFromHBonds() {
-        int SequenceLength = this.sequenceLength();
-        for (int i = 0; i < SequenceLength; i++) {
-            this.BridgeEnergy.add(new int[] {LARGE, LARGE});    // XXX do we need?
-        }
-
-        //conditions for an anti-parallel bridge: first is another residue to which there are both donor and acceptor HBonds//
-        for (int i = 0; i < SequenceLength; i++) {
-            if (this.isExtended(i)) {
-
-//                for (int j = 0; j < this.DonatedHBonds[i]; j++) {
-//                    for (int k = 0; k < this.AcceptedHBonds[i]; k++) {
-//                        if (this.DonatedHBonds[i][j] == this.AcceptedHBonds[i][k]) {
-//                            be = this.DonatedHBondEnergy[i][j] + this.AcceptedHBondEnergy[i][k];
-//                            this.AddBridgeByEnergy(i, this.DonatedHBonds[i][j], SSEPartner.ANTI_PARALLEL_BRIDGE, be);
-//                        }
-//                    }
-//                }
-                        
-                // second is an accepted HBond for i-1 from l+1 and a donated one from i+1 to l-1 for some l //
-                if (i > 0) {
-//                    for (int j; j < this.AcceptedHBonds[i - 1]; j++) {
-//                        l = this.AcceptedHBonds[i - 1][j] - 1;
-//                        double be = this.AcceptedHBondEnergy[i - 1][j];
-//                        if (l > 0) {
-//                            for (int k = 0; k < this.AcceptedHBonds[l - 1]; k++) {
-//                                if (this.AcceptedHBonds[l - 1][k] == (i+1)) {
-//                                    be += this.AcceptedHBondEnergy[l - 1][k];
-//                                    this.AddBridgeByEnergy(i, l, SSEPartner.ANTI_PARALLEL_BRIDGE, be);
-//                                }
-//                            }
-//                        }
-//                    }
-                }
-
-                // conditions for a parallel bridge //
-                // first: i has a donated H bond to l-1 and an accepted H bond from l+1 //
-//                for (int j  = 0; j < this.DonatedHBonds[i].size(); j++) {
-//                    l = this.DonatedHBonds[i][j] + 1;
-//                    be = this.DonatedHBondEnergy[i][j];
-//                    for (int k = 0; k < this.AcceptedHBonds[i]; k++) {
-//                        if (this.AcceptedHBonds[i][k] == (l+1)) {
-//                            be += this.AcceptedHBondEnergy[i][k];
-//                            this.AddBridgeByEnergy(i, l, PARALLEL_BRIDGE, be);
-//                        }
-//                    }
-//                }
-
-                // second: i-1 has an accepted H bond from l and i+1 has a donated H bond to l //
-                if (i > 0) {
-//                    for (int j = 0; j < this.AcceptedHBonds[i - 1]; j++) {
-//                        l = this.AcceptedHBonds[i-1][j];
-//                        be = this.AcceptedHBondEnergy[i-1][j];
-//                        for (int k = 0; k < this.AcceptedHBonds[l]; k++) {
-//                            if (this.AcceptedHBonds[l][k] == (i+1)) {
-//                                be += this.AcceptedHBondEnergy[l][k];
-//                                this.AddBridgeByEnergy(i, l, PARALLEL_BRIDGE, be);
-//                            }
-//                        }
-//                    }
-                }
-            }
-        }
-    }
-
-
-    public boolean addBridge(int SeqRes1, int SeqRes2, int Type, double Energy) {
-        int SequenceLength = this.sequenceLength();
-        if ((SeqRes1 >= SequenceLength) || (SeqRes1 < 0) || (SeqRes2 >= SequenceLength) || (SeqRes2 < 0)) return false;
-
-        int i;
-        for (i = 0; i < 2; i++) {
-            if (this.bridgePartners.get(SeqRes1)[i] < 0) break;
-        
-            if (this.bridgePartners.get(SeqRes1)[i] == SeqRes2) return true;
-        }
-
-        int j;
-        for (j = 0; j < 2; j++) {
-            if (this.bridgePartners.get(SeqRes2)[j] < 0) break;
-        
-            if (this.bridgePartners.get(SeqRes2)[j] == SeqRes1) return true;
-        }
-            
-        //using the variables outside the block! don't like it but...   
-        if ( (i<2) && (j<2) ) {
-        
-//            this.BridgePartners.get(SeqRes1)[i] = SeqRes2;
-//            this.BridgeEnergy.get(SeqRes1)[i] = Energy;
-//            this.BridgeType.get(SeqRes1)[i] = Type;
-//            this.BridgePartners.get(SeqRes2)[j] = SeqRes1;
-//            this.BridgeEnergy.get(SeqRes2)[j] = Energy;
-//            this.BridgeType.get(SeqRes2)[j] = Type;
-
-            return true;
-        }
-
-        return false;
-    }
-
-
-    public void addBridgeByEnergy(int SeqRes1, int SeqRes2, int Type, double Energy) {
-
-        if ((SeqRes1 >= this.sequenceLength()) || (SeqRes1 < 0) || (SeqRes2 >= this.sequenceLength()) || (SeqRes2 < 0)) return;
-
-        if (!this.addBridge(SeqRes1, SeqRes2, Type, Energy)) {
-            this.replaceBridgeByEnergy(SeqRes1, SeqRes2, Type, Energy);
-        }
-    }
-
-    public void replaceBridgeByEnergy(int SeqRes1, int SeqRes2, int Type, double Energy) {
-
-        if ((SeqRes1 >= this.sequenceLength()) || (SeqRes1 < 0) || (SeqRes2 >= this.sequenceLength()) || (SeqRes2 < 0)) return;
-
-//        int hep1 = this.HighestEnergyBridge(SeqRes1);
-//        double he1 = this.BridgeEnergy[SeqRes1][hep1];
-//        int hep2 = this.HighestEnergyBridge(SeqRes2);
-//        double he2 = this.BridgeEnergy[SeqRes2][hep2];
-
-//        if ((Energy < he1) && (Energy < he2)) {
-//        
-//            this.ReplaceBridge(SeqRes1, hep1, SeqRes2, Type, Energy);
-//            this.ReplaceBridge(SeqRes2, hep2, SeqRes1, Type, Energy);
-//        }
-    }
-
-
-    public void replaceBridge(int SeqRes, int BridgePos, int NewBridgeRes, int NewType, double NewEnergy) {
-
-//        int OldBridgeRes = this.BridgePartners[SeqRes][BridgePos];
-//        this.BridgePartners[SeqRes][BridgePos] = NewBridgeRes;
-//        this.BridgeType[SeqRes][BridgePos] = NewType;
-//        this.BridgeEnergy[SeqRes][BridgePos] = NewEnergy;
-
-//        if (OldBridgeRes > 0) {
-//            for (int i = 0; i < 2; i++) {
-//                if (this.BridgePartners[OldBridgeRes][i] == SeqRes) break;
-//                this.BridgePartners[OldBridgeRes][i] = UNSET_PDB;
-//                this.BridgeType[OldBridgeRes][i] = UNK_BRIDGE_TYPE;
-//                this.BridgeEnergy[OldBridgeRes][i] = LARGE;
-//            }
-//        }
-    }
-
-    public int highestEnergyBridge(int SeqRes) {
-        int heb = 0;
-        double he = Double.MIN_VALUE;
-
-        for (int i = 0; i < 2; i++) {
-//            if (this.BridgeEnergy[SeqRes][i] > he) {
-//                he = this.BridgeEnergy[SeqRes][i];
-//                heb = i;
-//            }
-        }
-        return heb;
-     }
-
 
     public String topsHeader(String proteinCode) {
         return String.format("DOMAIN_NUMBER %d %s%s%d", 0, proteinCode, this.name, 0);   //FIXME : domains!

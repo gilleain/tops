@@ -167,16 +167,17 @@ public class Protein {
     
                     int Dom = ResidueDomain(i);
     
-                    int bpl = chain.getLeftBridgePartner(i);
-                    int bpr = chain.getRightBridgePartner(i);
-    
-                    if ( (ResidueDomain(bpl) != Dom)||(Dom<0) ) {
-                        chain.removeLeftBridge(i);
-                    }
-    
-                    if ( (ResidueDomain(bpr) != Dom)||(Dom<0) ) {
-                        chain.removeRightBridge(i);
-                    }
+                    // TODO
+//                    int bpl = chain.getLeftBridgePartner(i);
+//                    int bpr = chain.getRightBridgePartner(i);
+//    
+//                    if ( (ResidueDomain(bpl) != Dom)||(Dom<0) ) {
+//                        chain.removeLeftBridge(i);
+//                    }
+//    
+//                    if ( (ResidueDomain(bpr) != Dom)||(Dom<0) ) {
+//                        chain.removeRightBridge(i);
+//                    }
                 }
             }
         }
@@ -872,12 +873,6 @@ public class Protein {
             } else {
                 LastCTerm = sse;
             }
-        }
-    }
-
-    public void BridgePartFromHBonds() {
-        for (Chain chain : chains) {
-            chain.bridgePartFromHBonds();
         }
     }
 
