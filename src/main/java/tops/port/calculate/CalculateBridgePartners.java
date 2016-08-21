@@ -8,9 +8,10 @@ import tops.port.model.BridgePartner.Side;
 import tops.port.model.BridgeType;
 import tops.port.model.Chain;
 import tops.port.model.Chain.SSEType;
+import tops.port.model.HBond;
 import tops.port.model.SSE;
 
-public class CalculateBridgePartnersFromHBonds {
+public class CalculateBridgePartners {
     
     /*
     function to obtain bridge partners from main chain H bond information
@@ -24,24 +25,24 @@ public class CalculateBridgePartnersFromHBonds {
         for (int i = 0; i < SequenceLength; i++) {
             if (chain.isExtended(i)) {
 
-                for (int j : chain.getDonatedHBonds(i)) {
-                    for (int k : chain.getAcceptedHBonds(i)) {
-                        if (j == k) {
-                            double be = chain.getDonatedHBondEnergy(i, j) + chain.getDonatedHBondEnergy(i, k);
-                            addBridgeByEnergy(chain, i, j, ANTI_PARALLEL_BRIDGE, be);
+                for (HBond j : chain.getDonatedHBonds(i)) {
+                    for (HBond k : chain.getAcceptedHBonds(i)) {
+                        if (j.getAcceptorIndex() == k.getDonorIndex()) {
+                            double be = j.getEnergy() + k.getEnergy();
+                            addBridgeByEnergy(chain, i, j.getAcceptorIndex(), ANTI_PARALLEL_BRIDGE, be);
                         }
                     }
                 }
 
                 // second is an accepted HBond for i-1 from l+1 and a donated one from i+1 to l-1 for some l //
                 if (i > 0) {
-                    for (int j : chain.getAcceptedHBonds(i - 1)) {
-                        int l = j - 1;
-                        double be = chain.getAcceptedHBondEnergy(i - 1, j);
+                    for (HBond j : chain.getAcceptedHBonds(i - 1)) {
+                        int l = j.getAcceptorIndex() - 1;
+                        double be = j.getEnergy();
                         if (l > 0) {
-                            for (int k : chain.getAcceptedHBonds(l - 1)) {
-                                if (k == i + 1) {
-                                    be += chain.getAcceptedHBondEnergy(l - 1, k);
+                            for (HBond k : chain.getAcceptedHBonds(l - 1)) {
+                                if (k.getDonorIndex() == i + 1) {
+                                    be += k.getEnergy();
                                     addBridgeByEnergy(chain, i, l, ANTI_PARALLEL_BRIDGE, be);
                                 }
                             }
@@ -51,12 +52,12 @@ public class CalculateBridgePartnersFromHBonds {
 
                 // conditions for a parallel bridge //
                 // first: i has a donated H bond to l-1 and an accepted H bond from l+1 //
-                for (int j : chain.getDonatedHBonds(i)) {
-                    int l = j + 1;
-                    double be = chain.getDonatedHBondEnergy(i, j);
-                    for (int k : chain.getAcceptedHBonds(i)) {
-                        if (k == l + 1) {
-                            be += chain.getAcceptedHBondEnergy(i, k);
+                for (HBond j : chain.getDonatedHBonds(i)) {
+                    int l = j.getAcceptorIndex() + 1;
+                    double be = j.getEnergy();
+                    for (HBond k : chain.getAcceptedHBonds(i)) {
+                        if (k.getDonorIndex() == l + 1) {
+                            be += k.getEnergy();
                             addBridgeByEnergy(chain, i, l, PARALLEL_BRIDGE, be);
                         }
                     }
@@ -64,12 +65,12 @@ public class CalculateBridgePartnersFromHBonds {
 
                 // second: i-1 has an accepted H bond from l and i+1 has a donated H bond to l //
                 if (i > 0) {
-                    for (int j : chain.getAcceptedHBonds(i - 1)) {
-                        int l = j;
-                        double be = chain.getAcceptedHBondEnergy(i - 1, j);
-                        for (int k : chain.getAcceptedHBonds(l)) {
-                            if (k == i + 1) {
-                                be += chain.getAcceptedHBondEnergy(l, k);
+                    for (HBond j : chain.getAcceptedHBonds(i - 1)) {
+                        int l = j.getDonorIndex();
+                        double be = j.getEnergy();
+                        for (HBond k : chain.getAcceptedHBonds(l)) {
+                            if (k.getDonorIndex() == i + 1) {
+                                be += k.getEnergy();
                                 addBridgeByEnergy(chain, i, l, PARALLEL_BRIDGE, be);
                             }
                         }
@@ -187,6 +188,7 @@ public class CalculateBridgePartnersFromHBonds {
         BridgePartner hp2 = highestEnergyBridge(chain, SeqRes2);
 
         if (hp1 != null && hp2 != null && Energy < hp1.energy && Energy < hp2.energy) {
+            // TODO : is this what was intended?
             hp1.energy = Energy;
             hp2.energy = Energy;
         }

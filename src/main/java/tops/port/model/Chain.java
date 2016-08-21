@@ -27,11 +27,14 @@ public class Chain {
     private List<BridgePartner> rightBridgePartners;
     private List<Point3d> CACoords;
     
-    private Map<Integer, List<Integer>> donatedHBonds;
-    private Map<Integer, List<Double>> donatedHBondEnergy;
+    private Map<Integer, List<HBond>> donatorHBonds;
+    private Map<Integer, List<HBond>> acceptorHBonds;
     
-    private Map<Integer, List<Integer>> acceptedHBonds;
-    private Map<Integer, List<Double>> acceptedHBondEnergy;
+//    private Map<Integer, List<Integer>> donatedHBondsOld;
+//    private Map<Integer, List<Double>> donatedHBondEnergy;
+//    
+//    private Map<Integer, List<Integer>> acceptedHBondsOld;
+//    private Map<Integer, List<Double>> acceptedHBondEnergy;
 
     private static char assignChain(char chain) {
         if (chain == ' ' || chain == '-') {
@@ -51,10 +54,8 @@ public class Chain {
         this.rightBridgePartners = new ArrayList<BridgePartner>();
         this.CACoords = new ArrayList<Point3d>();
         
-        this.donatedHBonds = new HashMap<Integer, List<Integer>>();
-        this.acceptedHBonds = new HashMap<Integer, List<Integer>>();
-        this.acceptedHBondEnergy = new HashMap<Integer, List<Double>>();
-        this.donatedHBondEnergy = new HashMap<Integer, List<Double>>();
+        this.acceptorHBonds = new HashMap<Integer, List<HBond>>();
+        this.donatorHBonds = new HashMap<Integer, List<HBond>>();
     }
     
     public void forceConsistent(Protein protein) {
@@ -352,63 +353,42 @@ public class Chain {
         }
     }
     
-    public List<Integer> getDonatedHBonds(int index) {
-        return donatedHBonds.get(index);
+    public List<HBond> getDonatedHBonds(int index) {
+        if (donatorHBonds.containsKey(index)) {
+            return donatorHBonds.get(index); 
+        } else {
+            return new ArrayList<HBond>();
+        }
     }
     
-    public List<Integer> getAcceptedHBonds(int index) {
-        return acceptedHBonds.get(index);
+    public List<HBond> getAcceptedHBonds(int index) {
+        if (acceptorHBonds.containsKey(index)) {
+            return acceptorHBonds.get(index);
+        } else {
+            return new ArrayList<HBond>();
+        }
     }
     
-    public double getDonatedHBondEnergy(int indexI, int indexJ) {
-        // XXX this could be better - are we storing a non-continuous list here?
-        return donatedHBondEnergy.get(indexI).get(indexJ);
-    }
-    
-    public double getAcceptedHBondEnergy(int indexI, int indexJ) {
-        // XXX this could be better - are we storing a non-continuous list here?
-        return acceptedHBondEnergy.get(indexI).get(indexJ);
-    }
-
     public void addDonatedBond(Integer a, Integer b, double energy) {
-        List<Integer> bonds;
-        if (this.donatedHBonds.containsKey(a)) {
-            bonds = this.donatedHBonds.get(a);
+        List<HBond> hbonds;
+        if (donatorHBonds.containsKey(a)) {
+            hbonds = donatorHBonds.get(a);
         } else {
-            bonds = new ArrayList<Integer>();
-            this.donatedHBonds.put(a, bonds);
+            hbonds = new ArrayList<HBond>();
+            donatorHBonds.put(a, hbonds);
         }
-        bonds.add(b);
-
-        List<Double> energies;
-        if (this.donatedHBondEnergy.containsKey(a)) {
-            energies = this.donatedHBondEnergy.get(a);
-        } else {
-            energies = new ArrayList<Double>();
-            this.donatedHBondEnergy.put(a, energies);
-        }
-        energies.add(energy);
+        hbonds.add(new HBond(a, b, energy));
     }
 
     public void addAcceptedBond(Integer a, Integer b, double energy) {
-        //
-        List<Integer> bonds;
-        if (this.acceptedHBonds.containsKey(a)) {
-            bonds = this.acceptedHBonds.get(a);
+        List<HBond> hbonds;
+        if (acceptorHBonds.containsKey(a)) {
+            hbonds = acceptorHBonds.get(a);
         } else {
-            bonds = new ArrayList<Integer>();
-            this.acceptedHBonds.put(a, bonds);
+            hbonds = new ArrayList<HBond>();
+            acceptorHBonds.put(a, hbonds);
         }
-        bonds.add(b);
-
-        List<Double> energies;
-        if (this.acceptedHBondEnergy.containsKey(a)) {
-            energies = this.acceptedHBondEnergy.get(a);
-        } else {
-            energies = new ArrayList<Double>();
-            this.acceptedHBondEnergy.put(a, energies);
-        }
-        energies.add(energy);
+        hbonds.add(new HBond(a, b, energy));
     }
 
     public List<SSE> range(SSE sseFrom, SSE sseTo) {
