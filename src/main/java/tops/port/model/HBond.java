@@ -37,5 +37,9 @@ public class HBond {
     public void setEnergy(double energy) {
         this.energy = energy;
     }
+    
+    public String toString() {
+        return String.format("%s->%s %2.2f", donorIndex, acceptorIndex, energy);
+    }
 
 }

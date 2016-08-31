@@ -131,11 +131,13 @@ public class Chain {
     }
     
     public BridgePartner getLeftBridgePartner(int index) {
-        return this.leftBridgePartners.get(index);
+        return this.leftBridgePartners.size() < index + 1? null :
+            this.leftBridgePartners.get(index);
     }
     
     public BridgePartner getRightBridgePartner(int index) {
-        return this.rightBridgePartners.get(index);
+        return this.rightBridgePartners.size() < index + 1? null :
+            this.rightBridgePartners.get(index);
     }
     
     public void addLeftBridgePartner(BridgePartner bridgePartner) {
@@ -369,26 +371,26 @@ public class Chain {
         }
     }
     
-    public void addDonatedBond(Integer a, Integer b, double energy) {
+    public void addDonatedBond(Integer fromResidue, Integer toResidue, double energy) {
         List<HBond> hbonds;
-        if (donatorHBonds.containsKey(a)) {
-            hbonds = donatorHBonds.get(a);
+        if (donatorHBonds.containsKey(fromResidue)) {
+            hbonds = donatorHBonds.get(fromResidue);
         } else {
             hbonds = new ArrayList<HBond>();
-            donatorHBonds.put(a, hbonds);
+            donatorHBonds.put(fromResidue, hbonds);
         }
-        hbonds.add(new HBond(a, b, energy));
+        hbonds.add(new HBond(fromResidue, toResidue, energy));
     }
 
-    public void addAcceptedBond(Integer a, Integer b, double energy) {
+    public void addAcceptedBond(Integer fromResidue, Integer toResidue, double energy) {
         List<HBond> hbonds;
-        if (acceptorHBonds.containsKey(a)) {
-            hbonds = acceptorHBonds.get(a);
+        if (acceptorHBonds.containsKey(toResidue)) {
+            hbonds = acceptorHBonds.get(toResidue);
         } else {
             hbonds = new ArrayList<HBond>();
-            acceptorHBonds.put(a, hbonds);
+            acceptorHBonds.put(toResidue, hbonds);
         }
-        hbonds.add(new HBond(a, b, energy));
+        hbonds.add(new HBond(fromResidue, toResidue, energy));
     }
 
     public List<SSE> range(SSE sseFrom, SSE sseTo) {

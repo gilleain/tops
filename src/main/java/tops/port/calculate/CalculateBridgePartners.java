@@ -3,6 +3,9 @@ package tops.port.calculate;
 import static tops.port.model.BridgeType.ANTI_PARALLEL_BRIDGE;
 import static tops.port.model.BridgeType.PARALLEL_BRIDGE;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import tops.port.model.BridgePartner;
 import tops.port.model.BridgePartner.Side;
 import tops.port.model.BridgeType;
@@ -13,6 +16,8 @@ import tops.port.model.SSE;
 
 public class CalculateBridgePartners {
     
+    private static Logger log = Logger.getLogger(CalculateBridgePartners.class.getName());
+    
     /*
     function to obtain bridge partners from main chain H bond information
     assumes that DonatedHBonds and AcceptedHBonds are fully redundant
@@ -21,12 +26,16 @@ public class CalculateBridgePartners {
         int SequenceLength = chain.sequenceLength();
         
 
-        //conditions for an anti-parallel bridge: first is another residue to which there are both donor and acceptor HBonds//
+        //conditions for an anti-parallel bridge: first is another residue 
+        // to which there are both donor and acceptor HBonds
         for (int i = 0; i < SequenceLength; i++) {
+//            System.out.println("i " + i + " isExtended " + chain.isExtended(i));
+//            System.out.println(i + " " + chain.getDonatedHBonds(i) + " " + chain.getAcceptedHBonds(i));
             if (chain.isExtended(i)) {
 
                 for (HBond j : chain.getDonatedHBonds(i)) {
                     for (HBond k : chain.getAcceptedHBonds(i)) {
+//                        System.out.println(i + ":" + j + " vs " + k);
                         if (j.getAcceptorIndex() == k.getDonorIndex()) {
                             double be = j.getEnergy() + k.getEnergy();
                             addBridgeByEnergy(chain, i, j.getAcceptorIndex(), ANTI_PARALLEL_BRIDGE, be);
@@ -34,7 +43,8 @@ public class CalculateBridgePartners {
                     }
                 }
 
-                // second is an accepted HBond for i-1 from l+1 and a donated one from i+1 to l-1 for some l //
+                // second is an accepted HBond for i-1 from l+1 
+                // and a donated one from i+1 to l-1 for some l //
                 if (i > 0) {
                     for (HBond j : chain.getAcceptedHBonds(i - 1)) {
                         int l = j.getAcceptorIndex() - 1;
@@ -121,31 +131,34 @@ public class CalculateBridgePartners {
     }
 
 
-    public void addBridgeByEnergy(Chain chain, int SeqRes1, int SeqRes2, BridgeType Type, double Energy) {
+    public void addBridgeByEnergy(Chain chain, int seqRes1, int seqRes2, BridgeType type, double energy) {
+//        log.log(Level.INFO, String.format("%s %s %s", seqRes1, seqRes2, Type));
+        System.out.println(String.format("%s %s %s", seqRes1, seqRes2, type));
+        
+        
+        if ((seqRes1 >= chain.sequenceLength()) || (seqRes1 < 0) || 
+            (seqRes2 >= chain.sequenceLength()) || (seqRes2 < 0)) return;
     
-        if ((SeqRes1 >= chain.sequenceLength()) || (SeqRes1 < 0) || 
-            (SeqRes2 >= chain.sequenceLength()) || (SeqRes2 < 0)) return;
-    
-        if (!addBridge(chain, SeqRes1, SeqRes2, Type, Energy)) {
-            replaceBridgeByEnergy(chain, SeqRes1, SeqRes2, Type, Energy);
+        if (!addBridge(chain, seqRes1, seqRes2, type, energy)) {
+            replaceBridgeByEnergy(chain, seqRes1, seqRes2, type, energy);
         }
     }
     
     private boolean leftBridgeExists(Chain chain, int SeqRes1, int SeqRes2) {
-        int partner = chain.getLeftBridgePartner(SeqRes1).partnerResidue;
-        if (partner < 0 || partner == SeqRes2) {
-            return true;
-        } else {
+        BridgePartner partner = chain.getLeftBridgePartner(SeqRes1);
+        if (partner == null) {
             return false;
+        } else {
+            return partner.partnerResidue == SeqRes2;
         }
     }
     
     private boolean rightBridgeExists(Chain chain, int SeqRes1, int SeqRes2) {
-        int partner = chain.getRightBridgePartner(SeqRes1).partnerResidue;
-        if (partner < 0 || partner == SeqRes2) {
-            return true;
-        } else {
+        BridgePartner partner = chain.getRightBridgePartner(SeqRes1);
+        if (partner == null) {
             return false;
+        } else {
+            return partner.partnerResidue == SeqRes2;
         }
     }
 
