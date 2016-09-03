@@ -11,6 +11,7 @@ import java.util.Map;
 
 import tops.port.calculate.chirality.ChiralityCalculator;
 import tops.port.model.DomainDefinition.DomainType;
+import tops.port.model.SSE.SSEType;
 
 public class Protein {
 
@@ -90,7 +91,7 @@ public class Protein {
                 protein.chains.add(chain);
             } else if (keyword.equals("SecondaryStructureType")) {
                 if (sse != null) chain.addSSE(sse);
-                sse = new SSE(values.get(0).charAt(0));
+                sse = new SSE(fromChar(values.get(0).charAt(0)));
             } else if (keyword.equals("FixedType") && values.size() > 0) {
                 sse.setFixedType(values.get(0));
                 //print "setting fixed type: %s to %i" % (values[0], sse.FixedType)
@@ -119,6 +120,17 @@ public class Protein {
         }
         chain.addSSE(sse);    // add the last one
         return protein;
+    }
+    
+    // XXX TODO - alter the enum to add this?
+    private static SSEType fromChar(char type) {
+        switch (type) {
+            case 'N': return SSEType.NTERMINUS;
+            case 'C': return SSEType.CTERMINUS;
+            case 'H': return SSEType.HELIX;
+            case 'E': return SSEType.EXTENDED;
+        }
+        return SSEType.COIL;    // XXX?
     }
 
     public String topsHeader() {
@@ -668,7 +680,7 @@ public class Protein {
                     domBreakNum = r.DomainBreakNumber;
 
                     numberStructures++;
-                    SSE q = new SSE('N');
+                    SSE q = new SSE(SSEType.NTERMINUS);
 
                     if (FIRST) {
                         newRoot = q;
@@ -732,7 +744,7 @@ public class Protein {
                         || (r.domainBreakType == DomainBreakType.NC_DOM_BREAK)) {
                     numberStructures++;
                     domBreakNum++;
-                    q = new SSE('C');
+                    q = new SSE(SSEType.CTERMINUS);
                     q.setSymbolPlaced(true);
                     q.setSymbolNumber(numberStructures);
                     q.setLabel("C" + domBreakNum);

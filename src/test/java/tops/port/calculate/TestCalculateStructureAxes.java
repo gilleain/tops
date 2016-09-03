@@ -10,6 +10,7 @@ import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
+import tops.port.model.SSE.SSEType;
 
 public class TestCalculateStructureAxes {
     
@@ -32,7 +33,7 @@ public class TestCalculateStructureAxes {
         chain.addCACoord(new Point3d(9.3, 22.6, 16.2));
         chain.addCACoord(new Point3d(8.2, 24.6, 13.1));
         chain.addCACoord(new Point3d(5.1, 25.8, 14.9));
-        SSE sse = new SSE('H');
+        SSE sse = new SSE(SSEType.HELIX);
         sse.sseData.SeqStartResidue = 1;
         sse.sseData.SeqFinishResidue = 10;
         chain.addSSE(sse);

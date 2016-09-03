@@ -9,8 +9,12 @@ import javax.vecmath.Point2d;
 
 public class SSE {
     
+    public enum SSEType {
+        HELIX, EXTENDED, COIL, RIGHT_ALPHA_HELIX, HELIX_310, PI_HELIX, TURN, ISO_BRIDGE, LEFT_ALPHA_HELIX, NTERMINUS, CTERMINUS;
+    }
+    
     private char Direction;
-    private char SSEType;                       // H, E, N, C, D 
+    private SSEType type;                       // H, E, N, C, D 
     private List<BridgePartner> bridgePartners;    // Bridge partners
     
     private int Merges = 0;                     // The number of merges made in creation 
@@ -43,8 +47,8 @@ public class SSE {
     private Object AxisLength;
 
 
-    public SSE(char SSEType) {
-        this.SSEType = SSEType;                  
+    public SSE(SSEType SSEType) {
+        this.type = SSEType;                  
         this.bridgePartners = new ArrayList<BridgePartner>();   
         this.neighbours = new ArrayList<Neighbour>();                    
         this.ConnectionTo = new ArrayList<Point2d>();
@@ -58,7 +62,7 @@ public class SSE {
      * TODO : copy constructor
      */
     public SSE(SSE other) {
-        this.SSEType = other.SSEType;
+        this.type = other.type;
         // TODO...
         this.bridgePartners = new ArrayList<BridgePartner>();
         this.cartoonSymbol = other.cartoonSymbol;
@@ -206,20 +210,22 @@ public class SSE {
     
    
 
-    public char getSSEType() {
-        return this.SSEType;
+    public SSEType getSSEType() {
+        return this.type;
     }
 
     public boolean isStrand() {
-        return this.SSEType == 'E';
+        return this.type == SSEType.EXTENDED;
     }
     
     public boolean isHelix() {
-        return this.SSEType == 'H';
+        return this.type == SSEType.HELIX || 
+                this.type == SSEType.HELIX_310 ||
+                        this.type == SSEType.PI_HELIX;
     }
     
     public boolean isSameType(SSE other) {
-        return this.SSEType == other.SSEType;
+        return this.type == other.type;
     }
     
     public char getDirection() {
@@ -231,7 +237,7 @@ public class SSE {
     }
 
     public boolean isTerminus() {
-        return this.SSEType == 'C' || this.SSEType == 'N';
+        return this.type == SSEType.NTERMINUS || this.type == SSEType.CTERMINUS;
     }
     
     public boolean isParallel(SSE other) {
@@ -481,7 +487,7 @@ public class SSE {
     public String toTopsFile(Chain chain) {
         //sys.stderr.write(this.dump())
         StringBuffer stringRepr = new StringBuffer();
-        stringRepr.append(String.format("%s %s\n", "SecondaryStructureType", this.SSEType));
+        stringRepr.append(String.format("%s %s\n", "SecondaryStructureType", this.type));
         stringRepr.append(String.format("%s %s\n", "Direction", this.Direction));
         stringRepr.append(String.format("%s %s\n", "Label", this.getLabel()));
         stringRepr.append(String.format("%s %s %s %s\n", "Colour", cartoonSymbol.getColor()[0], cartoonSymbol.getColor()[1], cartoonSymbol.getColor()[2]));
@@ -525,10 +531,10 @@ public class SSE {
     }
 
     public String toString() {
-        if (this.Direction == 'U' || (this.SSEType == 'N' || this.SSEType ==  'C')) {
-            return String.valueOf(this.SSEType);
+        if (this.Direction == 'U' || (this.type == SSEType.NTERMINUS || this.type == SSEType.CTERMINUS)) {
+            return String.valueOf(this.type);
         } else {   
-            return String.valueOf(this.SSEType).toLowerCase();
+            return String.valueOf(this.type).toLowerCase();
         }
     }
 

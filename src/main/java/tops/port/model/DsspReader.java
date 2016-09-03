@@ -2,6 +2,8 @@ package tops.port.model;
 
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Integer.parseInt;
+import static tops.port.model.SSE.SSEType.CTERMINUS;
+import static tops.port.model.SSE.SSEType.NTERMINUS;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +19,7 @@ import java.util.regex.Pattern;
 import javax.vecmath.Point3d;
 
 import tops.port.model.BridgePartner.Side;
-import tops.port.model.Chain.SSEType;
+import tops.port.model.SSE.SSEType;
 
 public class DsspReader {
     
@@ -31,13 +33,6 @@ public class DsspReader {
 		put("T", SSEType.TURN); 
 		put("B", SSEType.ISO_BRIDGE);
 	}};
-
-	// XXX TODO : convert this to values in the SSEType enum
-	Map<SSEType, Character> ssswitch = 
-	        new HashMap<SSEType, Character>() {{ 
-	            put(SSEType.HELIX, 'H'); 
-	            put(SSEType.EXTENDED, 'E'); 
-	        }};
 
     public Protein readDsspFile(String filename) throws IOException {
         String[] parts = filename.split("/");
@@ -191,7 +186,7 @@ public class DsspReader {
     							p.sseData.PDBFinishResidue = LastResidue;
     							q = p;
     						}
-    						SSE cTerm = new SSE('C');
+    						SSE cTerm = new SSE(CTERMINUS);
     
     						q.To = q.Next = cTerm;
     						cTerm.sseData.SeqStartResidue = cTerm.sseData.SeqFinishResidue = currentResidue;
@@ -204,7 +199,7 @@ public class DsspReader {
     
     					chain = new Chain(r.ChainId.charAt(0));
     					
-    					SSE nTerminus = new SSE('N');
+    					SSE nTerminus = new SSE(NTERMINUS);
     					numberOfStructures = 0;
     					nTerminus.setSymbolNumber(numberOfStructures);
     					chain.addSSE(nTerminus);
@@ -224,16 +219,16 @@ public class DsspReader {
     				
     				List<Integer> mappings = indexMapping.get(r.ChainId);
     				if (r.LeftBridgePartner == 0) {
-    				    chain.addLeftBridgePartner(new BridgePartner());
+    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner());
     				} else {
     				    int mappedIndex = mappings.get(r.LeftBridgePartner); 
-    				    chain.addLeftBridgePartner(new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
+    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
     				}
     				if (r.RightBridgePartner == 0) {
-    				    chain.addLeftBridgePartner(new BridgePartner());
+    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner());
     				} else {
     				    int mappedIndex = mappings.get(r.RightBridgePartner); 
-    				    chain.addLeftBridgePartner(new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
+    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
     				}
     
     				this.doDonatedHBond(chain, index, r.DonatedHBond1, r.DonatedHBondEn1, nDsspRes, mappings);
@@ -264,7 +259,7 @@ public class DsspReader {
     					if (secondaryStructure != SSEType.COIL) {
     						// New Structure //
     						open = true;
-    						p = new SSE(this.getSSType(secondaryStructure));
+    						p = new SSE(secondaryStructure);
     						chain.addSSE(p);
     						q.To = q.Next = p;
     						p.From = q;
@@ -287,7 +282,7 @@ public class DsspReader {
     			p.sseData.PDBFinishResidue = LastResidue;
     			q = p;
     		}
-    		SSE cTerm = new SSE('C');
+    		SSE cTerm = new SSE(CTERMINUS);
     
     		q.To = q.Next = cTerm;
     		cTerm.sseData.SeqStartResidue = cTerm.sseData.SeqFinishResidue = currentResidue;
@@ -318,13 +313,7 @@ public class DsspReader {
 		}
 	}
 
-    private char getSSType(SSEType ss) {
-		if (ssswitch.containsKey(ss)) {
-			return this.ssswitch.get(ss);
-	    } else {
-			return 'C';
-	    }
-	}
+  
 
 	
 

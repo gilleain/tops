@@ -11,31 +11,22 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
 import tops.port.calculate.util.DistanceCalculator;
+import tops.port.model.SSE.SSEType;
 
 public class Chain {
 
-    public enum SSEType {
-        HELIX, EXTENDED, COIL, RIGHT_ALPHA_HELIX, HELIX_310, PI_HELIX, TURN, ISO_BRIDGE, LEFT_ALPHA_HELIX;
-    }
-    
     private char name;
     private List<SSE> sses;
     private List<String> sequence;
     private List<Integer> pdbIndices;
     private List<SSEType> secondaryStruc;
-    private List<BridgePartner> leftBridgePartners;
-    private List<BridgePartner> rightBridgePartners;
+    private Map<Integer, BridgePartner> leftBridgePartners;
+    private Map<Integer, BridgePartner> rightBridgePartners;
     private List<Point3d> CACoords;
     
     private Map<Integer, List<HBond>> donatorHBonds;
     private Map<Integer, List<HBond>> acceptorHBonds;
     
-//    private Map<Integer, List<Integer>> donatedHBondsOld;
-//    private Map<Integer, List<Double>> donatedHBondEnergy;
-//    
-//    private Map<Integer, List<Integer>> acceptedHBondsOld;
-//    private Map<Integer, List<Double>> acceptedHBondEnergy;
-
     private static char assignChain(char chain) {
         if (chain == ' ' || chain == '-') {
             return '0';
@@ -50,8 +41,8 @@ public class Chain {
         this.sequence = new ArrayList<String>();
         this.pdbIndices = new ArrayList<Integer>();
         this.secondaryStruc = new ArrayList<SSEType>();
-        this.leftBridgePartners = new ArrayList<BridgePartner>();
-        this.rightBridgePartners = new ArrayList<BridgePartner>();
+        this.leftBridgePartners = new HashMap<Integer, BridgePartner>();
+        this.rightBridgePartners = new HashMap<Integer, BridgePartner>();
         this.CACoords = new ArrayList<Point3d>();
         
         this.acceptorHBonds = new HashMap<Integer, List<HBond>>();
@@ -131,21 +122,21 @@ public class Chain {
     }
     
     public BridgePartner getLeftBridgePartner(int index) {
-        return this.leftBridgePartners.size() < index + 1? null :
+        return this.leftBridgePartners.containsKey(index)? null :
             this.leftBridgePartners.get(index);
     }
     
     public BridgePartner getRightBridgePartner(int index) {
-        return this.rightBridgePartners.size() < index + 1? null :
+        return this.rightBridgePartners.containsKey(index)? null :
             this.rightBridgePartners.get(index);
     }
     
-    public void addLeftBridgePartner(BridgePartner bridgePartner) {
-        this.leftBridgePartners.add(bridgePartner);
+    public void addLeftBridgePartner(int index, BridgePartner bridgePartner) {
+        this.leftBridgePartners.put(index, bridgePartner);
     }
     
-    public void addRightBridgePartner(BridgePartner bridgePartner) {
-        this.leftBridgePartners.add(bridgePartner);
+    public void addRightBridgePartner(int index, BridgePartner bridgePartner) {
+        this.leftBridgePartners.put(index, bridgePartner);
     }
     
     public void addSecondaryStructure(SSEType secondaryStructure) {
