@@ -169,7 +169,7 @@ public class DsspReader {
     		Chain chain = null;
     		SSE p = null;
     		SSE q = null;
-    		int LastResidue = -1;
+    		int lastResidue = -1;
     		SSEType secondaryStructure = SSEType.COIL;
     		for (int index = 0; index < nDsspRes; index++) {
     		    Record r = records.get(index);
@@ -183,14 +183,14 @@ public class DsspReader {
     						// finish off the list //
     						if (open) {
     							p.sseData.SeqFinishResidue = currentResidue - 1;
-    							p.sseData.PDBFinishResidue = LastResidue;
+    							p.sseData.PDBFinishResidue = lastResidue;
     							q = p;
     						}
     						SSE cTerm = new SSE(CTERMINUS);
     
     						q.To = q.Next = cTerm;
     						cTerm.sseData.SeqStartResidue = cTerm.sseData.SeqFinishResidue = currentResidue;
-    						cTerm.sseData.PDBStartResidue = cTerm.sseData.PDBFinishResidue = LastResidue + 1;
+    						cTerm.sseData.PDBStartResidue = cTerm.sseData.PDBFinishResidue = lastResidue + 1;
     						cTerm.From = q;
     						numberOfStructures += 1;
     						cTerm.setSymbolNumber(numberOfStructures);
@@ -218,18 +218,14 @@ public class DsspReader {
     				chain.addSecondaryStructure(this.getDsspSSCode(r.SecStructure));
     				
     				List<Integer> mappings = indexMapping.get(r.ChainId);
-    				if (r.LeftBridgePartner == 0) {
-    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner());
-    				} else {
-    				    int mappedIndex = mappings.get(r.LeftBridgePartner); 
-    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
-    				}
-    				if (r.RightBridgePartner == 0) {
-    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner());
-    				} else {
-    				    int mappedIndex = mappings.get(r.RightBridgePartner); 
-    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
-    				}
+//    				if (r.LeftBridgePartner > 0) {
+//    				    int mappedIndex = mappings.get(r.LeftBridgePartner); 
+//    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
+//    				}
+//    				if (r.RightBridgePartner > 0) {
+//    				    int mappedIndex = mappings.get(r.RightBridgePartner); 
+//    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
+//    				}
     
     				this.doDonatedHBond(chain, index, r.DonatedHBond1, r.DonatedHBondEn1, nDsspRes, mappings);
     				this.doAcceptedHBond(chain, index, r.AcceptedHBond1, r.AcceptedHBondEn1, nDsspRes, mappings);
@@ -240,8 +236,7 @@ public class DsspReader {
     
     				// Get chain id and pdb index //
     				char chainID = chain.getName();
-    				int Id = r.PDBIndices;
-    				LastResidue = Id;
+    				lastResidue = r.PDBIndices;
     			
     				// Eradicate structures that are not needed and limit type ie. H, E, C //
     				SSEType PreviousStructure = secondaryStructure;
@@ -252,8 +247,7 @@ public class DsspReader {
     					if (open) {
     						// End Structure //
     						open = false;
-    						p.sseData.SeqFinishResidue = currentResidue - 1;
-    						p.sseData.PDBFinishResidue = LastResidue;
+    						p.setFinishPoints(currentResidue - 1, lastResidue);
     						q = p;
     					}
     					if (secondaryStructure != SSEType.COIL) {
@@ -265,9 +259,7 @@ public class DsspReader {
     						p.From = q;
     						numberOfStructures += 1;
     						p.setSymbolNumber(numberOfStructures);
-    						p.sseData.SeqStartResidue = currentResidue;
-    						p.sseData.PDBStartResidue = Id;
-    						
+    						p.setStartPoints(currentResidue, lastResidue);
     						p.Chain = chainID;
     					}
     				}
@@ -278,15 +270,14 @@ public class DsspReader {
     
     		// finish off the list //
     		if (open) {
-    			p.sseData.SeqFinishResidue = currentResidue - 1;
-    			p.sseData.PDBFinishResidue = LastResidue;
+    		    p.setFinishPoints(currentResidue - 1, lastResidue);
     			q = p;
     		}
     		SSE cTerm = new SSE(CTERMINUS);
     
     		q.To = q.Next = cTerm;
-    		cTerm.sseData.SeqStartResidue = cTerm.sseData.SeqFinishResidue = currentResidue;
-    		cTerm.sseData.PDBStartResidue = cTerm.sseData.PDBFinishResidue = LastResidue + 1;
+    		cTerm.setStartPoints(currentResidue, currentResidue);
+    		cTerm.setFinishPoints(lastResidue + 1, lastResidue + 1);
     		cTerm.From = q;
     		numberOfStructures += 1;
     		cTerm.setSymbolNumber(numberOfStructures);

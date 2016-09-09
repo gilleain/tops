@@ -31,9 +31,6 @@ public class CalculateRelativeSides implements Calculation {
   
     public void assignRelativeSides(SSE sse) {
         if (sse.isStrand()) {
-            for (BridgePartner bp : sse.getBridgePartners()) {
-                bp.setUnknown();
-            }
             BridgePartner bridgePartner1 = sse.longestBridgeRange();
             if (bridgePartner1 != null) {
                 bridgePartner1.setLeft();

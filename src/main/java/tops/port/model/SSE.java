@@ -10,7 +10,27 @@ import javax.vecmath.Point2d;
 public class SSE {
     
     public enum SSEType {
-        HELIX, EXTENDED, COIL, RIGHT_ALPHA_HELIX, HELIX_310, PI_HELIX, TURN, ISO_BRIDGE, LEFT_ALPHA_HELIX, NTERMINUS, CTERMINUS;
+        HELIX("H"), 
+        EXTENDED("E"), 
+        COIL("U"), 
+        RIGHT_ALPHA_HELIX("H"), 
+        HELIX_310("H"), 
+        PI_HELIX("H"), 
+        TURN("T"), 
+        ISO_BRIDGE("I"), 
+        LEFT_ALPHA_HELIX("H"), 
+        NTERMINUS("N"), 
+        CTERMINUS("C");
+        
+        private String oneLetterName;
+        
+        SSEType(String oneLetterName) {
+            this.oneLetterName = oneLetterName;
+        }
+        
+        public String getOneLetterName() {
+            return oneLetterName;
+        }
     }
     
     private char Direction;
@@ -66,6 +86,26 @@ public class SSE {
         // TODO...
         this.bridgePartners = new ArrayList<BridgePartner>();
         this.cartoonSymbol = other.cartoonSymbol;
+    }
+    
+    public String getSummary() {
+        return getSSEType().getOneLetterName() + getSymbolNumber() + " (" 
+                + sseData.PDBStartResidue + ", " + sseData.PDBFinishResidue + ")";  
+    }
+    
+    public boolean contains(int residue) {
+        return (residue >= sseData.PDBStartResidue 
+             && residue <= sseData.PDBFinishResidue);
+    }
+    
+    public void setStartPoints(int seqStart, int pdbStart) {
+        sseData.SeqStartResidue = seqStart;
+        sseData.PDBStartResidue = pdbStart;
+    }
+    
+    public void setFinishPoints(int seqEnd, int pdbEnd) {
+        sseData.SeqFinishResidue = seqEnd;
+        sseData.PDBFinishResidue = pdbEnd;
     }
     
     public List<Neighbour> getNeighbours() {
@@ -532,9 +572,9 @@ public class SSE {
 
     public String toString() {
         if (this.Direction == 'U' || (this.type == SSEType.NTERMINUS || this.type == SSEType.CTERMINUS)) {
-            return String.valueOf(this.type);
+            return String.valueOf(this.type.getOneLetterName());
         } else {   
-            return String.valueOf(this.type).toLowerCase();
+            return String.valueOf(this.type.getOneLetterName()).toLowerCase();
         }
     }
 

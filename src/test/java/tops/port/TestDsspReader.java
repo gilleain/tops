@@ -10,8 +10,10 @@ import java.io.Reader;
 
 import org.junit.Test;
 
+import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
+import tops.port.model.SSE;
 
 public class TestDsspReader {
     
@@ -29,6 +31,22 @@ public class TestDsspReader {
         Protein protein = new DsspReader().readDsspFile("1TGX", read("1tgx.dssp"));
 //        System.out.println(protein.toTopsFile());
         System.out.print(protein.toString());
+        for (Chain chain : protein.getChains()) {
+            for (SSE sse : chain.getSSEs()) {
+                System.out.println(sse.getSummary());
+            }
+        }
+    }
+    
+    @Test
+    public void test2igd() throws IOException {
+        Protein protein = new DsspReader().readDsspFile("2IGD", read("2igd.dssp"));
+//        System.out.println(protein.toTopsFile());
+        for (Chain chain : protein.getChains()) {
+            for (SSE sse : chain.getSSEs()) {
+                System.out.println(sse.getSummary());
+            }
+        }
     }
     
     private Reader read(String filename) throws FileNotFoundException {

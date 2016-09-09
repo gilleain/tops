@@ -1,6 +1,6 @@
 package tops.port.model;
 
-public class HBond {
+public class HBond implements Comparable<HBond> {
     
     private int donorIndex;
     
@@ -12,6 +12,41 @@ public class HBond {
         this.donorIndex = donorIndex;
         this.acceptorIndex = acceptorIndex;
         this.energy = energy;
+    }
+    
+    @Override
+    public int compareTo(HBond other) {
+        if (this.equals(other)) {
+            return 0;
+        } else {
+            if (this.greaterThan(other)) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
+    
+    public boolean equals(Object other) {
+        if (other instanceof HBond) {
+            HBond otherHBond = (HBond) other;
+            return donorIndex == otherHBond.donorIndex && 
+                   acceptorIndex == otherHBond.acceptorIndex;
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return donorIndex * acceptorIndex;
+    }
+    
+    public boolean greaterThan(HBond other) {
+        // TODO : less function calls...
+        int min = Math.min(donorIndex, acceptorIndex);
+        int max = Math.max(donorIndex, acceptorIndex);
+        int otherMin = Math.min(other.donorIndex, other.acceptorIndex);
+        int otherMax = Math.max(other.donorIndex, other.acceptorIndex);
+        return min > otherMin || (min == otherMin && max > otherMax);
     }
 
     public int getDonorIndex() {
@@ -39,7 +74,11 @@ public class HBond {
     }
     
     public String toString() {
-        return String.format("%s->%s %2.2f", donorIndex, acceptorIndex, energy);
+        if (donorIndex < acceptorIndex) {
+            return String.format("%s->%s %2.2f", donorIndex, acceptorIndex, energy);
+        } else {
+            return String.format("%s<-%s %2.2f", acceptorIndex, donorIndex, energy);
+        }
     }
 
 }

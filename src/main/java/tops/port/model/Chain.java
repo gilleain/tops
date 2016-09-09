@@ -20,9 +20,9 @@ public class Chain {
     private List<String> sequence;
     private List<Integer> pdbIndices;
     private List<SSEType> secondaryStruc;
-    private Map<Integer, BridgePartner> leftBridgePartners;
-    private Map<Integer, BridgePartner> rightBridgePartners;
+    private Map<Integer, List<BridgePartner>> bridgePartners;
     private List<Point3d> CACoords;
+    private List<Bridge> bridges;
     
     private Map<Integer, List<HBond>> donatorHBonds;
     private Map<Integer, List<HBond>> acceptorHBonds;
@@ -41,12 +41,25 @@ public class Chain {
         this.sequence = new ArrayList<String>();
         this.pdbIndices = new ArrayList<Integer>();
         this.secondaryStruc = new ArrayList<SSEType>();
-        this.leftBridgePartners = new HashMap<Integer, BridgePartner>();
-        this.rightBridgePartners = new HashMap<Integer, BridgePartner>();
+        this.bridgePartners = new HashMap<Integer, List<BridgePartner>>();
+        this.bridges = new ArrayList<Bridge>();
         this.CACoords = new ArrayList<Point3d>();
         
         this.acceptorHBonds = new HashMap<Integer, List<HBond>>();
         this.donatorHBonds = new HashMap<Integer, List<HBond>>();
+    }
+
+    public List<Bridge> getBridges() {
+        return bridges;
+    }
+    
+    public Bridge findBridge(SSE sseStart, SSE sseEnd) {
+        for (Bridge bridge : bridges) {
+            if (bridge.isBetween(sseStart, sseEnd)) {
+                return bridge;
+            }
+        }
+        return null;
     }
     
     public void forceConsistent(Protein protein) {
@@ -121,22 +134,25 @@ public class Chain {
         return this.pdbIndices.get(residue);
     }
     
-    public BridgePartner getLeftBridgePartner(int index) {
-        return this.leftBridgePartners.containsKey(index)? null :
-            this.leftBridgePartners.get(index);
+    public void addBridge(Bridge bridge) {
+        this.bridges.add(bridge);
     }
     
-    public BridgePartner getRightBridgePartner(int index) {
-        return this.rightBridgePartners.containsKey(index)? null :
-            this.rightBridgePartners.get(index);
+    public List<BridgePartner> getBridgePartner(int index) {
+        return this.bridgePartners.containsKey(index)?
+            this.bridgePartners.get(index) : new ArrayList<BridgePartner>();
     }
     
-    public void addLeftBridgePartner(int index, BridgePartner bridgePartner) {
-        this.leftBridgePartners.put(index, bridgePartner);
-    }
-    
-    public void addRightBridgePartner(int index, BridgePartner bridgePartner) {
-        this.leftBridgePartners.put(index, bridgePartner);
+    public void addBridgePartner(int index, BridgePartner bridgePartner) {
+        System.out.println("Adding bridge partner " + index + "  " + bridgePartner);
+        List<BridgePartner> list;
+        if (bridgePartners.containsKey(index)) {
+            list = bridgePartners.get(index);
+        } else {
+            list = new ArrayList<BridgePartner>();
+            bridgePartners.put(index, list);
+        }
+        list.add(bridgePartner);
     }
     
     public void addSecondaryStructure(SSEType secondaryStructure) {
@@ -199,11 +215,12 @@ public class Chain {
 
     public SSE findSecStr(int residue) {
         for (SSE sse : this.sses) {
-            if (residue >= sse.sseData.SeqStartResidue 
-                    && residue <= sse.sseData.SeqFinishResidue) return sse;
+            if (sse.contains(residue)) {
+                return sse;
+            }
         }
         return null;
-      }
+    }
     
     
     /*

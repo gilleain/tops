@@ -77,8 +77,13 @@ public class BridgePartner {
         return false;
     }
     
+    public int hashCode() {
+        return partnerResidue;
+    }
+    
     public String toString() {
         return String.format("%s %s %s %s %s", 
-                partner.getSymbolNumber(), side, bridgeType, rangeMin, rangeMax);
+                partner == null? "{}" : partner.getSymbolNumber(),
+                side, bridgeType, rangeMin, rangeMax);
     }
 }
