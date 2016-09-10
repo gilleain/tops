@@ -554,10 +554,16 @@ public class Chain {
 
     public String getEdgeString() {
         StringBuffer edges = new StringBuffer();
-        for (SSE sse : this.sses) {
-            sse.getEdgeString(edges);
+        for (Bridge bridge : bridges) {
+            edges.append(toString(bridge));
         }
         return edges.toString();
+    }
+    
+    private String toString(Bridge bridge) {
+        return bridge.getSseStart().getSymbolNumber() + ":"
+                + bridge.getSseEnd().getSymbolNumber()
+                + bridge.getType();
     }
 
     public String toString() {

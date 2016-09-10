@@ -25,6 +25,22 @@ public class TestCalculateBridgePartners {
         test("1tgx");
     }
     
+    @Test
+    public void test1ABA() throws IOException {
+        test("1aba");
+    }
+    
+    @Test
+    public void test1AKR() throws IOException {
+        test("1akr");
+    }
+    
+    @Test
+    public void test1BFD() throws IOException {
+        test("1bfd");
+    }
+      
+    
     private void test(String id) throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 
@@ -42,6 +58,8 @@ public class TestCalculateBridgePartners {
                     bridge.getSseStart().getSymbolNumber(), bridge.getSseEnd().getSymbolNumber()));
             System.out.println(bridge);
         }
+        
+        System.out.println(id + chain.toString());
     }
 
 }

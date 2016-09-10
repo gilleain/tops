@@ -770,9 +770,9 @@ public class Protein {
             for (SSE q = newRoot; q != null; q = q.To) {
                 if (q.hasFixed())
                     q.setFixed(copyTable.get(q.getFixed()));
-                for (BridgePartner bridgePartner : q.getBridgePartners()) {
-                    bridgePartner.partner = copyTable.get(bridgePartner.partner);
-                }
+//                for (BridgePartner bridgePartner : q.getBridgePartners()) {
+//                    bridgePartner.partner = copyTable.get(bridgePartner.partner);
+//                }
                 // for (SSE q.Neighbours)
                 // q.Neighbour[i] = GetFromCopyTab(q.Neighbour[i],CopyTable);
                 // }

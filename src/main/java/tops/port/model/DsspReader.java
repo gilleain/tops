@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 import javax.vecmath.Point3d;
 
-import tops.port.model.BridgePartner.Side;
 import tops.port.model.SSE.SSEType;
 
 public class DsspReader {
@@ -97,12 +96,12 @@ public class DsspReader {
     			// Hydrogen bonds (just skip read errors as some dssp files have **** in place of integer here) //
     			// d1, d1e, a1, a1e, d2, d2e, a2, a2e
     			List<String> matches = new ArrayList<String>();
-    			System.out.print("Matches for " + record.PDBIndices + " ");
+//    			System.out.print("Matches for " + record.PDBIndices + " ");
     			int start = 0;
     			String hbondString = bits.get("hbonds");
     			for (int p = 0; p < 4; p++) {
     			    String match = hbondString.substring(start, start+ 11);
-    			    System.out.print(String.format("[%s]", match));
+//    			    System.out.print(String.format("[%s]", match));
     			    String[] pairs = match.split(",");
     			    matches.add(pairs[0].trim());
     			    matches.add(pairs[1].trim());
@@ -121,13 +120,13 @@ public class DsspReader {
     			record.AcceptedHBond2 = Integer.parseInt(matches.get(6));
     			record.AcceptedHBondEn2 = Float.parseFloat(matches.get(7));
     			
-    			System.out.print(String.format("%s %2.2f %s %2.2f %s %2.2f %s %2.2f",
-    			        record.DonatedHBond1, record.DonatedHBondEn1,
-    			        record.AcceptedHBond1, record.AcceptedHBondEn1,
-    			        record.DonatedHBond2, record.DonatedHBondEn2,
-    			        record.AcceptedHBond2, record.AcceptedHBondEn2));
+//    			System.out.print(String.format("%s %2.2f %s %2.2f %s %2.2f %s %2.2f",
+//    			        record.DonatedHBond1, record.DonatedHBondEn1,
+//    			        record.AcceptedHBond1, record.AcceptedHBondEn1,
+//    			        record.DonatedHBond2, record.DonatedHBondEn2,
+//    			        record.AcceptedHBond2, record.AcceptedHBondEn2));
     			
-    			System.out.println();
+//    			System.out.println();
     
     			record.x = Double.parseDouble(bits.get("xca"));
                 record.y = Double.parseDouble(bits.get("yca"));
@@ -189,8 +188,8 @@ public class DsspReader {
     						SSE cTerm = new SSE(CTERMINUS);
     
     						q.To = q.Next = cTerm;
-    						cTerm.sseData.SeqStartResidue = cTerm.sseData.SeqFinishResidue = currentResidue;
-    						cTerm.sseData.PDBStartResidue = cTerm.sseData.PDBFinishResidue = lastResidue + 1;
+    						cTerm.setStartPoints(currentResidue, currentResidue);
+    						cTerm.setFinishPoints(lastResidue + 1, lastResidue + 1);
     						cTerm.From = q;
     						numberOfStructures += 1;
     						cTerm.setSymbolNumber(numberOfStructures);

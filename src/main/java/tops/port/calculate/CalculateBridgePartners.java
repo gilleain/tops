@@ -6,8 +6,6 @@ import static tops.port.model.BridgeType.PARALLEL_BRIDGE;
 import java.util.logging.Logger;
 
 import tops.port.model.Bridge;
-import tops.port.model.BridgePartner;
-import tops.port.model.BridgePartner.Side;
 import tops.port.model.BridgeType;
 import tops.port.model.Chain;
 import tops.port.model.HBond;
@@ -20,28 +18,6 @@ public class CalculateBridgePartners implements Calculation {
     
     @Override
     public void calculate(Chain chain) {
-        bridgePartFromHBonds(chain);
-//        for (SSE sse : chain.getSSEs()) {
-//            if (sse.getSSEType() == SSEType.EXTENDED) {
-//                for (int index = sse.sseData.PDBStartResidue; index < sse.sseData.PDBFinishResidue; index++) {
-//                    assignBridgePartnersToSSE(index, chain, sse, index);    // XXX FIXME
-//                }
-//            }
-//                
-//        }
-    }
-
-    @Override
-    public void setParameter(String key, double value) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /*
-    function to obtain bridge partners from main chain H bond information
-    assumes that DonatedHBonds and AcceptedHBonds are fully redundant
-     */
-    public void bridgePartFromHBonds(Chain chain) {
         for (SSE sse : chain.getSSEs()) {
             if (sse.getSSEType() == SSEType.EXTENDED) {
                 int start = sse.sseData.PDBStartResidue;
@@ -55,7 +31,13 @@ public class CalculateBridgePartners implements Calculation {
             }
         }
     }
-    
+
+    @Override
+    public void setParameter(String key, double value) {
+        // TODO Auto-generated method stub
+        
+    }
+
     private void typeA(Chain chain, SSE sse, int i) {
         // conditions for an anti-parallel bridge: first is another residue 
         // to which there are both donor and acceptor HBonds
@@ -120,24 +102,12 @@ public class CalculateBridgePartners implements Calculation {
             }
         }
     }
-    
-    public void assignBridgePartnersToSSE(int index, Chain chain, SSE sse, int currentResidue) {
-        //   bridge partners //
-        for (BridgePartner bridge : chain.getBridgePartner(currentResidue)) {
-            System.out.println("Assign " + index + " = " + bridge);
-            SSE bridgeSSE = chain.findSecStr(bridge.partnerResidue);
-            if ((bridgeSSE != null) && (bridge.partnerResidue < index) && (bridgeSSE.isStrand())) {
-                bridgeSSE.updateSecStr(sse, index, BridgePartner.Side.LEFT, bridge.bridgeType);
-                BridgePartner.Side bridgeSide = findBridgeSide(chain, bridge.partnerResidue, index);
-                sse.updateSecStr(bridge.partner, bridge.partnerResidue, bridgeSide, bridge.bridgeType);
-            }
-        }
-    }
+   
     
     /* 
     a small utility function to find the side for a bridge partner residue 
      */
-    private BridgePartner.Side findBridgeSide(Chain chain, int residueIndex, int bridgeIndex) {
+//    private BridgePartner.Side findBridgeSide(Chain chain, int residueIndex, int bridgeIndex) {
 //        if (residueIndex < chain.sequenceLength()) {
 //            if (chain.getRightBridgePartner(residueIndex).partnerResidue == bridgeIndex) { 
 //                return BridgePartner.Side.LEFT;
@@ -147,9 +117,9 @@ public class CalculateBridgePartners implements Calculation {
 //                return BridgePartner.Side.UNKNOWN;
 //            }
 //        } else {
-            return BridgePartner.Side.UNKNOWN;
+//            return BridgePartner.Side.UNKNOWN;
 //        }
-    }
+//    }
 
 
     private void addBridge(int index, Chain chain, SSE sseStart, SSE sseEnd, HBond bond1, HBond bond2, BridgeType type, String func) {

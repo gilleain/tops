@@ -225,21 +225,6 @@ public class SSE {
         return null;
     }
     
-    public void getEdgeString(StringBuffer edges) {
-        for (BridgePartner bridgePartner : bridgePartners) {
-            BridgeType edgeType = bridgePartner.bridgeType;
-            if (sseData.SeqStartResidue < bridgePartner.partner.sseData.SeqStartResidue) {
-                int partnerSymbolNumber = bridgePartner.partner.getSymbolNumber();
-                char edgeTypeChar;
-                if (edgeType == BridgeType.ANTI_PARALLEL_BRIDGE) edgeTypeChar = 'A';
-                else if (edgeType == BridgeType.PARALLEL_BRIDGE) edgeTypeChar = 'P';
-                else edgeTypeChar = '!';
-                String edge = String.format("%d:%d%s", getSymbolNumber(), partnerSymbolNumber, edgeTypeChar);
-                edges.append(edge).append(" ");
-            }
-        }
-    }
-    
     public List<SSE> getPartners() {
         List<SSE> sses = new ArrayList<SSE>();
         for (BridgePartner bp : bridgePartners) {

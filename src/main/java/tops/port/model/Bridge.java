@@ -47,4 +47,12 @@ public class Bridge {
         return sb.toString();
     }
 
+    public String getType() {
+        // XXX TODO
+        HBond first = types.keySet().iterator().next();
+        BridgeType bridgeType = types.get(first); 
+        return bridgeType == BridgeType.ANTI_PARALLEL_BRIDGE? "A":
+                bridgeType == BridgeType.PARALLEL_BRIDGE? "P": "U";
+    }
+
 }
