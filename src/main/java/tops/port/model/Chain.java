@@ -931,7 +931,7 @@ public class Chain {
         // these are the condition under which the code generates a bent connection,
         // rather than the usual straight line joining symbols 
         if (this.findFixedStart(sse) != this.findFixedStart(sse.To)) return;
-        if (sse.hasFixedType(FixedType.FT_SHEET) && !sse.To.hasFixedType(FixedType.FT_SANDWICH)) return;
+        if (sse.hasFixedType(FixedType.SHEET) && !sse.To.hasFixedType(FixedType.SANDWICH)) return;
         SSE q = sse.To;
         if (q == null) return;
         SSE r = LineHitSymbol(this, sse, q);

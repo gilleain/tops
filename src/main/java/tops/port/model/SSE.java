@@ -659,25 +659,25 @@ public class SSE {
         }
 
         switch (fixedType) {
-        case FT_BARREL:
+        case BARREL:
             print(out, "FixedType BARREL\n");
             break;
-        case FT_SHEET:
+        case SHEET:
             print(out, "FixedType SHEET\n");
             break;
-        case FT_CURVED_SHEET:
+        case CURVED_SHEET:
             print(out, "FixedType CURVED_SHEET\n");
             break;
-        case FT_V_CURVED_SHEET:
+        case V_CURVED_SHEET:
             print(out, "FixedType V_CURVED_SHEET\n");
             break;
-        case FT_SANDWICH:
+        case SANDWICH:
             print(out, "FixedType SANDWICH\n");
             break;
-        case FT_TEMPLATE:
+        case TEMPLATE:
             print(out, "FixedType TEMPLATE\n");
             break;
-        case FT_UNKNOWN:
+        case UNKNOWN:
             print(out, "FixedType UNKNOWN\n");
             break;
         default:

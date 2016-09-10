@@ -180,7 +180,7 @@ public class Optimise {
 
         if (insideBarrelPenalty > 0) {
             for (SSE sse : chain.iterFixed(chain.getSSEs().get(0))) {
-                if (sse.hasFixedType(FixedType.FT_BARREL, FixedType.FT_CURVED_SHEET)) {
+                if (sse.hasFixedType(FixedType.BARREL, FixedType.CURVED_SHEET)) {
                     double Ce = insideBarrelEnergy(chain, sse, insideBarrelPenalty);
                     TotalEnergy += Ce;
                     EnergyComps[7] += Ce;

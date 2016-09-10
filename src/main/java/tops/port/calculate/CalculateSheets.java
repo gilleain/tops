@@ -43,7 +43,7 @@ public class CalculateSheets implements Calculation {
                     SSE q = findEdgeStrand(p, null);
                     if (!q.isSymbolPlaced()) {
                         this.makeSheet(chain, q, null, gridUnitSize);
-                        if (q.hasFixedType(FixedType.FT_SHEET)) {
+                        if (q.hasFixedType(FixedType.SHEET)) {
                             this.sheetCurvature(chain, q);
                         }
                     }
@@ -143,7 +143,7 @@ public class CalculateSheets implements Calculation {
             X = rads + 2.0 * count * rads;
 
             SSE q = barrel.get(i);
-            q.setFixedType(FixedType.FT_BARREL);
+            q.setFixedType(FixedType.BARREL);
 
             if (count != 0) {
                 chain.moveFixed(p, q);
@@ -158,7 +158,7 @@ public class CalculateSheets implements Calculation {
             for (BridgePartner bridgePartner : q.getBridgePartners()) {
                 SSE r = bridgePartner.partner;
                 if (!barrel.contains(r)) {
-                    r.setFixedType(FixedType.FT_BARREL);
+                    r.setFixedType(FixedType.BARREL);
                     r.AssignRelDirection(q);
                     r.setCartoonX((int) ((Y1 * Math.sin(X) - 0.5) * GridUnitSize));
                     r.setCartoonY((int) ((Y1 * Math.cos(X) - Z) * GridUnitSize));
@@ -193,7 +193,7 @@ public class CalculateSheets implements Calculation {
         List<SSE> startLowerList = new ArrayList<SSE>();
         List<SSE> Layer = new ArrayList<SSE>();
 
-        p.setFixedType(FixedType.FT_SHEET);
+        p.setFixedType(FixedType.SHEET);
 
         // If this is the first strand place it based on the last strand
         if (q == null) {
@@ -299,7 +299,7 @@ public class CalculateSheets implements Calculation {
     private void divideLayers(Chain chain, SSE p, int startXPos, List<SSE> startLowerList, List<SSE> startUpperList) {
 //        System.out.println("Sheet configured as V_CURVED_SHEET");
         for (SSE t : chain.iterFixed(p)) {
-            t.setFixedType(FixedType.FT_V_CURVED_SHEET);
+            t.setFixedType(FixedType.V_CURVED_SHEET);
         }
 
         // divide at the point of splitting identified above
@@ -465,7 +465,7 @@ public class CalculateSheets implements Calculation {
 
         SSE Start = chain.findFixedStart(p);
 
-        if (Start == null || !Start.hasFixedType(FixedType.FT_SHEET)) return;
+        if (Start == null || !Start.hasFixedType(FixedType.SHEET)) return;
 
         // first determine left and right most strands in the sheet """
         SSE left = chain.getListAtXPosition(Start, chain.leftMostPos(Start)).get(0);
@@ -484,7 +484,7 @@ public class CalculateSheets implements Calculation {
 
 //            System.out.println("Sheet configured as CURVED_SHEET");
 
-            for (SSE q : chain.iterFixed(Start)) q.setFixedType(FixedType.FT_CURVED_SHEET);
+            for (SSE q : chain.iterFixed(Start)) q.setFixedType(FixedType.CURVED_SHEET);
 
             // this direction calculation is to ensure that sheets from AB barrels are plotted with the correct chirality """
             SeqDirResult result = this.findSheetSeqDir(chain, Start);

@@ -26,11 +26,11 @@ public class CalculateSandwiches implements Calculation {
         // detect and form sandwiches //
         List<SSE[]> sandwiches = new ArrayList<SSE[]>();
         for (SSE r : chain.getSSEs()) {
-            if (r.isStrand() && r.hasFixedType(FixedType.FT_SHEET)) {
+            if (r.isStrand() && r.hasFixedType(FixedType.SHEET)) {
                 String rDomain = this.FindDomain(r);
                 for (SSE s : chain.iterNext(r)) {
                     String sDomain = this.FindDomain(s);
-                    if (s.isStrand() && s.hasFixedType(FixedType.FT_SHEET) && sDomain == rDomain) { 
+                    if (s.isStrand() && s.hasFixedType(FixedType.SHEET) && sDomain == rDomain) { 
                         if (this.isSandwich(chain, r, s)) {
 //                            System.out.println(String.format("Sandwich detected between %s and %s" , r, s));
                             sandwiches.add(new SSE[] {r, s});
@@ -85,8 +85,8 @@ public class CalculateSandwiches implements Calculation {
         }
 
         if ((p == q) || (s1 < 3) || (s2 < 3) 
-                || (!p.hasFixedType(FixedType.FT_SHEET) 
-                || (!q.hasFixedType(FixedType.FT_SHEET)))) {
+                || (!p.hasFixedType(FixedType.SHEET) 
+                || (!q.hasFixedType(FixedType.SHEET)))) {
             return false;
         }
 
@@ -187,10 +187,10 @@ public class CalculateSandwiches implements Calculation {
 
         // set type of fixed structure """
         for (SSE sse : chain.iterFixed(shortSheetStart)) {
-            sse.setFixedType(FixedType.FT_SANDWICH);
+            sse.setFixedType(FixedType.SANDWICH);
         }
         for (SSE sse : chain.iterFixed(longSheetStart)) {
-            sse.setFixedType(FixedType.FT_SANDWICH);
+            sse.setFixedType(FixedType.SANDWICH);
         }
     }
 
