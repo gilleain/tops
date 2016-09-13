@@ -17,6 +17,7 @@ public class Chain {
 
     private char name;
     private List<SSE> sses;
+    private List<TSE> tses;
     private List<String> sequence;
     private List<Integer> pdbIndices;
     private List<SSEType> secondaryStruc;
@@ -47,6 +48,15 @@ public class Chain {
         
         this.acceptorHBonds = new HashMap<Integer, List<HBond>>();
         this.donatorHBonds = new HashMap<Integer, List<HBond>>();
+    }
+    
+    public List<TSE> getTSEs() {
+        return this.tses;
+    }
+    
+
+    public void addTSE(TSE barrel) {
+        this.tses.add(barrel);
     }
 
     public List<Bridge> getBridges() {
@@ -964,6 +974,7 @@ public class Chain {
             sse.addConnection(new Point2d(nx, ny));
         }
     }
+
   
 }
 

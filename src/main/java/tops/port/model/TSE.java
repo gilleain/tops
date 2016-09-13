@@ -35,5 +35,25 @@ public class TSE {
     public void setElements(List<SSE> elements) {
         this.elements = elements;
     }
+    
+    public void add(SSE element) {
+        this.elements.add(element);
+    }
+    
+    public boolean contains(SSE element) {
+        return elements.contains(element);
+    }
+    
+    public int size() {
+        return elements.size();
+    }
+    
+    public SSE getFirst() {
+        return elements.get(0);
+    }
+    
+    public SSE get(int index) {
+        return elements.get(index);
+    }
 
 }
