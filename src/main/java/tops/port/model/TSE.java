@@ -55,5 +55,18 @@ public class TSE {
     public SSE get(int index) {
         return elements.get(index);
     }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        int index = 0;
+        for (SSE sse : elements) {
+            sb.append(sse.getSymbolNumber());
+            if (index < elements.size() - 1) {
+                sb.append("-");
+            }
+            index++;
+        }
+        return sb.toString();
+    }
 
 }

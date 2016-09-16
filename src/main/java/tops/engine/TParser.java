@@ -1,6 +1,7 @@
 package tops.engine;
 
 import java.util.ArrayList;
+import java.util.List;
 
 //import java.util.regex.Pattern;
 //import java.util.regex.Matcher;
@@ -64,18 +65,9 @@ public class TParser {
             spspsp = this.current.length();
         return this.current.substring(spsp + 1, spspsp);
     }
+   
 
-    /*
-     * removed because it doesn't work in java1.3 public String[] getEdges() {
-     * String tail = this.getEdgeString(); Matcher m = edgeP.matcher(tail);
-     * ArrayList bits = new ArrayList(); while (m.find()) { //start i at 1,
-     * because group(0) is the whole match! for (int i = 1; i <= m.groupCount();
-     * i++) { bits.add(m.group(i)); } } return (String[]) bits.toArray(new
-     * String[0]); }
-     */
-
-    // ALTERNATIVE 1.3 method
-    public String[] getEdges() {
+    public String[] getEdgesAsStrings() {
         String tail = this.getEdgeString();
         ArrayList<String> bytes = new ArrayList<String>();
         char[] bits = tail.toCharArray();
@@ -113,7 +105,7 @@ public class TParser {
         TParser t = new TParser(args[0]);
         System.out.println(t.getName());
         System.out.println(t.getVertices());
-        String[] sta = t.getEdges();
+        String[] sta = t.getEdgesAsStrings();
         for (int k = 0; k < sta.length; k++) {
             System.out.println("[" + sta[k] + "]");
         }

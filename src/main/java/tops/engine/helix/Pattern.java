@@ -399,7 +399,7 @@ public class Pattern implements PatternI {
 
             this.head = parser.getName();
             char[] verts = parser.getVertices();
-            String[] edgeStrings = parser.getEdges();
+            String[] edgeStrings = parser.getEdgesAsStrings();
             this.classification = parser.getClassification();
             for (int i = 0; i < verts.length; ++i) {
                 this.vertices.add(new Vertex(verts[i], i));

@@ -55,4 +55,19 @@ public class Bridge {
                 bridgeType == BridgeType.PARALLEL_BRIDGE? "P": "U";
     }
 
+    public boolean contains(SSE current) {
+        return sseStart.equals(current) || sseEnd.equals(current);
+    }
+    
+    public SSE getOther(SSE sse) {
+        if (sseStart.equals(sse)) {
+            return sseEnd;
+        } else if (sseEnd.equals(sse)) {
+            return sseStart;
+        } else {
+            // should have called contains first!
+            return null;
+        }
+    }
+
 }

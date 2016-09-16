@@ -39,6 +39,7 @@ public class Chain {
     public Chain(char nameChar) {
         this.name = assignChain(nameChar);
         this.sses = new ArrayList<SSE>();
+        this.tses = new ArrayList<TSE>();
         this.sequence = new ArrayList<String>();
         this.pdbIndices = new ArrayList<Integer>();
         this.secondaryStruc = new ArrayList<SSEType>();
@@ -50,13 +51,24 @@ public class Chain {
         this.donatorHBonds = new HashMap<Integer, List<HBond>>();
     }
     
+
+    public List<Bridge> getBridges(SSE current) {
+        List<Bridge> selected = new ArrayList<Bridge>();
+        for (Bridge bridge : bridges) {
+            if (bridge.contains(current)) {
+                selected.add(bridge);
+            }
+        }
+        return selected;
+    }
+    
     public List<TSE> getTSEs() {
         return this.tses;
     }
     
 
-    public void addTSE(TSE barrel) {
-        this.tses.add(barrel);
+    public void addTSE(TSE tse) {
+        this.tses.add(tse);
     }
 
     public List<Bridge> getBridges() {
@@ -974,8 +986,6 @@ public class Chain {
             sse.addConnection(new Point2d(nx, ny));
         }
     }
-
-  
 }
 
     

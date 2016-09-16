@@ -1,10 +1,12 @@
 package tops.port.calculate;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import tops.port.model.Bridge;
 import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
@@ -19,20 +21,39 @@ public class CalculateSheets implements Calculation {
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Calculating sheets and barrels");
 
-        TSE barrel;
-        for (SSE p : chain.getSSEs()) { 
-            if (!p.isSymbolPlaced() && p.isStrand()) {
-                barrel = this.detectBarrel(p);
-                if (barrel.size() > 0) {
-                    System.out.println("Barrel detected");
-                    chain.addTSE(barrel);
-                } else {
-//                    System.out.println("Sheet detected");
-                    SSE q = findEdgeStrand(p, null);
-                    if (!q.isSymbolPlaced()) {
-                       
-                    }
-                }
+        TSE barrel = new TSE(FixedType.UNKNOWN);
+        BitSet seen = new BitSet(chain.countStructures());
+        for (SSE sse : chain.getSSEs()) {
+            if (sse.isStrand() && !seen.get(chain.getSSEs().indexOf(sse))) {
+                search(chain, sse, null, barrel, seen);
+                chain.addTSE(barrel);
+            }
+//            if (!sse.isSymbolPlaced() && sse.isStrand()) {
+//                barrel = this.detectBarrel(sse);
+//                if (barrel.size() > 0) {
+//                    System.out.println("Barrel detected");
+//                    chain.addTSE(barrel);
+//                } else {
+////                    System.out.println("Sheet detected");
+//                    SSE q = findEdgeStrand(sse, null);
+//                    if (!q.isSymbolPlaced()) {
+//                       
+//                    }
+//                }
+//            }
+        }
+    }
+    
+    private void search(Chain chain, SSE current, SSE last, TSE tse, BitSet visited) {
+        tse.add(current);
+        visited.set(chain.getSSEs().indexOf(current));
+        List<Bridge> bridges = chain.getBridges(current);
+        for (Bridge bridge : bridges) {
+            SSE next = bridge.getOther(current);
+            if (last != null && next.equals(last)) {
+                continue;
+            } else {
+                search(chain, next, current, tse, visited);
             }
         }
     }
