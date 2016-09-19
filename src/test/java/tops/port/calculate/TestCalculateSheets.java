@@ -1,17 +1,17 @@
 package tops.port.calculate;
 
-import static tops.port.model.SSE.SSEType.EXTENDED;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
-import tops.port.model.Bridge;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 import tops.port.model.StringConverter;
+import tops.port.model.TSE;
 
 public class TestCalculateSheets extends TestCalculateNeighbours {
     
@@ -23,30 +23,71 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
     }
     
     @Test
-    public void testMultipleSheet() {
-        String topsString = "head NEEeeC 1:3A2:4A";
-        Chain chain = StringConverter.convert(topsString);
-        CalculateSheets calculation = new CalculateSheets();
-        calculation.calculate(chain);
-        System.out.println(chain.getTSEs().get(0));
-        System.out.println(chain.getTSEs().get(1));
-    }
-    
-    @Test
     public void testSingleSheet() {
         String topsString = "head NEeEC 1:2A2:3A";
         Chain chain = StringConverter.convert(topsString);
         
         CalculateSheets calculation = new CalculateSheets();
         calculation.calculate(chain);
-        System.out.println(chain.getTSEs().get(0));
+        
+        TSE sheet1 = chain.getTSEs().get(0);
+        System.out.println(sheet1);
+        assertEquals(3, sheet1.size());
+    }
+
+    @Test
+    public void testMultipleSheet() {
+        String topsString = "head NEEEeeeC 1:4A2:5A";
+        Chain chain = StringConverter.convert(topsString);
+        CalculateSheets calculation = new CalculateSheets();
+        calculation.calculate(chain);
+        TSE sheet1 = chain.getTSEs().get(0);
+        System.out.println(sheet1);
+        assertEquals(2, sheet1.size());
+        
+        TSE sheet2 = chain.getTSEs().get(1);
+        System.out.println(sheet2);
+        assertEquals(2, sheet2.size());
     }
     
-    private Bridge makeBridge(SSE start, SSE end) {
-        Bridge bridge = new Bridge();
-        bridge.setStartSSE(start);
-        bridge.setEndSSE(end);
-        return bridge;
+    @Test
+    public void testBarrel() {
+        String topsString = "head NEeEeC 1:2A1:4A2:3A3:4A";
+        Chain chain = StringConverter.convert(topsString);
+        CalculateSheets calculation = new CalculateSheets();
+        calculation.calculate(chain);
+        
+        TSE barrel1 = chain.getTSEs().get(0);
+        System.out.println(barrel1);
+        assertEquals(4, barrel1.size());
+    }
+    
+    @Test
+    public void testSigmaBarrel() {
+        String topsString = "head NeEeEeC 1:2A2:5A2:3A3:4A4:5A";
+        Chain chain = StringConverter.convert(topsString);
+        CalculateSheets calculation = new CalculateSheets();
+        calculation.calculate(chain);
+        
+        TSE barrel1 = chain.getTSEs().get(0);
+        System.out.println(barrel1);
+        assertEquals(4, barrel1.size());
+    }
+    
+    @Test
+    public void testDisconnectedBarrels() {
+        String topsString = "head NEeEeEeEeC 1:2A1:4A2:3A3:4A5:6A5:8A6:7A7:8A";
+        Chain chain = StringConverter.convert(topsString);
+        CalculateSheets calculation = new CalculateSheets();
+        calculation.calculate(chain);
+        
+        TSE barrel1 = chain.getTSEs().get(0);
+        System.out.println(barrel1);
+        assertEquals(4, barrel1.size());
+        
+        TSE barrel2 = chain.getTSEs().get(1);
+        System.out.println(barrel2);
+        assertEquals(4, barrel2.size());
     }
     
     @Test

@@ -39,12 +39,16 @@ public class Bridge {
         types.put(hBond, type);
     }
     
-    public String toString() {
+    public String getHBondsAsString() {
         StringBuffer sb = new StringBuffer();
         for (HBond hBond : types.keySet()) {
             sb.append(hBond).append(" : ").append(types.get(hBond)).append("\n");
         }
         return sb.toString();
+    }
+    
+    public String toString() {
+        return sseStart.getSymbolNumber() + "-" + sseEnd.getSymbolNumber();
     }
 
     public String getType() {

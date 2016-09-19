@@ -21,26 +21,15 @@ public class CalculateSheets implements Calculation {
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Calculating sheets and barrels");
 
-        TSE barrel = new TSE(FixedType.UNKNOWN);
         BitSet seen = new BitSet(chain.countStructures());
         for (SSE sse : chain.getSSEs()) {
-            if (sse.isStrand() && !seen.get(chain.getSSEs().indexOf(sse))) {
+            int index = chain.getSSEs().indexOf(sse);
+            if (sse.isStrand() && !seen.get(index)) {
+                TSE barrel = new TSE(FixedType.UNKNOWN);
+                System.out.println("searching with " + s(sse));
                 search(chain, sse, null, barrel, seen);
                 chain.addTSE(barrel);
             }
-//            if (!sse.isSymbolPlaced() && sse.isStrand()) {
-//                barrel = this.detectBarrel(sse);
-//                if (barrel.size() > 0) {
-//                    System.out.println("Barrel detected");
-//                    chain.addTSE(barrel);
-//                } else {
-////                    System.out.println("Sheet detected");
-//                    SSE q = findEdgeStrand(sse, null);
-//                    if (!q.isSymbolPlaced()) {
-//                       
-//                    }
-//                }
-//            }
         }
     }
     
@@ -50,11 +39,29 @@ public class CalculateSheets implements Calculation {
         List<Bridge> bridges = chain.getBridges(current);
         for (Bridge bridge : bridges) {
             SSE next = bridge.getOther(current);
-            if (last != null && next.equals(last)) {
+            System.out.print("Current = " + s(current) + " Bridge = " + bridge 
+                    + " Next = " + s(next)
+                    + " Last = " + s(last));
+            if (last != null && next.getSymbolNumber() == last.getSymbolNumber()) {
+                System.out.println(" Ignoring");
                 continue;
             } else {
-                search(chain, next, current, tse, visited);
+                int nextIndex = chain.getSSEs().indexOf(next);
+                if (visited.get(nextIndex)) {
+                    System.out.println(" Already seen");
+                } else {
+                    System.out.println(" Following");
+                    search(chain, next, current, tse, visited);
+                }
             }
+        }
+    }
+    
+    private String s(SSE sse) {
+        if (sse == null) {
+            return "";
+        } else {
+            return "" + sse.getSymbolNumber();
         }
     }
     
