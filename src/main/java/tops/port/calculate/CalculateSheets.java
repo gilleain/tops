@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import tops.port.model.Bridge;
-import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
@@ -62,27 +61,6 @@ public class CalculateSheets implements Calculation {
             return "";
         } else {
             return "" + sse.getSymbolNumber();
-        }
-    }
-    
-    //FIXME 
-    //recursive and unidirectional!//
-    public SSE findEdgeStrand(SSE current, SSE last) {
-        if (current == null) return last;
-        
-        List<BridgePartner> partners = current.getBridgePartners(); 
-        BridgePartner partner0 = partners.size() > 0? partners.get(0) : null;
-        BridgePartner partner1 = partners.size() > 1? partners.get(1) : null;
-//        System.out.println(String.format(
-//                "find edge strand at %s bridge partners %s and %s", current, partner0, partner1));
-        if (partner0 == null || partner1 == null) {
-            return current;
-        } else {
-            if (partner0.partner != last) {
-                return this.findEdgeStrand(partner0.partner, current);
-            } else {
-                return this.findEdgeStrand(partner1.partner, current);
-            }
         }
     }
     

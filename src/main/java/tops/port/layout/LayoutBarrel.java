@@ -1,6 +1,6 @@
 package tops.port.layout;
 
-import tops.port.model.BridgePartner;
+import tops.port.model.Bridge;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
@@ -59,8 +59,10 @@ public class LayoutBarrel implements TSELayout {
             q.setSymbolPlaced(true);
 
             double Y1 = Y+1;
-            for (BridgePartner bridgePartner : q.getBridgePartners()) {
-                SSE r = bridgePartner.partner;
+            
+            // TODO - this should work on the existing TSE...
+            for (Bridge bridge : chain.getBridges(q)) {
+                SSE r = bridge.getOther(q);
                 if (!barrel.contains(r)) {
                     r.setFixedType(FixedType.BARREL);
                     r.AssignRelDirection(q);

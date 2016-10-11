@@ -93,8 +93,8 @@ public class CalculateRelativeSides implements Calculation {
     }
 
     /*
-     * A function to decide geometrically whether strand p lies on the same or
-     * opposite side of strand q as strand r
+     * A function to decide geometrically whether strand bpP lies on the same or
+     * opposite side of strand q as strand bpR
      */
     public boolean geometricSameSide(SSE q, BridgePartner bpR, BridgePartner bpP) {
         SSE r = bpR.partner;

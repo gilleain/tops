@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import tops.port.calculate.util.DistanceCalculator;
+import tops.port.model.Bridge;
 import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
@@ -43,54 +44,54 @@ public class LayoutSheet implements TSELayout {
      */
     public void sheetCurvature(Chain chain, SSE p) {
 
-        double MinSpan = 5;
-        double MaxSep = 10.0;
+        double minSpan = 5;
+        double maxSep = 10.0;
 
-        SSE Start = chain.findFixedStart(p);
+        SSE start = chain.findFixedStart(p);
 
-        if (Start == null || !Start.hasFixedType(FixedType.SHEET)) return;
+        if (start == null || !start.hasFixedType(FixedType.SHEET)) return;
 
         // first determine left and right most strands in the sheet """
-        SSE left = chain.getListAtXPosition(Start, chain.leftMostPos(Start)).get(0);
-        SSE right = chain.getListAtXPosition(Start, chain.rightMostPos(Start)).get(0);
+        SSE left = chain.getListAtXPosition(start, chain.leftMostPos(start)).get(0);
+        SSE right = chain.getListAtXPosition(start, chain.rightMostPos(start)).get(0);
         
-        double span = chain.fixedSpan(Start, gridUnitSize);
+        double span = chain.fixedSpan(start, gridUnitSize);
 
         // MaxSep is 0.65 of the separation if the sheet were flat with 4.5A between each pair of strands """
-        MaxSep = 4.5 * (span - 1.0) * 0.65;
+        maxSep = 4.5 * (span - 1.0) * 0.65;
 
         double sep = DistanceCalculator.secStrucSeparation(left, right);
 
 //        System.out.println(String.format("SheetCurvature %d %d %f %f", left.getSymbolNumber(), right.getSymbolNumber(), sep, MaxSep));
 
-        if (span >= MinSpan && sep<MaxSep) {
+        if (span >= minSpan && sep<maxSep) {
 
 //            System.out.println("Sheet configured as CURVED_SHEET");
 
-            for (SSE q : chain.iterFixed(Start)) q.setFixedType(FixedType.CURVED_SHEET);
+            for (SSE q : chain.iterFixed(start)) q.setFixedType(FixedType.CURVED_SHEET);
 
             // this direction calculation is to ensure that sheets from AB barrels are plotted with the correct chirality """
-            SeqDirResult result = this.findSheetSeqDir(chain, Start);
-            double AddDir;
+            SeqDirResult result = this.findSheetSeqDir(chain, start);
+            double addDir;
             if (result.SeqDir == 1) {
-                if (result.Dir == 'D') AddDir = 1.0;
-                else AddDir = -1.0;
+                if (result.Dir == 'D') addDir = 1.0;
+                else addDir = -1.0;
             } else if (result.SeqDir == -1) {
-                if (result.Dir=='U') AddDir = 1.0;
-                else AddDir = -1.0;
+                if (result.Dir=='U') addDir = 1.0;
+                else addDir = -1.0;
             } else {
-                AddDir = 1.0;
+                addDir = 1.0;
             }
         
-            int NSpaces = (int) (span + 1);
+            int nSpaces = (int) (span + 1);
 
-            double Rads = Math.PI / NSpaces;
-            double X = Rads;
-            double YStart = 0.5 / Math.sin(Rads);
-            double Z = 0.5 / Math.tan(Rads);
+            double rads = Math.PI / nSpaces;
+            double X = rads;
+            double YStart = 0.5 / Math.sin(rads);
+            double Z = 0.5 / Math.tan(rads);
 
-            int CurrXPos = (int) chain.leftMostPos(Start);
-            List<SSE> sseList = chain.getListAtXPosition(Start, CurrXPos);
+            int currXPos = (int) chain.leftMostPos(start);
+            List<SSE> sseList = chain.getListAtXPosition(start, currXPos);
 
             double YEF = 0.75;
             while (sseList.size() > 0) {
@@ -102,10 +103,10 @@ public class LayoutSheet implements TSELayout {
                     Y += YEF;
                 }
 
-                CurrXPos += gridUnitSize;
-                sseList = chain.getListAtXPosition(Start, CurrXPos);
+                currXPos += gridUnitSize;
+                sseList = chain.getListAtXPosition(start, currXPos);
 
-                X += AddDir * 2.0 * Rads;
+                X += addDir * 2.0 * rads;
            }
         }
     }
@@ -178,8 +179,8 @@ public class LayoutSheet implements TSELayout {
 
             // Have any of q's neighbours already been placed?
             int i = 0;
-            for (BridgePartner bp : q.getBridgePartners()) {
-                SSE r = bp.partner;
+            for (Bridge bp : chain.getBridges(q)) {
+                SSE r = bp.getOther(q);
                 if (r == null) continue;
                 if (r.isSymbolPlaced()) break;
                 int rindex = i;
@@ -216,7 +217,7 @@ public class LayoutSheet implements TSELayout {
             }
         }
 
-        sortStacking(chain, p, q, 0, startLowerList, startUpperList, 0);
+        sortStacking(chain, p, null, 0, startLowerList, startUpperList, 0);
     }
     
     private void sortStacking(Chain chain, SSE p, SSE q, int startXPos, List<SSE> startLowerList, List<SSE> startUpperList, int maxListLen) {
