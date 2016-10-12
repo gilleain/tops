@@ -12,12 +12,13 @@ import javax.vecmath.Point3d;
 
 import tops.port.calculate.util.DistanceCalculator;
 import tops.port.model.SSE.SSEType;
+import tops.port.model.tse.BaseTSE;
 
 public class Chain {
 
     private char name;
     private List<SSE> sses;
-    private List<TSE> tses;
+    private List<BaseTSE> tses;
     private List<String> sequence;
     private List<Integer> pdbIndices;
     private List<SSEType> secondaryStruc;
@@ -39,7 +40,7 @@ public class Chain {
     public Chain(char nameChar) {
         this.name = assignChain(nameChar);
         this.sses = new ArrayList<SSE>();
-        this.tses = new ArrayList<TSE>();
+        this.tses = new ArrayList<BaseTSE>();
         this.sequence = new ArrayList<String>();
         this.pdbIndices = new ArrayList<Integer>();
         this.secondaryStruc = new ArrayList<SSEType>();
@@ -62,12 +63,12 @@ public class Chain {
         return selected;
     }
     
-    public List<TSE> getTSEs() {
+    public List<BaseTSE> getTSEs() {
         return this.tses;
     }
     
 
-    public void addTSE(TSE tse) {
+    public void addTSE(BaseTSE tse) {
         this.tses.add(tse);
     }
 

@@ -4,7 +4,7 @@ import tops.port.model.Bridge;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
-import tops.port.model.TSE;
+import tops.port.model.tse.BaseTSE;
 
 public class LayoutBarrel implements TSELayout {
     
@@ -15,7 +15,7 @@ public class LayoutBarrel implements TSELayout {
     }
 
     @Override
-    public void layout(Chain chain, TSE barrel) {
+    public void layout(Chain chain, BaseTSE barrel) {
         System.out.println("laying out barrel...");
 
         int numberOfStrands = barrel.size();

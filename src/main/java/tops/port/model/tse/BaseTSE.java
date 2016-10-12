@@ -1,7 +1,10 @@
-package tops.port.model;
+package tops.port.model.tse;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import tops.port.model.FixedType;
+import tops.port.model.SSE;
 
 /**
  * Tertiary structure element - sheet, barrel, sandwich, and so on.
@@ -9,13 +12,13 @@ import java.util.List;
  * @author maclean
  *
  */
-public class TSE {
+public class BaseTSE {
     
     private FixedType type; // XXX refactor, but useful for now
     
     private List<SSE> elements;
     
-    public TSE(FixedType type) {
+    public BaseTSE(FixedType type) {
         this.type = type;
         this.elements = new ArrayList<SSE>();
     }

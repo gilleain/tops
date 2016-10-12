@@ -11,7 +11,7 @@ import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 import tops.port.model.StringConverter;
-import tops.port.model.TSE;
+import tops.port.model.tse.BaseTSE;
 
 public class TestCalculateSheets extends TestCalculateNeighbours {
     
@@ -30,7 +30,7 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
         CalculateSheets calculation = new CalculateSheets();
         calculation.calculate(chain);
         
-        TSE sheet1 = chain.getTSEs().get(0);
+        BaseTSE sheet1 = chain.getTSEs().get(0);
         System.out.println(sheet1);
         assertEquals(3, sheet1.size());
     }
@@ -41,11 +41,11 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
         Chain chain = StringConverter.convert(topsString);
         CalculateSheets calculation = new CalculateSheets();
         calculation.calculate(chain);
-        TSE sheet1 = chain.getTSEs().get(0);
+        BaseTSE sheet1 = chain.getTSEs().get(0);
         System.out.println(sheet1);
         assertEquals(2, sheet1.size());
         
-        TSE sheet2 = chain.getTSEs().get(1);
+        BaseTSE sheet2 = chain.getTSEs().get(1);
         System.out.println(sheet2);
         assertEquals(2, sheet2.size());
     }
@@ -57,21 +57,21 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
         CalculateSheets calculation = new CalculateSheets();
         calculation.calculate(chain);
         
-        TSE barrel1 = chain.getTSEs().get(0);
+        BaseTSE barrel1 = chain.getTSEs().get(0);
         System.out.println(barrel1);
         assertEquals(4, barrel1.size());
     }
     
     @Test
     public void testSigmaBarrel() {
-        String topsString = "head NeEeEeC 1:2A2:5A2:3A3:4A4:5A";
+        String topsString = "head NeEeEeC 1:2A2:3A2:5A3:4A4:5A";
         Chain chain = StringConverter.convert(topsString);
         CalculateSheets calculation = new CalculateSheets();
         calculation.calculate(chain);
         
-        TSE barrel1 = chain.getTSEs().get(0);
+        BaseTSE barrel1 = chain.getTSEs().get(0);
         System.out.println(barrel1);
-        assertEquals(4, barrel1.size());
+        assertEquals(5, barrel1.size());
     }
     
     @Test
@@ -81,11 +81,11 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
         CalculateSheets calculation = new CalculateSheets();
         calculation.calculate(chain);
         
-        TSE barrel1 = chain.getTSEs().get(0);
+        BaseTSE barrel1 = chain.getTSEs().get(0);
         System.out.println(barrel1);
         assertEquals(4, barrel1.size());
         
-        TSE barrel2 = chain.getTSEs().get(1);
+        BaseTSE barrel2 = chain.getTSEs().get(1);
         System.out.println(barrel2);
         assertEquals(4, barrel2.size());
     }

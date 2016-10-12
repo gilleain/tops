@@ -10,7 +10,7 @@ import tops.port.model.Bridge;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
-import tops.port.model.TSE;
+import tops.port.model.tse.BaseTSE;
 
 public class CalculateSheets implements Calculation {
     
@@ -24,7 +24,7 @@ public class CalculateSheets implements Calculation {
         for (SSE sse : chain.getSSEs()) {
             int index = chain.getSSEs().indexOf(sse);
             if (sse.isStrand() && !seen.get(index)) {
-                TSE barrel = new TSE(FixedType.UNKNOWN);
+                BaseTSE barrel = new BaseTSE(FixedType.UNKNOWN);
                 System.out.println("searching with " + s(sse));
                 search(chain, sse, null, barrel, seen);
                 chain.addTSE(barrel);
@@ -32,7 +32,7 @@ public class CalculateSheets implements Calculation {
         }
     }
     
-    private void search(Chain chain, SSE current, SSE last, TSE tse, BitSet visited) {
+    private void search(Chain chain, SSE current, SSE last, BaseTSE tse, BitSet visited) {
         tse.add(current);
         visited.set(chain.getSSEs().indexOf(current));
         List<Bridge> bridges = chain.getBridges(current);
@@ -69,8 +69,8 @@ public class CalculateSheets implements Calculation {
      * cycle of strands but with the possibility of some strands also
      * participating in another sheet
      */
-    public TSE detectBarrel(SSE p) {
-        TSE barrel = new TSE(FixedType.BARREL);
+    public BaseTSE detectBarrel(SSE p) {
+        BaseTSE barrel = new BaseTSE(FixedType.BARREL);
         List<SSE> visited = new ArrayList<SSE>();
         this.findBarrel(p, barrel, visited, null);
         return barrel;
@@ -80,7 +80,7 @@ public class CalculateSheets implements Calculation {
      * This function detects and enumerates the first cycle found in a set of
      * strands connected by BridgePartner relationships
      */
-    public boolean findBarrel(SSE p, TSE barrel, List<SSE> visited, SSE addFrom) {
+    public boolean findBarrel(SSE p, BaseTSE barrel, List<SSE> visited, SSE addFrom) {
 
         if (visited.contains(p)) {
             //If we've been to this node before then we've detected a barrel - return true//

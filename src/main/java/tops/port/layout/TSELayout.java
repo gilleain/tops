@@ -1,10 +1,10 @@
 package tops.port.layout;
 
 import tops.port.model.Chain;
-import tops.port.model.TSE;
+import tops.port.model.tse.BaseTSE;
 
 public interface TSELayout {
     
-    public void layout(Chain chain, TSE tse);
+    public void layout(Chain chain, BaseTSE tse);
 
 }

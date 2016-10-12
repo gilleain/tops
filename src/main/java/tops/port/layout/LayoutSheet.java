@@ -11,7 +11,7 @@ import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
-import tops.port.model.TSE;
+import tops.port.model.tse.BaseTSE;
 
 public class LayoutSheet implements TSELayout {
     
@@ -31,7 +31,7 @@ public class LayoutSheet implements TSELayout {
     }
 
     @Override
-    public void layout(Chain chain, TSE tse) {
+    public void layout(Chain chain, BaseTSE tse) {
         this.makeSheet(chain, tse.getFirst(), null, gridUnitSize);
         this.sheetCurvature(chain, tse.getFirst());
     }
