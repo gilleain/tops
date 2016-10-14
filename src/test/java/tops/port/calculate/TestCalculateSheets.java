@@ -1,6 +1,8 @@
 package tops.port.calculate;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
@@ -11,7 +13,9 @@ import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 import tops.port.model.StringConverter;
+import tops.port.model.tse.Barrel;
 import tops.port.model.tse.BaseTSE;
+import tops.port.model.tse.Sheet;
 
 public class TestCalculateSheets extends TestCalculateNeighbours {
     
@@ -32,6 +36,7 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
         
         BaseTSE sheet1 = chain.getTSEs().get(0);
         System.out.println(sheet1);
+        assertThat(sheet1, instanceOf(Sheet.class));
         assertEquals(3, sheet1.size());
     }
 
@@ -43,10 +48,12 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
         calculation.calculate(chain);
         BaseTSE sheet1 = chain.getTSEs().get(0);
         System.out.println(sheet1);
+        assertThat(sheet1, instanceOf(Sheet.class));
         assertEquals(2, sheet1.size());
         
         BaseTSE sheet2 = chain.getTSEs().get(1);
         System.out.println(sheet2);
+        assertThat(sheet2, instanceOf(Sheet.class));
         assertEquals(2, sheet2.size());
     }
     
@@ -59,6 +66,7 @@ public class TestCalculateSheets extends TestCalculateNeighbours {
         
         BaseTSE barrel1 = chain.getTSEs().get(0);
         System.out.println(barrel1);
+        assertThat(barrel1, instanceOf(Barrel.class));
         assertEquals(4, barrel1.size());
     }
     

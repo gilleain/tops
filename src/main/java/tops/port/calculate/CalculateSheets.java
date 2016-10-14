@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 import tops.port.model.Bridge;
 import tops.port.model.Chain;
-import tops.port.model.FixedType;
 import tops.port.model.SSE;
-import tops.port.model.tse.BaseTSE;
+import tops.port.model.tse.Barrel;
+import tops.port.model.tse.Sheet;
 
 public class CalculateSheets implements Calculation {
     
@@ -21,18 +21,26 @@ public class CalculateSheets implements Calculation {
         log.log(Level.INFO, "STEP : Calculating sheets and barrels");
 
         BitSet seen = new BitSet(chain.countStructures());
+        List<List<SSE>> components = new ArrayList<List<SSE>>();
         for (SSE sse : chain.getSSEs()) {
             int index = chain.getSSEs().indexOf(sse);
             if (sse.isStrand() && !seen.get(index)) {
-                BaseTSE barrel = new BaseTSE(FixedType.UNKNOWN);
+                List<SSE> component = new ArrayList<SSE>();
                 System.out.println("searching with " + s(sse));
-                search(chain, sse, null, barrel, seen);
-                chain.addTSE(barrel);
+                search(chain, sse, null, component, seen);
+                components.add(component);
+            }
+        }
+        for (List<SSE> component : components) {
+            if (isBarrel(chain, component)) {
+                chain.addTSE(new Barrel(component));
+            } else {
+                chain.addTSE(new Sheet(component));
             }
         }
     }
     
-    private void search(Chain chain, SSE current, SSE last, BaseTSE tse, BitSet visited) {
+    private void search(Chain chain, SSE current, SSE last, List<SSE> tse, BitSet visited) {
         tse.add(current);
         visited.set(chain.getSSEs().indexOf(current));
         List<Bridge> bridges = chain.getBridges(current);
@@ -69,38 +77,37 @@ public class CalculateSheets implements Calculation {
      * cycle of strands but with the possibility of some strands also
      * participating in another sheet
      */
-    public BaseTSE detectBarrel(SSE p) {
-        BaseTSE barrel = new BaseTSE(FixedType.BARREL);
+    public boolean isBarrel(Chain chain, List<SSE> component) {
         List<SSE> visited = new ArrayList<SSE>();
-        this.findBarrel(p, barrel, visited, null);
-        return barrel;
+        System.out.println("Searching barrel");
+        return this.isBarrel(chain, component.get(0), visited, null);
     }
     
     /**
      * This function detects and enumerates the first cycle found in a set of
      * strands connected by BridgePartner relationships
      */
-    public boolean findBarrel(SSE p, BaseTSE barrel, List<SSE> visited, SSE addFrom) {
-
-        if (visited.contains(p)) {
+    private boolean isBarrel(Chain chain, SSE sse, List<SSE> visited, SSE addFrom) {
+        System.out.println("Visiting " + s(sse));
+        if (visited.contains(sse)) {
             //If we've been to this node before then we've detected a barrel - return true//
-            if (!barrel.contains(p)) {
-                barrel.add(p);
-            }
+            System.out.println("Found barrel");
             return true;
         } else {
             //else continue looking//
-            visited.add(p);
+            visited.add(sse);
 
-            for (SSE bridgePartner : p.getPartners()) {
-                if (bridgePartner == addFrom) continue;
+            for (Bridge bridge : chain.getBridges(sse)) {
+                SSE other = bridge.getOther(sse);
+                System.out.println("Trying partner " + bridge + " other " + s(other));
+                if (other == addFrom) continue;
 
-                if (this.findBarrel(bridgePartner, barrel, visited, p)) {
-                    if (barrel.getFirst() != p) barrel.add(p);
+                if (isBarrel(chain, other, visited, sse)) {
                     return true;
                 }
             }
         }
+        System.out.println("No barrel");
         return false;
     }
     
