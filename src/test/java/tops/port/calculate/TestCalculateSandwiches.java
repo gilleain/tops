@@ -17,16 +17,25 @@ public class TestCalculateSandwiches extends TestCalculateSheets {
         calculation.calculate(chain);
     }
     
-    @Test
-    public void test1DLF() throws IOException {
+    private void test(String pdbCode) throws IOException {
         DsspReader dsspReader = new DsspReader();
-        Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1dlf.dssp");
+        String path = String.format("/Users/maclean/data/dssp/reps/%s.dssp", pdbCode);
+        Protein protein = dsspReader.readDsspFile(path);
         Chain chain = protein.getChains().get(0);
         calculate(chain);
         for (BaseTSE tse : chain.getTSEs()) {
             System.out.println(tse.getClass().getSimpleName());
         }
+    }
+    
+    @Test
+    public void test1DLF() throws IOException {
+      test("1dlf");
+    }
+    
+    @Test
+    public void test1AAC() throws IOException {
+      test("1aac");
     }
 
 }

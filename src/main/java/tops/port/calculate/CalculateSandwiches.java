@@ -48,7 +48,6 @@ public class CalculateSandwiches implements Calculation {
             }
         }
 
-
         // turn the sandwiches into fixed structures //
         for (SSE[] sandwich : sandwiches) {
             chain.moveFixed(sandwich[0], sandwich[1]);
@@ -57,16 +56,19 @@ public class CalculateSandwiches implements Calculation {
     
     private List<Sandwich> findSandwiches(Chain chain) {
         List<Sandwich> sandwiches = new ArrayList<Sandwich>();
-        for (BaseTSE tse1 : chain.getTSEs()) {
+        List<BaseTSE> tses = chain.getTSEs();
+        for (int tseIndex = 0; tseIndex < tses.size(); tseIndex++) {
+            BaseTSE tse1 = tses.get(tseIndex);
             if (tse1 instanceof Sheet) {
                 Sheet sheet1 = (Sheet) tse1;
                 String domain1 = findDomain(sheet1);
-                for (BaseTSE tse2 : chain.getTSEs()) {
-                    if (tse2 != tse1 && tse2 instanceof Sheet) {
+                for (int tseIndex2 = tseIndex + 1; tseIndex2 < tses.size(); tseIndex2++) {
+                    BaseTSE tse2 = tses.get(tseIndex2);
+                    if (tse2 instanceof Sheet) {
                         Sheet sheet2 = (Sheet) tse2;
                         log.info("Examining " + sheet1 + " against " + sheet2);
                         String domain2 = findDomain(sheet2);
-                        if (domain1.equals(domain2)) continue;
+                        if (!domain1.equals(domain2)) continue;
                         if (isSandwich(chain, sheet1, sheet2)) {
                             sandwiches.add(new Sandwich(sheet1, sheet2));
                         }
@@ -91,6 +93,7 @@ public class CalculateSandwiches implements Calculation {
                 }
             }
         }
+        log.log(Level.INFO, String.format("contacts = %s, min = %s", contacts, minContacts));
         return contacts > minContacts;
     }
 
