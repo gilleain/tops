@@ -11,9 +11,15 @@ import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 
-public class TestCalculateBridgePartners {
+public class TestCalculateBridgePartners extends TestCalculateMergedStrands {
     
     private static final String PATH = "/Users/maclean/data/dssp/reps/";
+    
+    public void calculate(Chain chain) {
+        super.calculate(chain);
+        CalculateBridgePartners calculation = new CalculateBridgePartners();
+        calculation.calculate(chain);
+    }
     
     @Test
     public void test2IGD() throws IOException {

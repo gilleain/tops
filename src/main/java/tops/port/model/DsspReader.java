@@ -368,6 +368,7 @@ public class DsspReader {
 	}
 	
 	private void doDonatedHBond(Chain chain, int index, int offset, double energy, int nDsspRes, List<Integer> indexMapping) {
+	    if (index >= indexMapping.size()) return;  // XXX
 		int mappedPos = indexMapping.get(index);
 		int partner = mappedPos + offset;
 //		System.out.println("Donor index " + mappedPos + " offset " + offset + " = " + partner + String.format(" NRG %2.2f", energy));
@@ -377,6 +378,7 @@ public class DsspReader {
 	}
 
 	private void doAcceptedHBond(Chain chain, int index, int offset, double energy, int nDsspRes, List<Integer> indexMapping) {
+	    if (index >= indexMapping.size()) return;  // XXX
 	    int mappedPos = indexMapping.get(index);
 	    int partner = mappedPos + offset;
 //	    System.out.println("Acceptor " + mappedPos + " offset " + offset + " = " + partner + String.format(" NRG %2.2f", energy));

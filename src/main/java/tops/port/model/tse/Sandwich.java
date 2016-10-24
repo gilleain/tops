@@ -4,12 +4,14 @@ import tops.port.model.FixedType;
 
 public class Sandwich extends BaseTSE {
     
-    private BaseTSE sheetA;
+    private Sheet sheetA;
     
-    private BaseTSE sheetB;
+    private Sheet sheetB;
 
-    public Sandwich() {
+    public Sandwich(Sheet sheetA, Sheet sheetB) {
         super(FixedType.SANDWICH);
+        this.sheetA = sheetA;
+        this.sheetB = sheetB;
     }
 
 }

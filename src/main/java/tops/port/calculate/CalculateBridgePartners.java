@@ -3,6 +3,7 @@ package tops.port.calculate;
 import static tops.port.model.BridgeType.ANTI_PARALLEL_BRIDGE;
 import static tops.port.model.BridgeType.PARALLEL_BRIDGE;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import tops.port.model.Bridge;
@@ -18,6 +19,7 @@ public class CalculateBridgePartners implements Calculation {
     
     @Override
     public void calculate(Chain chain) {
+        log.log(Level.INFO, "STEP : Calculating bridge partners");
         for (SSE sse : chain.getSSEs()) {
             if (sse.getSSEType() == SSEType.EXTENDED) {
                 int start = sse.sseData.PDBStartResidue;
@@ -80,6 +82,7 @@ public class CalculateBridgePartners implements Calculation {
             for (HBond k : chain.getAcceptedHBonds(i)) {
                 if (k.getDonorIndex() == l + 1) {
                     SSE otherSSE = chain.findSecStr(k.getDonorIndex());
+                    if (otherSSE == null) continue;
                     System.out.println("lookup " + k.getDonorIndex() + " = " + otherSSE.getSummary());
                     addBridge(i, chain, sse, otherSSE, j, k, PARALLEL_BRIDGE, "C");
                 }
@@ -124,7 +127,7 @@ public class CalculateBridgePartners implements Calculation {
 
     private void addBridge(int index, Chain chain, SSE sseStart, SSE sseEnd, HBond bond1, HBond bond2, BridgeType type, String func) {
 //        log.log(Level.INFO, String.format("%s %s %s", seqRes1, seqRes2, Type));
-        System.out.println(String.format("%s %s %s %s %s %s %s", 
+        System.out.println(String.format("BRIDGE %s %s %s %s %s %s %s", 
                 index, bond1, bond2, type, 
                 sseStart == null? null : sseStart.getSymbolNumber(), 
                 sseEnd == null? null : sseEnd.getSymbolNumber(), func));

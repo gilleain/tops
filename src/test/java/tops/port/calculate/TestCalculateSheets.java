@@ -17,7 +17,7 @@ import tops.port.model.tse.Barrel;
 import tops.port.model.tse.BaseTSE;
 import tops.port.model.tse.Sheet;
 
-public class TestCalculateSheets extends TestCalculateNeighbours {
+public class TestCalculateSheets extends TestCalculateBridgePartners {
     
    
     public void calculate(Chain chain) {

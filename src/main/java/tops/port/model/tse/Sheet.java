@@ -17,5 +17,24 @@ public class Sheet extends BaseTSE {
             add(sse);
         }
     }
+    
+    public int span() {
+        return getElements().size();
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer("[");
+        int index = 0;
+        for (SSE sse : getElements()) {
+            sb.append(sse.getSymbolNumber());
+            if (index < size() - 1) {
+                sb.append("-");
+            } else {
+                sb.append("]");
+            }
+            index++;
+        }
+        return sb.toString();
+    }
 
 }

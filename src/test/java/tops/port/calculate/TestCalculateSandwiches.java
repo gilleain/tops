@@ -7,7 +7,7 @@ import org.junit.Test;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
-import tops.port.model.SSE;
+import tops.port.model.tse.BaseTSE;
 
 public class TestCalculateSandwiches extends TestCalculateSheets {
     
@@ -24,10 +24,8 @@ public class TestCalculateSandwiches extends TestCalculateSheets {
                 dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1dlf.dssp");
         Chain chain = protein.getChains().get(0);
         calculate(chain);
-        
-        for (SSE sse : chain.getSSEs()) {
-            System.out.println(sse.getSymbolNumber() + 
-                    String.format(" at (%s, %s)", sse.getCartoonX(), sse.getCartoonY()));
+        for (BaseTSE tse : chain.getTSEs()) {
+            System.out.println(tse.getClass().getSimpleName());
         }
     }
 

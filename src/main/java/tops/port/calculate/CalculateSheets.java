@@ -19,6 +19,7 @@ public class CalculateSheets implements Calculation {
     
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Calculating sheets and barrels");
+        System.out.println(s(chain.getSSEs()));
 
         BitSet seen = new BitSet(chain.countStructures());
         List<List<SSE>> components = new ArrayList<List<SSE>>();
@@ -26,7 +27,7 @@ public class CalculateSheets implements Calculation {
             int index = chain.getSSEs().indexOf(sse);
             if (sse.isStrand() && !seen.get(index)) {
                 List<SSE> component = new ArrayList<SSE>();
-                System.out.println("searching with " + s(sse));
+                System.out.println("searching with " + s(sse) + " seen " + seen);
                 search(chain, sse, null, component, seen);
                 components.add(component);
             }
@@ -62,6 +63,15 @@ public class CalculateSheets implements Calculation {
                 }
             }
         }
+    }
+    
+    private String s(List<SSE> sses) {
+        StringBuffer sb = new StringBuffer("[");
+        for (SSE sse : sses) {
+            sb.append(s(sse)).append(" ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
     
     private String s(SSE sse) {
