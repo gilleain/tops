@@ -10,13 +10,53 @@ import tops.port.calculate.Configure;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
+import tops.port.model.tse.BaseTSE;
+import tops.port.model.tse.Sandwich;
 
 public class RunAll {
     
     private static final String DIR = "/Users/maclean/data/dssp/reps";
     
+    private interface Callback {
+        public void handle(Protein protein, Chain chain);
+    }
+    
     @Test
-    public void run() {
+    public void runBasic() {
+        run(new Callback() {
+
+            @Override
+            public void handle(Protein protein, Chain chain) {
+                System.out.println(protein.getProteinCode() + chain.toString());                
+            }
+            
+        });
+    }
+    
+    @Test
+    public void runSandwiches() {
+        run(new Callback() {
+
+            @Override
+            public void handle(Protein protein, Chain chain) {
+                StringBuffer sb = new StringBuffer();
+                boolean isSandwich = false;
+                for (BaseTSE tse : chain.getTSEs()) {
+                    if (tse instanceof Sandwich) isSandwich = true;
+                    sb.append(tse.toString());
+                }
+                if (isSandwich) {
+                System.out.println(
+                        protein.getProteinCode() + 
+                        chain.toString() +
+                        " " + sb.toString());
+                }
+            }
+            
+        });
+    }
+    
+    public void run(Callback callback) {
         Logger.getLogger("").setLevel(Level.OFF);
         File dirFile = new File(DIR);
         DsspReader dsspReader = new DsspReader();
@@ -27,9 +67,9 @@ public class RunAll {
                 Protein protein = dsspReader.readDsspFile(file.getAbsolutePath());
                 Chain chain = protein.getChains().get(0);
                 configure.configure(chain);
-                System.out.println(protein.getProteinCode() + chain.toString());
+                callback.handle(protein, chain);
             } catch (Exception e) {
-                System.out.println("Failed " + file.getName());
+                System.out.println("Failed " + file.getName() + " " + e.getStackTrace()[0]);
             }
         }
     }

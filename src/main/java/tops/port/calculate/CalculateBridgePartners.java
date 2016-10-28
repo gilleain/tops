@@ -39,16 +39,19 @@ public class CalculateBridgePartners implements Calculation {
         // TODO Auto-generated method stub
         
     }
+    
+    private void log(String typeString, int index, SSE otherSSE) {
+//        log.log(Level.OFF, typeString + " lookup " + index + " = " + (otherSSE == null? "null" : otherSSE.getSummary()));
+    }
 
     private void typeA(Chain chain, SSE sse, int i) {
         // conditions for an anti-parallel bridge: first is another residue 
         // to which there are both donor and acceptor HBonds
         for (HBond j : chain.getDonatedHBonds(i)) {
             for (HBond k : chain.getAcceptedHBonds(i)) {
-//                System.out.println(i + ":" + j + " vs " + k);
                 if (j.getAcceptorIndex() == k.getDonorIndex()) {
                     SSE otherSSE = chain.findSecStr(k.getDonorIndex());
-                    System.out.println("lookup " + k.getDonorIndex() + " = " + otherSSE.getSummary());
+                    log("A", k.getDonorIndex(), otherSSE);
                     addBridge(i, chain, sse, otherSSE, j, k, ANTI_PARALLEL_BRIDGE, "A");
                 }
             }
@@ -65,7 +68,7 @@ public class CalculateBridgePartners implements Calculation {
                     for (HBond k : chain.getAcceptedHBonds(l - 1)) {
                         if (k.getDonorIndex() == i + 1) {
                             SSE otherSSE = chain.findSecStr(k.getAcceptorIndex());
-                            System.out.println("lookup " + k.getAcceptorIndex() + " = " + otherSSE.getSummary());
+                            log("B", k.getAcceptorIndex(), otherSSE);
                             addBridge(i, chain, sse, otherSSE, j, k, ANTI_PARALLEL_BRIDGE, "B");
                         }
                     }
@@ -83,7 +86,7 @@ public class CalculateBridgePartners implements Calculation {
                 if (k.getDonorIndex() == l + 1) {
                     SSE otherSSE = chain.findSecStr(k.getDonorIndex());
                     if (otherSSE == null) continue;
-                    System.out.println("lookup " + k.getDonorIndex() + " = " + otherSSE.getSummary());
+                    log("C", k.getDonorIndex(), otherSSE);
                     addBridge(i, chain, sse, otherSSE, j, k, PARALLEL_BRIDGE, "C");
                 }
             }
@@ -98,7 +101,7 @@ public class CalculateBridgePartners implements Calculation {
                 for (HBond k : chain.getAcceptedHBonds(l)) {
                     if (k.getDonorIndex() == i + 1) {
                         SSE otherSSE = chain.findSecStr(k.getAcceptorIndex());
-                        System.out.println("lookup " + k.getAcceptorIndex() + " = " + otherSSE.getSummary());
+                        log("D", k.getAcceptorIndex(), otherSSE);
                         addBridge(i, chain, sse, otherSSE, j, k, PARALLEL_BRIDGE, "D");
                     }
                 }
@@ -125,13 +128,16 @@ public class CalculateBridgePartners implements Calculation {
 //    }
 
 
-    private void addBridge(int index, Chain chain, SSE sseStart, SSE sseEnd, HBond bond1, HBond bond2, BridgeType type, String func) {
+    private void addBridge(int index, Chain chain, SSE sseA, SSE sseB, HBond bond1, HBond bond2, BridgeType type, String func) {
+        if (sseA == null || sseB == null) return;
 //        log.log(Level.INFO, String.format("%s %s %s", seqRes1, seqRes2, Type));
-        System.out.println(String.format("BRIDGE %s %s %s %s %s %s %s", 
-                index, bond1, bond2, type, 
-                sseStart == null? null : sseStart.getSymbolNumber(), 
-                sseEnd == null? null : sseEnd.getSymbolNumber(), func));
-        if (sseStart.getSymbolNumber() > sseEnd.getSymbolNumber()) return;  // XXX could do better?
+//        System.out.println(String.format("BRIDGE %s %s %s %s %s %s %s", 
+//                index, bond1, bond2, type, 
+//                sseA == null? null : sseA.getSymbolNumber(), 
+//                sseB == null? null : sseB.getSymbolNumber(), func));
+//        if (sseStart.getSymbolNumber() > sseEnd.getSymbolNumber()) return;  // XXX could do better?
+        SSE sseStart = (sseA.getSymbolNumber() < sseB.getSymbolNumber())? sseA : sseB;
+        SSE sseEnd = (sseA.getSymbolNumber() < sseB.getSymbolNumber())? sseB : sseA;
         Bridge bridge = chain.findBridge(sseStart, sseEnd);
         if (bridge == null) {
             bridge = new Bridge();

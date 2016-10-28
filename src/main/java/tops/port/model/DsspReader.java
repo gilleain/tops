@@ -22,7 +22,7 @@ import tops.port.model.SSE.SSEType;
 
 public class DsspReader {
     
-    private double hBondECutoff = -0.5;
+    private double hBondECutoff = -0.25;
     
 	private HashMap<String, SSEType> codemap  = new HashMap<String, SSEType>() {{ 
 		put("H", SSEType.RIGHT_ALPHA_HELIX); 
@@ -142,19 +142,19 @@ public class DsspReader {
     		int nres = nDsspRes - nChains + 1;
     
 //    		int[] indexMapping = new int[nDsspRes];
-    		Map<String, List<Integer>> indexMapping = new HashMap<String, List<Integer>>();
+    		Map<String, Map<Integer, Integer>> indexMapping = new HashMap<String, Map<Integer, Integer>>();
     		for (int j = 0; j < nDsspRes && j < records.size(); j++) {
     		    Record record = records.get(j);
-    		    List<Integer> mappings;
+    		    Map<Integer, Integer> mappings;
     		    String chainName = record.ChainId;
     			if (record.ResidueNames.equals("!") || !indexMapping.containsKey(chainName)){
-    			    mappings = new ArrayList<Integer>();
+    			    mappings = new HashMap<Integer, Integer>();
     			    indexMapping.put(chainName, mappings);
     			} else {
     			    mappings = indexMapping.get(chainName);
 //    				indexMapping[j] = j - 1 - chainCount;
     			}
-    			mappings.add(record.PDBIndices);
+    			mappings.put(j + 1, record.PDBIndices);
     		}
     		
     		Protein protein = new Protein(pdbid);
@@ -216,7 +216,7 @@ public class DsspReader {
     				chain.addPDBIndex(r.PDBIndices);
     				chain.addSecondaryStructure(this.getDsspSSCode(r.SecStructure));
     				
-    				List<Integer> mappings = indexMapping.get(r.ChainId);
+    				Map<Integer, Integer> mappings = indexMapping.get(r.ChainId);
 //    				if (r.LeftBridgePartner > 0) {
 //    				    int mappedIndex = mappings.get(r.LeftBridgePartner); 
 //    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
@@ -367,21 +367,23 @@ public class DsspReader {
         return lines;
 	}
 	
-	private void doDonatedHBond(Chain chain, int index, int offset, double energy, int nDsspRes, List<Integer> indexMapping) {
-	    if (index >= indexMapping.size()) return;  // XXX
+	private void doDonatedHBond(Chain chain, int index, int offset, double energy, int nDsspRes, Map<Integer, Integer> indexMapping) {
+//		System.out.print("Donor Index " + index +  " Offset " + offset + " " + String.format(" NRG %2.2f", energy));
+	    if (!indexMapping.containsKey(index)) return;  // XXX
 		int mappedPos = indexMapping.get(index);
 		int partner = mappedPos + offset;
-//		System.out.println("Donor index " + mappedPos + " offset " + offset + " = " + partner + String.format(" NRG %2.2f", energy));
+//		System.out.println(" mapped to " + mappedPos + " partner " + partner);
 		if (check(partner, nDsspRes, offset, energy)) {
 			chain.addDonatedBond(mappedPos, partner, energy);
 		}
 	}
 
-	private void doAcceptedHBond(Chain chain, int index, int offset, double energy, int nDsspRes, List<Integer> indexMapping) {
-	    if (index >= indexMapping.size()) return;  // XXX
+	private void doAcceptedHBond(Chain chain, int index, int offset, double energy, int nDsspRes, Map<Integer, Integer> indexMapping) {
+//	    System.out.print("Acceptor Index " + index +  " Offset " + offset + " " + String.format(" NRG %2.2f", energy));
+	    if (!indexMapping.containsKey(index)) return;  // XXX
 	    int mappedPos = indexMapping.get(index);
 	    int partner = mappedPos + offset;
-//	    System.out.println("Acceptor " + mappedPos + " offset " + offset + " = " + partner + String.format(" NRG %2.2f", energy));
+//	    System.out.println(" mapped to " + mappedPos + " partner " + partner);
 		if (check(partner, nDsspRes, offset, energy)) {
 			chain.addAcceptedBond(partner, mappedPos, energy);
 		}

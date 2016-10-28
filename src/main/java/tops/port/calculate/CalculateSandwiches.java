@@ -83,6 +83,7 @@ public class CalculateSandwiches implements Calculation {
         int minDistance = 13;   // XXX magic number...
         int span1 = sheet1.span();
         int span2 = sheet2.span();
+        if (span1 < 3 || span2 < 3) return false;
         
         int minContacts = Math.min(span1, span2);
         int contacts = 0;

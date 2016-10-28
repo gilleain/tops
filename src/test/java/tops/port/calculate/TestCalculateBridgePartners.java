@@ -27,6 +27,11 @@ public class TestCalculateBridgePartners extends TestCalculateMergedStrands {
     }
     
     @Test
+    public void test2ENG() throws IOException {
+        test("2eng");
+    }
+    
+    @Test
     public void test1TGX() throws IOException {
         test("1tgx");
     }
