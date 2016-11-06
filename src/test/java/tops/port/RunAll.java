@@ -40,16 +40,20 @@ public class RunAll {
             @Override
             public void handle(Protein protein, Chain chain) {
                 StringBuffer sb = new StringBuffer();
-                boolean isSandwich = false;
+                boolean hasSandwich = false;
+                int sandwichIndex = 0;
                 for (BaseTSE tse : chain.getTSEs()) {
-                    if (tse instanceof Sandwich) isSandwich = true;
-                    sb.append(tse.toString());
+                    if (tse instanceof Sandwich) {
+                        hasSandwich = true;
+                        sandwichIndex++;
+                        sb.append("\n").append(sandwichIndex).append(" ").append(tse.toString());
+                    }
                 }
-                if (isSandwich) {
-                System.out.println(
-                        protein.getProteinCode() + 
-                        chain.toString() +
-                        " " + sb.toString());
+                if (hasSandwich) {
+                    System.out.println(
+                            protein.getProteinCode() + 
+                            chain.toString() +
+                            " " + sb.toString());
                 }
             }
             
