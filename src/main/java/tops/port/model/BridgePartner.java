@@ -1,6 +1,6 @@
 package tops.port.model;
 
-public class BridgePartner {
+public class BridgePartner implements Comparable<BridgePartner> {
     
     public enum Side { LEFT, RIGHT, UNKNOWN }
     
@@ -75,6 +75,11 @@ public class BridgePartner {
                     && this.partner.equals(oBridgePartner.partner);
         }
         return false;
+    }
+
+    public int compareTo(BridgePartner other) {
+      return new Integer(this.NumberBridgePartners).compareTo(
+                        new Integer(other.NumberBridgePartners));
     }
     
     public int hashCode() {

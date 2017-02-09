@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import com.github.quickhull3d.QuickHull3D;
-
 import tops.port.model.Axis;
 import tops.port.model.Chain;
 import tops.port.model.SSE;
@@ -21,7 +19,6 @@ import tops.port.model.tse.Sheet;
 public class BoundingBoxCalculator {
     
     public class BoundingBox {  // TODO - extract ...
-        public QuickHull3D hull;    // XXX tmp ref
         public Point3d center;
     }
     
@@ -43,10 +40,6 @@ public class BoundingBoxCalculator {
         if (points.size() < 4) {
             return boundingBox;
         } else {
-            QuickHull3D quickHull3D = new QuickHull3D();
-            quickHull3D.build(getDoubles(points));
-            boundingBox.hull = quickHull3D;
-             
             return boundingBox;
         }
     }

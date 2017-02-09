@@ -35,7 +35,6 @@ public class TestBoundingBoxCalculator {
             if (tse instanceof Sheet) {
                 Sheet sheet = (Sheet) tse;
                 BoundingBoxCalculator.BoundingBox bb = bbCalc.calculate(chain, sheet);
-                bb.hull.print(System.out);
             }
         }
     }

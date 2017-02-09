@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Collections;
 
 import javax.vecmath.Point2d;
 
@@ -197,15 +198,7 @@ public class SSE {
     }
     
     public void sortBridgePartners() {
-        this.bridgePartners.sort(new Comparator<BridgePartner>() {
-
-            @Override
-            public int compare(BridgePartner o1, BridgePartner o2) {
-                return new Integer(o1.NumberBridgePartners).compareTo(
-                        new Integer(o2.NumberBridgePartners));
-            }
-            
-        });
+        Collections.sort(this.bridgePartners);
     }
     
     public static SSE getCommonBP(SSE Start, List<SSE> CurrentList) {
