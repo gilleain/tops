@@ -162,6 +162,17 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
             return false;
         }
     }
+    
+    public boolean overlapsPDBNumberRange(int pdbResidueNumberStart, int pdbResidueNumberEnd) {
+        try {
+            int first = this.firstPDB();
+            int last = this.lastPDB();
+            return (first >= pdbResidueNumberStart && first <= pdbResidueNumberEnd) ||
+                    (last >= pdbResidueNumberStart && last <= pdbResidueNumberEnd);
+        } catch (NoSuchElementException n) {
+            return false;
+        }
+    }
 
     public boolean containsPDBNumber(int pdbResidueNumber) {
         for (Residue r : this) {

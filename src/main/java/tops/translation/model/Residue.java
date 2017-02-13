@@ -4,34 +4,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3d;
 
 import tops.translation.Geometer;
 
-public class Residue implements Comparable<Object> {
-
-    private HashMap<String, Point3d> atoms;
-
+public class Residue implements Comparable<Residue> {
+    private Map<String, Point3d> atoms;
     private int absoluteNumber;
-
     private int pdbNumber;
-
     private String type;
-
     private String polymerType;
-
     private String environment;
-
-    private ArrayList<HBond> hBonds;
-
+    private List<HBond> hBonds;
     private double phi;
-
     private double psi;
 
     public Residue() {
-        this.atoms = new HashMap<String, Point3d>();
-        this.hBonds = new ArrayList<HBond>();
+        atoms = new HashMap<String, Point3d>();
+        hBonds = new ArrayList<HBond>();
         this.phi = 0;
         this.psi = 0;
         this.type = "None";
@@ -55,28 +47,39 @@ public class Residue implements Comparable<Object> {
         }
     }
 
-    public int compareTo(Object o) {
-        Residue other = (Residue) o;
-        return Integer.valueOf(this.absoluteNumber).compareTo(
-                Integer.valueOf(other.absoluteNumber));
+    public int compareTo(Residue other) {
+        return new Integer(this.absoluteNumber).compareTo(new Integer(other.absoluteNumber));
+    }
+
+    public boolean isPro() {
+        return this.type.equals("PRO");
     }
 
     public boolean isBase() {
-        return this.type.equals("A") || this.type.equals("C")
-                || this.type.equals("G") || this.type.equals("T");
+        return this.type.equals("A") || this.type.equals("C") || this.type.equals("G") || this.type.equals("T");
     }
 
     public boolean isStandardAminoAcid() {
-        return this.type.equals("ALA") || this.type.equals("ARG")
-                || this.type.equals("ASP") || this.type.equals("ASN")
-                || this.type.equals("CYS") || this.type.equals("GLN")
-                || this.type.equals("GLU") || this.type.equals("GLY")
-                || this.type.equals("HIS") || this.type.equals("ILE")
-                || this.type.equals("LEU") || this.type.equals("LYS")
-                || this.type.equals("MET") || this.type.equals("PHE")
-                || this.type.equals("PRO") || this.type.equals("SER")
-                || this.type.equals("THR") || this.type.equals("TRP")
-                || this.type.equals("TYR") || this.type.equals("VAL");
+        return  this.type.equals("ALA") ||
+                this.type.equals("ARG") ||
+                this.type.equals("ASP") ||
+                this.type.equals("ASN") ||
+                this.type.equals("CYS") ||
+                this.type.equals("GLN") ||
+                this.type.equals("GLU") ||
+                this.type.equals("GLY") ||
+                this.type.equals("HIS") ||
+                this.type.equals("ILE") ||
+                this.type.equals("LEU") ||
+                this.type.equals("LYS") ||
+                this.type.equals("MET") ||
+                this.type.equals("PHE") ||
+                this.type.equals("PRO") ||
+                this.type.equals("SER") ||
+                this.type.equals("THR") ||
+                this.type.equals("TRP") ||
+                this.type.equals("TYR") ||
+                this.type.equals("VAL");
     }
 
     public boolean isDNA() {
@@ -100,10 +103,11 @@ public class Residue implements Comparable<Object> {
     }
 
     public List<HBond> getNTerminalHBonds() {
-        ArrayList<HBond> nTerminalHBonds = new ArrayList<HBond>();
-        for (HBond hBond : this.hBonds) {
+    	List<HBond> nTerminalHBonds = new ArrayList<HBond>();
+        for (int i = 0; i < this.hBonds.size(); i++) {
+            HBond hBond = this.hBonds.get(i);
             if (hBond.residueIsDonor(this)) {
-                // System.out.println("N : " + hBond + " for " + this);
+                //System.out.println("N : " + hBond + " for " + this);
                 nTerminalHBonds.add(hBond);
             }
         }
@@ -111,10 +115,11 @@ public class Residue implements Comparable<Object> {
     }
 
     public List<HBond> getCTerminalHBonds() {
-        List<HBond> cTerminalHBonds = new ArrayList<HBond>();
-        for (HBond hBond : this.hBonds) {
+    	List<HBond> cTerminalHBonds = new ArrayList<HBond>();
+        for (int i = 0; i < this.hBonds.size(); i++) {
+            HBond hBond = this.hBonds.get(i);
             if (hBond.residueIsAcceptor(this)) {
-                // System.out.println("C : " + hBond + " for " + this);
+                //System.out.println("C : " + hBond + " for " + this);
                 cTerminalHBonds.add(hBond);
             }
         }
@@ -124,19 +129,17 @@ public class Residue implements Comparable<Object> {
     public int[] getHBondPartners() {
         int[] partners = new int[this.hBonds.size()];
         for (int i = 0; i < this.hBonds.size(); i++) {
-            HBond hbond = this.hBonds.get(i);
+            HBond hbond = hBonds.get(i);
             partners[i] = hbond.getPartner(this).getAbsoluteNumber();
         }
         return partners;
     }
 
     public boolean bondedTo(Residue other) {
-        for (HBond hBond : this.hBonds) {
-            if (hBond == null) {
-                System.err.println("hbond null");
-                continue;
-            }
-            if (hBond.contains(other)) {
+        for (int i = 0; i < this.hBonds.size(); i++) {
+            HBond hbond = this.hBonds.get(i);
+            if (hbond == null) { System.err.println("hbond null"); continue; }
+            if (hbond.contains(other)) {
                 return true;
             }
         }
@@ -159,13 +162,13 @@ public class Residue implements Comparable<Object> {
         return this.psi;
     }
 
-    public void setAtom(String atomType, String xyz) {
-        Point3d coordinates = this.parseXYZ(xyz);
-        this.atoms.put(atomType, coordinates);
+    public void setAtom(String atomType, Point3d coordinates) {
+        atoms.put(atomType, coordinates);
     }
 
-    public void setAtom(String atomType, Point3d coordinates) {
-        this.atoms.put(atomType, coordinates);
+    public void setAtom(String atomType, String xyz) {
+        Point3d coordinates = this.parseXYZ(xyz);
+        this.setAtom(atomType, coordinates);
     }
 
     public Point3d parseXYZ(String xyz) {
@@ -176,13 +179,10 @@ public class Residue implements Comparable<Object> {
                 coordinates[i] = Double.parseDouble(bits[i]);
             }
         } catch (ArrayIndexOutOfBoundsException a) {
-            System.err.println("index out of bounds in parseXYZ in residue : "
-                    + this.getPDBNumber());
+            System.err.println("index out of bounds in parseXYZ in residue : " + this.getPDBNumber());
             return new Point3d();
         } catch (NumberFormatException n) {
-            System.err
-                    .println("number format exception in parseXYZ in residue : "
-                            + this.getPDBNumber() + " xyz string = " + xyz);
+            System.err.println("number format exception in parseXYZ in residue : " + this.getPDBNumber() + " xyz string = " + xyz);
             return new Point3d();
         }
         return new Point3d(coordinates);
@@ -218,23 +218,20 @@ public class Residue implements Comparable<Object> {
 
     public String hBondString() {
         StringBuffer strbuf = new StringBuffer();
-        Iterator<HBond> itr = this.hBonds.iterator();
-        while (itr.hasNext()) {
-            HBond hbond = (HBond) itr.next();
+       for (HBond hbond : this.hBonds) {
             strbuf.append(hbond).append(" ");
         }
         return strbuf.toString();
     }
 
     public String toFullString() {
-        return String.format("%s-%-3d %-3d %-19s [%6.2f, %6.2f] %s", this.type,
-                this.pdbNumber, this.absoluteNumber, this.environment,
-                this.phi, this.psi, this.hBondString());
+        //return String.format("%s-%-3d %-3d %-19s [%6.2f, %6.2f] %s", this.type, this.pdbNumber, this.absoluteNumber, this.environment, this.phi, this.psi, this.hBondString());
+        return "";
     }
 
-    @Override
     public String toString() {
-        return String.format("%s-%d ", this.type, this.pdbNumber);
+        //return String.format("%s-%d ", this.type, this.pdbNumber);
+        return this.type + " " + this.pdbNumber;
     }
 
     public static void main(String[] args) {

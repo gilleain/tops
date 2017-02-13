@@ -1,21 +1,19 @@
 package tops.translation.model;
 
+
 public class HBond implements Comparable<HBond> {
-
     private Residue donor;
-
     private Residue acceptor;
-
     private double distance;
-
     private double nhoAngle;
-
     private double hocAngle;
     
+    // XXX - this is odd, we have two different ways to define an hbond - 
+    // different classes?
     private double energy;
 
     /**
-     * Construct an HBond from geometric parameters
+     * Construct an HBond from geometric parameters.
      */
     public HBond(Residue donor, Residue acceptor, double distance, double nhoAngle, double hocAngle) {
         this.donor = donor;
@@ -34,15 +32,11 @@ public class HBond implements Comparable<HBond> {
         this.energy = energy;
     }
 
-    // sort by donor, then acceptor (well, why not, eh?)
+    //sort by donor, then acceptor (well, why not, eh?)
     public int compareTo(HBond other) {
-        int c = Integer.valueOf(this.donor.getAbsoluteNumber()).compareTo(
-                Integer.valueOf(other.donor.getAbsoluteNumber()));
+        int c = Integer.valueOf(this.donor.getAbsoluteNumber()).compareTo(Integer.valueOf(other.donor.getAbsoluteNumber()));
         if (c == 0) {
-            return Integer
-                    .valueOf(this.acceptor.getAbsoluteNumber())
-                    .compareTo(
-                            Integer.valueOf(other.acceptor.getAbsoluteNumber()));
+            return Integer.valueOf(this.acceptor.getAbsoluteNumber()).compareTo(Integer.valueOf(other.acceptor.getAbsoluteNumber()));
         } else {
             return c;
         }
@@ -61,8 +55,7 @@ public class HBond implements Comparable<HBond> {
     }
 
     public int getResidueSeparation() {
-        return Math.abs(this.donor.getAbsoluteNumber()
-                - this.acceptor.getAbsoluteNumber());
+        return Math.abs(this.donor.getAbsoluteNumber() - this.acceptor.getAbsoluteNumber());
     }
 
     public boolean hasHelixResidueSeparation() {
@@ -89,9 +82,11 @@ public class HBond implements Comparable<HBond> {
         return this.donor == residue;
     }
 
-    @Override
+    public String toFullString() {
+        return String.format("%3s - %3s (%4.2f, %6.2f, %6.2f) [%2.2f]", this.donor, this.acceptor, this.distance, this.nhoAngle, this.hocAngle, this.energy);        
+    }
+    
     public String toString() {
-        return String.format("%3s - %3s (%4.2f, %6.2f, %6.2f) [%2.2f]",
-                this.donor, this.acceptor, this.distance, this.nhoAngle, this.hocAngle, this.energy);
+        return "";
     }
 }

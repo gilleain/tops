@@ -1,13 +1,13 @@
 package tops.translation.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+
 public class Domain {
-
+	
     private int number;
-
+    
     private List<DomainSegment> segments;
 
     public Domain(int number) {
@@ -32,6 +32,10 @@ public class Domain {
     }
 
     public boolean contains(BackboneSegment backboneSegment) {
+        if (this.isEmpty()) {
+            return true;
+        }
+
         for (int i = 0; i < this.segments.size(); i++) {
             DomainSegment domainSegment = (DomainSegment) this.segments.get(i);
             if (domainSegment.contains(backboneSegment)) {
@@ -43,23 +47,18 @@ public class Domain {
 
     public List<BackboneSegment> filter(List<BackboneSegment> backboneSegments) {
         List<BackboneSegment> segmentsInDomain = new ArrayList<BackboneSegment>();
-        Iterator<DomainSegment> itr = this.segments.iterator();
-        while (itr.hasNext()) {
-            DomainSegment domainSegment = (DomainSegment) itr.next();
+        for (DomainSegment domainSegment : this.segments) {
             segmentsInDomain.addAll(domainSegment.filter(backboneSegments));
         }
         return segmentsInDomain;
     }
 
-    @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(this.number);
 
-        Iterator<DomainSegment> itr = this.segments.iterator();
-        while (itr.hasNext()) {
-            stringBuffer.append(' ').append(
-                    ((DomainSegment) itr.next()).toString());
+        for (DomainSegment domainSegment : this.segments) {
+            stringBuffer.append(' ').append((domainSegment).toString());
         }
         return stringBuffer.toString();
     }

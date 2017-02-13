@@ -37,7 +37,7 @@ public class Protein implements Iterable<Chain> {
         HashMap<String, HashMap<String, String>> chainDomainStringMap = 
         		new HashMap<String, HashMap<String, String>>();
         for (int i = 0; i < this.chains.size(); i++) {
-            Chain chain = (Chain) this.chains.get(i);
+            Chain chain = this.chains.get(i);
             chainDomainStringMap.put(
             		chain.getCathCompatibleLabel(), chain.toTopsDomainStrings(chainDomainMap));
         }
@@ -47,7 +47,7 @@ public class Protein implements Iterable<Chain> {
     public String[] toTopsChainStringArray() {
         String[] chainStrings = new String[this.chains.size()];
         for (int i = 0; i < this.chains.size(); i++) {
-            Chain chain = (Chain) this.chains.get(i);
+            Chain chain = this.chains.get(i);
             chainStrings[i] = chain.toTopsString(new Domain(0));
         }
         return chainStrings;
@@ -57,7 +57,7 @@ public class Protein implements Iterable<Chain> {
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();
         for (int i = 0; i < this.chains.size(); i++) {
-            Chain chain = (Chain) this.chains.get(i);
+            Chain chain = this.chains.get(i);
             stringBuffer.append(chain.toString());
         }
         return stringBuffer.toString();
