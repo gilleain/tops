@@ -8,28 +8,21 @@ import java.util.List;
 import java.util.ListIterator;
 
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 import tops.translation.Geometer;
 
 public class Chain implements Iterable<BackboneSegment> {
 
     private String label;
-
-//    private String type;
-
-//    private Point3d center;
-
+    private String type;
+    private Point3d center;
     private List<Residue> residues;
-
     private List<HBond> hbonds;
-
     private List<Sheet> sheets;
-
     private List<BackboneSegment> backboneSegments;
-
     private List<Edge> chiralities;
-
-//    private ArrayList domains;
+    private List<Domain> domains;
 
     public Chain() {
         this.residues = new ArrayList<Residue>();
@@ -37,8 +30,8 @@ public class Chain implements Iterable<BackboneSegment> {
         this.sheets = new ArrayList<Sheet>();
         this.backboneSegments = new ArrayList<BackboneSegment>();
         this.chiralities = new ArrayList<Edge>();
-//        this.domains = new ArrayList();
-//        this.center = null;
+        this.domains = new ArrayList<Domain>();
+        this.center = null;
     }
 
     public Chain(String label) {
@@ -50,9 +43,47 @@ public class Chain implements Iterable<BackboneSegment> {
         return this.residues.size();
     }
 
+    public Point3d getCenter() {
+        return this.center;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public List<Domain> getDomains() {
+        return this.domains;
+    }
+
     public boolean isDNA() {
         return this.residues.get(0).isDNA();
     }
+    
+    // since this doesn't check, in the event that a structure actually HAS
+    // backbone amide hydrogens, it will overwrite them...
+    public void addBackboneAmideHydrogens() {
+        for (int i = 1; i < this.residues.size(); i++) {
+            Residue lastResidue = (Residue) this.residues.get(i - 1);
+            Residue residue     = (Residue) this.residues.get(i);
+
+            if (residue.isPro()) {
+                continue;
+            }
+
+            Point3d lastC       = lastResidue.getCoordinates("C");
+            Point3d lastO       = lastResidue.getCoordinates("O");
+            Point3d N           =     residue.getCoordinates("N");
+
+            Vector3d OC = new Vector3d();
+            OC.sub(lastC, lastO);
+            OC.normalize();
+
+            Point3d H = new Point3d();
+            H.add(N, OC);
+
+            residue.setAtom("H", H);
+        }
+    } 
 
     public Residue createResidue(int pdbNumber, String residueType) {
         Residue r = new Residue(this.residues.size(), pdbNumber, residueType);
@@ -119,11 +150,11 @@ public class Chain implements Iterable<BackboneSegment> {
     }
 
     public void addTerminii() {
-        if (!((BackboneSegment) this.backboneSegments.get(0) instanceof Terminus)) {
+        if (!(this.backboneSegments.get(0) instanceof Terminus)) {
             this.backboneSegments.add(0, new Terminus("N Terminus", 'N'));
         }
 
-        if (!((BackboneSegment) this.backboneSegments.get(this.backboneSegments
+        if (!(this.backboneSegments.get(this.backboneSegments
                 .size() - 1) instanceof Terminus)) {
             this.backboneSegments.add(new Terminus("C Terminus", 'C'));
         }
@@ -131,6 +162,10 @@ public class Chain implements Iterable<BackboneSegment> {
 
     public void sortBackboneSegments() {
         Collections.sort(this.backboneSegments);
+    }
+    
+    public Iterator<BackboneSegment> backboneSegmentIterator() {
+        return this.backboneSegments.iterator();
     }
 
     public boolean hasResidueByPDBNumbering(int pdbResidueNumber) {
@@ -156,7 +191,7 @@ public class Chain implements Iterable<BackboneSegment> {
     }
 
     public Residue getResidueByAbsoluteNumbering(int i) {
-        return (Residue) this.residues.get(i);
+        return this.residues.get(i);
     }
 
     public boolean hasResidueByAbsoluteNumbering(int i) {
@@ -164,18 +199,18 @@ public class Chain implements Iterable<BackboneSegment> {
     }
 
     public Residue firstResidue() {
-        return (Residue) this.residues.get(0);
+        return this.residues.get(0);
     }
 
     public Residue lastResidue() {
-        return (Residue) this.residues.get(this.residues.size() - 1);
+        return this.residues.get(this.residues.size() - 1);
     }
 
     public Residue getNextResidue(int i) {
         if (i + 1 >= this.residues.size()) {
             return null;
         } else {
-            return (Residue) this.residues.get(i + 1);
+            return this.residues.get(i + 1);
         }
     }
 
@@ -210,9 +245,7 @@ public class Chain implements Iterable<BackboneSegment> {
     }
 
     public Sheet getSheetContaining(BackboneSegment strand) {
-        Iterator<Sheet> sheetIterator = this.sheets.iterator();
-        while (sheetIterator.hasNext()) {
-            Sheet sheet = sheetIterator.next();
+        for (Sheet sheet : this.sheets) {
             if (sheet.contains(strand)) {
                 return sheet;
             }
