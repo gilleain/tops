@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import tops.view.tops2D.diagram.DiagramDrawer;
+import tops.view.diagram.DiagramDrawer;
 
 public class DiagramServlet extends HttpServlet {
 

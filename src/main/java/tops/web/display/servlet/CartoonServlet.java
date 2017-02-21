@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
-import tops.view.tops2D.cartoon.CartoonDrawer;
+import tops.view.cartoon.CartoonDrawer;
 
 public class CartoonServlet extends HttpServlet {
 

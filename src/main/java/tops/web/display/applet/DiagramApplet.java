@@ -5,7 +5,7 @@ import java.applet.Applet;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import tops.view.tops2D.diagram.DiagramDrawer;
+import tops.view.diagram.DiagramDrawer;
 
 /**
  * Diagram display applet that takes TOPS strings and displays as linear graphs.

@@ -6,8 +6,8 @@ import java.io.IOException;
 import org.junit.Test;
 
 import tops.translation.model.Protein;
-import tops.view.tops2D.diagram.DiagramConverter;
-import tops.view.tops2D.diagram.Graph;
+import tops.view.diagram.DiagramConverter;
+import tops.view.diagram.Graph;
 
 /**
  * Not a unit test class, but a transformation utility.

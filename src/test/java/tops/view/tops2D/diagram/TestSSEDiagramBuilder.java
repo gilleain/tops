@@ -8,6 +8,8 @@ import tops.model.Chain;
 import tops.model.HBondSet;
 import tops.model.Protein;
 import tops.model.SSE;
+import tops.view.diagram.DiagramConverter;
+import tops.view.diagram.Graph;
 
 public class TestSSEDiagramBuilder {
     

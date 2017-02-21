@@ -19,7 +19,7 @@ import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
-import tops.view.tops2D.cartoon.CartoonDrawer;
+import tops.view.cartoon.CartoonDrawer;
 
 public class TestOptimise {
     
