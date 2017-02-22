@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import tops.data.dssp.DSSPReader;
+import tops.data.dssp.SSEType;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
 import tops.translation.model.HBondSet;

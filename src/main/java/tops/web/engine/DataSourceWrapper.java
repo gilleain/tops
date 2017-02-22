@@ -13,7 +13,7 @@ import javax.naming.NamingException;
 
 /**
  * Simple wrapper for a data source, provides Connections. This is the
- * alternative to the {@link tops.db.update.DBManager DBManager} in tops.db, for use in
+ * alternative to the {@link tops.data.db.update.DBManager DBManager} in tops.db, for use in
  * a servlet environment.
  */
 

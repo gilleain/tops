@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import tops.data.dssp.DSSPReader;
 import tops.translation.model.Protein;
 import tops.view.diagram.DiagramConverter;
 import tops.view.diagram.Graph;

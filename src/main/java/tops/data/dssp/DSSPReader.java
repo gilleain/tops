@@ -1,4 +1,4 @@
-package tops.dssp;
+package tops.data.dssp;
 
 import java.io.BufferedReader;
 import java.io.File;

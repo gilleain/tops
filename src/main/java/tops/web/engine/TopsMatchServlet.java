@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import tops.datasource.ArrayGraphDatasource;
-import tops.datasource.GraphSetDatasource;
+import tops.data.datasource.ArrayGraphDatasource;
+import tops.data.datasource.GraphSetDatasource;
 import tops.engine.TopsStringFormatException;
 import tops.engine.drg.Matcher;
 

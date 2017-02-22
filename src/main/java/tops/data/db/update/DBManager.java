@@ -1,4 +1,4 @@
-package tops.db.update;
+package tops.data.db.update;
 
 import java.sql.Statement;
 import java.sql.ResultSet;

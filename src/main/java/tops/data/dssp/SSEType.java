@@ -1,4 +1,4 @@
-package tops.dssp;
+package tops.data.dssp;
 
 public enum SSEType {
     ALPHA_HELIX ("H"),

@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import tops.data.dssp.HBondHelper;
+import tops.data.dssp.SSEType;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.HBond;
 import tops.translation.model.HBondSet;

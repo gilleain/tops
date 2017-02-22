@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import tops.data.dssp.DsspModel;
+
 public class TestDsspModel {
     
     @Test

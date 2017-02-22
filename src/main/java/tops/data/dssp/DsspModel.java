@@ -1,4 +1,4 @@
-package tops.dssp;
+package tops.data.dssp;
 
 import java.util.ArrayList;
 import java.util.List;

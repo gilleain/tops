@@ -1,4 +1,4 @@
-package tops.db.update;
+package tops.data.db.update;
 
 public class FatalException extends Exception {
 

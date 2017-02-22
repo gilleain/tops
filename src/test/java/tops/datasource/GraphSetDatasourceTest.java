@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import tops.data.datasource.ArrayGraphDatasource;
+
 public class GraphSetDatasourceTest {
 	
 	@Test
