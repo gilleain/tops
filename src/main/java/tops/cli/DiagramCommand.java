@@ -84,7 +84,8 @@ public class DiagramCommand extends Command {
                 height = Integer.parseInt(line.getOptionValue("h"));
             }
             
-            List<String> remainingArgs = line.getArgList();
+            @SuppressWarnings("unchecked")
+            List<String> remainingArgs = (List<String>)line.getArgList();
             fileString = remainingArgs.get(0);
             
             return this;
