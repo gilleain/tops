@@ -26,7 +26,9 @@ public class CartoonCommand extends Command {
         int w = 300;
         int h = 200;
 
-        System.err.println("Making " + handler.outputType + " file");
+        System.err.println("Making " + handler.outputType 
+                        + " file for " + handler.topsFilepath
+                        + " in " + handler.outputFilepath);
         
         CartoonDrawer drawer = new CartoonDrawer();
         
@@ -35,23 +37,21 @@ public class CartoonCommand extends Command {
             Vector<DomainDefinition> dd = protein.getDomainDefs();
             Vector<SecStrucElement> ll = protein.getLinkedLists();
 
-            if (handler.outputType.equalsIgnoreCase("pdf") || 
-                    handler.outputType.equalsIgnoreCase("img")) {
+            if (handler.outputType.equals("PDF") || handler.outputType.equals("IMG")) {
                 FileOutputStream fos = new FileOutputStream(handler.outputFilepath);
                 
                 for (int i = 0; i < dd.size(); i++) {
 //                    DomainDefinition d = (DomainDefinition) dd.get(i);
-                    SecStrucElement root = (SecStrucElement) ll.get(i);
+                    SecStrucElement root = ll.get(i);
                     drawer.draw(handler.topsFilepath, handler.outputType, w, h, root, fos);
                 }
                 
-            } else if (handler.outputType.equalsIgnoreCase("svg") 
-                    || handler.outputType.equalsIgnoreCase("ps")) {
+            } else if (handler.outputType.equals("SVG") || handler.outputType.equals("PS")) {
                 PrintWriter pw = new PrintWriter(handler.outputFilepath);
 
                 for (int i = 0; i < dd.size(); i++) {
 //                    DomainDefinition d = (DomainDefinition) dd.get(i);
-                    SecStrucElement root = (SecStrucElement) ll.get(i);
+                    SecStrucElement root = ll.get(i);
                     drawer.draw(handler.topsFilepath, handler.outputType, root, pw);
                 }
                 pw.flush();
@@ -80,30 +80,30 @@ public class CartoonCommand extends Command {
         public CLIHandler() {
             options = new Options();
             options.addOption(opt("h", "Print help"));
-            options.addOption(opt("o", "Output type"));
-            options.addOption(opt("t", "Tops filepath"));
-            options.addOption(opt("f", "Output filepath"));
+            options.addOption(opt("o", "type", "Output type"));
+            options.addOption(opt("t", "filepath", "Tops filepath"));
+            options.addOption(opt("f", "filepath", "Output filepath"));
         }
         
         public CLIHandler processArguments(String[] args) throws ParseException {
             PosixParser parser = new PosixParser();
             CommandLine line = parser.parse(options, args, true);
             
-            if (line.hasOption('h')) {
+            if (line.hasOption("h")) {
                 printHelp();
                 return this;
             }
             
-            if (line.hasOption('o')) {
-                outputType = line.getOptionValue('o');
+            if (line.hasOption("o")) {
+                outputType = line.getOptionValue("o").toUpperCase();
             }
             
-            if (line.hasOption('t')) {
-                topsFilepath = line.getOptionValue('t');
+            if (line.hasOption("t")) {
+                topsFilepath = line.getOptionValue("t");
             }
             
-            if (line.hasOption('f')) {
-                outputFilepath = line.getOptionValue('f');
+            if (line.hasOption("f")) {
+                outputFilepath = line.getOptionValue("f");
             }
             
             return this;

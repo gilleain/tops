@@ -14,6 +14,9 @@ import org.apache.commons.cli.ParseException;
  */
 public class Tops {
     
+    /**
+     * Commands keyed by command string arguments.
+     */
     private Map<String, Command> commands;
     
     public Tops() {
@@ -37,6 +40,7 @@ public class Tops {
         }
         String arg = args[0];
         String[] remainingArgs = Arrays.copyOfRange(args, 1, args.length);
+        System.out.println(Arrays.toString(remainingArgs));
         try {
             tops.run(arg, remainingArgs);
         } catch (ParseException e) {

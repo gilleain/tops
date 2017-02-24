@@ -4,10 +4,23 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 
+/**
+ * A command is a single command-line app, run through {@link Tops}.
+ * 
+ * @author maclean
+ *
+ */
 public abstract class Command {
     
+    /**
+     * @param args
+     * @throws ParseException
+     */
     public abstract void handle(String[] args) throws ParseException;
     
+    /**
+     * Convenience methods for command-line argument handling
+     */
     public class CLIHandler {
         
         @SuppressWarnings("static-access")
