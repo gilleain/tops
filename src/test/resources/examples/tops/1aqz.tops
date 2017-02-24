@@ -36,15 +36,15 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType E
-Direction DOWN
+Direction UP
 Label
 Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 11 10
-BridgePartnerSide L R
-BridgePartnerType A P
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -64,15 +64,15 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType E
-Direction UP
+Direction DOWN
 Label
 Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 11
-BridgePartnerSide R
-BridgePartnerType P
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -120,15 +120,15 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType E
-Direction DOWN
+Direction UP
 Label
 Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 8 9
-BridgePartnerSide L R
-BridgePartnerType A A
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -210,9 +210,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 5 9
-BridgePartnerSide R L
-BridgePartnerType A A
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -238,9 +238,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 5 8
-BridgePartnerSide L R
-BridgePartnerType A A
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -266,9 +266,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 2 11
-BridgePartnerSide L R
-BridgePartnerType P A
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -288,15 +288,15 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType E
-Direction UP
+Direction DOWN
 Label
 Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 3 2 10
-BridgePartnerSide L R L
-BridgePartnerType P A A
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0

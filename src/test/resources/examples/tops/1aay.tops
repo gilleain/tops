@@ -42,9 +42,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 3
-BridgePartnerSide R
-BridgePartnerType A
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -70,9 +70,9 @@ Colour 255 255 255
 Next -1
 Fixed -1
 FixedType UNKNOWN
-BridgePartner 2
-BridgePartnerSide L
-BridgePartnerType A
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
@@ -120,7 +120,7 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType H
-Direction UP
+Direction DOWN
 Label
 Colour 255 255 255
 Next -1
@@ -176,7 +176,7 @@ ConnectionTo
 Fill 0
 
 SecondaryStructureType H
-Direction DOWN
+Direction UP
 Label
 Colour 255 255 255
 Next -1

@@ -1,11 +1,11 @@
 ##
 ## TOPS: tops.dw.protein topology information file
 ##
-## Protein code 1a2p
+## Protein code 1aqb
 ## Number of domains 1
 ##
 
-DOMAIN_NUMBER 0 1a2pA 
+DOMAIN_NUMBER 0 1aqb0 
 
 SecondaryStructureType N
 Direction UP
@@ -35,8 +35,8 @@ NConnectionPoints 0
 ConnectionTo
 Fill 0
 
-SecondaryStructureType E
-Direction UP
+SecondaryStructureType H
+Direction DOWN
 Label
 Colour 255 255 255
 Next -1
@@ -48,8 +48,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 3
-PDBFinishResidue 5
+PDBStartResidue 5
+PDBFinishResidue 9
 SymbolNumber 2
 Chain null
 Chirality 0
@@ -76,8 +76,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 6
-PDBFinishResidue 18
+PDBStartResidue 17
+PDBFinishResidue 21
 SymbolNumber 3
 Chain null
 Chirality 0
@@ -104,8 +104,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 23
-PDBFinishResidue 25
+PDBStartResidue 22
+PDBFinishResidue 30
 SymbolNumber 4
 Chain null
 Chirality 0
@@ -119,7 +119,7 @@ NConnectionPoints 0
 ConnectionTo
 Fill 0
 
-SecondaryStructureType H
+SecondaryStructureType E
 Direction DOWN
 Label
 Colour 255 255 255
@@ -132,8 +132,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 26
-PDBFinishResidue 34
+PDBStartResidue 38
+PDBFinishResidue 46
 SymbolNumber 5
 Chain null
 Chirality 0
@@ -147,8 +147,8 @@ NConnectionPoints 0
 ConnectionTo
 Fill 0
 
-SecondaryStructureType H
-Direction DOWN
+SecondaryStructureType E
+Direction UP
 Label
 Colour 255 255 255
 Next -1
@@ -160,8 +160,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 36
-PDBFinishResidue 40
+PDBStartResidue 53
+PDBFinishResidue 61
 SymbolNumber 6
 Chain null
 Chirality 0
@@ -175,7 +175,7 @@ NConnectionPoints 0
 ConnectionTo
 Fill 0
 
-SecondaryStructureType H
+SecondaryStructureType E
 Direction DOWN
 Label
 Colour 255 255 255
@@ -188,8 +188,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 41
-PDBFinishResidue 46
+PDBStartResidue 69
+PDBFinishResidue 78
 SymbolNumber 7
 Chain null
 Chirality 0
@@ -216,8 +216,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 50
-PDBFinishResidue 56
+PDBStartResidue 84
+PDBFinishResidue 93
 SymbolNumber 8
 Chain null
 Chirality 0
@@ -244,8 +244,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 70
-PDBFinishResidue 77
+PDBStartResidue 100
+PDBFinishResidue 108
 SymbolNumber 9
 Chain null
 Chirality 0
@@ -272,8 +272,8 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 85
-PDBFinishResidue 92
+PDBStartResidue 113
+PDBFinishResidue 122
 SymbolNumber 10
 Chain null
 Chirality 0
@@ -300,9 +300,37 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 96
-PDBFinishResidue 99
+PDBStartResidue 130
+PDBFinishResidue 139
 SymbolNumber 11
+Chain null
+Chirality 0
+CartoonX 0
+CartoonY 0
+AxesStartPoint 0.0 0.0 0.0
+AxesFinishPoint 0.0 0.0 0.0
+SymbolRadius 0
+AxisLength 0.0
+NConnectionPoints 0
+ConnectionTo
+Fill 0
+
+SecondaryStructureType H
+Direction DOWN
+Label
+Colour 255 255 255
+Next -1
+Fixed -1
+FixedType UNKNOWN
+BridgePartner
+BridgePartnerSide
+BridgePartnerType
+Neighbour
+SeqStartResidue 0
+SeqFinishResidue 0
+PDBStartResidue 147
+PDBFinishResidue 160
+SymbolNumber 12
 Chain null
 Chirality 0
 CartoonX 0
@@ -328,9 +356,9 @@ BridgePartnerType
 Neighbour
 SeqStartResidue 0
 SeqFinishResidue 0
-PDBStartResidue 107
-PDBFinishResidue 109
-SymbolNumber 12
+PDBStartResidue 166
+PDBFinishResidue 169
+SymbolNumber 13
 Chain null
 Chirality 0
 CartoonX 0
@@ -358,7 +386,7 @@ SeqStartResidue 0
 SeqFinishResidue 0
 PDBStartResidue -1
 PDBFinishResidue -1
-SymbolNumber 13
+SymbolNumber 14
 Chain null
 Chirality 0
 CartoonX 0
