@@ -22,6 +22,7 @@ public class Tops {
     public Tops() {
         commands = new HashMap<String, Command>();
         commands.put("cartoon", new CartoonCommand());
+        commands.put("diagram", new DiagramCommand());
     }
     
     public boolean hasCommand(String arg) {

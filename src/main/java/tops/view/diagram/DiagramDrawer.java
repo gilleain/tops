@@ -22,12 +22,12 @@ public class DiagramDrawer {
         this.h = h;
         this.axis = (new Integer((2 * h) / 3)).doubleValue();
         this.gr = new Graph();
+        builder = new DiagramConverter();
         this.showLabelNumbers = false;
     }
 
     public DiagramDrawer(String vertices, String edges, String highlights, int w, int h) {
         this(w, h);
-        builder = new DiagramConverter();
         this.gr = builder.toDiagram(vertices, edges, highlights);
     }
     
