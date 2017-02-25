@@ -13,15 +13,15 @@ import org.apache.commons.cli.ParseException;
 public abstract class Command {
     
     /**
+     * @return a readable description of the command
+     */
+    public abstract String getDescription();
+    
+    /**
      * @param args
      * @throws ParseException
      */
     public abstract void handle(String[] args) throws ParseException;
-    
-    /**
-     * @return a readable description of the command
-     */
-    public abstract String getDescription();
     
     /**
      * Convenience methods for command-line argument handling

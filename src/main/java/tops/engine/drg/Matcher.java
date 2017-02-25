@@ -624,14 +624,5 @@ public class Matcher implements MatcherI {
         return found;
     }
 
-    public static void main(String[] args) {
-        
-        String pattern = args[0];
-        String filename = args[1];
-        
-        Matcher m = new Matcher();
-        m.runToStdOut(filename, pattern);
-    }
-
 }
 
