@@ -72,7 +72,7 @@ public class CartoonCommand extends Command {
         }
     }
     
-    private class CLIHandler extends Command.CLIHandler {
+    private class CLIHandler extends BaseCLIHandler {
 
         private Options options;
         

@@ -157,8 +157,4 @@ public class AllVAllWrapper {
             stream.println(results[j].getCompression());
         }
     }
-
-    public static void main(String[] args) {
-       
-    }
 }

@@ -60,7 +60,7 @@ public class DiagramCommand extends Command {
         }
     }
     
-    private class CLIHandler extends Command.CLIHandler {
+    private class CLIHandler extends BaseCLIHandler {
         
         private int width = 300;
         
