@@ -306,9 +306,4 @@ class Finder {
         return;
     }
 
-//    public static void main(String[] args) {
-//        Finder f = new Finder(args[0], args[1]);
-//    }
-
 }
-// EOC

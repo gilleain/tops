@@ -20,6 +20,11 @@ import tops.view.cartoon.CartoonDrawer;
 
 public class CartoonCommand extends Command {
     
+    @Override
+    public String getDescription() {
+        return "Draw a tops cartoon as an image";
+    }
+    
     public void handle(String[] args) throws ParseException {
         CLIHandler handler = new CLIHandler().processArguments(args);
         

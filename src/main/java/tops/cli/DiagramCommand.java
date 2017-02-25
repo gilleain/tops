@@ -18,6 +18,11 @@ import tops.view.app.TParser;
 import tops.view.diagram.DiagramDrawer;
 
 public class DiagramCommand extends Command {
+    
+    @Override
+    public String getDescription() {
+        return "Draw a tops graph as an image";
+    }
 
     @Override
     public void handle(String[] args) throws ParseException {

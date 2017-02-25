@@ -144,22 +144,4 @@ public class Sheet {
         return new String("vertices = " + this.vertices.toString() + 
         		", edges = " + this.edges.toString());
     }
-
-    public static void main(String[] args) {
-        List<Vertex> v = new ArrayList<Vertex>();
-        v.add(new Vertex('N', 0));
-        v.add(new Vertex('C', 1));
-        
-        // create a sheet composed of a P edge
-        Sheet s = new Sheet(new Vertex('E', 1), new Vertex('E', 2), 'P', v);
-        
-        System.out.println("Before extension: " + s.toString());
-        s.insertBefore(2, 'e');
-        
-        s.extend(2, 3, 'A'); // define the limits of the extension?
-        System.out.println("After extension : " + s.toString());
-        
-        s.undoLastMove();
-        System.out.println("After rewind : " + s.toString());
-    }
 }

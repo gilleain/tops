@@ -264,9 +264,4 @@ class Grower {
         return -1;
     }
 
-    public static void main(String[] args) {
-        Grower g = new Grower();
-        System.out.println(g);
-    }
-
 }

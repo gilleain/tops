@@ -1,7 +1,5 @@
 package tops.engine.helix;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -745,33 +743,5 @@ public class Matcher implements MatcherI {
         return found;
 
     }// end of backtrack
-
-    public static void main(String[] args) {
-        List<String> l = new ArrayList<String>();
-        String line;
-        String pattern = args[0];
-        String filename = args[1];
-
-        try {
-            BufferedReader bu = new java.io.BufferedReader(new FileReader(filename));
-            while ((line = bu.readLine()) != null) {
-                l.add(line);
-            }
-            bu.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        try {
-            Matcher m = new Matcher((String[]) l.toArray(new String[0]));
-            String[] results = m.run(new Pattern(pattern));
-            for (int i = 0; i < results.length; i++) {
-                System.out.println(results[i]);
-            }
-        } catch (TopsStringFormatException tsfe) {
-            System.err.println(tsfe.getMessage());
-            tsfe.printStackTrace();
-        }
-    }
 }
 

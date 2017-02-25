@@ -86,14 +86,4 @@ public class TParser {
             return "";
         return this.current.substring(spspsp);
     }
-
-    public static void main(String[] args) {
-        TParser t = new TParser(args[0]);
-        System.out.println(t.getName());
-        System.out.println(t.getVertices());
-        String[] sta = t.getEdges();
-        for (int k = 0; k < sta.length; k++) {
-            System.out.println(sta[k]);
-        }
-    }
-}// EOC
+}

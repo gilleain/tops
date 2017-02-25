@@ -1,10 +1,7 @@
 package tops.engine;
 
 import java.util.ArrayList;
-import java.util.List;
 
-//import java.util.regex.Pattern;
-//import java.util.regex.Matcher;
 
 public class TParser {
 
@@ -100,14 +97,4 @@ public class TParser {
     public String[] getConnectedComponents() {
         return null;
     }
-
-    public static void main(String[] args) {
-        TParser t = new TParser(args[0]);
-        System.out.println(t.getName());
-        System.out.println(t.getVertices());
-        String[] sta = t.getEdgesAsStrings();
-        for (int k = 0; k < sta.length; k++) {
-            System.out.println("[" + sta[k] + "]");
-        }
-    }
-}// EOC
+}

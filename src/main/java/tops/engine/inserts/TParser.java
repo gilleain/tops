@@ -199,21 +199,4 @@ public class TParser {
             return "";
         return this.current.substring(spspsp);
     }
-
-    public static void main(String[] args) {
-        String pattern = args[0];
-        /*
-         * TParser t = new TParser(pattern); System.out.println(t.getName());
-         * System.out.println(t.getVertices()); String[] ins = t.getInserts();
-         * for (int l = 0; l < ins.length; l++) { System.out.println("[" +
-         * ins[l] + "]"); } String[] sta = t.getEdges(); for (int k = 0; k <
-         * sta.length; k++) { System.out.println("[" + sta[k] + "]"); }
-         */
-        Logger.getLogger("tops.engine.inserts.Pattern").setLevel(Level.ALL);
-        Logger.getLogger("tops.engine.inserts.TParser").setLevel(Level.ALL);
-        TParser t = new TParser();
-        tops.engine.inserts.Pattern p = t.parse(pattern);
-        System.out.println(p.getVertexStringWithInserts());
-        System.out.println(t.getVerticesWithInserts());
-    }
-}// EOC
+}

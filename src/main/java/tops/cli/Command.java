@@ -19,6 +19,11 @@ public abstract class Command {
     public abstract void handle(String[] args) throws ParseException;
     
     /**
+     * @return a readable description of the command
+     */
+    public abstract String getDescription();
+    
+    /**
      * Convenience methods for command-line argument handling
      */
     public class CLIHandler {

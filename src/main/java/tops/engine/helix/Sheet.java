@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
-import java.util.Vector; //why use Vector &! ArrayList?
 
 import tops.engine.Edge;
 import tops.engine.Vertex;
@@ -13,11 +12,9 @@ public class Sheet {
 
     private List<Vertex> vertices; // a reference to the underlying list of vertices
 
-    private Stack<Edge> edges; // this is a stack to enable mistakes to be simply
-                            // popped off the end
+    private Stack<Edge> edges; // a stack to enable mistakes to be popped off
 
-    private int lastInsertedVertex; // position in the List where a vertex was
-                                    // last inserted
+    private int lastInsertedVertex; // last vertex insertion point in the List 
 
     private Vertex rhv, lhv;
 
@@ -29,17 +26,15 @@ public class Sheet {
         this.lhv = l;
         this.rhv = r;
 
-        // insert the vertices and create the primary edge of which this sheet
-        // is composed
-        // System.out.print(vertices + " adding : " + l);
+        // insert the vertices and create the primary 
+        // edge of which this sheet is composed
         this.vertices.add(l.getPos(), l);
-        // System.out.println(" " + vertices);
-        // System.out.print(vertices + " adding : " + r);
         this.vertices.add(r.getPos(), r);
-        // System.out.println(" " + vertices);
         this.renumberFrom(l.getPos());
-        this.edges.push(new Edge(this.lhv, this.rhv, type)); // at this point, the sheet ==
-                                                // this edge
+        
+        // at this point, the sheet == this edge
+        this.edges.push(new Edge(this.lhv, this.rhv, type)); 
+        
     }
 
     public int getLEndpoint() {
@@ -151,25 +146,5 @@ public class Sheet {
     public String toString() {
         return new String("vertices = " + this.vertices.toString() + ", edges = "
                 + this.edges.toString());
-    }
-
-    public static void main(String[] args) {
-        List<Vertex> v = new Vector<Vertex>();
-        v.add(new Vertex('N', 0));
-        v.add(new Vertex('C', 1));
-
-        Sheet s = new Sheet(new Vertex('E', 1), new Vertex('E', 2), 'P', v); // create
-                                                                                // a
-                                                                                // sheet
-                                                                                // composed
-                                                                                // of a
-                                                                                // P
-                                                                                // edge
-        // System.out.println("Before extension: " + s.toString());
-        s.insertBefore(2, 'e');
-        s.extend(2, 3, 'A'); // define the limits of the extension?
-        // System.out.println("After extension : " + s.toString());
-        s.undoLastMove();
-        // System.out.println("After rewind : " + s.toString());
     }
 }
