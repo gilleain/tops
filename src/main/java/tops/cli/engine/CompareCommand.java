@@ -17,7 +17,7 @@ public class CompareCommand extends Command {
     
     @Override
     public String getDescription() {
-        return "Compare?";  // TODO
+        return "DRG Compare?";
     }
 
     @Override

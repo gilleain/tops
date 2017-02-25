@@ -9,7 +9,7 @@ public class MatcherCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "Matching";  // XXX TODO
+        return "DRG Matching";
     }
 
     @Override

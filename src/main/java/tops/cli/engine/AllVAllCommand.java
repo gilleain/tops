@@ -16,7 +16,7 @@ public class AllVAllCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "All-v-all comparison";
+        return "DRG All-v-all comparison";
     }
 
     @Override
