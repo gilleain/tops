@@ -64,7 +64,6 @@ public class TParser {
         return this.current.substring(spsp + 1, spspsp);
     }
     
-    // doesn't work in java1.3 
     public String[] getEdges() {
         String tail = this.getEdgeString(); 
         Matcher m = edgeP.matcher(tail);
@@ -77,30 +76,6 @@ public class TParser {
         return (String[]) bits.toArray(new String[0]); 
      }
 
-    // ALTERNATIVE 1.3 method
-      /*
-    public String[] getEdges() {
-        String tail = this.getEdgeString();
-        ArrayList bytes = new ArrayList();
-        char[] bits = tail.toCharArray();
-        StringBuffer numstr = new StringBuffer();
-        for (int i = 0; i < bits.length; i++) {
-            char c = bits[i];
-            if (Character.isDigit(c)) {
-                numstr.append(c);
-            } else if (Character.isLetter(c)) {
-                bytes.add(numstr.toString());
-                bytes.add(String.valueOf(c));
-                numstr = new StringBuffer();
-            } else {
-                bytes.add(numstr.toString());
-                numstr = new StringBuffer();
-            }
-        }
-        return (String[]) bytes.toArray(new String[0]);
-    }
-    */
-
     public String getClassification() {
         int sp = this.current.indexOf(' ');
         int spsp = this.current.indexOf(' ', sp + 1);
@@ -112,15 +87,5 @@ public class TParser {
 
     public String[] getConnectedComponents() {
         return null;
-    }
-
-    public static void main(String[] args) {
-        TParser t = new TParser(args[0]);
-        System.out.println(t.getName());
-        System.out.println(t.getVertices());
-        String[] sta = t.getEdges();
-        for (int k = 0; k < sta.length; k++) {
-            System.out.println("[" + sta[k] + "]");
-        }
     }
 }

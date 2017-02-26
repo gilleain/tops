@@ -49,9 +49,8 @@ public class LevelIterator implements Iterator<Level> {
         } else {
             // System.out.println("Reached depth : " + currentDepth);
             int indexAtThisLevel = this.positions[currentDepth - 1];
-            Level subLevel = (Level) currentSubLevel.get(indexAtThisLevel);
-            int nextPositionAtLowerLevel = this.nextPosition(currentDepth + 1,
-                    subLevel.getSubLevels());
+            Level subLevel = currentSubLevel.get(indexAtThisLevel);
+            int nextPositionAtLowerLevel = this.nextPosition(currentDepth + 1, subLevel.getSubLevels());
             // not found => go on to the next
             if (nextPositionAtLowerLevel == -1) {
                 // System.out.println("Shifting at depth : " + currentDepth);
@@ -59,8 +58,7 @@ public class LevelIterator implements Iterator<Level> {
                 if (nextIndexAtThisLevel < currentSubLevel.size()) {
                     this.positions[currentDepth - 1]++;
                     // try again
-                    Level nextSubLevel = (Level) currentSubLevel
-                            .get(nextIndexAtThisLevel);
+                    Level nextSubLevel = currentSubLevel.get(nextIndexAtThisLevel);
                     nextPositionAtLowerLevel = this.nextPosition(
                             currentDepth + 1, nextSubLevel.getSubLevels());
                 } else {
@@ -73,7 +71,7 @@ public class LevelIterator implements Iterator<Level> {
     }
 
     public Level getLevelAtTargetDepth(int currentDepth, List<Level> currentSubLevel) {
-        Level subLevel = (Level) currentSubLevel.get(this.positions[currentDepth - 1]);
+        Level subLevel = currentSubLevel.get(this.positions[currentDepth - 1]);
         if (currentDepth == this.relativeTargetDepth) {
             return subLevel;
         } else {

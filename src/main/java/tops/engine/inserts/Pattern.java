@@ -3,7 +3,6 @@ package tops.engine.inserts;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import tops.engine.Edge;
@@ -959,13 +958,6 @@ public class Pattern implements PatternI {
             result.append(e.getType());
         }
         return result.toString();
-    }
-
-    public static void main(String[] args) {
-        Pattern p = new Pattern(args[0]);
-        Logger.getLogger("tops.engine.inserts.Pattern").setLevel(Level.ALL);
-        System.out.println(p.getVertexString(0, 0, false));
-        System.out.println(p);
     }
 
 	@Override

@@ -1,13 +1,14 @@
 package tops.engine.crossvalidate;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import tops.model.classification.Level;
-import tops.model.classification.RepSet;
+import java.util.Map;
 
 import tops.engine.inserts.Matcher;
 import tops.engine.inserts.Pattern;
+import tops.model.classification.Level;
+import tops.model.classification.RepSet;
 
 public class CrossValidator {
 
@@ -15,32 +16,31 @@ public class CrossValidator {
         Level root = null;
         try {
             root = Level.fromFile(filename, Level.ROOT, "Superfolds");
-        } catch (java.io.IOException ioe) {
+        } catch (IOException ioe) {
             System.err.println(ioe);
             return;
         }
 
         // first, make the patterns
-        HashMap<Level, HashMap<Level, Pattern>> tLevelHGroupPatterns = CrossValidator.generatePatterns(root);
+        Map<Level, Map<Level, Pattern>> tLevelHGroupPatterns = CrossValidator.generatePatterns(root);
 
         // now, do the validation
-         CrossValidator.doSuperfoldValidation(tLevelHGroupPatterns);
+        CrossValidator.doSuperfoldValidation(tLevelHGroupPatterns);
     }
 
-    public static HashMap<Level, HashMap<Level, Pattern>> generatePatterns(Level root) {
+    public static Map<Level, Map<Level, Pattern>> generatePatterns(Level root) {
         // make patterns for each h-group
         Iterator<Level> tLevelIterator = root.getSubLevelIterator(Level.T);
-        HashMap<Level, HashMap<Level, Pattern>> tLevelHGroupPatterns = new HashMap<Level, HashMap<Level, Pattern>>();
+        Map<Level, Map<Level, Pattern>> tLevelHGroupPatterns = new HashMap<Level, Map<Level, Pattern>>();
         while (tLevelIterator.hasNext()) {
             Level tLevel = (Level) tLevelIterator.next();
-            HashMap<Level, Pattern> hLevelPatterns = new HashMap<Level, Pattern>();
+            Map<Level, Pattern> hLevelPatterns = new HashMap<Level, Pattern>();
             Iterator<Level> hLevelIterator = tLevel.getSubLevelIterator(Level.H);
             while (hLevelIterator.hasNext()) {
-                Level hLevel = (Level) hLevelIterator.next();
+                Level hLevel = hLevelIterator.next();
                 RepSet reps = hLevel.getRepSet();
                 Pattern pattern = reps.generatePatternWithInserts();
-                System.out.println(pattern.getCompression() + "\t" + pattern
-                        + "\t" + hLevel);
+                System.out.println(pattern.getCompression() + "\t" + pattern + "\t" + hLevel);
                 hLevelPatterns.put(hLevel, pattern);
             }
             tLevelHGroupPatterns.put(tLevel, hLevelPatterns);
@@ -48,16 +48,14 @@ public class CrossValidator {
         return tLevelHGroupPatterns;
     }
 
-    public static void doSuperfoldValidation(HashMap<Level, HashMap<Level, Pattern>> tLevelHGroupPatterns) {
+    public static void doSuperfoldValidation(Map<Level, Map<Level, Pattern>> tLevelHGroupPatterns) {
         // go through the SReps, matching each set of HPatterns to determine
         // TLevel
         Matcher m = new Matcher();
-        Iterator<Level> tLevelMapIterator = tLevelHGroupPatterns.keySet().iterator();
-        while (tLevelMapIterator.hasNext()) {
-            Level tLevelKey = tLevelMapIterator.next();
-            Iterator<Level> anotherHLevelIterator = tLevelKey.getSubLevelIterator(Level.H);
-            while (anotherHLevelIterator.hasNext()) {
-                Level bundleOfSReps = (Level) anotherHLevelIterator.next();
+        for (Level tLevelKey : tLevelHGroupPatterns.keySet()) {
+            Iterator<Level> subLevelIterator = tLevelKey.getSubLevelIterator(Level.H); 
+            while (subLevelIterator.hasNext()) {
+                Level bundleOfSReps = subLevelIterator.next();
                 RepSet sReps = bundleOfSReps.getRepSet();
                 String[] instances = sReps.getInstances();
                 for (int i = 0; i < instances.length; i++) {
@@ -65,25 +63,18 @@ public class CrossValidator {
                     int TRUE_NEGATIVES = 0;
                     int FALSE_POSITIVES = 0;
                     Pattern instance = new Pattern(instances[i]);
-                    Iterator<Level> anotherTLevelIterator = tLevelHGroupPatterns
-                            .keySet().iterator();
-                    while (anotherTLevelIterator.hasNext()) {
+                    for (Level anotherTLevelKey : tLevelHGroupPatterns.keySet()) {
                         boolean matchedAnotherTLevel = false;
-                        Level anotherTLevelKey = anotherTLevelIterator
-                                .next();
-                        HashMap<Level, Pattern> hLevelPatternMap = tLevelHGroupPatterns
-                                .get(anotherTLevelKey);
-                        Iterator<Level> hLevelMapIterator = hLevelPatternMap.keySet()
-                                .iterator();
+                        Map<Level, Pattern> hLevelPatternMap = tLevelHGroupPatterns.get(anotherTLevelKey);
+                        Iterator<Level> hLevelMapIterator = hLevelPatternMap.keySet().iterator();
                         while (hLevelMapIterator.hasNext()) {
-                            Level hLevel = (Level) hLevelMapIterator.next();
+                            Level hLevel = hLevelMapIterator.next();
                             // don't match the SRep against the HLevel from
                             // which it originated!
                             if (hLevel.equals(bundleOfSReps)) {
                                 continue;
                             }
-                            Pattern hPattern = (Pattern) hLevelPatternMap
-                                    .get(hLevel);
+                            Pattern hPattern = hLevelPatternMap.get(hLevel);
                             try {
                                 if (m.singleMatch(hPattern, instance)) {
                                     if (tLevelKey.equals(anotherTLevelKey)) {
@@ -180,28 +171,11 @@ public class CrossValidator {
                 RepSet slice = reps.removeSlice(i, i + n - 1);
                 Pattern pattern = reps.generatePatternWithInserts();
                 int numberMatching = reps.numberMatching(pattern);
-                System.out.println(pattern + " matches " + numberMatching
+                System.out.println(
+                        pattern + " matches " + numberMatching 
                         + " out of " + reps.size());
                 reps.replaceSubset(slice);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        String filename = args[0];
-        CrossValidator.doSuperfolds(filename);
-        
-//         String tLevelName = args[1];
-         
-//         try { 
-//             Level tLevel = Level.fromFile(filename, Level.T, tLevelName);
-//             System.out.println(tLevel); 
-//             System.out.println("leave one out : ");
-//             CrossValidator.leaveOneOut(tLevel); 
-//             CrossValidator.nFold(2, tLevel); 
-//         } catch(java.io.IOException ioe) {
-//             System.err.println(ioe); 
-//         }
-
     }
 }
