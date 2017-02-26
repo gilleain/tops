@@ -17,7 +17,7 @@ import org.apache.commons.cli.PosixParser;
 import tops.view.app.TParser;
 import tops.view.diagram.DiagramDrawer;
 
-public class DiagramCommand extends Command {
+public class DiagramCommand implements Command {
     
     @Override
     public String getDescription() {

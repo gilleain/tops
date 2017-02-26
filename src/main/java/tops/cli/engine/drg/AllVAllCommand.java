@@ -12,7 +12,7 @@ import tops.cli.Command;
 import tops.engine.Result;
 import tops.engine.drg.AllVAllWrapper;
 
-public class AllVAllCommand extends Command {
+public class AllVAllCommand implements Command {
 
     @Override
     public String getDescription() {

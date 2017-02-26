@@ -1,37 +1,15 @@
 package tops.engine.juris;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-class PipedFinder {
-
-    private BufferedReader buffy;
-
-    private List<String> instances;
+public class PipedFinder {
 
     private Constrainer c;
 
     private Matcher m;
 
-    private String instr, maxpat;
+    private String maxpat;
 
-    public PipedFinder(String name) {
+    public PipedFinder(String name, String[] inst) {
         this.maxpat = "";
-        this.instances = new ArrayList<String>();
-        this.buffy = new BufferedReader(new InputStreamReader(System.in));
-
-        try {
-            while ((this.instr = this.buffy.readLine()) != null) {
-                this.instances.add(this.instr);
-            }
-        } catch (IOException IOE) {
-            System.err.println(IOE.toString());
-        }
-
-        String[] inst = (String[]) this.instances.toArray(new String[0]);
 
         this.c = new Constrainer(inst);
         this.m = new Matcher(inst);
@@ -58,9 +36,9 @@ class PipedFinder {
 
         fullP += this.maxpat;
 
-        int indy = this.maxpat.indexOf(" ") + 1;
+        int spaceIndex = this.maxpat.indexOf(" ") + 1;
 
-        if (indy != this.maxpat.length() - 1) {
+        if (spaceIndex != this.maxpat.length() - 1) {
             this.m = new Matcher(this.maxpat, inst);
             String[] res = this.m.run();
             for (int i = 0; i < res.length; ++i) {
@@ -175,12 +153,5 @@ class PipedFinder {
         }
 
         return;
-    }// end of mER
-
-//    public static void main(String[] args) {
-//        String name = (args.length < 1) ? "pattern" : args[0];
-//        PipedFinder f = new PipedFinder(name);
-//    }
-
+    }
 }
-// EOC

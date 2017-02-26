@@ -18,7 +18,7 @@ import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.view.cartoon.CartoonDrawer;
 
-public class CartoonCommand extends Command {
+public class CartoonCommand implements Command {
     
     @Override
     public String getDescription() {

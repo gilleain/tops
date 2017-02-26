@@ -1,8 +1,5 @@
 package tops.engine.juris;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -300,25 +297,4 @@ public class Constrainer {
         outstring.append(this.total_edge);
         return outstring.toString();
     }
-    
-    public static void main(String[] args) {
-        java.io.File file = new java.io.File(args[0]);
-        try {
-            ArrayList<String> instances = new ArrayList<String>();
-            BufferedReader buffy = new BufferedReader(new FileReader(file));
-
-            String instr;
-            while ((instr = buffy.readLine()) != null) {
-                instances.add(instr);
-            }
-            buffy.close();
-
-            String[] inst = (String[]) instances.toArray(new String[0]);
-            Constrainer graphConstraints = new Constrainer(inst);
-            System.out.println(graphConstraints);
-        } catch (IOException IOE) {
-            System.err.println(IOE.toString());
-        }
-    }
-
-}// EOC
+}

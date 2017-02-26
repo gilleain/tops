@@ -8,17 +8,17 @@ import org.apache.commons.cli.ParseException;
  * @author maclean
  *
  */
-public abstract class Command {
+public interface Command {
     
     /**
      * @return a readable description of the command
      */
-    public abstract String getDescription();
+    public String getDescription();
     
     /**
      * @param args
      * @throws ParseException
      */
-    public abstract void handle(String[] args) throws ParseException;
+    public void handle(String[] args) throws ParseException;
 
 }

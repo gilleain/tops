@@ -5,7 +5,7 @@ import org.apache.commons.cli.ParseException;
 import tops.cli.Command;
 import tops.engine.drg.Matcher;
 
-public class MatcherCommand extends Command {
+public class MatcherCommand implements Command {
 
     @Override
     public String getDescription() {

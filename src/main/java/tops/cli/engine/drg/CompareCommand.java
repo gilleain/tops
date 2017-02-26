@@ -13,7 +13,7 @@ import tops.engine.TopsStringFormatException;
 import tops.engine.drg.Comparer;
 import tops.engine.drg.Matcher;
 
-public class CompareCommand extends Command {
+public class CompareCommand implements Command {
     
     @Override
     public String getDescription() {
