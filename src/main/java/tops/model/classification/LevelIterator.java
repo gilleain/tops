@@ -89,45 +89,4 @@ public class LevelIterator implements Iterator<Level> {
 
     public void remove() {
     }
-
-    public static void main(String[] args) {
-        try {
-            Level root = Level.fromFile(args[0], Level.ROOT, "test");
-
-            Iterator<Level> cLevelIterator = root.getSubLevelIterator(Level.C);
-            System.out.println("Classes : ");
-            while (cLevelIterator.hasNext()) {
-                Level classLevel = (Level) cLevelIterator.next();
-                System.out.println(Level.levelName(classLevel.depth) + " "
-                        + classLevel.getFullCode());
-            }
-
-            Iterator<Level> aLevelIterator = root.getSubLevelIterator(Level.A);
-            System.out.println("Architectures : ");
-            while (aLevelIterator.hasNext()) {
-                Level architectureLevel = (Level) aLevelIterator.next();
-                System.out.println(Level.levelName(architectureLevel.depth)
-                        + " " + architectureLevel.getFullCode());
-            }
-
-            Iterator<Level> tLevelIterator = root.getSubLevelIterator(Level.T);
-            System.out.println("Topologies : ");
-            while (tLevelIterator.hasNext()) {
-                Level topologyLevel = (Level) tLevelIterator.next();
-                System.out.println(Level.levelName(topologyLevel.depth) + " "
-                        + topologyLevel.getFullCode());
-            }
-
-            Iterator<Level> hLevelIterator = root.getSubLevelIterator(Level.H);
-            System.out.println("Homologous Superfamilies : ");
-            while (hLevelIterator.hasNext()) {
-                Level homologyLevel = (Level) hLevelIterator.next();
-                System.out.println(Level.levelName(homologyLevel.depth) + " "
-                        + homologyLevel.getFullCode());
-            }
-
-        } catch (java.io.IOException ioe) {
-            System.out.println(ioe);
-        }
-    }
 }

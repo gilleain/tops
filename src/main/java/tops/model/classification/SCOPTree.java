@@ -219,13 +219,4 @@ public class SCOPTree implements ClassificationTree {
 
         return tree;
     }
-
-    public static void main(String[] args) {
-        try {
-            SCOPTree tree = SCOPTree.fromFile(new File(args[0]));
-            tree.printToStream(System.out);
-        } catch (IOException ioe) {
-            System.err.println(ioe);
-        }
-    }
 }

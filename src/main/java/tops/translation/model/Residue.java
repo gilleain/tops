@@ -233,10 +233,4 @@ public class Residue implements Comparable<Residue> {
         //return String.format("%s-%d ", this.type, this.pdbNumber);
         return this.type + " " + this.pdbNumber;
     }
-
-    public static void main(String[] args) {
-        Residue r = new Residue(1, 1, "TYR");
-        r.setAtom(args[0], args[1]);
-        System.out.println(r.toString());
-    }
 }

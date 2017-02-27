@@ -203,16 +203,4 @@ public class Level {
         }
         return stringBuffer.toString();
     }
-
-    public static void main(String[] args) {
-        String filename = args[0];
-        String groupName = args[1];
-
-        try {
-            Level root = Level.fromFile(filename, Level.ROOT, groupName);
-            System.out.println(root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
