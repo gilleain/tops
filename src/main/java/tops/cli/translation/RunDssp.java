@@ -1,8 +1,12 @@
-package tops.translation;
+package tops.cli.translation;
 
 import java.io.File;
 
-public class RunDssp extends Executer {
+import org.apache.commons.cli.ParseException;
+
+import tops.cli.Command;
+
+public class RunDssp extends Executer implements Command {
 
     private String path_to_dssp;
 
@@ -27,8 +31,14 @@ public class RunDssp extends Executer {
         this.execute(command, this.run_directory);
     }
 
-    public static void main(String[] args) {
+    @Override
+    public String getDescription() {
+        return "Run the dssp executable";
+    }
+
+    @Override
+    public void handle(String[] args) throws ParseException {
         RunDssp dssp = new RunDssp(args[0], args[1], args[1], args[1]);
-        dssp.convert(args[2], args[3]);
+        dssp.convert(args[2], args[3]);   
     }
 }

@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import tops.cli.translation.RunDssp;
+import tops.cli.translation.RunTops;
 import tops.translation.CompressedFileHandler;
-import tops.translation.RunDssp;
-import tops.translation.RunTops;
 import tops.translation.Tops2String;
 
 /*

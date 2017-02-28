@@ -1,4 +1,4 @@
-package tops.translation;
+package tops.cli.translation;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

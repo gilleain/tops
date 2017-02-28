@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import tops.cli.translation.RunDssp;
+import tops.cli.translation.RunTops;
 import tops.dw.protein.Protein;
 
 
