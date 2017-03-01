@@ -194,22 +194,4 @@ public class CompressedFileHandler {
             }
         }
     }
-
-    public static void main(String[] args) {
-        String fileName = args[0];
-        String mimeType = args[1];
-        String workingDirectory = args[2];
-
-        CompressedFileHandler cfh = new CompressedFileHandler(workingDirectory,
-                workingDirectory);
-        try {
-            String decompressedFileName = cfh.attemptDecompressionOfFile(
-                    fileName, mimeType);
-            System.err.println("Decompressing : " + fileName + " to "
-                    + decompressedFileName);
-        } catch (IOException ioe) {
-            System.err.println(ioe.toString());
-        }
-    }
-
 }

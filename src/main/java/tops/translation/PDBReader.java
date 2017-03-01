@@ -78,13 +78,4 @@ public class PDBReader {
 
         return chain;
     }
-
-    public static void main(String[] args) {
-        try {
-            Protein protein = PDBReader.read(args[0]);
-            System.out.println(protein.toString());
-        } catch (IOException ioe) {
-            System.err.println(ioe);
-        }
-    }
 }

@@ -1,6 +1,5 @@
 package tops.translation;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -442,26 +441,5 @@ public class HBondAnalyser {
     @Override
     public String toString() {
         return this.properties.toString();
-    }
-
-    public static void main(String[] args) {
-        String pdbFilename = args[0];
-        String propertiesFilename = args[1];
-
-        try {
-            HBondAnalyser hBondAnalyser = new HBondAnalyser();
-            hBondAnalyser
-                    .loadProperties(new FileInputStream(propertiesFilename));
-            hBondAnalyser.storeProperties(System.err);
-
-            Protein protein = PDBReader.read(pdbFilename);
-
-            hBondAnalyser.analyse(protein);
-            System.out.println(protein);
-        } catch (IOException ioe) {
-            System.err.println(ioe);
-        } catch (PropertyError pe) {
-            System.err.println(pe);
-        }
     }
 }
