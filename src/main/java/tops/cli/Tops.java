@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.cli.ParseException;
 
+import tops.cli.translation.CATHDomainFileParserCommand;
+
 /**
  * Main CLI class to run commands.
  * 
@@ -23,6 +25,7 @@ public class Tops {
         commands = new HashMap<String, Command>();
         commands.put("cartoon", new CartoonCommand());
         commands.put("diagram", new DiagramCommand());
+        commands.put("parse-cath", new CATHDomainFileParserCommand());
     }
     
     public boolean hasCommand(String arg) {
@@ -35,10 +38,15 @@ public class Tops {
     
     public static void main(String[] args) {
         Tops tops = new Tops();
-        if (args.length < 1 || !tops.hasCommand(args[0])) {
-            System.err.println("No command or command not known");
+        if (args.length < 1) {
+            System.err.println("No command!");
             System.exit(0);
         }
+        if (!tops.hasCommand(args[0])) {
+            System.err.println("Command not known " + args[0]);
+            System.exit(0);
+        }
+        
         String arg = args[0];
         String[] remainingArgs = Arrays.copyOfRange(args, 1, args.length);
         System.out.println(Arrays.toString(remainingArgs));
