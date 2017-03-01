@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Protein implements Iterable<Chain> {
 
@@ -32,10 +33,8 @@ public class Protein implements Iterable<Chain> {
         this.chains.add(chain);
     }
 
-    public HashMap<String, HashMap<String, String>> toTopsDomainStrings(
-    		HashMap<String, List<Domain>> chainDomainMap) {
-        HashMap<String, HashMap<String, String>> chainDomainStringMap = 
-        		new HashMap<String, HashMap<String, String>>();
+    public Map<String, Map<String, String>> toTopsDomainStrings(Map<String, List<Domain>> chainDomainMap) {
+        Map<String, Map<String, String>> chainDomainStringMap = new HashMap<String, Map<String, String>>();
         for (int i = 0; i < this.chains.size(); i++) {
             Chain chain = this.chains.get(i);
             chainDomainStringMap.put(

@@ -1,10 +1,7 @@
 package tops.translation;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ListIterator;
 
 import javax.vecmath.Point3d;
@@ -13,7 +10,6 @@ import javax.vecmath.Vector3d;
 import tops.translation.model.Axis;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
-import tops.translation.model.Domain;
 import tops.translation.model.Protein;
 import tops.translation.model.Residue;
 import tops.translation.model.Sheet;
@@ -307,39 +303,4 @@ public class FoldAnalyser {
             }
         }
     }
-
-    public static void main(String[] args) {
-        String pdbFilename = args[0];
-
-        try {
-            Protein protein = PDBReader.read(pdbFilename);
-
-            FoldAnalyser foldAnalyser = new FoldAnalyser();
-            foldAnalyser.analyse(protein);
-
-            System.out.println(protein);
-
-            HashMap<String, List<Domain>> cathChainDomainMap = 
-            		CATHDomainFileParser.parseUpToParticularID(args[1], protein.getID());
-            HashMap<String, HashMap<String, String>> chainDomainStringMap = 
-            		protein.toTopsDomainStrings(cathChainDomainMap);
-
-            Iterator<String> itr = chainDomainStringMap.keySet().iterator();
-            while (itr.hasNext()) {
-                String chainID = (String) itr.next();
-                HashMap<String, String> domainStrings = chainDomainStringMap.get(chainID);
-                Iterator<String> itr2 = domainStrings.keySet().iterator();
-                while (itr2.hasNext()) {
-                    String domainString = domainStrings.get(itr2.next());
-                    System.out.println(protein.getID() + domainString);
-                }
-            }
-
-        } catch (IOException ioe) {
-            System.err.println(ioe);
-        } catch (PropertyError pe) {
-            System.err.println(pe);
-        }
-    }
-
 }

@@ -1,19 +1,24 @@
-package tops.translation;
+package tops.cli.translation;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import tops.cli.translation.RunDssp;
-import tops.cli.translation.RunTops;
+import org.apache.commons.cli.ParseException;
+
+import tops.cli.Command;
 import tops.dw.protein.Protein;
+import tops.translation.CompressedFileHandler;
+import tops.translation.PDBToCartoon;
+import tops.translation.PDBToGraph;
+import tops.translation.Tops2String;
 
 
 /**
  * @author maclean
  *
  */
-public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
+public class DsspTopsRunner implements PDBToGraph, PDBToCartoon, Command {
     
     private RunDssp dssp;
     
@@ -37,6 +42,42 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
         this.tops = new RunTops(topsPath, scratchDirectory, scratchDirectory, "./");
         this.tops2String = new Tops2String(scratchDirectory);
         this.compressedFileHandler = new CompressedFileHandler(scratchDirectory);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Run dssp then tops";
+    }
+
+    @Override
+    public void handle(String[] args) throws ParseException {
+        String path = args[0];
+        String scratchDirectory = args[1];
+        DsspTopsRunner runner = new DsspTopsRunner(scratchDirectory);
+        
+        File pathFile = new File(path);
+        if (pathFile.isDirectory()) {
+            String[] files = pathFile.list(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".pdb");
+                }
+            });
+            for (int i = 0; i < files.length; i++) {
+                try {
+                    runner.convertAndPrint(files[i]);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        } else if (pathFile.isFile()) {
+            try {
+                runner.convertAndPrint(pathFile.getName());
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        } else {
+            System.out.println("Path is not a file or directory " + path);
+        }
     }
     
     private File toTopsFile(String pdbFilename, String fileType, String fourLetterCode) throws IOException {
@@ -81,35 +122,4 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon {
             System.out.println(topsStrings[j]); 
         }
     }
-    
-    public static void main(String[] args) {
-        String path = args[0];
-        String scratchDirectory = args[1];
-        DsspTopsRunner runner = new DsspTopsRunner(scratchDirectory);
-        
-        File pathFile = new File(path);
-        if (pathFile.isDirectory()) {
-            String[] files = pathFile.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".pdb");
-                }
-            });
-            for (int i = 0; i < files.length; i++) {
-                try {
-                    runner.convertAndPrint(files[i]);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            }
-        } else if (pathFile.isFile()) {
-            try {
-                runner.convertAndPrint(pathFile.getName());
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-        } else {
-            System.out.println("Path is not a file or directory " + path);
-        }
-    }
-
 }

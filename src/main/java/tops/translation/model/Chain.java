@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -433,21 +434,20 @@ public class Chain implements Iterable<BackboneSegment> {
         return script.toString();
     }
 
-    public HashMap<String, String> toTopsDomainStrings(
-    		HashMap<String, List<Domain>> chainDomainMap) {
+    public Map<String, String> toTopsDomainStrings(Map<String, List<Domain>> chainDomainMap) {
         if (!chainDomainMap.isEmpty()
                 && chainDomainMap.containsKey(this.getCathCompatibleLabel())) {
             List<Domain> domains = chainDomainMap.get(this.getCathCompatibleLabel());
             return this.toTopsDomainStrings(domains);
         } else {
-            HashMap<String, String> h = new HashMap<String, String>();
+            Map<String, String> h = new HashMap<String, String>();
             h.put("0", this.toTopsString(new Domain(0)));
             return h;
         }
     }
 
-    public HashMap<String, String> toTopsDomainStrings(List<Domain> domains) {
-        HashMap<String, String> domainStrings = new HashMap<String, String>(domains.size());
+    public Map<String, String> toTopsDomainStrings(List<Domain> domains) {
+        Map<String, String> domainStrings = new HashMap<String, String>(domains.size());
 
         for (int i = 0; i < domains.size(); i++) {
             Domain d = domains.get(i);
