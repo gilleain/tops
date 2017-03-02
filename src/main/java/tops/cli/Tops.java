@@ -7,7 +7,8 @@ import java.util.Map;
 import org.apache.commons.cli.ParseException;
 
 import tops.cli.translation.CATHDomainFileParserCommand;
-import tops.cli.view.CartoonEditorCommand;
+import tops.cli.view.SimpleCartoonEditorCommand;
+import tops.cli.view.AnotherCartoonEditorCommand;
 import tops.cli.view.DiagramEditorCommand;
 import tops.cli.view.OriginalEditorCommand;
 
@@ -29,9 +30,10 @@ public class Tops {
         commands.put("cartoon", new CartoonCommand());
         commands.put("diagram", new DiagramCommand());
         commands.put("parse-cath", new CATHDomainFileParserCommand());
-        commands.put("edit-cartoon", new CartoonEditorCommand());
+        commands.put("edit-cartoon", new SimpleCartoonEditorCommand());
         commands.put("edit-diagram", new DiagramEditorCommand());
         commands.put("edit-original", new OriginalEditorCommand());
+        commands.put("edit-another", new AnotherCartoonEditorCommand());
     }
     
     public boolean hasCommand(String arg) {

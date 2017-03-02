@@ -7,11 +7,11 @@ import org.apache.commons.cli.ParseException;
 import tops.cli.Command;
 import tops.web.display.applet.SimpleEditorApplet;
 
-public class CartoonEditorCommand implements Command {
+public class SimpleCartoonEditorCommand implements Command {
 
     @Override
     public String getDescription() {
-        return "Run the cartoon editor";
+        return "Run the (simple) cartoon editor"; // XXX simple?
     }
 
     @Override

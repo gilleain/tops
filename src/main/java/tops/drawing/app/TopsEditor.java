@@ -746,21 +746,5 @@ public class TopsEditor extends JApplet {
             }
         }
     }
-    
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("TOPS Designer 1.0");
-        TopsEditor editor = new TopsEditor();
-        editor.installInFrame(frame);
-        
-        frame.setLocation(750, 50); // XXX remove me
-        
-        frame.pack();
-        frame.setSize(550,700);
-        frame.setVisible(true);
-        
-        if (args.length > 0) {
-            editor.openCartoon(args[0]);
-        }
-    }
 }
 
