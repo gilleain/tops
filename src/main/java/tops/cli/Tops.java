@@ -7,6 +7,9 @@ import java.util.Map;
 import org.apache.commons.cli.ParseException;
 
 import tops.cli.translation.CATHDomainFileParserCommand;
+import tops.cli.view.CartoonEditorCommand;
+import tops.cli.view.DiagramEditorCommand;
+import tops.cli.view.OriginalEditorCommand;
 
 /**
  * Main CLI class to run commands.
@@ -26,6 +29,9 @@ public class Tops {
         commands.put("cartoon", new CartoonCommand());
         commands.put("diagram", new DiagramCommand());
         commands.put("parse-cath", new CATHDomainFileParserCommand());
+        commands.put("edit-cartoon", new CartoonEditorCommand());
+        commands.put("edit-diagram", new DiagramEditorCommand());
+        commands.put("edit-original", new OriginalEditorCommand());
     }
     
     public boolean hasCommand(String arg) {

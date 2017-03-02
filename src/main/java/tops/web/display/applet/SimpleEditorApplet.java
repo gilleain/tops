@@ -168,11 +168,4 @@ public class SimpleEditorApplet extends Applet implements ActionListener,
             }
         }
     }
-    
-    public static void main(String[] args) {
-    	SimpleEditorApplet applet = new SimpleEditorApplet();
-    	JFrame frame = new JFrame();
-    	frame.add(applet);
-    	frame.setVisible(true);
-    }
 }

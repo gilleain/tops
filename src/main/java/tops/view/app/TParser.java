@@ -115,15 +115,6 @@ public class TParser {
         return this.current.substring(spsp + 1, spspsp);
     }
 
-    /*
-     * removed because it doesn't work in java1.3 public String[] getEdges() {
-     * String tail = this.getEdgeString(); Matcher m = edgeP.matcher(tail);
-     * ArrayList bits = new ArrayList(); while (m.find()) { //start i at 1,
-     * because group(0) is the whole match! for (int i = 1; i <= m.groupCount();
-     * i++) { bits.add(m.group(i)); } } return (String[]) bits.toArray(new
-     * String[0]); }
-     */
-
     // ALTERNATIVE 1.3 method
     public String[] getEdges() {
         String tail = this.getEdgeString();
@@ -155,16 +146,4 @@ public class TParser {
             return "";
         return this.current.substring(spspsp);
     }
-
-    public static void main(String[] args) {
-//        String pattern = args[0];
-        /*
-         * TParser t = new TParser(pattern); System.out.println(t.getName());
-         * System.out.println(t.getVertices()); String[] ins = t.getInserts();
-         * for (int l = 0; l < ins.length; l++) { System.out.println("[" +
-         * ins[l] + "]"); } String[] sta = t.getEdges(); for (int k = 0; k <
-         * sta.length; k++) { System.out.println("[" + sta[k] + "]"); }
-         */
-//        TParser t = new TParser();
-    }
-}// EOC
+}

@@ -1029,14 +1029,6 @@ public class TopsEditor implements ActionListener {
          return list;
     }
 
-
-    /**
-     * to enable the TopsEditor to run standalone
-     */
-    public static void main(String[] argv) {
-        new TopsEditor(false, argv);
-    }
-
 }
 
 class TopsFileFilter implements FilenameFilter {

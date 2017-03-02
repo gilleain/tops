@@ -1,15 +1,18 @@
 package tops.view.app;
 
-import java.awt.*;
-import java.awt.event.*;
-
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
-//import javax.swing.DefaultListModel;
-import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 //import javax.swing.JList;
@@ -17,19 +20,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
+//import javax.swing.DefaultListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 
 import tops.engine.Result;
 import tops.engine.TopsStringFormatException;
-
 import tops.engine.drg.Comparer;
 import tops.engine.drg.Matcher;
 
@@ -102,13 +100,11 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
         pane.setLayout(null);
 
         this.tableModel = new DefaultTableModel();
-        TableSorter sorter = new TableSorter(this.tableModel);
-        this.jTable = new JTable(sorter);
+        this.jTable = new JTable(tableModel);
         this.jTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         
         ListSelectionModel lsm = this.jTable.getSelectionModel();
         lsm.addListSelectionListener(this);
-        sorter.addMouseListenerToHeaderInTable(this.jTable);
         pane.add(this.jTable);
 
         JScrollPane scrollPane = new JScrollPane(this.jTable);
@@ -320,17 +316,4 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
             this.showSelected(sel);
         }
     }
-
-    public static void main(String[] args) throws IOException {
-        
-        try {
-            new TOPSViewer(args[0], args);
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            System.out.println(aioobe + " No file specified : using default!");
-            new TOPSViewer("test.str", args);
-        }
-        
-        
-    }
-
 }
