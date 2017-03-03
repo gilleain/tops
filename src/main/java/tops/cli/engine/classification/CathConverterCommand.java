@@ -1,43 +1,25 @@
-package tops.data.db.update;
+package tops.cli.engine.classification;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CATHConverter extends ClassificationConverter {
+import org.apache.commons.cli.ParseException;
 
-    public CATHConverter() {
+import tops.cli.Command;
+import tops.data.db.update.CATHParser;
+import tops.data.db.update.ClassificationConverter;
+import tops.data.db.update.FatalException;
+
+public class CathConverterCommand implements Command {
+
+    @Override
+    public String getDescription() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public HashMap<String, String> parseDomainList(ArrayList<String> lines) {
-        HashMap<String, String> data = new HashMap<String, String>();
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
-            if (line.substring(0, 1).equals("#")) {
-                continue;
-            } else {
-                String[] bits = line.split("\\s+");
-                String domainID = bits[0];
-
-                // ignore superseded entries
-                String resolution = bits[9];
-                if (resolution.equals("1000.000")) {
-                    continue;
-                }
-
-                // concatenate the CATH number
-                String CATHNumber = "";
-                for (int j = 1; j < 8; j++) {
-                    CATHNumber += bits[j];
-                    CATHNumber += ".";
-                }
-                data.put(domainID, CATHNumber);
-            }
-        }
-        return data;
-    }
-
-    public static void main(String[] args) {
+    public void handle(String[] args) throws ParseException {
 
         String classificationVersion = args[0];
         String listFileURLBase = args[1];
@@ -54,7 +36,7 @@ public class CATHConverter extends ClassificationConverter {
         String topsExecutable = args[8];
         String currentDirectory = args[9];
 
-        CATHConverter converter = new CATHConverter();
+        ClassificationConverter converter = new ClassificationConverter(new CATHParser());
 
         try {
             // Step 1 : Download the latest classification file and domain
@@ -74,24 +56,24 @@ public class CATHConverter extends ClassificationConverter {
                             domainBoundaryFileURL, domainBoundaryFilename);
 
             // Step 2 : Parse the file, and store a list of domain names.
-            ArrayList<String> lines = converter.readListFile(listFilePath);
-            HashMap<String, String> domainClassificationMap = converter.parseDomainList(lines);
+            List<String> lines = converter.readListFile(listFilePath);
+            Map<String, String> domainClassificationMap = converter.parseDomainList(lines);
 
             // Step 3 : Convert domain names to chain names and diff with the
             // existing chain files in the tops directory.
-            ArrayList<String> chains = converter.getChainsFromDomains(domainClassificationMap);
-            ArrayList<String> existingChainNames = converter.getExistingChainNames(topsFileDirectory);
-            ArrayList<String> newChainNames = converter.determineNewChains(chains,existingChainNames);
+            List<String> chains = converter.getChainsFromDomains(domainClassificationMap);
+            List<String> existingChainNames = converter.getExistingChainNames(topsFileDirectory);
+            List<String> newChainNames = converter.determineNewChains(chains,existingChainNames);
 
             // Step 4 : Get PDB-IDs and check that we have the PDB files,
             // downloading the missing ones.
-            ArrayList<String> newPDBIDList = converter.getPDBIDsFromChains(newChainNames);
-            ArrayList<String> missingPDBIDs = converter.getPDBFilesToDownload(newPDBIDList, pdbFileDirectory, pdbDirectoryHasStructure);
+            List<String> newPDBIDList = converter.getPDBIDsFromChains(newChainNames);
+            List<String> missingPDBIDs = converter.getPDBFilesToDownload(newPDBIDList, pdbFileDirectory, pdbDirectoryHasStructure);
             converter.downloadMissingPDBFiles(missingPDBIDs, pdbURL,
                     scratchDirectory);
 
             // Step 5 : Convert the PDB files to DSSP and TOPS/String files.
-            ArrayList<String> stringList = converter.convertFiles(newChainNames,
+            List<String> stringList = converter.convertFiles(newChainNames,
                     missingPDBIDs, currentDirectory, domainBoundaryFilePath,
                     pdbFileDirectory, pdbDirectoryHasStructure,
                     scratchDirectory, dsspExecutable, topsExecutable);
@@ -101,7 +83,7 @@ public class CATHConverter extends ClassificationConverter {
         } catch (FatalException e) {
             converter.log(e);
         }
-
+  
     }
 
 }

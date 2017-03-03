@@ -1,4 +1,4 @@
-package tops.cli.engine.crossvalidate;
+package tops.cli.engine.classification;
 
 import org.apache.commons.cli.ParseException;
 
