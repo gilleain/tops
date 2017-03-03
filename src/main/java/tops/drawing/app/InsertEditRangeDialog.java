@@ -37,11 +37,6 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
 
     private JCheckBox infinite_cb;
     private JCheckBox zero_range;
-    
-    public static void main(String[] args) {
-        InsertEditRangeDialog r = new InsertEditRangeDialog(null);
-        r.setVisible(true);
-    }
 
     public InsertEditRangeDialog(TopsEditor controller) {
         this.controller = controller;

@@ -1,15 +1,10 @@
 package tops.drawing.layers;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import tops.drawing.model.Connection;
 import tops.drawing.model.Helix;
@@ -123,39 +118,6 @@ public class LayerDiagram {
         }
         
 //        this.cTerminus.draw(g);   XXX TODO
-    }
-    
-    public static void main(String[] args) {
-        String directions = args[0];
-        
-        GeometricParameters params;
-        if (args.length == 1) {
-            params = new GeometricParameters();
-        } else {
-            String[] newArgs = new String[args.length - 1];
-            System.arraycopy(args, 1, newArgs, 0, newArgs.length);
-            params = new GeometricParameters(newArgs);
-        }
-        
-        LayerDiagram layerDiagram = new LayerDiagram();
-        layerDiagram.setParams(params);
-        layerDiagram.createFromTopsString(directions);
-        
-        JPanel picture = new JPanel();
-        
-        Dimension d = new Dimension(500, 500);
-        picture.setPreferredSize(d);
-        
-        JFrame t2df = new JFrame(directions);
-        t2df.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        t2df.getContentPane().add(picture, BorderLayout.CENTER);
-        t2df.setSize(d);
-        t2df.setLocation(800, 30);
-        t2df.pack();
-        t2df.setVisible(true);
-        
-        Graphics2D g2 = (Graphics2D) picture.getGraphics();
-        layerDiagram.draw(g2);
     }
 
 }
