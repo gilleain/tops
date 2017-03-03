@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.cli.ParseException;
 
+import tops.cli.drawing.CartoonCommand;
+import tops.cli.drawing.DiagramCommand;
 import tops.cli.translation.CATHDomainFileParserCommand;
 import tops.cli.view.SimpleCartoonEditorCommand;
 import tops.cli.view.AnotherCartoonEditorCommand;

@@ -1,4 +1,4 @@
-package tops.cli;
+package tops.cli.drawing;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,6 +14,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
+import tops.cli.BaseCLIHandler;
+import tops.cli.Command;
 import tops.view.app.TParser;
 import tops.view.diagram.DiagramDrawer;
 

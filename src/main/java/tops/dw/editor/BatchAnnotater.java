@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -50,8 +50,8 @@ public class BatchAnnotater {
 		}
 	}
 	
-	public static HashMap<String, List<Integer>> parse(File file) {
-		HashMap<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+	public static Map<String, List<Integer>> parse(File file) {
+		Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
 		try {
 			BufferedReader b = new BufferedReader(new FileReader(file));
 			String line;
@@ -80,26 +80,6 @@ public class BatchAnnotater {
 		}
 		
 		return map;
-	}
-	
-	public static void main(String[] args) {
-		String inputFile = args[0];
-		String outputDirectory = args[1];
-		String inputDir = args[2];
-		
-		HashMap<String, List<Integer>> map = BatchAnnotater.parse(new File(inputFile));
-		
-		Iterator<String> keys = map.keySet().iterator();
-		while (keys.hasNext()) {
-			String pdbid = (String) keys.next();
-			List<Integer> r = map.get(pdbid);
-			int[] residuesToAnnotate = new int[r.size()];
-			for (int i = 0; i < r.size(); i++) {
-				residuesToAnnotate[i] = ((Integer) r.get(i)).intValue();
-			}
-			File file = new File(inputDir, pdbid + ".tops");
-			BatchAnnotater.annotateCartoon(file, outputDirectory, residuesToAnnotate);	
-		}
 	}
 
 }
