@@ -1,6 +1,5 @@
 .gitignore
 docs/javadocs
-data
 thirdpartylibs
 web/WEB-INF/lib/
 .DS_Store
@@ -10,3 +9,4 @@ designer.jar
 /target
 .settings
 src/main/webapp/scratch
+*.dssp
