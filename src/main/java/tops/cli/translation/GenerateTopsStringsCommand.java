@@ -1,29 +1,29 @@
-package tops.dssp;
+package tops.cli.translation;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Test;
+import org.apache.commons.cli.ParseException;
 
+import tops.cli.Command;
 import tops.data.dssp.DSSPReader;
 import tops.translation.model.Protein;
 import tops.view.diagram.DiagramConverter;
-import tops.view.diagram.Graph;
 
-/**
- * Not a unit test class, but a transformation utility.
- * 
- * @author maclean
- *
- */
-public class GenerateTopsStrings {
+public class GenerateTopsStringsCommand implements Command {
     
     private final double DEFAULT_MIN_ENERGY = -0.9;
     
     private final String directoryPath = "/Users/maclean/data/dssp/reps";
-    
-    @Test
-    public void generate() throws IOException {
+
+    @Override
+    public String getDescription() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void handle(String[] args) throws ParseException {
         File directory = new File(directoryPath);
         for (File file : directory.listFiles()) {
             if (!file.getName().endsWith("dssp")) continue;
@@ -35,20 +35,6 @@ public class GenerateTopsStrings {
                 System.out.println("Error for " + name);
                 e.printStackTrace();
             }
-        }
-    }
-    
-    @Test
-    public void test() {
-        test("1bte");
-    }
-    
-    
-    private void test(String name) {
-        try {
-            System.out.println(getTopsString(new File(directoryPath, name + ".dssp")));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
     
