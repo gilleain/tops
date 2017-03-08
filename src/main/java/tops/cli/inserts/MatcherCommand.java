@@ -65,4 +65,10 @@ public class MatcherCommand implements Command {
         System.out.println(m.numberMatching(p) + " matches");
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

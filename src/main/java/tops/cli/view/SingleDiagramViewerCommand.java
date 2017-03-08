@@ -79,4 +79,10 @@ public class SingleDiagramViewerCommand implements Command {
         new TinyViewer(name, vertices, edges, width, height);
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

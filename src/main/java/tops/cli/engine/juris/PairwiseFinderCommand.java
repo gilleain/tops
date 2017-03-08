@@ -67,4 +67,10 @@ public class PairwiseFinderCommand implements Command {
         new PairwiseFinder(lowerIndex, upperIndex, names, instMap);
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

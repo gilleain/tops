@@ -25,4 +25,9 @@ public class LevelCommand implements Command {
             e.printStackTrace();
         }    
     }
+
+    @Override
+    public String getHelp() {
+        return "<filename> <groupName>";
+    }
 }

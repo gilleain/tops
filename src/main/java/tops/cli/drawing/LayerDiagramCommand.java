@@ -55,4 +55,10 @@ public class LayerDiagramCommand implements Command {
         layerDiagram.draw(g2);        
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

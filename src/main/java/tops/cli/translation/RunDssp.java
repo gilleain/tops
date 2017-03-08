@@ -41,4 +41,10 @@ public class RunDssp extends Executer implements Command {
         RunDssp dssp = new RunDssp(args[0], args[1], args[1], args[1]);
         dssp.convert(args[2], args[3]);   
     }
+
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

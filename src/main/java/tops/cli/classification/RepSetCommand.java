@@ -19,6 +19,11 @@ public class RepSetCommand implements Command {
     }
 
     @Override
+    public String getHelp() {
+        return "<filename> <levelName>";
+    }
+
+    @Override
     public void handle(String[] args) throws ParseException {
         String filename = args[0];
         String levelName = args[1];

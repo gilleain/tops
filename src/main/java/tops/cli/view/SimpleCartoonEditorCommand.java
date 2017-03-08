@@ -22,6 +22,12 @@ public class SimpleCartoonEditorCommand implements Command {
         frame.pack();
         frame.setVisible(true);
     }
+
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
     
 

@@ -14,6 +14,11 @@ public class ScopTreeCommand implements Command {
     public String getDescription() {
         return "Print a SCOP tree";
     }
+    
+    @Override
+    public String getHelp() {
+        return "<filename>";
+    }
 
     @Override
     public void handle(String[] args) throws ParseException {
@@ -24,5 +29,4 @@ public class ScopTreeCommand implements Command {
             System.err.println(ioe);
         }
     }
-
 }

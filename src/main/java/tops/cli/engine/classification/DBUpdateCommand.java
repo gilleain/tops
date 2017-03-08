@@ -111,4 +111,10 @@ public class DBUpdateCommand implements Command {
             System.err.println(ioe);
         }
     }
+
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

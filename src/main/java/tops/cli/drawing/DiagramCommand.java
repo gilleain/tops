@@ -10,7 +10,6 @@ import java.io.Reader;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
@@ -25,6 +24,13 @@ public class DiagramCommand implements Command {
     public String getDescription() {
         return "Draw a tops graph as an image";
     }
+    
+
+    @Override
+    public String getHelp() {
+        return new CLIHandler().getHelp("diagram");
+    }
+
 
     @Override
     public void handle(String[] args) throws ParseException {
@@ -70,10 +76,7 @@ public class DiagramCommand implements Command {
         
         private String fileString; // either the file name or a string
         
-        private Options options;
-        
         public CLIHandler() {
-            options = new Options();
 //            options.addOption(opt("h", "Print help")); // XXX - conflicts with height!!
             options.addOption(opt("w", "width", "Diagram width"));
             options.addOption(opt("h", "height", "Diagram height"));
@@ -99,5 +102,4 @@ public class DiagramCommand implements Command {
         }
         
     }
-
 }

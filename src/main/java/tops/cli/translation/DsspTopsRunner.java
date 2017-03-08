@@ -122,4 +122,10 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon, Command {
             System.out.println(topsStrings[j]); 
         }
     }
+
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

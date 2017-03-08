@@ -26,4 +26,10 @@ public class DiagramEditorCommand implements Command {
         
         frame.setVisible(true);
     }
+
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

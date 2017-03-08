@@ -40,4 +40,10 @@ public class PipedFinderCommand implements Command {
         new PipedFinder(name, inst);
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

@@ -29,6 +29,10 @@ public class Tops {
     
     public Tops() {
         commands = new HashMap<String, Command>();
+        
+        // special command to print help
+        commands.put("help", new HelpCommand(commands));
+        
         commands.put("cartoon", new CartoonCommand());
         commands.put("diagram", new DiagramCommand());
         commands.put("parse-cath", new CATHDomainFileParserCommand());

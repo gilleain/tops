@@ -16,6 +16,11 @@ public interface Command {
     public String getDescription();
     
     /**
+     * @return a description of how to use this command
+     */
+    public String getHelp();
+    
+    /**
      * @param args
      * @throws ParseException
      */

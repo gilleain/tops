@@ -21,4 +21,10 @@ public class MatcherCommand implements Command {
         m.runToStdOut(filename, pattern);
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

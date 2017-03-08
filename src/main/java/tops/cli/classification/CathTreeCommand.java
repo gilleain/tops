@@ -25,4 +25,9 @@ public class CathTreeCommand implements Command {
         }
     }
 
+    @Override
+    public String getHelp() {
+        return "<filename>";
+    }
+
 }

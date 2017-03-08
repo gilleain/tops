@@ -40,4 +40,10 @@ public class ConstrainCommand implements Command {
         }
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

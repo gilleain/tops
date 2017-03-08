@@ -19,6 +19,11 @@ public class FileManagerCommand implements Command {
     }
 
     @Override
+    public String getHelp() {
+        return "<className> <path> <pdbId> ..."; // TODO
+    }
+
+    @Override
     public void handle(String[] args) throws ParseException {
         TopsFileManager tfm = new TopsFileManager("./");
         System.out.println(Arrays.toString(args));

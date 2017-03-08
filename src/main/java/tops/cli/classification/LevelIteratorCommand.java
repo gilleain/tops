@@ -17,9 +17,16 @@ public class LevelIteratorCommand implements Command {
     }
 
     @Override
+    public String getHelp() {
+        return "<filename>";
+    }
+
+    @Override
     public void handle(String[] args) throws ParseException {
+        String filename = args[0];
+        
         try {
-            Level root = Level.fromFile(args[0], Level.ROOT, "test");
+            Level root = Level.fromFile(filename, Level.ROOT, "test");
 
             Iterator<Level> cLevelIterator = root.getSubLevelIterator(Level.C);
             System.out.println("Classes : ");

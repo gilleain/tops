@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.Vector;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
@@ -25,6 +24,11 @@ public class CartoonCommand implements Command {
     @Override
     public String getDescription() {
         return "Draw a tops cartoon as an image";
+    }
+
+    @Override
+    public String getHelp() {
+        return new CLIHandler().getHelp("cartoon");
     }
     
     public void handle(String[] args) throws ParseException {
@@ -75,8 +79,6 @@ public class CartoonCommand implements Command {
     }
     
     private class CLIHandler extends BaseCLIHandler {
-
-        private Options options;
         
         private String outputType;
         
@@ -85,7 +87,6 @@ public class CartoonCommand implements Command {
         private String outputFilepath;
         
         public CLIHandler() {
-            options = new Options();
             options.addOption(opt("h", "Print help"));
             options.addOption(opt("o", "type", "Output type"));
             options.addOption(opt("t", "filepath", "Tops filepath"));
@@ -121,5 +122,4 @@ public class CartoonCommand implements Command {
         }
         
     }
-
 }

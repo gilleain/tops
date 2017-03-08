@@ -17,4 +17,10 @@ public class OriginalEditorCommand implements Command {
         new TopsEditor(false, args);
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

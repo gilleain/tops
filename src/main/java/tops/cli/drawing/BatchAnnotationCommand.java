@@ -17,6 +17,11 @@ public class BatchAnnotationCommand implements Command {
     }
 
     @Override
+    public String getHelp() {
+        return "<inputFile> <outputDir> <inputDir>";
+    }
+
+    @Override
     public void handle(String[] args) throws ParseException {
         String inputFile = args[0];
         String outputDirectory = args[1];
@@ -34,5 +39,4 @@ public class BatchAnnotationCommand implements Command {
             BatchAnnotater.annotateCartoon(file, outputDirectory, residuesToAnnotate);  
         }
     }
-
 }

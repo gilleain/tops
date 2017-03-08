@@ -30,6 +30,12 @@ public class AnotherCartoonEditorCommand implements Command {
             editor.openCartoon(args[0]);
         }
     }
+
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
     
 

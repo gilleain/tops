@@ -47,4 +47,10 @@ public class GenerateTopsStringsCommand implements Command {
       return String.valueOf(protein.toTopsChainStringArray());  // FIXME
     }
 
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
