@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -201,8 +202,8 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
     }
 
     @SuppressWarnings("unchecked")
-	public String[] getInstances() {
-        ArrayList<String> instances = new ArrayList<String>();
+	public List<String> getInstances() {
+        List<String> instances = new ArrayList<String>();
         Vector<Vector<?>> dataVector = this.tableModel.getDataVector();
         int nameColumnIndex = 0;
 
@@ -217,7 +218,7 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
             instance.append(this.classMap.get(name));
             instances.add(instance.toString());
         }
-        return instances.toArray(new String[0]);
+        return instances;
     }
 
     public void showSelected(int[] indices) {
@@ -240,9 +241,9 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
     public void compare() {
         String pattern = this.patternField.getText();
         System.out.println("Comparing : " + pattern);
-        String[] instances = this.getInstances();
+        List<String> instances = this.getInstances();
         Comparer e = new Comparer();
-        Result[] results = null;
+        List<Result> results = null;
         try {
             results = e.compare(pattern, instances);
         } catch (TopsStringFormatException tsfe) {
@@ -252,8 +253,8 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
         this.tableModel.addColumn("compression");
         this.tableModel.addColumn("classification");
 
-        for (int i = 0; i < results.length; i++) {
-            Result r = results[i];
+        for (int i = 0; i < results.size(); i++) {
+            Result r = results.get(i);
             this.tableModel.setValueAt(r.getID(), i, 0);
             this.tableModel.setValueAt(new Float(r.getCompression()), i, 1);
             this.tableModel.setValueAt(r.getClassification(), i, 2);

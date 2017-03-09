@@ -33,11 +33,11 @@ public class Matcher implements MatcherI {
         this.diagrams = diag;
     }
 
-    public Matcher(String[] diag) {
+    public Matcher(List<String> diag) {
         this();
-        this.diagrams = new Pattern[diag.length];
-        for (int p = 0; p < diag.length; ++p) {
-            this.diagrams[p] = new Pattern(diag[p]);
+        this.diagrams = new Pattern[diag.size()];
+        for (int p = 0; p < diag.size(); ++p) {
+            this.diagrams[p] = new Pattern(diag.get(p));
         }
     }
     
@@ -132,7 +132,7 @@ public class Matcher implements MatcherI {
 	}
 
 	// return a Result array rather than a String array
-    public Result[] runResults(Pattern p) {
+    public List<Result> runResults(Pattern p) {
         List<Result> results = new ArrayList<Result>();
         for (int i = 0; i < this.diagrams.length; ++i) {
             Result result = new Result();
@@ -160,7 +160,7 @@ public class Matcher implements MatcherI {
             if (matchfound)
                 results.add(result);
         }
-        return (Result[]) results.toArray(new Result[0]);
+        return results;
     }
 
     public String[] run(String s) {

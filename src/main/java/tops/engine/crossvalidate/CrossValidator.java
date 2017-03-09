@@ -3,6 +3,7 @@ package tops.engine.crossvalidate;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import tops.engine.inserts.Matcher;
@@ -57,12 +58,12 @@ public class CrossValidator {
             while (subLevelIterator.hasNext()) {
                 Level bundleOfSReps = subLevelIterator.next();
                 RepSet sReps = bundleOfSReps.getRepSet();
-                String[] instances = sReps.getInstances();
-                for (int i = 0; i < instances.length; i++) {
+                List<String> instances = sReps.getInstances();
+                for (int i = 0; i < instances.size(); i++) {
                     boolean TRUE_POSITIVES = false;
                     int TRUE_NEGATIVES = 0;
                     int FALSE_POSITIVES = 0;
-                    Pattern instance = new Pattern(instances[i]);
+                    Pattern instance = new Pattern(instances.get(i));
                     for (Level anotherTLevelKey : tLevelHGroupPatterns.keySet()) {
                         boolean matchedAnotherTLevel = false;
                         Map<Level, Pattern> hLevelPatternMap = tLevelHGroupPatterns.get(anotherTLevelKey);

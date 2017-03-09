@@ -1,5 +1,7 @@
 package tops.engine.drg;
 
+import java.util.List;
+
 import tops.engine.TopsStringFormatException;
 
 public class Utilities {
@@ -104,10 +106,10 @@ public class Utilities {
         return currentMin;
     }
 
-    public static float doCompression(String[] instances, Pattern p) throws TopsStringFormatException {
-        Pattern[] pinstances = new Pattern[instances.length];
-        for (int i = 0; i < instances.length; i++) {
-            pinstances[i] = new Pattern(instances[i]);
+    public static float doCompression(List<String> instances, Pattern p) throws TopsStringFormatException {
+        Pattern[] pinstances = new Pattern[instances.size()];
+        for (int i = 0; i < instances.size(); i++) {
+            pinstances[i] = new Pattern(instances.get(i));
         }
         return doCompression(pinstances, p);
     }

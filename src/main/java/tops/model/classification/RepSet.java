@@ -97,13 +97,11 @@ public class RepSet {
         this.repBitSet.clear();
     }
 
-    public String[] getInstances() {
-        String[] instances = new String[this.cardinality()];
-        int j = 0;
+    public List<String> getInstances() {
+        List<String> instances = new ArrayList<String>(this.cardinality());
         for (int i = 0; i < this.size(); i++) {
             if (!this.repBitSet.get(i)) {
-                instances[j] = ((Rep) this.reps.get(i)).getTopsString();
-                j++;
+                instances.add(this.reps.get(i).getTopsString());
             }
         }
         return instances;
@@ -132,8 +130,8 @@ public class RepSet {
             Comparer ex = new Comparer();
             // String pattern =
             // ex.findPatternStringWithInserts(this.getInstances());
-            tops.engine.drg.Pattern simplePattern = ex.findPattern(this
-                    .getInstances());
+            tops.engine.drg.Pattern simplePattern = 
+                    ex.findPattern(this.getInstances());
             float compression = 1 - Utilities.doCompression(this.getInstances(),
                     simplePattern);
             String insertPatternString = ex.matchAndGetInserts(simplePattern);

@@ -1,24 +1,26 @@
 package tops.web.engine;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-
-import java.util.Iterator;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import tops.engine.TParser;
 import tops.engine.TopsStringFormatException;
-
 import tops.engine.drg.Comparer;
 import tops.engine.drg.Pattern;
 import tops.engine.drg.Utilities;
-
 import tops.model.classification.CATHLevel;
 import tops.model.classification.SCOPLevel;
 
@@ -180,11 +182,10 @@ public class ClassificationServlet extends HttpServlet {
         Pattern result = null;
         float compression = 1.0f;
         try {
-            String[] instanceArray = (String[]) instances.values().toArray(
-                    new String[0]);
-            result = ex.findPattern(instanceArray);
+            List<String> instanceValues = new ArrayList<String>(instances.values());
+            result = ex.findPattern(instanceValues);
             result.rename(classificationStub);
-            compression = 1 - Utilities.doCompression(instanceArray, result);
+            compression = 1 - Utilities.doCompression(instanceValues, result);
         } catch (TopsStringFormatException tsfe) {
             this.log(tsfe.toString());
             return;

@@ -83,7 +83,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         out.println("</tr></table></p>");
     }
 
-    public void displayPage(int page, int pageSize, Result[] results,
+    public void displayPage(int page, int pageSize, List<Result> results,
             PrintWriter out, String targetName, String target,
             Map<Integer, List<String>> idToNameMap, String targetService, String classification) {
         out
@@ -115,9 +115,9 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         } else if (targetService.equals("advanced-match")) {
             out.println("<a href=\"" + TopsComparisonServlet.advancedStartPageURL
                     + "\">Advanced Match again?</a><p>");
-            out.println("<p><b>" + results.length + " Matches for pattern: "
+            out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
-            if (results.length == 0) {
+            if (results.size() == 0) {
             	// probably from pattern invention
                 out.println("Sorry, no matches for this pattern!"); 
                 return;
@@ -125,9 +125,9 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         } else if (targetService.equals("insert-match")) {
             out.println("<a href=\"" + TopsComparisonServlet.advancedStartPageURL
                     + "\">Insert Match again?</a><p>");
-            out.println("<p><b>" + results.length + " Matches for pattern: "
+            out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
-            if (results.length == 0) {
+            if (results.size() == 0) {
             	// probably from pattern invention
                 out.println("Sorry, no matches for this pattern!"); 
                 return;
@@ -135,9 +135,9 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         } else {
             out.println("<a href=\"" + TopsComparisonServlet.matchStartPageURL
                     + "\">Classic Match again?</a><p>");
-            out.println("<p><b>" + results.length + " Matches for pattern: "
+            out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
-            if (results.length == 0) {
+            if (results.size() == 0) {
             	// probably from pattern invention
                 out.println("Sorry, no matches for this pattern!"); 
                 return;
@@ -167,13 +167,13 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         out.println("<img src=\"" + TopsComparisonServlet.diagramURL + "/300/100/none"
         			+ patternDiagramURL + "\"/></p><hr>");
 
-        if (pageSize > results.length)
-            pageSize = results.length; // no funny business!
+        if (pageSize > results.size())
+            pageSize = results.size(); // no funny business!
 
-        int startIndex = (page - 1) * pageSize; // page-1 becuase array index is
+        int startIndex = (page - 1) * pageSize; // page-1 because array index is
                                                 // from 0!
         int endIndex = startIndex + pageSize;
-        int totalPages = Math.round(results.length / pageSize);
+        int totalPages = Math.round(results.size() / pageSize);
 
         int startPage = (page > 5) ? page - 5 : 1;
         int endPage = (page < (totalPages - 5)) ? page + 5 : totalPages;
@@ -220,9 +220,10 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         tops.engine.TParser resultParser = new tops.engine.TParser();
 
         for (int i = startIndex; i < endIndex; i++) {
-            Integer id = new Integer(results[i].getID());
+            Result result = results.get(i);
+            Integer id = new Integer(result.getID());
             List<String> nameList = idToNameMap.get(id);
-            String data = results[i].getData();
+            String data = result.getData();
 //            String insertString = null; // TODO sort this all out!
             String matchString = null;
 
@@ -238,7 +239,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 tail = resultParser.getEdgeString();
                 if (tail.equals(""))
                     tail = "none";
-                compression = results[i].getCompression();
+                compression = result.getCompression();
                 // compression = 1 - compression;
             }
 
@@ -304,7 +305,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         int pageSize = 10;
 
         HttpSession session = request.getSession();
-        Result[] results = (Result[]) session.getAttribute("results");
+        List<Result> results = (List<Result>) session.getAttribute("results");
         
         // this should have been passed in by the caller
         String newSubmission = (String) request.getAttribute("newSubmission"); 
@@ -404,23 +405,21 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
             this.log("A = " + query_a + " B = " + query_b);
 
-            String[] instances = null;
+            List<String> instances = new ArrayList<String>();
 
             try {
                 Connection connection = DataSourceWrapper.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery(query_a);
-                ArrayList<String> in = new ArrayList<String>();
                 while (rs.next()) {
                     String nextInstance = new String();
                     nextInstance += rs.getString("group_id") + " ";
                     nextInstance += rs.getString("vertex_string") + " ";
                     nextInstance += rs.getString("edge_string");
                     // log(nextInstance); !!
-                    in.add(nextInstance);
+                    instances.add(nextInstance);
                 }
                 rs.close();
-                instances = (String[]) in.toArray(new String[0]);
 
                 // now concatenate the names together into a csv list, put lists
                 // into a map
@@ -448,7 +447,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
             if (instances != null) {
                 try {
-                    Result[] tmp = null;
+                    List<Result> tmp = null;
                     if (targetService.equals("compare") || targetService.equals("advanced-compare")) {
                         Comparer ex = new Comparer();
                         tmp = ex.compare(target, instances);
@@ -464,9 +463,10 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                         results = tmp;
                     } else {
                         int max = Integer.parseInt(topResultS);
-                        if (max > tmp.length)
-                            max = tmp.length;
-                        results = new Result[max];
+                        if (max > tmp.size()) {
+                            max = tmp.size();
+                        }
+                        results = tmp.subList(0, max);
                         System.arraycopy(tmp, 0, results, 0, max);
                     }
 

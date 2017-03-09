@@ -36,7 +36,7 @@ public class Comparer {
         this.m = new Matcher();
     }
     
-    public Pattern findPattern(String[] instances) throws TopsStringFormatException {
+    public Pattern findPattern(List<String> instances) throws TopsStringFormatException {
     	m.setDiagrams(instances);
     	Pattern p = this.extendAndMatch();
         
@@ -62,7 +62,7 @@ public class Comparer {
         return this.m.matchAndGetInserts(p);
     }
 
-    public String findPatternStringWithInserts(String[] instances) {
+    public String findPatternStringWithInserts(List<String> instances) {
         try {
             Pattern p = this.findPattern(instances);
             return this.m.matchAndGetInserts(p);
@@ -72,7 +72,7 @@ public class Comparer {
         }
     }
 
-    public String findPatternAndDoCompression(String[] instances, boolean makeInserts) throws TopsStringFormatException {
+    public String findPatternAndDoCompression(List<String> instances, boolean makeInserts) throws TopsStringFormatException {
         Pattern p = this.findPattern(instances);
         float compression = 1 - Utilities.doCompression(instances, p);
         if (makeInserts) {
@@ -87,15 +87,15 @@ public class Comparer {
         this.largestCommonPattern = new Pattern();
     }
 
-    public Result[] compare(String probe, String[] examples) throws TopsStringFormatException {
-        List<Result> results = new ArrayList<Result>(examples.length);
+    public List<Result> compare(String probe, List<String> examples) throws TopsStringFormatException {
+        List<Result> results = new ArrayList<Result>(examples.size());
         Pattern[] pair = new Pattern[2];
         pair[0] = new Pattern(probe);
         System.out.println("for probe : \t" + probe);
         m = new Matcher();
 
-        for (int e = 0; e < examples.length; e++) { //for each example, compare to pattern
-            pair[1] = new Pattern(examples[e]);
+        for (String e : examples) { //for each example, compare to pattern
+            pair[1] = new Pattern(e);
             m.setDiagrams(pair);
 
             Pattern p = this.extendAndMatch();
@@ -129,12 +129,12 @@ public class Comparer {
         }
 
         Collections.sort(results);
-        return (Result[]) results.toArray(new Result[0]);
+        return results;
     }
 
 
-    public void reproduce(String example) throws TopsStringFormatException {
-        String[] ex = {example};
+    public void reproduce(final String example) throws TopsStringFormatException {
+        List<String> ex = new ArrayList<String>() { {add(example); }};
 
         this.m.setDiagrams(ex);
 

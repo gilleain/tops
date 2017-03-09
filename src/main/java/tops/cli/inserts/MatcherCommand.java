@@ -23,7 +23,7 @@ public class MatcherCommand implements Command {
 
     @Override
     public void handle(String[] args) throws ParseException {
-        List<String> l = new ArrayList<String>();
+        List<String> targets = new ArrayList<String>();
         String line;
 
         if (args.length == 0) {
@@ -45,14 +45,13 @@ public class MatcherCommand implements Command {
             BufferedReader bu = new BufferedReader(new FileReader(filename));
             
             while ((line = bu.readLine()) != null) {
-                l.add(line);
+                targets.add(line);
             }
             bu.close();
         } catch (Exception e) {
             System.out.println(e);
         }
 
-        String[] targets = (String[]) l.toArray(new String[0]);
         Matcher m = new Matcher(targets);
         Logger.getLogger("tops.engine.inserts.Pattern").setLevel(level);
         Logger.getLogger("tops.engine.inserts.Matcher").setLevel(level);

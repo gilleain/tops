@@ -35,11 +35,11 @@ public class Matcher implements MatcherI {
         this.diagrams = diag;
     }
 
-    public Matcher(String[] diag) throws TopsStringFormatException {
+    public Matcher(List<String> diag) throws TopsStringFormatException {
     	this();
-        this.diagrams = new PatternI[diag.length];
-        for (int p = 0; p < diag.length; ++p) {
-            this.diagrams[p] = new Pattern(diag[p]);
+        this.diagrams = new PatternI[diag.size()];
+        for (int p = 0; p < diag.size(); ++p) {
+            this.diagrams[p] = new Pattern(diag.get(p));
         }
     }
 
@@ -70,10 +70,10 @@ public class Matcher implements MatcherI {
         this.diagrams = diagrams;
     }
 
-    public void setDiagrams(String[] diag) throws TopsStringFormatException {
-        this.diagrams = new Pattern[diag.length];
-        for (int i = 0; i < diag.length; ++i) {
-            this.diagrams[i] = new Pattern(diag[i]);
+    public void setDiagrams(List<String> diag) throws TopsStringFormatException {
+        this.diagrams = new Pattern[diag.size()];
+        for (int i = 0; i < diag.size(); ++i) {
+            this.diagrams[i] = new Pattern(diag.get(i));
         }
     }
 
@@ -257,7 +257,7 @@ public class Matcher implements MatcherI {
     }
 
     // return a Result array rather than a String array
-    public Result[] runResults(Pattern p) {
+    public List<Result> runResults(Pattern p) {
         List<Result> results = new ArrayList<Result>();
         for (int i = 0; i < this.diagrams.length; ++i) {
             Result result = new Result();
@@ -285,7 +285,7 @@ public class Matcher implements MatcherI {
             if (matchfound)
                 results.add(result);
         }
-        return (Result[]) results.toArray(new Result[0]);
+        return results;
     }
 
     public String[] run(String pattern) {

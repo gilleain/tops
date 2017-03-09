@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import tops.engine.TopsStringFormatException;
@@ -56,6 +57,7 @@ public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -64,23 +66,21 @@ public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
 //        ServletContext context = getServletContext();
         String names = request.getParameter("names");
 
-        // if there are no name sin the request, try getting an array of results
+        // if there are no name sin the request, try getting a list of results
         // from pipeline
         // odd way to switch between alternative services - might be a better
         // way
-        String[] instances = new String[0];
+        List<String> instances = new ArrayList<String>();
 
         if (names == null) {
-            instances = (String[]) request.getAttribute("results");
+            instances = (List<String>) request.getAttribute("results");
         } else {
-            ArrayList<String> instanceList = new ArrayList<String>();
             StringTokenizer st = new StringTokenizer(names, ".");
             while (st.hasMoreElements()) {
                 String n = (String) st.nextElement();
                 // log(n);
-                instanceList.add(n);
+                instances.add(n);
             }
-            instances = (String[]) instanceList.toArray(instances);
         }
 
         response.setContentType("text/html");
@@ -100,9 +100,9 @@ public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
             out.println("<b>" + result + "</b><hr>");
             out.println("<p><b>Common Pattern for group : </b></p><table>");
             TParser parser = new TParser();
-            for (int i = 0; i < instances.length; i++) {
-                parser.load(instances[i]);
-                out.println("<tr><td>" + instances[i] + "</td><td>");
+            for (int i = 0; i < instances.size(); i++) {
+                parser.load(instances.get(i));
+                out.println("<tr><td>" + instances.get(i) + "</td><td>");
                 String patternDiagramURL = "/" + parser.getVertexString() + "/"
                         + parser.getEdgeString() + "/" + parser.getName();
                 out.println("<img src=\"" + TopsGroupServlet.diagramURL + "/200/100/none"

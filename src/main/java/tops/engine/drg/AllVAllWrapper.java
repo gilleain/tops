@@ -16,7 +16,7 @@ public class AllVAllWrapper {
         //the domain names we are comparing are (pairKey, pairValue).
         String pair1, pair2;
         String[][] pairs = pairList.toArray(new String[0][]);
-        String[] couple = new String[2];
+        List<String> couple = new ArrayList<String>();
         TParser tp = new TParser();
         Result[] results = new Result[pairList.size()];
         Comparer comparer = new Comparer();
@@ -24,18 +24,18 @@ public class AllVAllWrapper {
         for (int i = 0; i < pairs.length; ++i) {
             pair1 = pairs[i][0];
             pair2 = pairs[i][1];
-            couple[0] = instMap.get(pair1);
-            couple[1] = instMap.get(pair2);
+            couple.add(instMap.get(pair1));
+            couple.add(instMap.get(pair2));
 
-            if (couple[0] != null && couple[1] != null) {
+            if (couple.get(0) != null && couple.get(1) != null) {
                 //do the real work!
                 try {
                     Pattern chi = comparer.findPattern(couple);
                     
-                    tp.load(couple[0]);
+                    tp.load(couple.get(0));
                     String classification1 = tp.getClassification();
 
-                    tp.load(couple[1]);
+                    tp.load(couple.get(1));
                     String classification2 = tp.getClassification();
 
                     String name = pair1 + '\t' + pair2 + '\t';
@@ -56,17 +56,17 @@ public class AllVAllWrapper {
         //the domain names we are comparing are (pairKey, pairValue).
         String pair1, pair2;
         String[][] pairs = (String[][]) pairList.toArray(new String[0][]);
-        String[] couple = new String[2];
+        List<String> couple = new ArrayList<String>();
         TParser tp = new TParser();
         Comparer comparer = new Comparer();
 
         for (int i = 0; i < pairs.length; ++i) {
             pair1 = pairs[i][0];
             pair2 = pairs[i][1];
-            couple[0] = (String) instMap.get(pair1);
-            couple[1] = (String) instMap.get(pair2);
+            couple.add(instMap.get(pair1));
+            couple.add(instMap.get(pair2));
 
-            if (couple[0] != null && couple[1] != null) {
+            if (couple.get(0) != null && couple.get(1) != null) {
                 //do the real work!
                 try {
                     Pattern chi = comparer.findPattern(couple);
@@ -77,10 +77,10 @@ public class AllVAllWrapper {
                     System.out.print(pair1 + '\t' + pair2 + '\t');  //say which we are trying
                     System.out.print(chi);
                     System.out.print('\t');
-                    tp.load(couple[0]);
+                    tp.load(couple.get(0));
                     System.out.print(tp.getClassification());
                     System.out.print('\t');
-                    tp.load(couple[1]);
+                    tp.load(couple.get(1));
                     System.out.print(tp.getClassification());
                     System.out.print('\n');
                     
