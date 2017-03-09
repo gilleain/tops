@@ -8,6 +8,7 @@ import org.apache.commons.cli.ParseException;
 
 import tops.cli.drawing.CartoonCommand;
 import tops.cli.drawing.DiagramCommand;
+import tops.cli.engine.drg.MatcherCommand;
 import tops.cli.translation.CATHDomainFileParserCommand;
 import tops.cli.view.SimpleCartoonEditorCommand;
 import tops.cli.view.AnotherCartoonEditorCommand;
@@ -33,13 +34,15 @@ public class Tops {
         // special command to print help
         commands.put("help", new HelpCommand(commands));
         
-        commands.put("cartoon", new CartoonCommand());
+        commands.put(CartoonCommand.KEY, new CartoonCommand());
         commands.put("diagram", new DiagramCommand());
         commands.put("parse-cath", new CATHDomainFileParserCommand());
         commands.put("edit-cartoon", new SimpleCartoonEditorCommand());
         commands.put("edit-diagram", new DiagramEditorCommand());
         commands.put("edit-original", new OriginalEditorCommand());
         commands.put("edit-another", new AnotherCartoonEditorCommand());
+        
+        commands.put(MatcherCommand.KEY, new MatcherCommand());
     }
     
     public boolean hasCommand(String arg) {

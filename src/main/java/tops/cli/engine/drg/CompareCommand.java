@@ -21,6 +21,12 @@ public class CompareCommand implements Command {
     }
 
     @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public void handle(String[] args) throws ParseException {
         if (args.length == 0) {
             System.out.println("-f <file> OR -s <string> OR -d <string> OR -m <file> OR -c <file> <string>");
@@ -93,11 +99,4 @@ public class CompareCommand implements Command {
         }
         
     }
-
-    @Override
-    public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

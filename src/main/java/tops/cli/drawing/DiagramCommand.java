@@ -10,8 +10,8 @@ import java.io.Reader;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 
 import tops.cli.BaseCLIHandler;
 import tops.cli.Command;
@@ -78,12 +78,12 @@ public class DiagramCommand implements Command {
         
         public CLIHandler() {
 //            options.addOption(opt("h", "Print help")); // XXX - conflicts with height!!
-            options.addOption(opt("w", "width", "Diagram width"));
-            options.addOption(opt("h", "height", "Diagram height"));
+            opt("w", "width", "Diagram width");
+            opt("h", "height", "Diagram height");
         }
         
         public CLIHandler processArguments(String[] args) throws ParseException {
-            PosixParser parser = new PosixParser();
+            DefaultParser parser = new DefaultParser();
             CommandLine line = parser.parse(options, args, true);
             
             if (line.hasOption("w")) {
@@ -94,8 +94,7 @@ public class DiagramCommand implements Command {
                 height = Integer.parseInt(line.getOptionValue("h"));
             }
             
-            @SuppressWarnings("unchecked")
-            List<String> remainingArgs = (List<String>)line.getArgList();
+            List<String> remainingArgs = line.getArgList();
             fileString = remainingArgs.get(0);
             
             return this;

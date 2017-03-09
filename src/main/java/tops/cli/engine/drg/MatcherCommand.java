@@ -1,11 +1,16 @@
 package tops.cli.engine.drg;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 
+import tops.cli.BaseCLIHandler;
 import tops.cli.Command;
 import tops.engine.drg.Matcher;
 
 public class MatcherCommand implements Command {
+    
+    public static final String KEY = "drg-matcher";
 
     @Override
     public String getDescription() {
@@ -13,18 +18,40 @@ public class MatcherCommand implements Command {
     }
 
     @Override
-    public void handle(String[] args) throws ParseException {
-        String pattern = args[0];
-        String filename = args[1];
-        
-        Matcher m = new Matcher();
-        m.runToStdOut(filename, pattern);
+    public String getHelp() {
+        return new CLIHandler().getHelp(KEY);
     }
 
     @Override
-    public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+    public void handle(String[] args) throws ParseException {
+        CLIHandler handler = new CLIHandler().processArguments(args);
+        Matcher m = new Matcher();
+        m.runToStdOut(handler.filename, handler.pattern);
     }
-
+    
+    private class CLIHandler extends BaseCLIHandler {
+        
+        private String pattern;
+        private String filename;
+        
+        public CLIHandler() {
+            opt("p", "pattern", "Input pattern");
+            opt("f", "filename", "Filename of targets");
+        }
+        
+        public CLIHandler processArguments(String[] args) throws ParseException {
+            DefaultParser parser = new DefaultParser();
+            CommandLine line = parser.parse(options, args, true);
+            
+            if (line.hasOption("p")) {
+                pattern = line.getOptionValue("p");
+            }
+            
+            if (line.hasOption("f")) {
+                filename = line.getOptionValue("f");
+            }
+    
+            return this;
+        }
+    }
 }

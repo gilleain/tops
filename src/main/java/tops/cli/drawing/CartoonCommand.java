@@ -8,8 +8,8 @@ import java.io.PrintWriter;
 import java.util.Vector;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 
 import tops.cli.BaseCLIHandler;
 import tops.cli.Command;
@@ -21,6 +21,8 @@ import tops.view.cartoon.CartoonDrawer;
 
 public class CartoonCommand implements Command {
     
+    public static final String KEY = "cartoon";
+    
     @Override
     public String getDescription() {
         return "Draw a tops cartoon as an image";
@@ -28,7 +30,7 @@ public class CartoonCommand implements Command {
 
     @Override
     public String getHelp() {
-        return new CLIHandler().getHelp("cartoon");
+        return new CLIHandler().getHelp(KEY);
     }
     
     public void handle(String[] args) throws ParseException {
@@ -87,14 +89,14 @@ public class CartoonCommand implements Command {
         private String outputFilepath;
         
         public CLIHandler() {
-            options.addOption(opt("h", "Print help"));
-            options.addOption(opt("o", "type", "Output type"));
-            options.addOption(opt("t", "filepath", "Tops filepath"));
-            options.addOption(opt("f", "filepath", "Output filepath"));
+            opt("h", "Print help");
+            opt("o", "type", "Output type");
+            opt("t", "filepath", "Tops filepath");
+            opt("f", "filepath", "Output filepath");
         }
         
         public CLIHandler processArguments(String[] args) throws ParseException {
-            PosixParser parser = new PosixParser();
+            DefaultParser parser = new DefaultParser();
             CommandLine line = parser.parse(options, args, true);
             
             if (line.hasOption("h")) {

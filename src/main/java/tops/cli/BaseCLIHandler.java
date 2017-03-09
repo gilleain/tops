@@ -5,7 +5,6 @@ import java.io.StringWriter;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 /**
@@ -19,19 +18,17 @@ public class BaseCLIHandler {
         options = new Options();
     }
     
-    @SuppressWarnings("static-access")
-    public Option opt(String o, String desc) {
-        return OptionBuilder.withDescription(desc).create(o);
+    public void opt(String flag, String desc) {
+        options.addOption(Option.builder(flag).desc(desc).build());
     }
     
-    @SuppressWarnings("static-access")
-    public Option opt(String o, String argName, String desc) {
-        return OptionBuilder.hasArg()
-                            .withDescription(desc)
-                            .withArgName(argName)
-                            .create(o);
+    public void opt(String flag, String argName, String desc) {
+        options.addOption(Option.builder(flag)
+                                .hasArg()
+                                .desc(desc)
+                                .argName(argName)
+                                .build());
     }
-    
 
     public String getHelp(String command) {
         return getHelp(command, options);
