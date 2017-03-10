@@ -8,12 +8,13 @@ import org.apache.commons.cli.ParseException;
 
 import tops.cli.drawing.CartoonCommand;
 import tops.cli.drawing.DiagramCommand;
+import tops.cli.engine.drg.CompareCommand;
 import tops.cli.engine.drg.MatcherCommand;
 import tops.cli.translation.CATHDomainFileParserCommand;
-import tops.cli.view.SimpleCartoonEditorCommand;
 import tops.cli.view.AnotherCartoonEditorCommand;
 import tops.cli.view.DiagramEditorCommand;
 import tops.cli.view.OriginalEditorCommand;
+import tops.cli.view.SimpleCartoonEditorCommand;
 
 /**
  * Main CLI class to run commands.
@@ -43,6 +44,7 @@ public class Tops {
         commands.put("edit-another", new AnotherCartoonEditorCommand());
         
         commands.put(MatcherCommand.KEY, new MatcherCommand());
+        commands.put(CompareCommand.KEY, new CompareCommand());
     }
     
     public boolean hasCommand(String arg) {
