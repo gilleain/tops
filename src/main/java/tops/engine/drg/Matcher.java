@@ -1,8 +1,5 @@
 package tops.engine.drg;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -78,16 +75,16 @@ public class Matcher implements MatcherI {
     }
 
     // XXX : the match method adds the pattern to the beginning for some reason!
-    public String[] run(String[] patterns, String d)
+    public List<String> run(List<String> patterns, String target)
             throws TopsStringFormatException {
-        Pattern diagram = new Pattern(d);
+        Pattern diagram = new Pattern(target);
         List<String> results = new ArrayList<String>();
-        for (int i = 0; i < patterns.length; i++) {
-            String result = this.match(new Pattern(patterns[i]), diagram);
+        for (int i = 0; i < patterns.size(); i++) {
+            String result = this.match(new Pattern(patterns.get(i)), diagram);
             if (!result.equals(""))
                 results.add(result);
         }
-        return (String[]) results.toArray(new String[0]);
+        return results;
     }
 
     // synthesise insert ranges from the matches of the pattern to the set of
@@ -297,26 +294,6 @@ public class Matcher implements MatcherI {
         }
     }
     
-    public void runToStdOut(String filename, String pattern) {
-    	try {
-    		Pattern p = new Pattern(pattern);
-            BufferedReader bu = new BufferedReader(new FileReader(filename));
-            String line;
-            while ((line = bu.readLine()) != null) {
-            	String result = this.match(p, new Pattern(line));
-            	if (!result.equals("")) {
-            		System.out.println(result);
-            	}
-            }
-            bu.close();
-        } catch (IOException e) {
-            System.out.println(e);
-        } catch (TopsStringFormatException tsfe) {
-            System.err.println(tsfe.getMessage());
-            tsfe.printStackTrace();
-        }
-    }
-
     public String[] run(Pattern p) {
         List<String> results = new ArrayList<String>();
         for (int i = 0; i < this.diagrams.length; ++i) {

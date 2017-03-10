@@ -65,7 +65,7 @@ public class TopsMatchServlet extends HttpServlet {
         out.println("<form action=\"" + requestPath + "/pattern/compare?target=" + target + "\" method=\"POST\">");
         out.println("<input type=\"submit\" name=\"compare\"></form>");
 
-        List<String> patternList = patternSource.getGraphSet("PATTERNS");
+        List<String> patterns = patternSource.getGraphSet("PATTERNS");
 
         // TODO : move to db graph source...
 //        String query = "SELECT pattern_id, pattern_vertices, pattern_edges, note  FROM TOPS_pattern ORDER BY compression";
@@ -88,16 +88,15 @@ public class TopsMatchServlet extends HttpServlet {
 //        }
         // TODO : /move to db graph source
 
-        if (patternList.size() != 0) {
-        	String[] patterns = patternList.toArray(new String[] {});
+        if (patterns.size() != 0) {
             try {
                 Matcher m = new Matcher();
-                String[] results = m.run(patterns, target);
+                List<String> results = m.run(patterns, target);
                 out.println("<p><table border=\"1\" align=\"center\">");
                 out.println("<thead><th>Pattern</th><th>Correspondance</th><th>Inserts</th><th>Group</th></thead>");
                 out.println("<tbody align=\"center\">");
-                for (int i = 0; i < results.length; i++) {
-                    String[] bits = results[i].split("\t");
+                for (int i = 0; i < results.size(); i++) {
+                    String[] bits = results.get(i).split("\t");
                     if (i % 2 == 0)
                         out.println("<tr class=\"evenrow\">");
                     else

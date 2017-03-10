@@ -78,10 +78,9 @@ public class CompareCommand implements Command {
                 if (args.length < 2) System.out.println("please supply filename and probe");
                 String target = args[3];
                 Matcher ma = new Matcher();
-                String[] patterns = (String[])examples.toArray(new String[0]);
-                String[] results = ma.run(patterns, target);
-                for (int k = 0; k < results.length; k++) {
-                    System.out.println(results[k]);
+                List<String> results = ma.run(examples, target);
+                for (int k = 0; k < results.size(); k++) {
+                    System.out.println(results.get(k));
                 }
             } else if (mode.equals("-g")) {     //FIND A PATTERN FOR A GROUP
                 Comparer ex = new Comparer();
