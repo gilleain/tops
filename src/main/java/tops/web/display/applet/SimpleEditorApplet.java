@@ -14,10 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.JFrame;
-
-public class SimpleEditorApplet extends Applet implements ActionListener,
-        ItemListener {
+public class SimpleEditorApplet extends Applet implements ActionListener, ItemListener {
 
     private TopsDrawCanvas canvas;
 

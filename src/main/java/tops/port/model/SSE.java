@@ -2,7 +2,6 @@ package tops.port.model;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Collections;
 
@@ -755,11 +754,7 @@ public class SSE {
         return;
 
     }
-
-    private void print(String s, Object... vars) {
-        print(System.out, s, vars);
-    }
-
+    
     private void print(PrintStream out, String s, Object... args) {
         out.print(String.format(s, args));
     }
