@@ -75,7 +75,7 @@ public class Tops {
                 return;
             }
             reader = new BufferedReader(new FileReader(DefsFile));
-            ErrorStatus = options.ReadDefaults(reader);
+            ErrorStatus = options.readDefaults(reader);
             if (ErrorStatus != 0) {
                 log("ERROR: while reading %s defaults file\n", defaultsFile);
                 reader.close();
@@ -91,7 +91,7 @@ public class Tops {
         }
 
         /* Parse command line arguments */
-        Pcode = options.CommandArguments(args);
+        Pcode = options.parseArguments(args);
         if (ErrorStatus > 0) {
             log("Tops error: in CommandArguments, status %d\n", ErrorStatus);
             System.exit(1);
@@ -108,7 +108,7 @@ public class Tops {
 
         /* check runtime options are reasonable */
         try {
-            options.CheckOptions();
+            options.checkOptions();
         } catch (Exception e) {
             log("ERROR: checking runtime options\n");
             System.exit(1);
@@ -122,10 +122,10 @@ public class Tops {
         }
 
         /* set global variables which are derived from inputs */
-        options.SetGlobalVariables();
+        options.setGridUnitSize();
 
         /* call main driver */
-        ErrorStatus = RunTops(Pcode, options);
+        ErrorStatus = runTops(Pcode, options);
         if (ErrorStatus > 0) {
             log("Error detected by RunTops, status %d\n", ErrorStatus);
             System.exit(1);
@@ -135,7 +135,7 @@ public class Tops {
         }
     }
 
-    public int RunTops(String Pcode, Options options) throws IOException {
+    public int runTops(String Pcode, Options options) throws IOException {
 
         String Comment;
         int SpecifiedDomains = 0;
@@ -164,7 +164,7 @@ public class Tops {
             if (options.isVerbose())
                 System.out.println("Reading dssp file\n");
 
-            String dsspFile = new File(options.getDsspFilePath(), GetDSSPFileName(Pcode)).getAbsolutePath();
+            String dsspFile = new File(options.getDsspFilePath(), getDSSPFileName(Pcode)).getAbsolutePath();
             protein = new DsspReader().readDsspFile(dsspFile);
             if (protein == null || Error > 0) {
                 log("Tops error: processing DSSP information, code %d\n",
@@ -313,10 +313,10 @@ public class Tops {
         if (options.getTopsFilename() != null) {
             fn = options.getTopsFilename();
         } else {
-            fn = GetTOPSFileName(Pcode, options.getChainToPlot(), options.getDomainToPlot());
+            fn = getTOPSFileName(Pcode, options.getChainToPlot(), options.getDomainToPlot());
         }
         
-        WriteTOPSFile(fn, cartoons, Pcode, protein, DomainsToPlot);
+        writeTOPSFile(fn, cartoons, Pcode, protein, DomainsToPlot);
 
         /* Create postscript files for each Cartoon */
         makePostscript(cartoons, protein, DomainsToPlot.size(), PlotFragInf, options);
@@ -364,27 +364,27 @@ public class Tops {
         return new File(filename + "_" + i + ".ps");
     }
 
-    private String GetTOPSFileName(String pcode, String chainToPlot, int domainToPlot) {
+    private String getTOPSFileName(String pcode, String chainToPlot, int domainToPlot) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    private String GetSTRIDEFileName(String pcode) {
+    private String getSTRIDEFileName(String pcode) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    private String GetPDBFileName(String pcode) {
+    private String getPDBFileName(String pcode) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    private String GetDSSPFileName(String pcode) {
+    private String getDSSPFileName(String pcode) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    void GetPSFILE(char[] PostScript, char[] psfile, int i) {
+    private void getPSFILE(char[] PostScript, char[] psfile, int i) {
 
         int dum;
 
@@ -404,17 +404,14 @@ public class Tops {
 
     }
 
-  
-
-
-    void WriteTOPSFile(String Filename, List<Cartoon> cartoonPtrs,
+    private void writeTOPSFile(String Filename, List<Cartoon> cartoonPtrs,
             String pcode, Protein protein, List<Integer> domainsToPlot) throws FileNotFoundException {
 
         int i, j;
         PrintStream out = new PrintStream(new FileOutputStream(Filename));
         DomainDefinition dompt;
 
-        WriteTOPSHeader(out, pcode, cartoonPtrs.size());
+        writeTOPSHeader(out, pcode, cartoonPtrs.size());
 
         for (i = 0; i < cartoonPtrs.size(); i++) {
             dompt = protein.getDomain(domainsToPlot.get(i));
@@ -426,7 +423,7 @@ public class Tops {
                 );
             out.println();
             // XXX ugly, but due to the difference between a pointer and an array/list
-            AppendLinkedList(out, cartoonPtrs.get(i).getSSEs().get(0));
+            appendLinkedList(out, cartoonPtrs.get(i).getSSEs().get(0));
             out.println();
             out.println();
         }
@@ -434,7 +431,7 @@ public class Tops {
         out.close();
     }
 
-    void WriteTOPSHeader(PrintStream out, String pcode, int NDomains) {
+    private void writeTOPSHeader(PrintStream out, String pcode, int NDomains) {
 
         print(out,
                 "##\n## TOPS: protein topology information file\n##\n## Protein code %s\n## Number of domains %d\n##\n\n",
@@ -442,39 +439,12 @@ public class Tops {
 
     }
 
-    void AppendLinkedList(PrintStream out, SSE p) {
+    private void appendLinkedList(PrintStream out, SSE p) {
 
         for (; p != null; p = p.To) {
             print(out, "\n");
             p.WriteSecStr(out);
         }
-
-        return;
-
-    }
-    
-    void PrintMoveFixedError(String funct, PrintStream out) {
-
-        PrintStream outstream;
-
-        if (out == null) {
-            outstream = System.out;
-        } else {
-            outstream = out;
-        }
-
-        if (funct != null) {
-            outstream.print(String.format(
-                    "TOPS error: detected by MoveFixed called from %s\n",
-                    funct));
-        } else {
-            outstream.print("TOPS error: detected by MoveFixed\n");
-        }
-
-        outstream.print("Error: cycle found in Fixed list\n");
-        outstream.print(
-                "Probably a strange strand connectivity created by a strand merge\n");
-        outstream.print("Try re-running with MergeStrands set to zero\n");
 
         return;
 

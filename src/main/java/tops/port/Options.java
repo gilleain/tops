@@ -90,7 +90,7 @@ public class Options {
         return verbose;
     }
 
-    public int ReadDefaults(BufferedReader Def) throws IOException {
+    public int readDefaults(BufferedReader Def) throws IOException {
 
         String buffer;
         String ErrStr = "";
@@ -374,13 +374,13 @@ public class Options {
     }
     
     /*
-     * This function sets those global variables which are derived from inputs
+     * This function sets the grid unit size
      */
-    public void SetGlobalVariables() { // TODO - rename
+    public void setGridUnitSize() {
         gridUnitSize = 2 * radius + radius / 2;
     }
     
-    public String CommandArguments(String[] args) {
+    public String parseArguments(String[] args) {
 
         int i, Cmd;
         String pcode = null;
@@ -807,7 +807,7 @@ public class Options {
     /*
      * Function to check runtime options are reasonable
      */
-    public void CheckOptions() throws Exception {
+    public void checkOptions() throws Exception {
 
         if (gridSize <= 0) {
             throw new Exception("ERROR: GridSize negative or zero");
