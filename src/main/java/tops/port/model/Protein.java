@@ -171,13 +171,13 @@ public class Protein {
       Bridge partner relationships which cross domain boundaries are removed 
       ss elements which cross domain boundaries are limited to the domain they are mostly in
     */
-    public void ForceConsistent( Protein p ) {
+    public void forceConsistent( Protein p ) {
 
         for (Chain chain : this.chains) {
             for (int i = 0; i < chain.sequenceLength(); i++) {
                 if ( chain.isExtended(i) ) {
     
-                    int Dom = ResidueDomain(i);
+                    int Dom = residueDomain(i);
     
                     // TODO
 //                    int bpl = chain.getLeftBridgePartner(i);
@@ -309,7 +309,7 @@ public class Protein {
 
                     for (int k = 0; k < 2; k++) {
 
-                        if (GetSequenceNumber(dm.segmentIndices[k][j], dm.segmentChains[k][j]) < 0) {
+                        if (getSequenceNumber(dm.segmentIndices[k][j], dm.segmentChains[k][j]) < 0) {
 
                             ddep.ErrorType = ErrorType.DOMAIN_RESIDUE_ERROR;
                             System.out.println(ddep.ErrorString + 
@@ -369,7 +369,7 @@ public class Protein {
         return ddep;
     }
 
-    public boolean ResIsInDomain( int PDBRes, char PDBChain, DomainDefinition Domain) {
+    public boolean resIsInDomain( int PDBRes, char PDBChain, DomainDefinition Domain) {
         if ( Domain == null) return false;
 
         for ( int i=0 ; i<Domain.numberOfSegments ; i++) {
@@ -390,7 +390,7 @@ public class Protein {
     }
 
 
-    public int ResidueDomain(int Residue) {
+    public int residueDomain(int Residue) {
         for (Chain chain : chains) {
             if ((Residue >= chain.sequenceLength()) || (Residue < 0)) {
                 return -1;
@@ -400,7 +400,7 @@ public class Protein {
             char PDBChain = chain.getName();
     
             for (int i = 0; i < numberOfDomains; i++) {
-                if (ResIsInDomain(PDBRes, PDBChain, domains.get(i))) {
+                if (resIsInDomain(PDBRes, PDBChain, domains.get(i))) {
                     return i;
                 }
             }
@@ -420,7 +420,7 @@ public class Protein {
       return false;
      }
      
-    public int GetSequenceNumber(int PDBIndex, char Chain) {
+    public int getSequenceNumber(int PDBIndex, char Chain) {
 //        for (int  i=0 ;i<sequenceLength ;i++) {
 //            if ( (PDBIndices[i]==PDBIndex) && (GetChainIdentifier(i)==Chain) ) {
 //                return i;
@@ -430,9 +430,9 @@ public class Protein {
     }
     
 
-    public DomainId SSIsInDomain(SSE p, DomainDefinition Domain) {
+    public DomainId ssIsInDomain(SSE p, DomainDefinition domain) {
         for (Chain chain : this.chains) {
-            DomainId domainId = SSIsInDomain(chain, p, Domain);
+            DomainId domainId = ssIsInDomain(chain, p, domain);
             if (domainId.segment > -1) {
                 return domainId;
             }
@@ -440,12 +440,12 @@ public class Protein {
         return new DomainId(-1, -1, -1);
     }
 
-    public DomainId SSIsInDomain(Chain chain, SSE p, DomainDefinition Domain) {
+    public DomainId ssIsInDomain(Chain chain, SSE p, DomainDefinition domain) {
         int ExclusionType = -1;
         int Segment = -1;
 
         /* First check the element passed in */
-        Segment = SingleSSIsInDomain(p, Domain);
+        Segment = singleSSIsInDomain(p, domain);
         if (Segment > 0) {
             ExclusionType = 0;
             return new DomainId(Segment, -1, ExclusionType);
@@ -453,7 +453,7 @@ public class Protein {
 
         /* Now check the whole associated fixed list */
         for (p = chain.findFixedStart(p); p != null; p = p.getFixed()) {
-            Segment = SingleSSIsInDomain(p, Domain);
+            Segment = singleSSIsInDomain(p, domain);
             if (Segment > 0) {
                 ExclusionType = 1;
                 return new DomainId(Segment, -1, ExclusionType);
@@ -463,7 +463,7 @@ public class Protein {
     }
     
 
-    public int SingleSSIsInDomain(SSE p, DomainDefinition Domain) {
+    public int singleSSIsInDomain(SSE p, DomainDefinition Domain) {
 
         int i;
         char chain = p.Chain;
@@ -502,9 +502,9 @@ public class Protein {
     /** 
      * Function to find the domain associated with a SS element
      */
-    public DomainId FindDomain(SSE p) {
+    public DomainId findDomain(SSE p) {
         for (Chain chain : this.chains) {
-            DomainId domainId = FindDomain(chain, p);
+            DomainId domainId = findDomain(chain, p);
             if (domainId.segment > -1) {
                 return domainId;
             }
@@ -512,9 +512,9 @@ public class Protein {
         return new DomainId(-1, -1, -1);
     }
     
-    public DomainId FindDomain(Chain chain, SSE p) {
+    public DomainId findDomain(Chain chain, SSE p) {
         for (int i = 0; i < domains.size(); i++) {
-            DomainId result = SSIsInDomain(chain, p, domains.get(i));
+            DomainId result = ssIsInDomain(chain, p, domains.get(i));
             if (result.segment > -1) {
                 return result;
             }
@@ -535,7 +535,7 @@ public class Protein {
     }
     
 
-    public void DefaultDomains(char ChainToPlot) {
+    public void defaultDomains(char ChainToPlot) {
         /*
          * In the case of default domains being used we cannot tolerate separate
          * chains with the same chain identifier
@@ -580,7 +580,7 @@ public class Protein {
         }
     }
 
-    public void InitPlotFragInfo(PlotFragInformation pfi) {
+    public void initPlotFragInfo(PlotFragInformation pfi) {
         pfi.NFrags = 0;
         for (int i = 0; i < PlotFragInformation.MAX_PLOT_FRAGS; i++) {
             pfi.FragDomain[i] = -1;
@@ -591,15 +591,15 @@ public class Protein {
         }
     }
 
-    public char GetChain(String cathCode) {
+    public char getChain(String cathCode) {
         return cathCode.length() < 4 ? 0 : cathCode.charAt(3);
     }
 
-    public char GetDomainNumber(String cathCode) {
+    public char getDomainNumber(String cathCode) {
         return cathCode.length() < 6 ? 0 : cathCode.charAt(5);
     }
 
-    public List<Integer> FixDomainsToPlot(char ChainToPlot, int DomainToPlot) {
+    public List<Integer> fixDomainsToPlot(char ChainToPlot, int DomainToPlot) {
 
         int ndp;
 
@@ -618,9 +618,9 @@ public class Protein {
             for (int i = 0; i < domains.size(); i++) {
                 DomainDefinition domain = domains.get(i);
                 if (ChainToPlot == 0
-                        || ChainToPlot == GetChain(domain.domainCATHCode)) {
+                        || ChainToPlot == getChain(domain.domainCATHCode)) {
                     if (DomainToPlot == 0 
-                            || DomainToPlot == GetDomainNumber(domain.domainCATHCode)) {
+                            || DomainToPlot == getDomainNumber(domain.domainCATHCode)) {
                         DomainsToPlot.add(i);
                     }
                 }
@@ -635,9 +635,9 @@ public class Protein {
         return DomainsToPlot;
     }
 
-    void MoveNextToDom(Protein protein, SSE q, DomainDefinition Domain) {
+    public void moveNextToDom(Protein protein, SSE q, DomainDefinition Domain) {
         for (SSE p = q.Next; p != null; p = p.Next) {
-            DomainId result = protein.SSIsInDomain(p, Domain);
+            DomainId result = protein.ssIsInDomain(p, Domain);
             if (result.segment > 0) {
                 q.Next = p;
                 return;
@@ -650,7 +650,7 @@ public class Protein {
      * Function to set up a new linked list corresponding to a given domain XXX
      * now returns the new root
      */
-    public Cartoon SetDomain(SSE OriginalRoot, DomainDefinition domain) {
+    public Cartoon setDomain(SSE OriginalRoot, DomainDefinition domain) {
 
         int numberStructures;
         int domBreakNum = 0;
@@ -667,7 +667,7 @@ public class Protein {
         SSE p = null;
         for (SSE r = OriginalRoot.To; r != null; r = r.To) {
 
-            DomainId domainId = SSIsInDomain(r, domain);
+            DomainId domainId = ssIsInDomain(r, domain);
             if (domainId.segment != -1) {
 
                 /*
@@ -799,12 +799,12 @@ public class Protein {
         for (sse = Root; sse != null; sse = sse.To)
             sse.domainBreakType = DomainBreakType.NOT_DOM_BREAK;
 
-        InitPlotFragInfo(PlotFragInf);
+        initPlotFragInfo(PlotFragInf);
 
         /* advance to the first ss element in a real domain */
         int segment = -1;
         for (sse = Root.To; sse != null && segment < 0; sse = sse.To) {
-            segment = FindDomain(sse).segment;
+            segment = findDomain(sse).segment;
         }
 
         if (sse == null)
@@ -814,7 +814,7 @@ public class Protein {
         sse.DomainBreakNumber = Count;
         sse.domainBreakType = DomainBreakType.N_DOM_BREAK;
 
-        DomainId result = FindDomain(sse);
+        DomainId result = findDomain(sse);
         LastDom = -1;
         LastSegment = -1;
         if (result.segment > -1) {
@@ -839,12 +839,12 @@ public class Protein {
 
         while (sse != null) {
             sse = sse.To;
-            DomainId result2 = FindDomain(sse);
+            DomainId result2 = findDomain(sse);
             Dom = result2.domain;
 
             if ((Dom != LastDom) || (segment != LastSegment)) {
 
-                DomainId did = SSIsInDomain(sse, domains.get(LastDom));
+                DomainId did = ssIsInDomain(sse, domains.get(LastDom));
 
                 if ((did.exclusionType == 0) || (Dom == LastDom)) {
 
@@ -863,7 +863,7 @@ public class Protein {
                     Dom = -1;
                     while (sse != null && Dom < 0) {
                         sse = sse.To;
-                        Dom = FindDomain(sse).domain;
+                        Dom = findDomain(sse).domain;
                     }
                     if (sse != null) {
                         sse.DomainBreakNumber = Count;

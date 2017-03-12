@@ -52,9 +52,7 @@ public class Tops {
     }
 
     public void run(String[] args) throws IOException {
-
-        String Pcode;
-        String ErrStr = null;
+        String proteinCode;
         int ErrorStatus = 0;
         File DefsFile = null;
         char[] dfp = new char[1024];
@@ -91,18 +89,18 @@ public class Tops {
         }
 
         /* Parse command line arguments */
-        Pcode = options.parseArguments(args);
+        proteinCode = options.parseArguments(args);
         if (ErrorStatus > 0) {
             log("Tops error: in CommandArguments, status %d\n", ErrorStatus);
             System.exit(1);
         }
-        if (Pcode == null) {
+        if (proteinCode == null) {
             log("Tops error: No protein specified on command line\n");
             System.exit(1);
         }
-        if (Pcode.length() != 4) {
+        if (proteinCode.length() != 4) {
             log("Tops error: Protein code %s must be exactly 4 characters\n",
-                    Pcode);
+                    proteinCode);
             System.exit(1);
         }
 
@@ -118,14 +116,14 @@ public class Tops {
             System.out.println("Starting TOPS\n");
             System.out.println(
                     "Copyright � 1996 by European Bioinformatics Institute, Cambridge, UK.\n\n");
-            options.PrintRunParams(System.out);
+            options.printRunParams(System.out);
         }
 
         /* set global variables which are derived from inputs */
         options.setGridUnitSize();
 
         /* call main driver */
-        ErrorStatus = runTops(Pcode, options);
+        ErrorStatus = runTops(proteinCode, options);
         if (ErrorStatus > 0) {
             log("Error detected by RunTops, status %d\n", ErrorStatus);
             System.exit(1);
@@ -135,7 +133,7 @@ public class Tops {
         }
     }
 
-    public int runTops(String Pcode, Options options) throws IOException {
+    public int runTops(String proteinCode, Options options) throws IOException {
 
         String Comment;
         int SpecifiedDomains = 0;
@@ -151,7 +149,7 @@ public class Tops {
         int Error = 0;
 
         /* Check that a file has been specified */
-        if (Pcode == null) {
+        if (proteinCode == null) {
             Error = 1;
             return Error;
         }
@@ -164,7 +162,7 @@ public class Tops {
             if (options.isVerbose())
                 System.out.println("Reading dssp file\n");
 
-            String dsspFile = new File(options.getDsspFilePath(), getDSSPFileName(Pcode)).getAbsolutePath();
+            String dsspFile = new File(options.getDsspFilePath(), options.getDSSPFileName(proteinCode)).getAbsolutePath();
             protein = new DsspReader().readDsspFile(dsspFile);
             if (protein == null || Error > 0) {
                 log("Tops error: processing DSSP information, code %d\n",
@@ -213,7 +211,7 @@ public class Tops {
         }
 
         /* Assign protein name and code from input file name */
-        protein.setName(Pcode);
+        protein.setName(proteinCode);
 
         /* Initialise the chirality code at this point */
         // InitialiseChirality( protein, Error );
@@ -246,7 +244,7 @@ public class Tops {
         /* add default domains */
         if (options.isVerbose())
             System.out.println("Setting default domains\n");
-        protein.DefaultDomains(options.getChainToPlot().charAt(0));
+        protein.defaultDomains(options.getChainToPlot().charAt(0));
         if (Error > 0) {
             log("Tops error: detected in DefaultDomains, code %d\n", Error);
             Error = 8;
@@ -283,7 +281,7 @@ public class Tops {
             System.out.println("Setting domain breaks and domains to plot\n");
         protein.setDomBreaks(Root, PlotFragInf);
 
-        List<Integer> DomainsToPlot = protein.FixDomainsToPlot(options.getChainToPlot().charAt(0), options.getDomainToPlot());
+        List<Integer> DomainsToPlot = protein.fixDomainsToPlot(options.getChainToPlot().charAt(0), options.getDomainToPlot());
         if (DomainsToPlot.isEmpty()) {
             Error = 14;
             log("Tops error: fixing domains to plot\n");
@@ -299,7 +297,7 @@ public class Tops {
             }
 
             /* Set the domain to plot */
-            Cartoon cartoon = protein.SetDomain(Root, protein.getDomain(domainToPlot));
+            Cartoon cartoon = protein.setDomain(Root, protein.getDomain(domainToPlot));
 
             new Optimise().optimise(cartoon);
             cartoon.calculateConnections(options.getRadius());
@@ -313,10 +311,10 @@ public class Tops {
         if (options.getTopsFilename() != null) {
             fn = options.getTopsFilename();
         } else {
-            fn = getTOPSFileName(Pcode, options.getChainToPlot(), options.getDomainToPlot());
+            fn = options.getTOPSFileName(proteinCode, options.getChainToPlot(), options.getDomainToPlot());
         }
         
-        writeTOPSFile(fn, cartoons, Pcode, protein, DomainsToPlot);
+        writeTOPSFile(fn, cartoons, proteinCode, protein, DomainsToPlot);
 
         /* Create postscript files for each Cartoon */
         makePostscript(cartoons, protein, DomainsToPlot.size(), PlotFragInf, options);
@@ -363,26 +361,7 @@ public class Tops {
         String filename = filePrefix.substring(0, filePrefix.indexOf('.'));
         return new File(filename + "_" + i + ".ps");
     }
-
-    private String getTOPSFileName(String pcode, String chainToPlot, int domainToPlot) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private String getSTRIDEFileName(String pcode) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private String getPDBFileName(String pcode) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private String getDSSPFileName(String pcode) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+   
 
     private void getPSFILE(char[] PostScript, char[] psfile, int i) {
 

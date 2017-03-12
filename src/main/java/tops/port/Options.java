@@ -34,8 +34,6 @@ public class Options {
     private int mergeStrands = 5; /* ?? */
     private boolean mergeBetweenSheets;
     private double cutoffDistance = 20.0; /* ?? */
-    private boolean strands = true; /* Use strands in topology */
-    private boolean helices = true; /* Use helices in topology */
     
     private int anglePenalty = 0;
     private int multiplicity = 6;
@@ -53,6 +51,25 @@ public class Options {
     private int stepSize = 100;
     private int arcsSample = 0;
     private int lineSample = 50;
+    
+    public String getTOPSFileName(String pcode, String chainToPlot, int domainToPlot) {
+        return pcode + chainToPlot + domainToPlot + ".tops";  // TODO
+    }
+
+    public String getSTRIDEFileName(String pcode) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getPDBFileName(String pcode) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getDSSPFileName(String pcode) {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
     public String getFileType() {
         return fileType;
@@ -879,7 +896,7 @@ public class Options {
 
     }
     
-    public void PrintRunParams(PrintStream out) {
+    public void printRunParams(PrintStream out) {
 
         print(out, "===================================================\n");
         print(out, "===================================================\n\n");

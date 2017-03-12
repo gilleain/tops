@@ -91,13 +91,13 @@ public class Chain {
             if ( isSSelement(i) ) {
                 int start = i;
                 SSEType thissstype = getSSEType(i);
-                int Dom = protein.ResidueDomain(i);
+                int Dom = protein.residueDomain(i);
                 int DBreak = -1;
                 int LastDom = -1;
                 while ( isSSelement(i) && getSSEType(i) == thissstype ) {
                     i++;
                     LastDom = Dom;
-                    Dom = protein.ResidueDomain(i);
+                    Dom = protein.residueDomain(i);
                     if ( Dom != LastDom ) DBreak = i;
                 }
 
