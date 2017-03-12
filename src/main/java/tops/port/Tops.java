@@ -34,21 +34,9 @@ public class Tops {
     private SSE CentreFixed = null;
     private double[][] CaXYZ = null; /* Calpha coordinates */
     private int NumberResidues = 0; /* Number of residues in protein */
-    
     private boolean Small = false;
-    
-    private String Postscript = null; /* Save picture into postscript file */
-    private String DefaultsFile = "tops.def";
-    private String TopsFilename = null;
-    private String DomBoundaryFile = null;
-    private int DomainToPlot = 0;
-    private String ChainToPlot = null;
-    private String FileType = null;
-    private String DefaultFileType = "dssp";
-    private String DSSPFilePath = "./";
-    
+    private String defaultsFile = "tops.def";
     private String TOPS_HOME = null;
-    
     private final int DOMS_PER_PAGE = 2;    // for ps output
 
     /* --------------------- */
@@ -79,22 +67,22 @@ public class Tops {
         BufferedReader reader = null;
         try {
             if (TOPS_HOME != null) {
-                DefaultsFile = TOPS_HOME + "/" + DefaultsFile;
-                DefsFile = new File(DefaultsFile);
+                defaultsFile = TOPS_HOME + "/" + defaultsFile;
+                DefsFile = new File(defaultsFile);
             }
             if (!DefsFile.canRead()) {
-                log("Cannot read file%s\n", DefaultsFile);
+                log("Cannot read file%s\n", defaultsFile);
                 return;
             }
             reader = new BufferedReader(new FileReader(DefsFile));
             ErrorStatus = options.ReadDefaults(reader);
             if (ErrorStatus != 0) {
-                log("ERROR: while reading %s defaults file\n", DefaultsFile);
+                log("ERROR: while reading %s defaults file\n", defaultsFile);
                 reader.close();
                 return;
             }
         } catch (Exception e) {
-            log("Unable to open defaults file %s\n", DefaultsFile);
+            log("Unable to open defaults file %s\n", defaultsFile);
             return;
         } finally {
             if (reader != null) {
@@ -147,7 +135,7 @@ public class Tops {
         }
     }
 
-    int RunTops(String Pcode, Options options) throws IOException {
+    public int RunTops(String Pcode, Options options) throws IOException {
 
         String Comment;
         int SpecifiedDomains = 0;
@@ -169,25 +157,22 @@ public class Tops {
         }
 
         /* Read secondary structure file ( DSSP or STRIDE ) or old save file */
-        if (FileType == null)
-            FileType = DefaultFileType;
-        FileType = FileType.toLowerCase();
+        
 
-        if (FileType.equals("dssp")) {
+        if (options.getFileType().equals("dssp")) {
 
             if (options.isVerbose())
                 System.out.println("Reading dssp file\n");
 
-            protein = new DsspReader()
-                    .readDsspFile(new File(DSSPFilePath, GetDSSPFileName(Pcode))
-                            .getAbsolutePath());
+            String dsspFile = new File(options.getDsspFilePath(), GetDSSPFileName(Pcode)).getAbsolutePath();
+            protein = new DsspReader().readDsspFile(dsspFile);
             if (protein == null || Error > 0) {
                 log("Tops error: processing DSSP information, code %d\n",
                         Error);
                 Error = 7;
                 return Error;
             }
-        } else if (FileType.equals("stride")) {
+        } else if (options.getFileType().equals("stride")) { // TODO
 //
 //            if (options.isVerbose())
 //                System.out.println("Reading pdb file\n");
@@ -213,7 +198,7 @@ public class Tops {
 //
 //            protein.BridgePartFromHBonds();
 
-        } else if (FileType.equals("tops")) {
+        } else if (options.getFileType().equals("tops")) {
 
             log("Tops error: this bit not implemented yet\n");
             Error = 99;
@@ -221,7 +206,7 @@ public class Tops {
 
         } else {
 
-            log("Tops error: Unrecognized file type %s\n", FileType);
+            log("Tops error: Unrecognized file type %s\n", options.getFileType());
             Error = 5;
             return Error;
 
@@ -236,7 +221,7 @@ public class Tops {
         /*
          * Read the domain boundary file if ChainToPlot was not specified as ALL
          */
-        if (ChainToPlot != null && !ChainToPlot.equals("ALL")) {
+        if (options.getChainToPlot() != null && !options.getChainToPlot().equals("ALL")) {
             if (options.isVerbose())
                 System.out.println("Reading domain boundary file\n");
 
@@ -244,9 +229,9 @@ public class Tops {
              * first check if specified file exists, otherwise look for one in
              * TOPS_HOME
              */
-            if (DomBoundaryFile != null
-                    && new File(DomBoundaryFile).canRead()) {
-                dbf = DomBoundaryFile;
+            if (options.getDomBoundaryFile() != null
+                    && new File(options.getDomBoundaryFile()).canRead()) {
+                dbf = options.getDomBoundaryFile();
             } else if (TOPS_HOME != null) {
                 dbf = TOPS_HOME + "/" + "DomainFile";
 
@@ -261,7 +246,7 @@ public class Tops {
         /* add default domains */
         if (options.isVerbose())
             System.out.println("Setting default domains\n");
-        protein.DefaultDomains(ChainToPlot.charAt(0));
+        protein.DefaultDomains(options.getChainToPlot().charAt(0));
         if (Error > 0) {
             log("Tops error: detected in DefaultDomains, code %d\n", Error);
             Error = 8;
@@ -298,7 +283,7 @@ public class Tops {
             System.out.println("Setting domain breaks and domains to plot\n");
         protein.setDomBreaks(Root, PlotFragInf);
 
-        List<Integer> DomainsToPlot = protein.FixDomainsToPlot(ChainToPlot.charAt(0), DomainToPlot);
+        List<Integer> DomainsToPlot = protein.FixDomainsToPlot(options.getChainToPlot().charAt(0), options.getDomainToPlot());
         if (DomainsToPlot.isEmpty()) {
             Error = 14;
             log("Tops error: fixing domains to plot\n");
@@ -309,8 +294,9 @@ public class Tops {
         List<Cartoon> cartoons = new ArrayList<Cartoon>();
         for (int domainToPlot : DomainsToPlot) {
 
-            if (options.isVerbose())
+            if (options.isVerbose()) {
                 log("\nPlotting domain %d\n", domainToPlot + 1);
+            }
 
             /* Set the domain to plot */
             Cartoon cartoon = protein.SetDomain(Root, protein.getDomain(domainToPlot));
@@ -321,20 +307,19 @@ public class Tops {
         }
 
         /* temporary write out of TOPS file */
-        if (options.isVerbose())
-            System.out.println("\n");
-        if (options.isVerbose())
-            System.out.println("Writing tops file\n");
-        if (TopsFilename != null) {
-            fn = TopsFilename;
+        if (options.isVerbose()) {
+            System.out.println("\nWriting tops file\n");
+        }
+        if (options.getTopsFilename() != null) {
+            fn = options.getTopsFilename();
         } else {
-            fn = GetTOPSFileName(Pcode, ChainToPlot, DomainToPlot);
+            fn = GetTOPSFileName(Pcode, options.getChainToPlot(), options.getDomainToPlot());
         }
         
         WriteTOPSFile(fn, cartoons, Pcode, protein, DomainsToPlot);
 
         /* Create postscript files for each Cartoon */
-        makePostscript(Postscript, cartoons, protein, DomainsToPlot.size(), PlotFragInf, options);
+        makePostscript(cartoons, protein, DomainsToPlot.size(), PlotFragInf, options);
 
         if (options.isVerbose())
             System.out.println("\n");
@@ -349,12 +334,12 @@ public class Tops {
     }
     
     private void makePostscript(
-            String Postscript,
             List<Cartoon> cartoons, 
             Protein protein, 
             int NDomainsToPlot, 
             PlotFragInformation PlotFragInf,
             Options options) {
+        String Postscript = options.getPostscript();
         if (Postscript != null) {
 
             if (options.isVerbose()) System.out.println("Writing postscript file\n");

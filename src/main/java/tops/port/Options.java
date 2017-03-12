@@ -6,55 +6,88 @@ import java.io.PrintStream;
 
 public class Options {
     
-    private String PDBFilePath = "./";
-    private String STRIDEFilePath = "./";
-    private String stride_pref = null;
-    private String dssp_pref = null;
+    private String defaultFileType = "dssp";
+    
+    private String pdbFilePath = "./";
     private String pdb_pref = "pdb";
-    private String stride_ext = "stride";
-    private String dssp_ext = "dssp";
     private String pdb_ext = "ent";
     
-    private String Postscript = null; /* Save picture into postscript file */
-    private String TopsFilename = null;
-    private String DomBoundaryFile = null;
-    private String DSSPFilePath = "./";
-    private boolean Verbose = false;
-    private String ChainToPlot = null;
-    private int DomainToPlot = 0;
-    private String FileType = null;
+    private String strideFilePath = "./";
+    private String stride_pref = null;
+    private String stride_ext = "stride";
     
-    private int Radius = 20; /* The radius of the symbols */
-    private int GridUnitSize = 50; /* Grid unit size */
-    private int GridSize = 50; /* Grid Size */
-    private int MergeStrands = 5; /* ?? */
-    private boolean MergeBetweenSheets;
-    private double CutoffDistance = 20.0; /* ?? */
-    private boolean Strands = true; /* Use strands in topology */
-    private boolean Helices = true; /* Use helices in topology */
-    private int AnglePenalty = 0;
-    private int Multiplicity = 6;
-    private int ChainPenalty = 5;
-    private int ClashPenalty = 1000;
-    private int CrossPenalty = 0;
-    private int HandPenalty = 100;
-    private int NeighbourPenalty = 100;
-    private int InsideBarrelPenalty = 100;
-    private int NoConfigs = 250;
-    private int RandomSeed = 28464;
-    private long Temperature = 100;
-    private long FinishTemperature = 0;
-    private int Decrement = 10;
-    private int StepSize = 100;
-    private int ArcsSample = 0;
-    private int LineSample = 50;
+    private String dsspFilePath = "./";
+    private String dssp_pref = null;
+    private String dssp_ext = "dssp";
+    
+    private String postscript = null; /* Save picture into postscript file */
+    private String topsFilename = null;
+    private String domBoundaryFile = null;
+    private boolean verbose = false;
+    private String chainToPlot = null;
+    private int domainToPlot = 0;
+    private String fileType = null;
+    
+    private int radius = 20; /* The radius of the symbols */
+    private int gridUnitSize = 50; /* Grid unit size */
+    private int gridSize = 50; /* Grid Size */
+    private int mergeStrands = 5; /* ?? */
+    private boolean mergeBetweenSheets;
+    private double cutoffDistance = 20.0; /* ?? */
+    private boolean strands = true; /* Use strands in topology */
+    private boolean helices = true; /* Use helices in topology */
+    
+    private int anglePenalty = 0;
+    private int multiplicity = 6;
+    private int chainPenalty = 5;
+    private int clashPenalty = 1000;
+    private int crossPenalty = 0;
+    private int handPenalty = 100;
+    private int neighbourPenalty = 100;
+    private int insideBarrelPenalty = 100;
+    private int noConfigs = 250;
+    private int randomSeed = 28464;
+    private long temperature = 100;
+    private long finishTemperature = 0;
+    private int decrement = 10;
+    private int stepSize = 100;
+    private int arcsSample = 0;
+    private int lineSample = 50;
+    
+    public String getFileType() {
+        return fileType;
+    }
+    
+    public int getDomainToPlot() {
+        return domainToPlot;
+    }
+    
+    public String getChainToPlot() {
+        return chainToPlot;
+    }
+    
+    public String getDomBoundaryFile() {
+        return domBoundaryFile;
+    }
+    
+    public String getTopsFilename() {
+        return topsFilename;
+    }
+    
+    public String getPostscript() {
+        return postscript;
+    }
    
+    public String getDsspFilePath() {
+        return dsspFilePath;
+    }
+    
     public int getRadius() {
-        return Radius;
+        return radius;
     }
     
     public boolean isVerbose() {
-        return Verbose;
+        return verbose;
     }
 
     public int ReadDefaults(BufferedReader Def) throws IOException {
@@ -78,7 +111,7 @@ public class Options {
                 /* go through the possibilities */
                 if (key.equals("AnglePenalty")) {
                     try {
-                        AnglePenalty = Integer.parseInt(value);
+                        anglePenalty = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -88,7 +121,7 @@ public class Options {
                     }
                 } else if ("Multiplicity".equals(key)) {
                     try {
-                        Multiplicity = Integer.parseInt(value);
+                        multiplicity = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -98,13 +131,13 @@ public class Options {
                     }
                 } else if ("MergeBetweenSheets".equals(key)) {
                     if ((value.charAt(0) == 'F') || (value.charAt(0) == '0')) {
-                        MergeBetweenSheets = false;
+                        mergeBetweenSheets = false;
                     } else {
-                        MergeBetweenSheets = true;
+                        mergeBetweenSheets = true;
                     }
                 } else if ("ClashPenalty".equals(key)) {
                     try {
-                        ClashPenalty = Integer.parseInt(value);
+                        clashPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -114,7 +147,7 @@ public class Options {
                     }
                 } else if ("ChainPenalty".equals(key)) {
                     try {
-                        ChainPenalty = Integer.parseInt(value);
+                        chainPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -124,7 +157,7 @@ public class Options {
                     }
                 } else if ("Decrement".equals(key)) {
                     try {
-                        Decrement = Integer.parseInt(value);
+                        decrement = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -134,7 +167,7 @@ public class Options {
                     }
                 } else if ("GridSize".equals(key)) {
                     try {
-                        GridSize = Integer.parseInt(value);
+                        gridSize = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -144,7 +177,7 @@ public class Options {
                     }
                 } else if ("LineSample".equals(key)) {
                     try {
-                        LineSample = Integer.parseInt(value);
+                        lineSample = Integer.parseInt(value);
                     } catch (Exception e) {
 
                         ErrorStatus = 1;
@@ -155,7 +188,7 @@ public class Options {
                     }
                 } else if ("HandPenalty".equals(key)) {
                     try {
-                        HandPenalty = Integer.parseInt(value);
+                        handPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -165,7 +198,7 @@ public class Options {
                     }
                 } else if ("MergeStrands".equals(key)) {
                     try {
-                        MergeStrands = Integer.parseInt(value);
+                        mergeStrands = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -175,7 +208,7 @@ public class Options {
                     }
                 } else if ("NoConfigs".equals(key)) {
                     try {
-                        NoConfigs = Integer.parseInt(value);
+                        noConfigs = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -185,7 +218,7 @@ public class Options {
                     }
                 } else if ("NeighbourPenalty".equals(key)) {
                     try {
-                        NeighbourPenalty = Integer.parseInt(value);
+                        neighbourPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -195,7 +228,7 @@ public class Options {
                     }
                 } else if ("InsideBarrelPenalty".equals(key)) {
                     try {
-                        InsideBarrelPenalty = Integer.parseInt(value);
+                        insideBarrelPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -205,7 +238,7 @@ public class Options {
                     }
                 } else if ("CutoffDistance".equals(key)) {
                     try {
-                        CutoffDistance = Integer.parseInt(value);
+                        cutoffDistance = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -214,10 +247,10 @@ public class Options {
                         break;
                     }
                 } else if ("Postscript".equals(key)) {
-                    Postscript = value;
+                    postscript = value;
                 } else if ("ArcSample".equals(key)) {
                     try {
-                        ArcsSample = Integer.parseInt(value);
+                        arcsSample = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -227,7 +260,7 @@ public class Options {
                     }
                 } else if ("StepSize".equals(key)) {
                     try {
-                        StepSize = Integer.parseInt(value);
+                        stepSize = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -236,7 +269,11 @@ public class Options {
                         break;
                     }
                 } else if ("FileType".equals(key)) {
-                    FileType = value;
+                    fileType = value;
+                    if (fileType == null) {
+                        fileType = defaultFileType;
+                    }
+                    fileType = fileType.toLowerCase();
                 } else if ("DSSPPrefix".equals(key)) {
                     dssp_pref = value;
                 } else if ("DSSPExtension".equals(key)) {
@@ -251,7 +288,7 @@ public class Options {
                     stride_ext = value;
                 } else if ("StartTemperature".equals(key)) {
                     try {
-                        Temperature = Integer.parseInt(value);
+                        temperature = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -261,7 +298,7 @@ public class Options {
                     }
                 } else if ("FinishTemperature".equals(key)) {
                     try {
-                        FinishTemperature = Integer.parseInt(value);
+                        finishTemperature = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -271,7 +308,7 @@ public class Options {
                     }
                 } else if ("Radius".equals(key)) {
                     try {
-                        Radius = Integer.parseInt(value);
+                        radius = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -281,13 +318,13 @@ public class Options {
                     }
                 } else if ("Verbose".equals(key)) {
                     if ((value.charAt(0) == 'T') || (value.charAt(0) == '1')) {
-                        Verbose = true;
+                        verbose = true;
                     } else {
-                        Verbose = false;
+                        verbose = false;
                     }
                 } else if ("CrossPenalty".equals(key)) {
                     try {
-                        CrossPenalty = Integer.parseInt(value);
+                        crossPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -297,7 +334,7 @@ public class Options {
                     }
                 } else if ("RandomSeed".equals(key)) {
                     try {
-                        RandomSeed = Integer.parseInt(value);
+                        randomSeed = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -306,13 +343,13 @@ public class Options {
                         break;
                     }
                 } else if ("DomainFile".equals(key)) {
-                    DomBoundaryFile = value;
+                    domBoundaryFile = value;
                 } else if ("PDBDirectory".equals(key)) {
-                    PDBFilePath = value;
+                    pdbFilePath = value;
                 } else if ("STRIDEDirectory".equals(key)) {
-                    STRIDEFilePath = value;
+                    strideFilePath = value;
                 } else if ("DSSPDirectory".equals(key)) {
-                    DSSPFilePath = value;
+                    dsspFilePath = value;
                 } else {
                     ErrorStatus = 1;
                     ErrStr = String.format(
@@ -340,7 +377,7 @@ public class Options {
      * This function sets those global variables which are derived from inputs
      */
     public void SetGlobalVariables() { // TODO - rename
-        GridUnitSize = 2 * Radius + Radius / 2;
+        gridUnitSize = 2 * radius + radius / 2;
     }
     
     public String CommandArguments(String[] args) {
@@ -383,7 +420,7 @@ public class Options {
             case 'a':
                 if (++i < args.length) {
                     try {
-                        AnglePenalty = Integer.valueOf(args[i]);
+                        anglePenalty = Integer.valueOf(args[i]);
                     } catch (Exception e) {
                         log("ERROR: unable to read angle penalty (int) after -a %s\n",
                                 args[i]);
@@ -397,7 +434,7 @@ public class Options {
             case 'b':
                 if (++i < args.length) {
                     try {
-                        ClashPenalty = Integer.valueOf(args[i]);
+                        clashPenalty = Integer.valueOf(args[i]);
                     } catch (Exception e) {
                         log("ERROR: unable to read clash penalty (int) after -b %s\n",
                                 args[i]);
@@ -411,7 +448,7 @@ public class Options {
             case 'c':
                 if (++i < args.length) {
                     try {
-                        ChainPenalty = Integer.valueOf(args[i]);
+                        chainPenalty = Integer.valueOf(args[i]);
                     } catch (Exception e) {
                         log("ERROR: unable to read chain penalty (int) after -c %s\n",
                                 args[i]);
@@ -425,7 +462,7 @@ public class Options {
             case 'h':
                 if (++i < args.length) {
                     try {
-                        HandPenalty = Integer.valueOf(args[i]);
+                        handPenalty = Integer.valueOf(args[i]);
                     } catch (Exception e) {
                         log(ErrStr,
                                 "ERROR: unable to read hand penalty (int) after -h %s\n",
@@ -440,7 +477,7 @@ public class Options {
             case 'i':
                 if (++i < args.length) {
                     try {
-                        InsideBarrelPenalty = Integer.valueOf(args[i]);
+                        insideBarrelPenalty = Integer.valueOf(args[i]);
                     } catch (Exception e) {
                         log("ERROR: unable to read inside barrel penalty (int) after -i %s\n",
                                 args[i]);
@@ -454,7 +491,7 @@ public class Options {
             case 'm':
                 if (++i < args.length) {
                     try {
-                        Multiplicity = Integer.valueOf(c);
+                        multiplicity = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         log("ERROR: unable to read Multiplicity (int) after -m %s\n",
@@ -469,7 +506,7 @@ public class Options {
             case 'n':
                 if (++i < args.length) {
                     try {
-                        NeighbourPenalty = Integer.valueOf(c);
+                        neighbourPenalty = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -484,9 +521,9 @@ public class Options {
                 break;
             case 'p':
                 if (++i < args.length) {
-                    Postscript = c;
-                    if ((Postscript.charAt(0) == '-')
-                            || (Postscript.charAt(0) == '+')) {
+                    postscript = c;
+                    if ((postscript.charAt(0) == '-')
+                            || (postscript.charAt(0) == '+')) {
                         ErrStr = String.format(
                                 "ERROR: postscript file must not begin with + or - %s",
                                 c);
@@ -500,7 +537,7 @@ public class Options {
             case 'r':
                 if (++i < args.length) {
                     try {
-                        Radius = Integer.valueOf(c);
+                        radius = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -515,9 +552,9 @@ public class Options {
                 break;
             case 't':
                 if (++i < args.length) {
-                    TopsFilename = c;
-                    if ((TopsFilename.charAt(0) == '-')
-                            || (TopsFilename.charAt(0) == '+')) {
+                    topsFilename = c;
+                    if ((topsFilename.charAt(0) == '-')
+                            || (topsFilename.charAt(0) == '+')) {
                         ErrStr = String.format(
                                 "ERROR: tops file must not begin with + or - %s",
                                 c);
@@ -530,15 +567,15 @@ public class Options {
                 break;
             case 'v':
                 if (s == '-') {
-                    Verbose = false;
+                    verbose = false;
                 } else {
-                    Verbose = true;
+                    verbose = true;
                 }
                 break;
             case 'x':
                 if (++i < args.length) {
                     try {
-                        CrossPenalty = Integer.valueOf(c);
+                        crossPenalty = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -553,9 +590,9 @@ public class Options {
                 break;
             case 'B':
                 if (++i < args.length) {
-                    DomBoundaryFile = c;
-                    if ((DomBoundaryFile.charAt(0) == '-')
-                            || (DomBoundaryFile.charAt(0) == '+')) {
+                    domBoundaryFile = c;
+                    if ((domBoundaryFile.charAt(0) == '-')
+                            || (domBoundaryFile.charAt(0) == '+')) {
                         ErrStr = String.format(
                                 "ERROR: domain boundary file must not begin with - or + %s",
                                 c);
@@ -568,9 +605,9 @@ public class Options {
                 break;
             case 'C':
                 if (++i < args.length) {
-                    ChainToPlot = c;
-                    if ((ChainToPlot.charAt(0) == '-')
-                            || (ChainToPlot.charAt(0) == '+')) {
+                    chainToPlot = c;
+                    if ((chainToPlot.charAt(0) == '-')
+                            || (chainToPlot.charAt(0) == '+')) {
                         ErrStr = String.format(
                                 "ERROR: chain to plot must not begin + or - %s",
                                 c);
@@ -584,7 +621,7 @@ public class Options {
             case 'D':
                 if (++i < args.length) {
                     try {
-                        DomainToPlot = Integer.valueOf(c);
+                        domainToPlot = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -599,9 +636,9 @@ public class Options {
                 break;
             case 'F':
                 if (++i < args.length) {
-                    FileType = c;
-                    if ((FileType.charAt(0) == '-')
-                            || (FileType.charAt(0) == '+')) {
+                    fileType = c;
+                    if ((fileType.charAt(0) == '-')
+                            || (fileType.charAt(0) == '+')) {
                         ErrStr = String.format(
                                 "ERROR: file type must begin with a single alphanumeric %s",
                                 c);
@@ -615,7 +652,7 @@ public class Options {
             case 'G':
                 if (++i < args.length) {
                     try {
-                        GridSize = Integer.valueOf(c);
+                        gridSize = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -631,7 +668,7 @@ public class Options {
             case 'M':
                 if (++i < args.length) {
                     try {
-                        MergeStrands = Integer.valueOf(c);
+                        mergeStrands = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -646,9 +683,9 @@ public class Options {
                 break;
             case 'P':
                 if (++i < args.length) {
-                    DSSPFilePath = c;
-                    if ((DSSPFilePath.charAt(0) == '-')
-                            || (DSSPFilePath.charAt(0) == '+')) {
+                    dsspFilePath = c;
+                    if ((dsspFilePath.charAt(0) == '-')
+                            || (dsspFilePath.charAt(0) == '+')) {
                         ErrStr = String.format(
                                 "ERROR: DSSP file path must not begin with + or - %s",
                                 c);
@@ -662,7 +699,7 @@ public class Options {
             case 'N':
                 if (++i < args.length) {
                     try {
-                        NoConfigs = Integer.valueOf(c);
+                        noConfigs = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -678,7 +715,7 @@ public class Options {
             case 'S':
                 if (++i < args.length) {
                     try {
-                        RandomSeed = Integer.valueOf(c);
+                        randomSeed = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -694,7 +731,7 @@ public class Options {
             case 'T':
                 if (++i < args.length) {
                     try {
-                        Temperature = Integer.valueOf(c);
+                        temperature = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -710,7 +747,7 @@ public class Options {
             case 'U':
                 if (++i < args.length) {
                     try {
-                        FinishTemperature = Integer.valueOf(c);
+                        finishTemperature = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -726,7 +763,7 @@ public class Options {
             case 'V':
                 if (++i < args.length) {
                     try {
-                        Decrement = Integer.valueOf(c);
+                        decrement = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -772,70 +809,70 @@ public class Options {
      */
     public void CheckOptions() throws Exception {
 
-        if (GridSize <= 0) {
+        if (gridSize <= 0) {
             throw new Exception("ERROR: GridSize negative or zero");
         }
-        if (Radius <= 0) {
+        if (radius <= 0) {
             throw new Exception("ERROR: Radius negative or zero");
         }
-        if (MergeStrands < 0) {
+        if (mergeStrands < 0) {
             throw new Exception("ERROR: MergeStrands negative");
         }
-        if (ClashPenalty < 0) {
+        if (clashPenalty < 0) {
             throw new Exception("ERROR: ClashPenalty negative");
         }
-        if (AnglePenalty < 0) {
+        if (anglePenalty < 0) {
             throw new Exception("ERROR: AnglePenalty negative");
         }
-        if (AnglePenalty != 0 && (Multiplicity <= 0)) {
+        if (anglePenalty != 0 && (multiplicity <= 0)) {
             throw new Exception("ERROR: Multiplicity negative or zero");
         }
-        if (ChainPenalty < 0) {
+        if (chainPenalty < 0) {
             throw new Exception("ERROR: ChainPenalty negative");
         }
-        if (CrossPenalty < 0) {
+        if (crossPenalty < 0) {
             throw new Exception("ERROR: CrossPenalty negative");
         }
-        if (HandPenalty < 0) {
+        if (handPenalty < 0) {
             throw new Exception("ERROR: HandPenalty negative");
         }
-        if (NeighbourPenalty < 0) {
+        if (neighbourPenalty < 0) {
             throw new Exception("ERROR: NeighbourPenalty negative");
         }
-        if (CutoffDistance <= 0.0) {
+        if (cutoffDistance <= 0.0) {
             throw new Exception("ERROR: CutoffDistance negative");
         }
-        if (InsideBarrelPenalty < 0) {
+        if (insideBarrelPenalty < 0) {
             throw new Exception("ERROR: InsideBarrelPenalty negative");
         }
-        if (NoConfigs <= 0) {
+        if (noConfigs <= 0) {
             throw new Exception("ERROR: NoConfigs negative or zero");
         }
-        if (RandomSeed <= 0) {
+        if (randomSeed <= 0) {
             throw new Exception("ERROR: RandomSeed negative or zero");
         }
-        if (FinishTemperature < 0) {
+        if (finishTemperature < 0) {
             throw new Exception("ERROR: FinishTemperature negative");
         }
-        if (Temperature < 0) {
+        if (temperature < 0) {
             throw new Exception("ERROR: StartTemperature negative");
         }
-        if ((Temperature - FinishTemperature) <= 0) {
+        if ((temperature - finishTemperature) <= 0) {
             throw new Exception(
                     "ERROR: FinishTemperature greater than or equal start temperature");
         }
-        if ((Decrement <= 0) || (Decrement >= 100)) {
+        if ((decrement <= 0) || (decrement >= 100)) {
             throw new Exception(
                     "ERROR: Temperature decrement must be between 1 and 99 percent");
         }
-        if (StepSize <= 0) {
+        if (stepSize <= 0) {
             throw new Exception("ERROR: StepSize negative or zero");
         }
-        if ((LineSample < 0) || (LineSample >= 100)) {
+        if ((lineSample < 0) || (lineSample >= 100)) {
             throw new Exception(
                     "ERROR: LineSample must be between 0 and 99 percent");
         }
-        if ((ArcsSample < 0) || (ArcsSample >= 100)) {
+        if ((arcsSample < 0) || (arcsSample >= 100)) {
             throw new Exception(
                     "ERROR: ArcSample must be between 0 and 99 percent");
         }
@@ -847,44 +884,44 @@ public class Options {
         print(out, "===================================================\n");
         print(out, "===================================================\n\n");
         print(out, "Parameters for this run:\n\n");
-        print(out, "ClashPenalty %d\n", ClashPenalty);
-        print(out, "ChainPenalty %d\n", ChainPenalty);
-        print(out, "HandPenalty %d\n", HandPenalty);
-        print(out, "CrossPenalty %d\n", CrossPenalty);
-        print(out, "AnglePenalty %d\n", AnglePenalty);
-        print(out, "Multiplicity %d\n", Multiplicity);
-        print(out, "NeighbourPenalty %d\n", NeighbourPenalty);
-        print(out, "InsideBarrelPenalty %d\n", InsideBarrelPenalty);
-        print(out, "CutoffDistance %f\n", CutoffDistance);
+        print(out, "ClashPenalty %d\n", clashPenalty);
+        print(out, "ChainPenalty %d\n", chainPenalty);
+        print(out, "HandPenalty %d\n", handPenalty);
+        print(out, "CrossPenalty %d\n", crossPenalty);
+        print(out, "AnglePenalty %d\n", anglePenalty);
+        print(out, "Multiplicity %d\n", multiplicity);
+        print(out, "NeighbourPenalty %d\n", neighbourPenalty);
+        print(out, "InsideBarrelPenalty %d\n", insideBarrelPenalty);
+        print(out, "CutoffDistance %f\n", cutoffDistance);
         print(out, "\n");
 
-        print(out, "Radius %d\n", Radius);
-        print(out, "GridSize %d\n", GridSize);
-        print(out, "MergeStrands %d\n", MergeStrands);
-        if (MergeBetweenSheets)
+        print(out, "Radius %d\n", radius);
+        print(out, "GridSize %d\n", gridSize);
+        print(out, "MergeStrands %d\n", mergeStrands);
+        if (mergeBetweenSheets)
             print(out, "MergeBetweenSheets true\n");
         else
             print(out, "MergeBetweenSheets false\n");
         print(out, "\n");
 
-        print(out, "StartTemperature %d\n", Temperature);
-        print(out, "FinishTemperature %d\n", FinishTemperature);
-        print(out, "NoConfigs %d\n", NoConfigs);
-        print(out, "Decrement %d\n", Decrement);
-        print(out, "StepSize %d\n", StepSize);
-        print(out, "LineSample %d\n", LineSample);
-        print(out, "ArcSample %d\n", ArcsSample);
-        print(out, "RandomSeed %d\n", RandomSeed);
+        print(out, "StartTemperature %d\n", temperature);
+        print(out, "FinishTemperature %d\n", finishTemperature);
+        print(out, "NoConfigs %d\n", noConfigs);
+        print(out, "Decrement %d\n", decrement);
+        print(out, "StepSize %d\n", stepSize);
+        print(out, "LineSample %d\n", lineSample);
+        print(out, "ArcSample %d\n", arcsSample);
+        print(out, "RandomSeed %d\n", randomSeed);
         print(out, "\n");
 
-        if (Postscript != null)
-            print(out, "Postscript file %s\n", Postscript);
-        print(out, "FileType %s\n", FileType);
-        print(out, "DSSPDirectory %s\n", DSSPFilePath);
-        print(out, "PDBDirectory %s\n", PDBFilePath);
-        print(out, "STRIDEDirectory %s\n", STRIDEFilePath);
-        if (DomBoundaryFile != null)
-            print(out, "DomainFile %s\n", DomBoundaryFile);
+        if (postscript != null)
+            print(out, "Postscript file %s\n", postscript);
+        print(out, "FileType %s\n", fileType);
+        print(out, "DSSPDirectory %s\n", dsspFilePath);
+        print(out, "PDBDirectory %s\n", pdbFilePath);
+        print(out, "STRIDEDirectory %s\n", strideFilePath);
+        if (domBoundaryFile != null)
+            print(out, "DomainFile %s\n", domBoundaryFile);
         else
             print(out, "DomainFile NON\n");
         if (dssp_pref != null)
@@ -898,10 +935,10 @@ public class Options {
         print(out, "STRIDE extension %s\n", stride_ext);
         print(out, "\n");
 
-        if (ChainToPlot != null)
-            print(out, "Chain to plot %s\n", ChainToPlot);
-        if (DomainToPlot > 0)
-            print(out, "DomainToPlot %d\n", DomainToPlot);
+        if (chainToPlot != null)
+            print(out, "Chain to plot %s\n", chainToPlot);
+        if (domainToPlot > 0)
+            print(out, "DomainToPlot %d\n", domainToPlot);
 
         print(out, "===================================================\n");
         print(out, "===================================================\n");
@@ -910,5 +947,6 @@ public class Options {
     private void print(PrintStream out, String s, Object... args) {
         out.print(String.format(s, args));
     }
+
 
 }
