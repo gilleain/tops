@@ -29,28 +29,28 @@ public class Options {
     private String fileType = null;
     
     private int radius = 20; /* The radius of the symbols */
-    private int gridUnitSize = 50; /* Grid unit size */
-    private int gridSize = 50; /* Grid Size */
     private int mergeStrands = 5; /* ?? */
     private boolean mergeBetweenSheets;
     private double cutoffDistance = 20.0; /* ?? */
     
     private int anglePenalty = 0;
-    private int multiplicity = 6;
+    private int arcsSample = 0;
     private int chainPenalty = 5;
     private int clashPenalty = 1000;
     private int crossPenalty = 0;
+    private int decrement = 10;
+    private long finishTemperature = 0;
+    private int gridSize = 50; 
+    private int gridUnitSize = 50;
     private int handPenalty = 100;
-    private int neighbourPenalty = 100;
     private int insideBarrelPenalty = 100;
+    private int lineSample = 50;
+    private int multiplicity = 6;
+    private int neighbourPenalty = 100;
     private int noConfigs = 250;
     private int randomSeed = 28464;
-    private long temperature = 100;
-    private long finishTemperature = 0;
-    private int decrement = 10;
+    private long startTemperature = 100;
     private int stepSize = 100;
-    private int arcsSample = 0;
-    private int lineSample = 50;
     
     public String getTOPSFileName(String pcode, String chainToPlot, int domainToPlot) {
         return pcode + chainToPlot + domainToPlot + ".tops";  // TODO
@@ -305,7 +305,7 @@ public class Options {
                     stride_ext = value;
                 } else if ("StartTemperature".equals(key)) {
                     try {
-                        temperature = Integer.parseInt(value);
+                        startTemperature = Integer.parseInt(value);
                     } catch (Exception e) {
                         ErrorStatus = 1;
                         ErrStr = String.format(
@@ -748,7 +748,7 @@ public class Options {
             case 'T':
                 if (++i < args.length) {
                     try {
-                        temperature = Integer.valueOf(c);
+                        startTemperature = Integer.valueOf(c);
                     } catch (Exception e) {
 
                         ErrStr = String.format(
@@ -871,10 +871,10 @@ public class Options {
         if (finishTemperature < 0) {
             throw new Exception("ERROR: FinishTemperature negative");
         }
-        if (temperature < 0) {
+        if (startTemperature < 0) {
             throw new Exception("ERROR: StartTemperature negative");
         }
-        if ((temperature - finishTemperature) <= 0) {
+        if ((startTemperature - finishTemperature) <= 0) {
             throw new Exception(
                     "ERROR: FinishTemperature greater than or equal start temperature");
         }
@@ -921,7 +921,7 @@ public class Options {
             print(out, "MergeBetweenSheets false\n");
         print(out, "\n");
 
-        print(out, "StartTemperature %d\n", temperature);
+        print(out, "StartTemperature %d\n", startTemperature);
         print(out, "FinishTemperature %d\n", finishTemperature);
         print(out, "NoConfigs %d\n", noConfigs);
         print(out, "Decrement %d\n", decrement);

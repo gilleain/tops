@@ -20,25 +20,28 @@ public class Optimise {
     
     private double PARALLEL_SCALE = 5.0;
     private int N_ENERGY_COMPS = 9;
+    
     private double anglePenalty		 = 0;
+    private double arcsSample		 = 0;
     private double chainPenalty		 = 10;
     private double clashPenalty		 = 1500;
-    private double lineHitPenalty		 = clashPenalty / 2;
     private double crossPenalty		 = 250;
+    private double decrement		 = 10;
+    private double finishTemperature	 = 9000;
+    private double gridSize		 = 50;
+    private double gridUnitSize		 = 50;
     private double handPenalty		 = 500;
-    private double neighbourPenalty	 = 50;
     private double insideBarrelPenalty	 = 500;
+    private double lineSample		 = 25;
     private double multiplicity		 = 4;
+    private double neighbourPenalty	 = 50;
     private int noConfigs		 = 50;
     private int randomSeed		 = 28464;
     private double startTemperature	 = 10000;
-    private double finishTemperature	 = 9000;
-    private double decrement		 = 10;
     private double stepSize		 = 100;
-    private double arcsSample		 = 0;
-    private double lineSample		 = 25;
-    private double gridSize		 = 50;
-    private double gridUnitSize		 = 50;
+    
+    private double lineHitPenalty		 = clashPenalty / 2;
+    
     private Random random = new Random();
 
     // TODO refactor away this global! 
