@@ -59,7 +59,8 @@ public class Tops {
 
         /* get necessary env. vars. */
         TOPS_HOME = System.getenv("TOPS_HOME");
-        Options options = new Options(); 
+        Options options = new Options();
+        OptimiseOptions optimiseOptions = new OptimiseOptions();
 
         /* Parse defaults file */
         BufferedReader reader = null;
@@ -79,6 +80,12 @@ public class Tops {
                 reader.close();
                 return;
             }
+            ErrorStatus = optimiseOptions.readDefaults(reader);
+            if (ErrorStatus != 0) {
+                log("ERROR: while reading %s defaults file\n", defaultsFile);
+                reader.close();
+                return;
+            }
         } catch (Exception e) {
             log("Unable to open defaults file %s\n", defaultsFile);
             return;
@@ -90,6 +97,7 @@ public class Tops {
 
         /* Parse command line arguments */
         proteinCode = options.parseArguments(args);
+        optimiseOptions.parseArguments(args);
         if (ErrorStatus > 0) {
             log("Tops error: in CommandArguments, status %d\n", ErrorStatus);
             System.exit(1);
@@ -107,6 +115,7 @@ public class Tops {
         /* check runtime options are reasonable */
         try {
             options.checkOptions();
+            optimiseOptions.checkOptions();
         } catch (Exception e) {
             log("ERROR: checking runtime options\n");
             System.exit(1);
@@ -120,7 +129,7 @@ public class Tops {
         }
 
         /* set global variables which are derived from inputs */
-        options.setGridUnitSize();
+        optimiseOptions.setGridUnitSize(options.getRadius());
 
         /* call main driver */
         ErrorStatus = runTops(proteinCode, options);
