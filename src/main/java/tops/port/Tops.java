@@ -30,14 +30,9 @@ public class Tops {
     private double ProgramVersion = 2.0;
     
     private SSE Root = null; /* Pointer to link list of structures */
-    private SSE OriginalRoot = null; /* Pointer to master link list of structures */
-    private SSE CentreFixed = null;
-    private double[][] CaXYZ = null; /* Calpha coordinates */
-    private int NumberResidues = 0; /* Number of residues in protein */
-    private boolean Small = false;
     private String defaultsFile = "tops.def";
     private String TOPS_HOME = null;
-    private final int DOMS_PER_PAGE = 2;    // for ps output
+    
 
     /* --------------------- */
     /* Main control function */
@@ -50,19 +45,11 @@ public class Tops {
     private void log(String string, Object... args) {
         System.out.println(String.format(string, args));
     }
-
-    public void run(String[] args) throws IOException {
-        String proteinCode;
+    
+    /* Parse defaults file */
+    private void readDefaults(Options options, OptimiseOptions optimiseOptions) throws IOException {
         int ErrorStatus = 0;
         File DefsFile = null;
-        char[] dfp = new char[1024];
-
-        /* get necessary env. vars. */
-        TOPS_HOME = System.getenv("TOPS_HOME");
-        Options options = new Options();
-        OptimiseOptions optimiseOptions = new OptimiseOptions();
-
-        /* Parse defaults file */
         BufferedReader reader = null;
         try {
             if (TOPS_HOME != null) {
@@ -94,10 +81,23 @@ public class Tops {
                 reader.close();
             }
         }
+    }
+
+    public void run(String[] args) throws IOException {
+        String proteinCode;
+        int ErrorStatus = 0;
+
+        /* get necessary env. vars. */
+        TOPS_HOME = System.getenv("TOPS_HOME");
+        Options options = new Options();
+        OptimiseOptions optimiseOptions = new OptimiseOptions();
+
+        readDefaults(options, optimiseOptions);
 
         /* Parse command line arguments */
         proteinCode = options.parseArguments(args);
         optimiseOptions.parseArguments(args);
+        
         if (ErrorStatus > 0) {
             log("Tops error: in CommandArguments, status %d\n", ErrorStatus);
             System.exit(1);
@@ -107,8 +107,7 @@ public class Tops {
             System.exit(1);
         }
         if (proteinCode.length() != 4) {
-            log("Tops error: Protein code %s must be exactly 4 characters\n",
-                    proteinCode);
+            log("Tops error: Protein code %s must be exactly 4 characters\n", proteinCode);
             System.exit(1);
         }
 
@@ -143,29 +142,11 @@ public class Tops {
     }
 
     public int runTops(String proteinCode, Options options) throws IOException {
-
-        String Comment;
-        int SpecifiedDomains = 0;
-        PlotFragInformation PlotFragInf;
-        char[] psfile = new char[80];
-        String dbf = null;
-        String fn;
-        int npages, NLastPage, nplot;
-
         Protein protein = null;
-        Protein.DomDefError ddep = null;
 
         int Error = 0;
 
-        /* Check that a file has been specified */
-        if (proteinCode == null) {
-            Error = 1;
-            return Error;
-        }
-
         /* Read secondary structure file ( DSSP or STRIDE ) or old save file */
-        
-
         if (options.getFileType().equals("dssp")) {
 
             if (options.isVerbose())
@@ -225,6 +206,94 @@ public class Tops {
         /* Initialise the chirality code at this point */
         // InitialiseChirality( protein, Error );
 
+        readDomainBoundaryFile(protein, options);
+        
+        /* add default domains */
+        if (options.isVerbose()) {
+            System.out.println("Setting default domains\n");
+        }
+        protein.defaultDomains(options.getChainToPlot().charAt(0));
+        if (Error > 0) {
+            log("Tops error: detected in DefaultDomains, code %d\n", Error);
+            Error = 8;
+            return Error;
+        }
+
+        /* check domain definitions */
+        Protein.DomDefError ddep  = protein.checkDomainDefs();
+        if (ddep != null) {
+            if (ddep.ErrorType != null) {
+                log("Tops warning: problem with domain definitions type %d\n", ddep.ErrorType);
+                log("%s\n", ddep.ErrorString);
+            }
+        }
+        
+        /*
+         * information on plotted chain fragments is held in PlotFragInf for use
+         * in output postscript
+         */
+        PlotFragInformation plotFragInf = new PlotFragInformation();
+
+        /* set up the domain breaks and PlotFragInfo */
+        if (options.isVerbose()) {
+            System.out.println("Setting domain breaks and domains to plot\n");
+        }
+        protein.setDomBreaks(Root, plotFragInf);    // TODO - Root will be null here!! XXX
+
+        List<Integer> domainsToPlot = protein.fixDomainsToPlot(options.getChainToPlot().charAt(0), options.getDomainToPlot());
+        if (domainsToPlot.isEmpty()) {
+            Error = 14;
+            log("Tops error: fixing domains to plot\n");
+            return Error;
+        }
+
+        /* Loop over domains to plot */
+        List<Cartoon> cartoons = new ArrayList<Cartoon>();
+        for (int domainToPlot : domainsToPlot) {
+
+            if (options.isVerbose()) {
+                log("\nPlotting domain %d\n", domainToPlot + 1);
+            }
+
+            /* Set the domain to plot */
+            Cartoon cartoon = protein.setDomain(Root, protein.getDomain(domainToPlot));
+
+            new Optimise().optimise(cartoon);
+            cartoon.calculateConnections(options.getRadius());
+            cartoons.add(cartoon);
+        }
+
+        /* temporary write out of TOPS file */
+        if (options.isVerbose()) {
+            System.out.println("\nWriting tops file\n");
+        }
+        
+        String topsFilename;
+        if (options.getTopsFilename() != null) {
+            topsFilename = options.getTopsFilename();
+        } else {
+            topsFilename = options.getTOPSFileName(proteinCode, options.getChainToPlot(), options.getDomainToPlot());
+        }
+        
+        new TopsFileWriter().writeTOPSFile(topsFilename, cartoons, protein, domainsToPlot);
+
+        /* Create postscript files for each Cartoon */
+        new PostscriptFileWriter().makePostscript(cartoons, protein, domainsToPlot.size(), plotFragInf, options);
+
+        if (options.isVerbose())
+            System.out.println("\n");
+
+        if (Error > 0) {
+            log("Tops error: terminating the chirality calculation\n");
+            Error = 17;
+            return Error;
+        }
+        return 0;
+
+    }
+    
+    private void readDomainBoundaryFile(Protein protein, Options options) throws IOException {
+        String dbf = null;
         /*
          * Read the domain boundary file if ChainToPlot was not specified as ALL
          */
@@ -250,195 +319,5 @@ public class Tops {
                 log("TOPS warning: no domain file was found\n");
             }
         }
-        /* add default domains */
-        if (options.isVerbose())
-            System.out.println("Setting default domains\n");
-        protein.defaultDomains(options.getChainToPlot().charAt(0));
-        if (Error > 0) {
-            log("Tops error: detected in DefaultDomains, code %d\n", Error);
-            Error = 8;
-            return Error;
-        }
-
-        /* check domain definitions */
-        ddep = protein.checkDomainDefs();
-        if (ddep != null) {
-            if (ddep.ErrorType != null) {
-                log("Tops warning: problem with domain definitions type %d\n", ddep.ErrorType);
-                log("%s\n", ddep.ErrorString);
-                /* Error = 18; */
-                /* return; */
-            }
-        }
-
-        /* Build the linked list (main TOPS internal data structure ) */
-//        Root = protein; // XXX was TopsLinkedList which has become the dssp reader
-        if (Root == null) {
-            log("Tops error: Building linked list from protein\n");
-            Error = 2;
-            return Error;
-        }
-
-        /*
-         * information on plotted chain fragments is held in PlotFragInf for use
-         * in output postscript
-         */
-        PlotFragInf = new PlotFragInformation();
-
-        /* set up the domain breaks and PlotFragInfo */
-        if (options.isVerbose())
-            System.out.println("Setting domain breaks and domains to plot\n");
-        protein.setDomBreaks(Root, PlotFragInf);
-
-        List<Integer> DomainsToPlot = protein.fixDomainsToPlot(options.getChainToPlot().charAt(0), options.getDomainToPlot());
-        if (DomainsToPlot.isEmpty()) {
-            Error = 14;
-            log("Tops error: fixing domains to plot\n");
-            return Error;
-        }
-
-        /* Loop over domains to plot */
-        List<Cartoon> cartoons = new ArrayList<Cartoon>();
-        for (int domainToPlot : DomainsToPlot) {
-
-            if (options.isVerbose()) {
-                log("\nPlotting domain %d\n", domainToPlot + 1);
-            }
-
-            /* Set the domain to plot */
-            Cartoon cartoon = protein.setDomain(Root, protein.getDomain(domainToPlot));
-
-            new Optimise().optimise(cartoon);
-            cartoon.calculateConnections(options.getRadius());
-            cartoons.add(cartoon);
-        }
-
-        /* temporary write out of TOPS file */
-        if (options.isVerbose()) {
-            System.out.println("\nWriting tops file\n");
-        }
-        if (options.getTopsFilename() != null) {
-            fn = options.getTopsFilename();
-        } else {
-            fn = options.getTOPSFileName(proteinCode, options.getChainToPlot(), options.getDomainToPlot());
-        }
-        
-        writeTOPSFile(fn, cartoons, proteinCode, protein, DomainsToPlot);
-
-        /* Create postscript files for each Cartoon */
-        makePostscript(cartoons, protein, DomainsToPlot.size(), PlotFragInf, options);
-
-        if (options.isVerbose())
-            System.out.println("\n");
-
-        if (Error > 0) {
-            log("Tops error: terminating the chirality calculation\n");
-            Error = 17;
-            return Error;
-        }
-        return 0;
-
-    }
-    
-    private void makePostscript(
-            List<Cartoon> cartoons, 
-            Protein protein, 
-            int NDomainsToPlot, 
-            PlotFragInformation PlotFragInf,
-            Options options) {
-        String Postscript = options.getPostscript();
-        if (Postscript != null) {
-
-            if (options.isVerbose()) System.out.println("Writing postscript file\n");
-
-            int npages = NDomainsToPlot / DOMS_PER_PAGE;
-            int NLastPage = NDomainsToPlot % DOMS_PER_PAGE;
-            npages += (NLastPage > 0 ? 1 : 0);  // add an extra page if necessary
-
-            for (int i = 0; i < npages; i++) {
-                File psfile = getPSFile(Postscript, i);
-                int nplot = DOMS_PER_PAGE;
-                if ((i == (npages - 1)) && NLastPage > 0)
-                    nplot = NLastPage;
-//                PrintCartoons(
-//                   nplot, cartoons, DOMS_PER_PAGE * i, psfile, protein.getProteinCode(), PlotFragInf);
-            }
-        }
-    }
-    
-    private File getPSFile(String filePrefix, int i) {
-        String filename = filePrefix.substring(0, filePrefix.indexOf('.'));
-        return new File(filename + "_" + i + ".ps");
-    }
-   
-
-    private void getPSFILE(char[] PostScript, char[] psfile, int i) {
-
-        int dum;
-
-        int j;
-        for (j = 0; j < PostScript.length; j++) {
-            char c = PostScript[j];
-            if (c == '.')
-                break;
-            psfile[j] = c;
-        }
-
-        psfile[j] = '_';
-        psfile[j + 2] = '.';
-        psfile[j + 3] = 'p';
-        psfile[j + 4] = 's';
-        // psfile[j+5] = '\0'; // XXX no need to null-terminate strings
-
-    }
-
-    private void writeTOPSFile(String Filename, List<Cartoon> cartoonPtrs,
-            String pcode, Protein protein, List<Integer> domainsToPlot) throws FileNotFoundException {
-
-        int i, j;
-        PrintStream out = new PrintStream(new FileOutputStream(Filename));
-        DomainDefinition dompt;
-
-        writeTOPSHeader(out, pcode, cartoonPtrs.size());
-
-        for (i = 0; i < cartoonPtrs.size(); i++) {
-            dompt = protein.getDomain(domainsToPlot.get(i));
-            out.print(String.format("DOMAIN_NUMBER %d %s", i, dompt.domainCATHCode));
-            for (j = 0; j < dompt.numberOfSegments; j++)
-                out.print(
-                  String.format(" %d %d %d", 
-                          dompt.segmentStartIndex[j], dompt.segmentIndices[0][j], dompt.segmentIndices[1][j])
-                );
-            out.println();
-            // XXX ugly, but due to the difference between a pointer and an array/list
-            appendLinkedList(out, cartoonPtrs.get(i).getSSEs().get(0));
-            out.println();
-            out.println();
-        }
-
-        out.close();
-    }
-
-    private void writeTOPSHeader(PrintStream out, String pcode, int NDomains) {
-
-        print(out,
-                "##\n## TOPS: protein topology information file\n##\n## Protein code %s\n## Number of domains %d\n##\n\n",
-                pcode, NDomains);
-
-    }
-
-    private void appendLinkedList(PrintStream out, SSE p) {
-
-        for (; p != null; p = p.To) {
-            print(out, "\n");
-            p.WriteSecStr(out);
-        }
-
-        return;
-
-    }
-    
-    private void print(PrintStream out, String s, Object... args) {
-        out.print(String.format(s, args));
     }
 }

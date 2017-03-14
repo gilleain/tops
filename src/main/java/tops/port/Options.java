@@ -426,7 +426,6 @@ public class Options {
      * Function to check runtime options are reasonable
      */
     public void checkOptions() throws Exception {
-
        
         if (radius <= 0) {
             throw new Exception("ERROR: Radius negative or zero");
@@ -438,7 +437,6 @@ public class Options {
         if (cutoffDistance <= 0.0) {
             throw new Exception("ERROR: CutoffDistance negative");
         }
-       
 
     }
     
