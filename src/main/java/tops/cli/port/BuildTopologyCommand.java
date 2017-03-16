@@ -139,7 +139,7 @@ public class BuildTopologyCommand implements Command {
         }
 
         /* Assign protein name and code from input file name */
-        protein.setName(proteinCode); 
+        protein.setCode(proteinCode); 
 
         /* Initialise the chirality code at this point */
         // InitialiseChirality( protein, Error ); // XXX TODO

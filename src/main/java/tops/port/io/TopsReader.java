@@ -39,7 +39,7 @@ public class TopsReader {
             if (values.isEmpty()) values = null;
             if (keyword.equals("DOMAIN_NUMBER")) {
                 String cathcode = values.get(1);
-                protein.proteinCode = cathcode.substring(0, 4);
+                protein.setCode(cathcode.substring(0, 4));
                 char chain_id = cathcode.charAt(4);
                 char domain_id = cathcode.charAt(5);
                 chain = new Chain(chain_id);

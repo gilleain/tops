@@ -71,7 +71,7 @@ public class DomainBoundaryFileReader {
                         DomainDefinition domain = new DomainDefinition(DomainDefinition.DomainType.SEGMENT_SET);
                         protein.addDomain(domain);
                         domain.domainCATHCode = String.format("%s%s%d",
-                                protein.proteinCode, CodeChain,
+                                protein.getProteinCode(), CodeChain,
                                 (i - DomsFrom + 1) % 10);
 
                         CurrentToken = tokenizer.nextToken();

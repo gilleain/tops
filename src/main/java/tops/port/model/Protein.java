@@ -21,22 +21,20 @@ public class Protein {
     }
     
     private List<Chain> chains;
-    private String proteinName;
-    public String proteinCode;
+    private String proteinCode;
     public int numberOfDomains;
     public List<DomainDefinition> domains;
     
-    public Protein(String ProteinCode) {
-        this.proteinName = "";
-        this.proteinCode = ProteinCode;
+    public Protein(String proteinCode) {
+        this.proteinCode = proteinCode;
         this.numberOfDomains = 1;
 
         this.chains = new ArrayList<Chain>();
         this.domains = new ArrayList<DomainDefinition>();
     }
     
-    public void setName(String name) {
-        this.proteinName = name;
+    public void setCode(String name) {
+        this.proteinCode = name;
     }
     
     public DomainDefinition getDomain(int i) {
