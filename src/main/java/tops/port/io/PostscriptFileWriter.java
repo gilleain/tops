@@ -1,8 +1,9 @@
-package tops.port;
+package tops.port.io;
 
 import java.io.File;
 import java.util.List;
 
+import tops.port.Options;
 import tops.port.model.Cartoon;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
