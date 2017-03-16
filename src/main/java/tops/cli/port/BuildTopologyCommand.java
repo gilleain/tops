@@ -1,123 +1,100 @@
-package tops.port;
+package tops.cli.port;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.cli.ParseException;
+
+import tops.cli.Command;
+import tops.port.DomainBoundaryFileReader;
+import tops.port.Optimise;
+import tops.port.Options;
+import tops.port.PostscriptFileWriter;
+import tops.port.TopsFileWriter;
 import tops.port.model.Cartoon;
 import tops.port.model.DsspReader;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 
-/*
-	Program:         TOPS
-	Description: Program to automatically generate protein topology cartoons
-	Version:         3
-	Author: T. Flores (original) with further development by D. Westhead (EBI), 
-	ported to Java by Gilleain Torrance.
-*/
-
-public class Tops {
+/**
+ * Builds topologies from secondary structure.
+ * 
+ *
+ *   Program:         TOPS
+ *   Description: Program to automatically generate protein topology cartoons
+ *   Version:         3
+ *   Author: T. Flores (original) with further development by D. Westhead (EBI), 
+ *   ported to Java by Gilleain Torrance.
+ *
+ * 
+ * @author maclean
+ *
+ */
+public class BuildTopologyCommand implements Command {
     
-    private double ProgramVersion = 2.0;
-    
-    private SSE Root = null; /* Pointer to link list of structures */ // XXX TODO
-    private String defaultsFile = "tops.def";
-    private String TOPS_HOME = null;
-    
+    private String STANDARD_DEFAULTS_FILE = "tops.def";
 
-    /* --------------------- */
-    /* Main control function */
-    /* --------------------- */
-
-    public static void main(String[] args) throws IOException {
-        new Tops().run(args);
+    @Override
+    public String getDescription() {
+        return "Build toplogy from secondary structure";
     }
 
-    private void log(String string, Object... args) {
-        System.out.println(String.format(string, args));
+    @Override
+    public String getHelp() {
+        // TODO Auto-generated method stub
+        return null;
     }
-    
-    /* Parse defaults file */
-    private void readDefaults(Options options, OptimiseOptions optimiseOptions) throws IOException {
-        File defsFile = null;
-        BufferedReader reader = null;
+
+    @Override
+    public void handle(String[] args) throws ParseException {
+        String defaultsFile = STANDARD_DEFAULTS_FILE;
+        Options options = null;
         try {
-            if (TOPS_HOME != null) {
-                defaultsFile = TOPS_HOME + "/" + defaultsFile;
-                defsFile = new File(defaultsFile);
-            }
-            if (!defsFile.canRead()) {
-                log("Cannot read file%s\n", defaultsFile);
-                return;
-            }
-            reader = new BufferedReader(new FileReader(defsFile));
-            options.readDefaults(reader);
-            // XXX different files!
-            optimiseOptions.readDefaults(reader);
-        } catch (Exception e) {
-            log("Unable to open defaults file %s\n", defaultsFile);
-            return;
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
+            options = readDefaults(defaultsFile);
+        } catch (FileNotFoundException e) {
+            // XXX - why do we require a defaults file anyway??
+            log("Defaults file not found \"%s\"", defaultsFile);
+            System.exit(1);
         }
-    }
-
-    public void run(String[] args) throws IOException {
-        String proteinCode;
-
-        /* get necessary env. vars. */
-        TOPS_HOME = System.getenv("TOPS_HOME");
-        Options options = new Options();
-        OptimiseOptions optimiseOptions = new OptimiseOptions();
-
-        readDefaults(options, optimiseOptions);
-
-        /* Parse command line arguments */
-        proteinCode = options.parseArguments(args);
-        optimiseOptions.parseArguments(args);
         
-        if (proteinCode == null) {
-            log("Tops error: No protein specified on command line\n");
-            System.exit(1);
-        }
-        if (proteinCode.length() != 4) {
-            log("Tops error: Protein code %s must be exactly 4 characters\n", proteinCode);
-            System.exit(1);
-        }
-
+        // XXX - have to parse arguments before reading defaults if location of 
+        // XXX defaults file is somewhere else!??!
+        String proteinCode = options.parseArguments(args);
+        verifyCode(proteinCode);
+        
         /* check runtime options are reasonable */
         try {
             options.checkOptions();
-            optimiseOptions.checkOptions();
         } catch (Exception e) {
             log("ERROR: checking runtime options\n");
             System.exit(1);
         }
-
+        
         if (options.isVerbose()) {
             System.out.println("Starting TOPS\n");
             System.out.println(
                     "Copyright � 1996 by European Bioinformatics Institute, Cambridge, UK.\n\n");
             options.printRunParams(System.out);
         }
-
-        /* set global variables which are derived from inputs */
-        optimiseOptions.setGridUnitSize(options.getRadius());
-
+        
         /* call main driver */
-        runTops(proteinCode, options);
+        try {
+            runTops(proteinCode, options);
+        } catch (IOException ioe) {
+            log("Error running main method %s", ioe.getMessage());
+        }
         if (options.isVerbose()) {
             System.out.println("TOPS completed successfully\n");
         }
+        
     }
-
+    
     public void runTops(String proteinCode, Options options) throws IOException {
         Protein protein = null;
 
@@ -194,7 +171,8 @@ public class Tops {
         if (options.isVerbose()) {
             System.out.println("Setting domain breaks and domains to plot\n");
         }
-        protein.setDomBreaks(Root, plotFragInf);    // TODO - Root will be null here!! XXX
+        SSE root = null;
+        protein.setDomBreaks(root, plotFragInf);    // TODO - Root will be null here!! XXX
 
         List<Integer> domainsToPlot = protein.fixDomainsToPlot(options.getChainToPlot().charAt(0), options.getDomainToPlot());
         if (domainsToPlot.isEmpty()) {
@@ -211,9 +189,11 @@ public class Tops {
             }
 
             /* Set the domain to plot */
-            Cartoon cartoon = protein.setDomain(Root, protein.getDomain(domainToPlot));
+            Cartoon cartoon = protein.setDomain(root, protein.getDomain(domainToPlot));
 
+            // TODO - factor this out
             new Optimise().optimise(cartoon);
+            
             cartoon.calculateConnections(options.getRadius());
             cartoons.add(cartoon);
         }
@@ -240,6 +220,35 @@ public class Tops {
         }
     }
     
+    private void verifyCode(String proteinCode) {
+        if (proteinCode == null) {
+            log("Tops error: No protein specified on command line\n");
+            System.exit(1);
+        }
+        if (proteinCode.length() != 4) {
+            log("Tops error: Protein code %s must be exactly 4 characters\n", proteinCode);
+            System.exit(1);
+        }
+    }
+    
+    private Options readDefaults(String defaultsFile) throws FileNotFoundException {
+        Options options = new Options();
+        File defsFile = new File(defaultsFile);
+        BufferedReader reader = new BufferedReader(new FileReader(defsFile));
+        try {
+            options.readDefaults(reader);
+        } catch (IOException ioe) {
+            log("Error reading defaults file");
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ioe) {
+                log("Error closing defaults file");
+            }
+        }
+        return options;
+    }
+    
     private void readDomainBoundaryFile(Protein protein, Options options) throws IOException {
         String dbf = null;
         /*
@@ -256,16 +265,21 @@ public class Tops {
             if (options.getDomBoundaryFile() != null
                     && new File(options.getDomBoundaryFile()).canRead()) {
                 dbf = options.getDomBoundaryFile();
-            } else if (TOPS_HOME != null) {
-                dbf = TOPS_HOME + "/" + "DomainFile";
+            } else {
+                dbf = "DomainFile";
 
             }
 
             if (dbf != null) {
                 new DomainBoundaryFileReader().readDomBoundaryFile(dbf, protein);
             } else {
-                log("TOPS warning: no domain file was found\n");
+                log("TOPS warning: no domain file was found at %s\n", dbf);
             }
         }
     }
+    
+    private void log(String string, Object... args) {
+        System.err.println(String.format(string, args));
+    }
+
 }
