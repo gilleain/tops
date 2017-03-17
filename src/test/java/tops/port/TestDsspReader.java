@@ -10,6 +10,7 @@ import java.io.Reader;
 
 import org.junit.Test;
 
+import tops.port.io.TopsFileWriter;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
@@ -23,7 +24,7 @@ public class TestDsspReader {
     public void test1NOT() throws IOException {
         Protein protein = new DsspReader().readDsspFile("1NOT", read("resources/1not.dssp"));
         assertEquals(1, protein.getChains().size());
-        System.out.println(protein.toTopsFile());
+        new TopsFileWriter().writeTOPSFile(System.out, protein);
     }
     
     @Test

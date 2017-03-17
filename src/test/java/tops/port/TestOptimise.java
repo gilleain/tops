@@ -1,11 +1,10 @@
 package tops.port;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.Vector;
 
@@ -15,10 +14,10 @@ import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.port.calculate.Configure;
+import tops.port.io.TopsFileWriter;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
-import tops.port.model.SSE;
 import tops.view.cartoon.CartoonDrawer;
 
 public class TestOptimise {
@@ -36,7 +35,7 @@ public class TestOptimise {
         Optimise optimise = new Optimise();
         optimise.optimise(chain);
         
-        draw("1ifc", chain, "test.png");
+        draw("1ifc", protein, "test.png");  // XXX optimising chain but passing protein!!
 //        for (SSE sse : chain.getSSEs()) {
 //            System.out.println(sse.getSymbolNumber() + 
 //                    String.format(" at (%s, %s) is %s", 
@@ -46,9 +45,9 @@ public class TestOptimise {
 //        System.out.println(chain.toTopsFile());
     }
     
-    private void draw(String name, Chain chain, String outputFilepath) throws TopsFileFormatException, IOException {
+    private void draw(String name, Protein protein, String outputFilepath) throws TopsFileFormatException, IOException {
 //        tops.dw.protein.Protein dwProtein = convertOnDisk(name, chain);
-        tops.dw.protein.Protein dwProtein = convertInMemory(name, chain);
+        tops.dw.protein.Protein dwProtein = convertInMemory(name, protein);
         Vector<DomainDefinition> dd = dwProtein.getDomainDefs();
         Vector<SecStrucElement> ll = dwProtein.getLinkedLists();
         CartoonDrawer drawer = new CartoonDrawer();
@@ -63,19 +62,19 @@ public class TestOptimise {
         }
     }
     
-    private tops.dw.protein.Protein convertOnDisk(String name, Chain chain) throws IOException {
-        String topsFile = chain.topsHeader(name) + "\n" + chain.toTopsFile();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(new File("tmp.tops")));
-        writer.write(topsFile);
-        writer.close();
+    private tops.dw.protein.Protein convertOnDisk(String name, Protein protein) throws IOException {
+        String filename = "tmp.tops";
+        TopsFileWriter fileWriter = new TopsFileWriter();
+        fileWriter.writeTOPSFile(filename, protein);
         
         return new tops.dw.protein.Protein("tmp.tops");
     }
     
-    private tops.dw.protein.Protein convertInMemory(String name, Chain chain) throws TopsFileFormatException, IOException {
-        String topsFile = chain.topsHeader(name) + "\n" + chain.toTopsFile();
-        StringReader reader = new StringReader(topsFile);
-        return new tops.dw.protein.Protein(new BufferedReader(reader));
+    private tops.dw.protein.Protein convertInMemory(String name, Protein protein) throws TopsFileFormatException, IOException {
+        TopsFileWriter fileWriter = new TopsFileWriter();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        fileWriter.writeTOPSFile(new PrintStream(baos), protein);
+        return new tops.dw.protein.Protein(new BufferedReader(new StringReader(baos.toString())));
     }
 
 }

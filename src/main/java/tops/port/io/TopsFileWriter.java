@@ -12,6 +12,14 @@ import tops.port.model.SSE;
 
 public class TopsFileWriter {
     
+    public void writeTOPSFile(String filename, Protein protein) {
+        // TODO
+    }
+    
+    public void writeTOPSFile(PrintStream out, Protein protein) {
+        // TODO
+    }
+    
     public void writeTOPSFile(String filename, List<Cartoon> cartoons,
              Protein protein, List<Integer> domainsToPlot) throws FileNotFoundException {
 
@@ -43,6 +51,7 @@ public class TopsFileWriter {
         for (; p != null; p = p.To) {
             print(out, "\n");
             p.WriteSecStr(out);
+//            p.toTopsFile(chain);  XXX
         }
         return;
     }

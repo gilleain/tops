@@ -52,23 +52,6 @@ public class Protein {
     public List<Chain> getChains() {
         return this.chains;
     }
-
-    public String topsHeader() {
-        String header = "##\n## TOPS: protein topology information file\n##\n";
-        header += String.format("## Protein code %s\n", this.proteinCode);
-        header += String.format("## Number of domains %d\n##\n", this.numberOfDomains);
-        return header;
-    }
-
-    public String toTopsFile() {
-        StringBuffer chainStringList = new StringBuffer(this.topsHeader());
-        for (Chain chain : this.chains) {
-            chainStringList.append(chain.topsHeader(this.proteinCode));
-            chainStringList.append(chain.toTopsFile());
-            chainStringList.append("\n\n");
-        }
-        return chainStringList.toString();
-    }
         
     public String toString() {
         StringBuffer sb = new StringBuffer();

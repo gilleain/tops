@@ -560,20 +560,6 @@ public class Chain {
         TorsionResult values = p.ClosestApproach(q);
         return Math.abs(values.torsion) < 90.0;
     }
-        
-    
-
-    public String topsHeader(String proteinCode) {
-        return String.format("DOMAIN_NUMBER %d %s%s%d", 0, proteinCode, this.name, 0);   //FIXME : domains!
-    }
-
-    public String toTopsFile() {
-        StringBuffer sseStringList = new StringBuffer(); 
-        for (SSE sse : this.sses) {
-            sseStringList.append(sse.toTopsFile(this)).append("\n");
-        }
-        return sseStringList.toString();
-    }
 
     public String getEdgeString() {
         StringBuffer edges = new StringBuffer();
@@ -600,9 +586,6 @@ public class Chain {
     /*
      * Following methods moved from Cartoon...
      */
-    
-
-   
 
     public double fixedSpan(SSE p, double GridUnitSize) {
         double minx = 0;
