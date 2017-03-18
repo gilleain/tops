@@ -58,7 +58,6 @@ public class SSE {
     public SSEData sseData;
     
     // XXX TODO Gah, upwards pointers!
-    public char Chain;
     
     private SSE fixed;
     private boolean Fill;
@@ -495,11 +494,11 @@ public class SSE {
     public String getLabel() {
         return cartoonSymbol.getLabel();
     }
-
-    public String getChain() {
-        if (this.Chain == ' ') return "";
-        else return String.valueOf(this.Chain);
-    }
+//
+//    public String getChain() {
+//        if (this.Chain == ' ') return "";
+//        else return String.valueOf(this.Chain);
+//    }
 
     public String toTopsFile(Chain chain) {
         //sys.stderr.write(this.dump())
@@ -625,135 +624,7 @@ public class SSE {
     public double getSymbolRadius() {
         return cartoonSymbol.getSymbolRadius();
     }
-    
-    public void WriteSecStr(PrintStream out) {
-
-        char ch;
-
-        print(out, "SecondaryStructureType %c\n", getSSEType());
-        print(out, "Direction %c\n", getDirection());
-        print(out, "Label %s\n", getLabel());
-        print(out, "Colour %d %d %d\n", 
-                cartoonSymbol.getColor()[0], 
-                cartoonSymbol.getColor()[1], 
-                cartoonSymbol.getColor()[2]);
-
-        if (Next != null) {
-            print(out, "Next %d\n", Next.getSymbolNumber());
-        } else {
-            print(out, "Next -1\n");
-        }
-
-        if (fixed != null) {
-            print(out, "Fixed %d\n", fixed.getSymbolNumber());
-        } else {
-            print(out, "Fixed -1\n");
-        }
-
-        switch (fixedType) {
-        case BARREL:
-            print(out, "FixedType BARREL\n");
-            break;
-        case SHEET:
-            print(out, "FixedType SHEET\n");
-            break;
-        case CURVED_SHEET:
-            print(out, "FixedType CURVED_SHEET\n");
-            break;
-        case V_CURVED_SHEET:
-            print(out, "FixedType V_CURVED_SHEET\n");
-            break;
-        case SANDWICH:
-            print(out, "FixedType SANDWICH\n");
-            break;
-        case TEMPLATE:
-            print(out, "FixedType TEMPLATE\n");
-            break;
-        case UNKNOWN:
-            print(out, "FixedType UNKNOWN\n");
-            break;
-        default:
-            print(out, "FixedType UNKNOWN\n");
-            break;
-        }
-
-        print(out, "BridgePartner");
-        for (BridgePartner BridgePartner : getBridgePartners())
-            print(out, " %d", BridgePartner.partner.getSymbolNumber());
-        print(out, "\n");
-
-        print(out, "BridgePartnerSide");
-        for (BridgePartner BridgePartner : getBridgePartners())
-            print(out, " %c", BridgePartner.side);
-        print(out, "\n");
-
-        print(out, "BridgePartnerType");
-        for (BridgePartner BridgePartner : getBridgePartners()) {
-            switch (BridgePartner.bridgeType) {
-            case ANTI_PARALLEL_BRIDGE:
-                print(out, " %c", 'A');
-                break;
-            case PARALLEL_BRIDGE:
-                print(out, " %c", 'P');
-                break;
-            case UNK_BRIDGE_TYPE:
-                print(out, " %c", 'U');
-                break;
-            default:
-                print(out, " %c", 'U');
-                break;
-            }
-        }
-        print(out, "\n");
-
-        print(out, "Neighbour");
-        for (Neighbour neighbour : neighbours) {
-            print(out, " %d", neighbour.sse.getSymbolNumber());
-        }
-        print(out, "\n");
-
-        print(out, "SeqStartResidue %d\n", sseData.SeqStartResidue);
-        print(out, "SeqFinishResidue %d\n", sseData.SeqFinishResidue);
-
-        print(out, "PDBStartResidue %d\n", sseData.PDBStartResidue);
-        print(out, "PDBFinishResidue %d\n", sseData.PDBFinishResidue);
-
-        print(out, "SymbolNumber %d\n", getSymbolNumber());
-
-        ch = Chain;
-        if (ch == '\0')
-            ch = ' ';
-        print(out, "Chain %c\n", ch);
-
-        print(out, "Chirality %d\n", Chirality);
-
-        print(out, "CartoonX %d\n", getCartoonX());
-        print(out, "CartoonY %d\n", getCartoonY());
-
-        print(out, "AxesStartPoint");
-        print(out, " %s", axis.AxisStartPoint);
-        print(out, "\n");
-
-        print(out, "AxesFinishPoint");
-        print(out, " %s", axis.AxisFinishPoint);
-        print(out, "\n");
-
-        print(out, "SymbolRadius %d\n", cartoonSymbol.getSymbolRadius());
-
-        print(out, "AxisLength %f\n", axis.getLength());
-
-        print(out, "NConnectionPoints %d\n", NConnectionPoints);
-
-        print(out, "ConnectionTo");
-        for (Point2d point : ConnectionTo)
-            print(out, " %f %f", point.x, point.y);
-        print(out, "\n");
-
-        print(out, "Fill %d\n", getFill());
-
-        return;
-
-    }
+   
     
     private void print(PrintStream out, String s, Object... args) {
         out.print(String.format(s, args));
@@ -780,5 +651,29 @@ public class SSE {
         return false;
     }
 
+    public SSEData getSseData() {
+        return sseData;
+    }
+
+    public Hand getChirality() {
+        return Chirality;
+    }
+
+    public Axis getAxis() {
+        return axis;
+    }
+
+    public CartoonSymbol getCartoonSymbol() {
+        return cartoonSymbol;
+    }
+
+    public int getNConnectionPoints() {
+        return NConnectionPoints;
+    }
+
+    public char getChain() {
+        //XXX TODO REMOVE!!
+        return 0;
+    }
     
 }

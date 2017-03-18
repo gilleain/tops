@@ -259,7 +259,6 @@ public class DsspReader {
     						numberOfStructures += 1;
     						p.setSymbolNumber(numberOfStructures);
     						p.setStartPoints(currentResidue, lastResidue);
-    						p.Chain = chainID;
     					}
     				}
     				

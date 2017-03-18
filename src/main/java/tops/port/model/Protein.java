@@ -369,7 +369,7 @@ public class Protein {
     public int singleSSIsInDomain(SSE p, DomainDefinition Domain) {
 
         int i;
-        char chain = p.Chain;
+        char chain = p.getChain();
         int PDBStart = p.sseData.PDBStartResidue;
         int PDBFinish = p.sseData.PDBFinishResidue;
 
@@ -728,7 +728,7 @@ public class Protein {
         nf = 1;
         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
             PlotFragInf.NFrags = nf;
-            PlotFragInf.FragChainLims[nf - 1][0] = sse.Chain;
+            PlotFragInf.FragChainLims[nf - 1][0] = sse.getChain();
             PlotFragInf.FragResLims[nf - 1][0] = sse.sseData.PDBStartResidue;
             PlotFragInf.FragDomain[nf - 1] = LastDom + 1;
             /*
@@ -760,7 +760,7 @@ public class Protein {
                         LastCTerm.domainBreakType = DomainBreakType.NC_DOM_BREAK;
                     }
 
-                    PlotFragInf.FragChainLims[nf - 1][1] = LastCTerm.Chain;
+                    PlotFragInf.FragChainLims[nf - 1][1] = LastCTerm.getChain();
                     PlotFragInf.FragResLims[nf - 1][1] = LastCTerm.sseData.PDBFinishResidue;
 
                     Dom = -1;
@@ -776,7 +776,7 @@ public class Protein {
                         nf++;
                         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
                             PlotFragInf.NFrags = nf;
-                            PlotFragInf.FragChainLims[nf - 1][0] = sse.Chain;
+                            PlotFragInf.FragChainLims[nf - 1][0] = sse.getChain();
                             PlotFragInf.FragResLims[nf - 1][0] = sse.sseData.PDBStartResidue;
                             PlotFragInf.FragDomain[nf - 1] = Dom + 1;
                             domains.get(Dom).segmentStartIndex[segment] = nf;

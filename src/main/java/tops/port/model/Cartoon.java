@@ -6,8 +6,9 @@ public class Cartoon extends Chain {
         super(nameChar);
     }
 
+
     public Cartoon(SSE newRoot) {
-        super(newRoot.Chain);
+        super(' '); // XXX
         // TODO Auto-generated constructor stub
     }
 
