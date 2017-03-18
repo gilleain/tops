@@ -678,7 +678,7 @@ public class Protein {
     /*
      * Function to set up DomainBreakNumbers in the master linked list
      */
-    public void setDomBreaks(SSE Root, PlotFragInformation PlotFragInf) {
+    public void setDomBreaks(SSE Root, PlotFragInformation plotFragInf) {
 
         int Count = 0;
         int nf = 0;
@@ -714,10 +714,10 @@ public class Protein {
 
         nf = 1;
         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
-            PlotFragInf.NFrags = nf;
-            PlotFragInf.FragChainLims[nf - 1][0] = sse.getChain();
-            PlotFragInf.FragResLims[nf - 1][0] = sse.sseData.PDBStartResidue;
-            PlotFragInf.FragDomain[nf - 1] = LastDom + 1;
+            plotFragInf.setNumberOfFragments(nf);
+            plotFragInf.setChainLim0(nf - 1, sse.getChain());
+            plotFragInf.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
+            plotFragInf.setFragDomain(nf - 1, LastDom + 1);
             /*
              * this will be done later in a Protein.c func. it is easier here
              * for now
@@ -747,8 +747,8 @@ public class Protein {
                         LastCTerm.domainBreakType = DomainBreakType.NC_DOM_BREAK;
                     }
 
-                    PlotFragInf.FragChainLims[nf - 1][1] = LastCTerm.getChain();
-                    PlotFragInf.FragResLims[nf - 1][1] = LastCTerm.sseData.PDBFinishResidue;
+                    plotFragInf.setChainLim1(nf - 1, LastCTerm.getChain());
+                    plotFragInf.setResLim1(nf - 1, LastCTerm.sseData.PDBFinishResidue);
 
                     Dom = -1;
                     while (sse != null && Dom < 0) {
@@ -762,10 +762,10 @@ public class Protein {
 
                         nf++;
                         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
-                            PlotFragInf.NFrags = nf;
-                            PlotFragInf.FragChainLims[nf - 1][0] = sse.getChain();
-                            PlotFragInf.FragResLims[nf - 1][0] = sse.sseData.PDBStartResidue;
-                            PlotFragInf.FragDomain[nf - 1] = Dom + 1;
+                            plotFragInf.setNumberOfFragments(nf);
+                            plotFragInf.setChainLim0(nf - 1, sse.getChain());
+                            plotFragInf.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
+                            plotFragInf.setFragDomain(nf - 1, Dom + 1);
                             domains.get(Dom).segmentStartIndex[segment] = nf;
                         }
                     }
