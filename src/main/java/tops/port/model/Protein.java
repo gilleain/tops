@@ -483,17 +483,6 @@ public class Protein {
         }
     }
 
-    public void initPlotFragInfo(PlotFragInformation pfi) {
-        pfi.NFrags = 0;
-        for (int i = 0; i < PlotFragInformation.MAX_PLOT_FRAGS; i++) {
-            pfi.FragDomain[i] = -1;
-            for (int j = 0; j < 2; j++) {
-                pfi.FragChainLims[i][j] = '\0';
-                pfi.FragResLims[i][j] = -1;
-            }
-        }
-    }
-
     public char getChain(String cathCode) {
         return cathCode.length() < 4 ? 0 : cathCode.charAt(3);
     }
@@ -701,8 +690,6 @@ public class Protein {
             sse.DomainBreakNumber = 0;
         for (sse = Root; sse != null; sse = sse.To)
             sse.domainBreakType = DomainBreakType.NOT_DOM_BREAK;
-
-        initPlotFragInfo(PlotFragInf);
 
         /* advance to the first ss element in a real domain */
         int segment = -1;
