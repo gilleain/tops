@@ -675,5 +675,9 @@ public class SSE {
         //XXX TODO REMOVE!!
         return 0;
     }
+
+    public Point2d getConnectionTo(int i) {
+        return ConnectionTo.get(i);
+    }
     
 }

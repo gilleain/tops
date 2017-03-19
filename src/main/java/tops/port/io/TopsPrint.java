@@ -1,993 +1,930 @@
 package tops.port.io;
-//package python;
-//
-//import java.util.List;
-//
-//public class TopsPrint {
-//
-///* Hard coded but will change */
-//int Radius;
-//double Scale = 0.60;
-//String buffer;
-//
-//boolean Small;
-//
-//SSE Root;
-//
-//int GridUnitSize;
-//
-//private double PSxy(double  v ) {
-//    return ( (float) (v) / (float) GridUnitSize );
-//}
-//    
-//private double iPSxy(double  v ) {
-//    return ( (float) (v) * (float) GridUnitSize );
-//}
-//
-//private final double VERT_SEP = 2.0;
-//private final double BORDER = 5.0;
-//private final String TITLE_PREF = "TOPS Cartoon: ";
-//
-//boolean PrintCartoons( int NCartoons, List<SSE> CartoonStarts, String FileName, String ProtName, PlotFragInformation pfi, int ErrorStat )
-//{
-//
-//	int i;
-//	SSE p;
-//	double Xmax, Xmin, Ymax, Ymin;
-//	double CartoonTransX, CartoonTransY;
-//	double RubricSpace;
-//	String Title;
-//	int lt;
-//
-//	ErrorStat = 0;
-//
-//	if ( (NCartoons<1) || CartoonStarts.isEmpty() ) return false;
-//
-//	/* Open file */
-//	if (!OpenPostscript( FileName ))
-//		return false;
-//
-//	/* Find size of space required for cartoons */
-//	CartoonTransX = NCartoons;
-//	
-//	CartoonTransY = NCartoons;
-//	
-//	FindTotSize(NCartoons,CartoonStarts,Xmin,Xmax,Ymin,Ymax,CartoonTransX,CartoonTransY);
-//
-//	/* Find space needed for rubric */
-//	RubricSpace = 1.0 + (pfi.NFrags)*0.5;
-//
-//	/* Print bounding box command */
-//	if (Small) {
-//		PageSize( Xmax-Xmin+BORDER, Ymax-Ymin+BORDER+RubricSpace+VERT_SEP*(NCartoons-1));
-//	} else {
-//		PageSize( 21.9, 29.0 );
-//	}
-//
-//	/* Define cartoon symbols */
-//	DefCartoonSymbols();
-//
-//	/* Prepare plotting area */
-//	PictureSize( Xmax-Xmin+BORDER, Ymax-Ymin+BORDER+RubricSpace+VERT_SEP*(NCartoons-1));
-//	if (!Small) CentrePage();
-//	ScalePage( Xmin-(BORDER/2.0), Xmax+(BORDER/2.0), Ymin-(BORDER/2.0)-VERT_SEP*(NCartoons-1), Ymax+RubricSpace+(BORDER/2.0) );
-//	if (!Small) Perimeter();
-//	ChooseFont( "Courier", ConvertXPoint(PSxy(Radius)) );
-//	TextCentre( 0.5, 0.38 );
-//	LineWidth( 0.01 );	
-//
-//	/* Print title */
-//	lt = TITLE_PREF.length() + PROT_NAME_SIZE + 1;
-//	if (lt>0)
-//	{
-//		Title = TITLE_PREF + ProtName;
-//		PrintText(Title,(Xmax+Xmin)/2.0,Ymax+RubricSpace+(BORDER/4.0));
-//	}
-//
-///* Print plot rubric */
-//	PrintPlotRubric(pfi,(Xmax+Xmin)/2.0,Ymax+RubricSpace);
-//
-///* Print the Cartoons */
-//	for ( i=0 ; i<NCartoons ; i++) 
-//	{
-//		Translate( PSxy(CartoonTransX[i]) , PSxy(CartoonTransY[i]) );
-//		PrintCartoon(CartoonStarts[i]);
-//	}
-//
-///* Done */
-//	EndPostscript();
-//
-//	return true;
-//}
-//
-///*
-//  a function to find the total size of the cartoon diagrams
-//  with the cartoons stacked in the y direction centred in the x direction on the centre of the first 
-//*/
-//void FindTotSize(int NCartoons, List<SSE> CartoonStarts, float Xmin, float Xmax, float Ymin, float Ymax, float CartoonTransX,
-//															float CartoonTransY)
-//{
-//
-//	int i,j;
-//	SecStrPtr p;
-//	float xmax,xmin,ymax,ymin;
-//	float cxmax,cxmin,cymax,cymin;
-//	float cyminp,tx;
-//	float exwid,wid;
-//
-//	for ( i=0 ; i<NCartoons ; i++)
-//	{
-//		CartoonTransX[i] = 0.0;
-//		CartoonTransY[i] = 0.0;
-//	}
-//
-//	for ( i=0 ; i<NCartoons ; i++)
-//	{
-//
-//		cyminp = cymin;
-//
-//        	for (p=CartoonStarts[i],cxmax=cxmin= (float) p.CartoonX,cymax=cymin= (float) p.CartoonY;p;p=p.To)
-//        	{
-//                	if (p.SymbolPlaced)
-//                	{
-//                        	if ((float) p.CartoonX>cxmax) cxmax = (float) p.CartoonX;
-//                        	if ((float) p.CartoonX<cxmin) cxmin = (float) p.CartoonX;
-//                        	if ((float) p.CartoonY>cymax) cymax = (float) p.CartoonY;
-//                        	if ((float) p.CartoonY<cymin) cymin = (float) p.CartoonY;
-//                	}
-//        	}
-//
-//		if (i==0)
-//		{
-//			xmin = PSxy(cxmin);
-//			xmax = PSxy(cxmax);
-//			ymin = PSxy(cymin);
-//			ymax = PSxy(cymax);
-//			CartoonTransY[0] = 0.0;
-//		}
-//		else
-//		{
-//			wid = PSxy(cxmax-cxmin);
-//			exwid = wid - xmax + xmin;
-//			if ( exwid>0.0 )
-//			{
-//				xmin -= exwid/2.0;
-//				xmax += exwid/2.0;
-//			}
-//			ymin -= PSxy(cymax-cymin);
-//
-//			CartoonTransY[i] -= (cymax+iPSxy(VERT_SEP)-cyminp);
-//
-//		}
-//
-//
-//	}
-//
-//	*Xmin = xmin;
-//	*Xmax = xmax;
-//	*Ymin = ymin;
-//	*Ymax = ymax;
-//
-//
-//	tx = 0.0;
-//	for ( i=0 ; i<NCartoons ; i++)
-//	{
-//
-//        	for (p=CartoonStarts[i],cxmin=p.CartoonX;p;p=p.To)
-//        	{
-//                	if (p.SymbolPlaced)
-//                	{
-//                        	if ((float) p.CartoonX<cxmin) cxmin = (float) p.CartoonX;
-//                	}
-//        	}
-//
-//		CartoonTransX[i] = iPSxy(xmin)-cxmin-tx;
-//
-//		tx += CartoonTransX[i];
-//
-//	}
-//
-//	return;
-//
-//}
-//
-///*
-//    Function to Print a rubric for the plot
-//*/
-//void PrintPlotRubric(PlotFragInfoPtr pfi, float xpos, float ypos)
-//{
-//
-//	int i,j;
-//	char buff[80];
-//	float x,y;
-//
-//	x=xpos;
-//	y=ypos;
-//
-//	for ( i=0 ; i<pfi.NFrags ; i++)
-//	{
-//
-//		for( j=0 ; j<80 ; j++) buff[j] = ' ';
-//		buff[79] = '\0';
-//
-//		buff[0] = 'N';
-//		sprintf(buff+1,"%d",(i+1));
-//		buff[4] =pfi.FragChainLims[i][0];
-//		sprintf(buff+6,"%d",pfi.FragResLims[i][0]);
-//		buff[12] = 'C';
-//		sprintf(buff+13,"%d",(i+2));
-//		buff[16] = pfi.FragChainLims[i][1];
-//		sprintf(buff+18,"%d",pfi.FragResLims[i][1]);
-//		for( j=0 ; j<22	; j++) if ( buff[j]=='\0' ) buff[j]=' ';
-//		buff[22] = '\0';
-//
-//		PrintText(buff,x,y);
-//		y=y-0.5;
-//
-//	}
-//
-//	return;
-//}
-//
-///*
-//  a function which prints a single Cartoon
-//*/
-//void PrintCartoon(SecStrPtr Start)
-//{
-//
-//	int i,ncp;
-//	SecStrPtr p;
-//	char FromSSType, ToSSType;
-//
-///* set the Root to the current cartoon */
-//	Root = Start;
-//
-///* Loop through symbols */
-//	for (p=Start;p;p=p.To) 
-//	{
-//		if (p.SymbolPlaced)
-//		{
-//			switch (p.SecondaryStructureType) 
-//			{
-//				case 'E':	MakeObject( p.Direction=='U'?"UpTriangle":"DownTriangle", 
-//							3, Verbatim( 1.0-p.Fill/100.0 ), PSxy(p.CartoonX), PSxy(p.CartoonY) );
-//						break;
-//				case 'H':	MakeObject( "Circle", 3, Verbatim( 1.0-p.Fill/100.0 ), PSxy(p.CartoonX), PSxy(p.CartoonY) );
-//						break;
-//			}
-//		}
-//	}
-//
-///* Loop Through lines */
-//	for (p=Start;p;p=p.To)
-//	{
-//		if (p.SymbolPlaced)
-//		{
-//
-//			ToSSType = p.SecondaryStructureType;
-//
-//			if (p.From) 
-//			{
-//
-//				FromSSType = p.From.SecondaryStructureType;
-//				if ( !( ((ToSSType=='C')||(ToSSType=='N')) && ((FromSSType=='C')||(FromSSType=='N')) ) )
-//				{
-//
-//					if ( ncp = p.From.NConnectionPoints )
-//					{
-//
-//						JoinPoints( PSxy(p.From.CartoonX), PSxy(p.From.CartoonY),
-//								PSxy(p.From.ConnectionTo[0][0]),PSxy(p.From.ConnectionTo[0][1]),
-//								p.From.Direction,'*',p.From.SecondaryStructureType,
-//								p.SecondaryStructureType);
-//
-//						for ( i=0 ; i<(ncp-1) ; i++)
-//						{
-//							JoinPoints( PSxy(p.From.ConnectionTo[i][0]), PSxy(p.From.ConnectionTo[i][1]),
-//									PSxy(p.From.ConnectionTo[i+1][0]), PSxy(p.From.ConnectionTo[i+1][1]),
-//									'*','*',p.From.SecondaryStructureType,
-//									p.SecondaryStructureType);
-//						}
-//
-//						JoinPoints( PSxy(p.From.ConnectionTo[ncp-1][0]),
-//								PSxy(p.From.ConnectionTo[ncp-1][1]),
-//								PSxy(p.CartoonX),PSxy(p.CartoonY),'*',
-//								p.Direction,p.From.SecondaryStructureType,
-//								p.SecondaryStructureType);
-//
-//					}
-//					else
-//					{
-//						JoinPoints( PSxy(p.From.CartoonX), PSxy(p.From.CartoonY), 
-//							PSxy(p.CartoonX), PSxy(p.CartoonY), p.From.Direction,
-//							p.Direction, p.From.SecondaryStructureType,
-// 							p.SecondaryStructureType );
-//					}
-//
-//				}
-//
-//				if (FromSSType == 'N') 
-//				{
-//					MakeObject( "Square", 2, PSxy(p.From.CartoonX), PSxy(p.From.CartoonY) );
-//					PrintText( p.From.Label, PSxy(p.From.CartoonX), PSxy(p.From.CartoonY) );
-//				}
-//
-//			}
-//
-//			if (ToSSType == 'C') 
-//			{
-//				MakeObject( "Square", 2, PSxy(p.CartoonX), PSxy(p.CartoonY) );
-//				PrintText( p.Label, PSxy(p.CartoonX), PSxy(p.CartoonY) );
-//			}
-//
-//		}
-//
-//	}
-//
-//	return;
-//	
-//}
-//
-//
-///* 
-//  a function which writes out postscript code to define the symbols used in cartoons
-//*/
-//void DefCartoonSymbols(){
-//
-//	DefineObject( "Square" );
-//		Literal( "moveto" );
-//		MoveRelative( PSxy(-Radius)/2.0, PSxy(Radius)/2.0 );
-//		LineRelative( PSxy(Radius), 0.0 );
-//		LineRelative( 0.0, PSxy(-Radius) );
-//		LineRelative( PSxy(-Radius), 0.0 );
-//		ClosePath();
-//		Fill( 1.0 );
-//	EndObject();
-//
-//	DefineObject( "Circle" );
-//		sprintf( buffer, " %d %d %d arc",
-//			ConvertXPoint( PSxy(Radius)*Scale ), 0, 360 );
-//		Literal( buffer );
-//		Fill( -1.0 );
-//		OutLine();
-//	EndObject();
-//
-//	DefineObject( "UpTriangle" );
-//		Literal( "moveto" );
-//		MoveRelative( 0.0, PSxy(Radius) );
-//		LineRelative( PSxy(Radius)*sin(PI2/3.0), PSxy(Radius)*(cos(PI2/3.0)-1.0) );
-//		LineRelative( -2.0*PSxy(Radius)*sin(PI2/3.0), 0.0 );
-//		ClosePath();
-//		Fill( -1.0 );
-//		OutLine();
-//	EndObject();
-//
-//	DefineObject( "DownTriangle" );
-//		Literal ( "moveto" );
-//		MoveRelative( 0.0, PSxy(-Radius) );
-//		LineRelative( PSxy(Radius)*sin(PI2/3.0), PSxy(-Radius)*(cos(PI2/3.0)-1.0) );
-//		LineRelative( -2.0*PSxy(Radius)*sin(PI/3.0), 0.0 );
-//		ClosePath();
-//		Fill( -1.0 );
-//		OutLine();
-//	EndObject();
-//
-//	DefineObject( "Line" );
-//		Literal( "moveto" );
-//		Literal( "lineto" );
-//		OutLine();
-//	EndObject();
-//
-//}
-//
-///* 
-//	function cross_circle
-//
-//	Tom F. August 1992
-//
-//	Function to return crossing point at which a line from A, B 
-//	crosses the circle X and Y are replaced by the crossing point
-//*/
-//
-//void CrossCircle( float *X, float *Y, float A, float B )
-//{
-//	int	i;
-//	float	itv=20.0, lx, ly, rx, ry;
-//	float   nx, ny;
-//
-//	for ( i=0;i<=itv;i++,lx=rx,ly=ry) {
-//		rx = *X + PSxy(Radius)*sin( (float) i*PI2/itv )*Scale;
-//		ry = *Y + PSxy(Radius)*cos( (float) i*PI2/itv )*Scale;
-//		if (i) {
-//			if (LineCross(lx,ly,rx,ry,A,B,*X,*Y,&nx,&ny)) {
-//				*X = nx;
-//				*Y = ny;
-//				break;
-//			}
-//		}
-//	}
-//}
-//
-///* 
-//	function cross_up_triangle
-//
-//	Tom F. August 1992
-//
-//	Function to return crossing point at which a line from A, B 
-//	crosses the triangle X and Y are replaced by the crossing point
-//*/
-//
-//void CrossUpTriangle( float *X, float *Y, float A, float B )
-//{
-//	int	i;
-//	float	itv=3.0, lx, ly, rx, ry;
-//	float   nx, ny;
-//
-//	for ( i=0;i<=itv;i++,lx=rx,ly=ry) {
-//		rx = *X + PSxy(Radius)*sin( (float) i*PI2/itv );
-//		ry = *Y + PSxy(Radius)*cos( (float) i*PI2/itv );
-//		if (i) {
-//			if (LineCross(lx,ly,rx,ry,A,B,*X,*Y,&nx,&ny)) {
-//				*X = nx;
-//				*Y = ny;
-//				break;
-//			}
-//		}
-//	}
-//}
-//
-///* 
-//	function cross_down_triangle
-//
-//	Tom F. August 1992
-//
-//	Function to return crossing point at which a line from A, B 
-//	crosses the triangle X and Y are replaced by the crossing point
-//*/
-//
-//void CrossDownTriangle( float *X, float *Y, float A, float B )
-//{
-//	int	i;
-//	float	itv=3.0, lx, ly, rx, ry;
-//	float   nx, ny;
-//
-//	for ( i=0;i<=itv;i++,lx=rx,ly=ry) {
-//		rx = *X + PSxy(Radius)*sin( (float) i*PI2/itv );
-//		ry = *Y - PSxy(Radius)*cos( (float) i*PI2/itv );
-//		if (i) {
-//			if (LineCross(lx,ly,rx,ry,A,B,*X,*Y,&nx,&ny)) {
-//				*X = nx;
-//				*Y = ny;
-//				break;
-//			}
-//		}
-//	}
-//}
-//
-///*
-//	function join_points
-//
-//	Tom F. September 1992
-//
-//	Function to join two points
-//*/
-//
-//void JoinPoints( float px, float py, float qx, float qy, char pd, char qd, char pt, char qt )
-//{
-//	if (pd != 'U' && pd != '*') {
-//		if (pt == 'E')
-//			CrossDownTriangle( &px, &py, qx, qy );
-//		if (pt == 'H')
-//			CrossCircle( &px, &py, qx, qy );
-//	}
-//	if (qd != 'D' && qd != '*') {
-//		if (qt == 'E')
-//			CrossUpTriangle( &qx, &qy, px, py );
-//		if (qt == 'H')
-//			CrossCircle( &qx, &qy, px, py );
-//	}
-//	MakeObject( "Line", 4, px, py, qx, qy );	
-//}
-//
-///* 
-//This file contains a set of routines to draw postscript files. Every
-//task is translated to points
-//
-//Tom F. October 1992
-//*/
-//
-//
-///* 
-//These folow variables are set for usage through out these functions
-//and are only accessible from this file
-//*/
-//public static final double ITOC  =  2.540;       /* Inches to centimetres */
-//public static final double CTOI  =  0.3937;      /* Centimetres to inches */
-//public static final double PPI = 72;      /* Points per inch */
-//public static final double A4_W  =  21.0;        /* A4 width */
-//public static final double A4_H  =  29.7;        /* A4 height */
-//FILE    *OUT;           /* Output file */
-//double   WIDTH=A4_W;     /* A4 width */
-//double   HEIGHT=A4_H;        /* A4 height */
-//double   PWIDTH=A4_W;        /* Picture width */
-//double   PHEIGHT=A4_H;       /* Picture height */
-//double   XMIN=0.0;       /* X minimum */
-//double   YMIN=0.0;       /* Y minimum */
-//double   XMAX=A4_W;      /* X default scale = centimeters */
-//double   YMAX=A4_H;      /* Y default scale = centimeters */
-//double   XP=PPI/ITOC;        /* X default points per centimeter */
-//double   YP=PPI/ITOC;        /* Y defulat points per centimeter */
-//int OBJ=false;      /* Defining object? */
-//String FONT=null;     /* Default font */
-//int POINT=15;       /* Default point size */
-//float   TEXTPOS=0.0;        /* Default text position */
-//float   TEXTHGT=0.0;        /* Default text position */
-//
-///*
-//    function point_to_cm
-//
-//    Tom F. November 1992
-//
-//    Function to convert pointsize to centremetres (useful with text)
-//*/
-//float PointToCm( float point )
-//{
-//    return point*ITOC/PPI;
-//}
-//
-///*
-//function open_postscript
-//
-//Tom F. October 1992
-//
-//This function opens a postscript file for output. The file requires
-//the output device. If the file is "" ie. no name then output is
-//sent to stdout. Function returns false on failure. This function
-//writes all the header parts to the file
-//*/
-//int OpenPostscript( String output_file )
-//{
-//boolean test=true;
-//OUT = stdout;
-//if ( strlen( output_file ) ) {
-//    if ((OUT=fopen( output_file, "w" ))==null) {
-//        OUT = stdout;
-//        test = false;
-//    }
-//} else {
-//    OUT = stdout;
-//}
-//fprintf( OUT, "%%!PS-Adobe-1.0\n" );
-//fprintf( OUT, "%%%%Creator: postgen written by Tom Flores\n" );
-//fprintf( OUT, "%%%%Title: postscript procedure\n" );
-//fprintf( OUT, "%%%%CreationDate: Unknown\n" );
-//fprintf( OUT, "%%%%Pages: 1\n" );
-//
-//return test;
-//}
-//
-///*
-//function page_size
-//
-//Tom F. October 1992
-//
-//This function sets the page size
-//*/
-//void PageSize( float width, float height )
-//{
-//OUT = stdout;
-//if (width > 0.0) WIDTH = width;
-//if (height > 0.0) HEIGHT = height;
-//if (WIDTH < PWIDTH) PWIDTH=WIDTH;
-//if (HEIGHT < PHEIGHT) PHEIGHT=HEIGHT;
-//fprintf( OUT, "%%%%BoundingBox: %.1f %.1f %.1f %.1f\n",
-//    0.0, 0.0, WIDTH * PPI * CTOI,
-//    HEIGHT * PPI * CTOI );
-//}
-//
-///* 
-//function picture_size
-//
-//Tom F. October 1992
-//
-//This function sets up the picture size
-//*/  
-//void PictureSize( float width, float height )
-//{
-//if (width > 0.0) PWIDTH=width;
-//if (height > 0.0) PHEIGHT=height;
-//}
-//
-///*
-//function scale_page
-//
-//Tom F. October 1992
-//
-//This function sets the page scale
-//*/
-//void ScalePage( float xmin, float xmax, float ymin, float ymax )
-//{
-//OUT = stdout;
-//if (xmin < xmax) {
-//    XMIN = xmin;
-//    XMAX = xmax;
-//}
-//if (ymin < ymax) {
-//    YMIN = ymin;
-//    YMAX = ymax;
-//}
-//XP = ( PWIDTH * PPI ) / ((XMAX-XMIN) * ITOC);
-//YP = ( PHEIGHT * PPI ) / ((YMAX-YMIN) * ITOC);
-//if (OUT && XMIN != 0.0 && YMIN != 0.0)
-//    fprintf( OUT, "%.1f %.1f  translate\n", 
-//         -XMIN*PWIDTH/(XMAX-XMIN)*PPI*CTOI,
-//         -YMIN*PHEIGHT/(YMAX-YMIN)*PPI*CTOI );
-//}
-//
-///* 
-//function centre_page
-//
-//Tom F. October 1992
-//
-//This function centres a picture on a page
-//*/
-//void CentrePage( )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "%.1f %.1f translate\n", 
-//         ((WIDTH-PWIDTH) / 2.0 * PPI * CTOI),
-//         ((HEIGHT-PHEIGHT) /2.0 * PPI * CTOI) );
-//}
-//
-///*
-//function perimeter
-//
-//Tom F. October 1992
-//
-//This function draws a box round the picture
-//*/
-//void Perimeter( )
-//{
-//OUT = stdout;
-//if (OUT) {
-//    fprintf( OUT, "newpath\n" );
-//    fprintf( OUT, "  %.1f %.1f moveto\n",  (XMIN*XP),  (YMIN*YP) );
-//    fprintf( OUT, "  %.1f %.1f lineto\n",  (XMIN*XP),  (YMAX*YP) );
-//    fprintf( OUT, "  %.1f %.1f lineto\n",  (XMAX*XP),  (YMAX*YP) );
-//    fprintf( OUT, "  %.1f %.1f lineto\n",  (XMAX*XP),  (YMIN*YP) );
-//    fprintf( OUT, "  %.1f %.1f lineto\n",  (XMIN*XP),  (YMIN*YP) );
-//    fprintf( OUT, "  closepath\n" );
-//    fprintf( OUT, "stroke\n" );
-//}
-//}
-//
-///*  
-//function define_object
-//
-//Tom F. October 1992
-//
-//Function to begin an object definition
-//*/
-//void DefineObject( String object_name )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "/%s\n{ newpath\n", object_name );
-//}
-//
-///* 
-//function end_object
-//
-//Tom F. OCtober 1992
-//
-//Function to finish object definition
-//*/
-//void EndObject( )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, " } def\n" );
-//}
-//
-///*
-//function make_object
-//
-//Tom F. October 1992
-//
-//This function uses a variable argument list, the first member 
-//represents the object to be placed, the next is an integer that
-//represents the number of of parameters to be stacked before the
-//object is drawn these must all be floats!
-//*/
-//void MakeObject( String object_name, int i, double... args)
-//{
-//double  arg;
-//OUT = stdout;
-//
-//if (OUT) {
-//    fprintf( OUT, "  " );
-//    va_start( ap, i );
-//    for (double arg : args) {
-//        fprintf( OUT, "%.1f ", (float) (arg*XP) );
-//    }
-//    va_end( ap );
-//    fprintf( OUT, "%s\n", object_name );
-//}
-//}
-//
-///* 
-//function translate
-//D. Westhead 11/09/96
-//*/
-//void Translate( float x, float y)
-//{
-//OUT = stdout;
-//if (OUT) fprintf( OUT, "  %.1f %.1f translate\n",  (x*XP),  (y*YP) );
-//}
-//
-///*
-//function move_to
-//
-//Tom F. October 1992
-//*/
-//void MoveTo( float x, float y )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "  %.1f %.1f moveto\n",  (x*XP),  (y*YP) );
-//}
-//
-///*
-//Function move_relative
-//
-//Tom F. October 1992
-//*/
-//void MoveRelative( float x, float y )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "  %.1f %.1f rmoveto\n",  (x*XP),  (y*YP) );
-//}
-//
-///*
-//function line_to
-//
-//Tom F. October 1992
-//*/
-//void LineTo( float x, float y )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "  %.1f %.1f lineto\n",  (x*XP),  (y*YP) );
-//}
-//
-///*
-//function line_relative
-//
-//Tom F. October 1992
-//*/
-//void LineRelative( float x, float y )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "  %.1f %.1f rlineto\n",  (x*XP),  (y*YP) );
-//}
-//
-///*
-//function close_path
-//
-//Tom F. October 1992
-//*/
-//void ClosePath( )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "  closepath\n" );
-//}
-//
-///*
-//function newpath
-//
-//Tom F. October 1992
-//*/
-//void NewPath( )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "newpath\n" );
-//}
-//
-///*
-//function end_postscript
-//
-//Tom F. October 1992
-//
-//Function to complete postscript picture
-//*/
-//void EndPostscript( )
-//{
-//OUT = stdout;
-//if (OUT) {
-//    fprintf( OUT, "showpage\n" );
-//    if (OUT!=stdout) fclose( OUT );
-//}
-//}
-//
-///*
-//function outline
-//
-//TOm F. October 1992
-//*/
-//void OutLine( )
-//{
-//OUT = stdout;
-//if (OUT) 
-//    fprintf( OUT, "  stroke\n" );
-//}   
-//
-///*
-//function fill
-//
-//Tom F. October 1992
-//*/
-//void Fill( double level )
-//{
-//OUT = stdout;
-//if (OUT)
-//    if (level >= 0.0 )
-//        fprintf( OUT, "  gsave\n  %.2f setgray fill\n  grestore\n", level );
-//    else
-//        fprintf( OUT, "  gsave\n  setgray fill\n  grestore\n" );
-//}
-//
-///*
-//function line_width
-//
-//Tom F. October 1992
-//*/
-//void LineWidth( double width )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "  %.1f setlinewidth\n",  (width*XP) );
-//}
-//
-///* 
-//function literal
-//
-//Tom F. October 1992
-//
-//Function to allow literal translation of postscript ie. written to
-//file directly - this allows for any additional bits to be added 
-//freely
-//*/
-//void Literal( String postlit )
-//{
-//OUT = stdout;
-//if (OUT)
-//    fprintf( OUT, "  %s\n", postlit );
-//}
-//
-///*
-//function choose_font
-//
-//Tom F. October 1992
-//
-//function to select font
-//*/
-//void ChooseFont( String font, int point_size )
-//{
-//OUT = stdout;
-//if (FONT) free(FONT);
-//FONT = strdup( font );
-//if (point_size > 0) POINT = point_size;
-//if (OUT)
-//    fprintf( OUT, "/%s findfont %d scalefont setfont\n",
-//        FONT, POINT );
-//}
-//
-///*
-//function character_height
-//
-//Tom F. October 1992
-//
-//This function set the character height
-//*/
-//void CharacterHeight( float height )
-//{
-//OUT = stdout;
-//if (POINT != height*YP && height*YP > 0.0) {
-//    POINT = height*YP;
-//    ChooseFont( FONT, POINT );
-//}
-//}
-//
-///*
-//function print_text
-//
-//Tom F. October 1992
-//
-//Function to output text
-//*/
-//void PrintText( String text, float x, float y )
-//{
-//OUT = stdout;
-//if (OUT && FONT) {
-//    fprintf( OUT, "  %.1f %.1f moveto\n",  (x*XP), 
-//         (y*YP - TEXTHGT*POINT) );
-//    fprintf( OUT, "  (%s) dup stringwidth pop\n", text );
-//    fprintf( OUT, "  %.2f mul 0 rmoveto\n", -TEXTPOS );
-//    fprintf( OUT, "   show\n" );
-//    
-//}
-//}
-//
-///*
-//function text_centre
-//
-//Tom F. October 1992
-//
-//Function to determine text centre value as fraction
-//*/
-//void TextCentre( float length, float height )
-//{
-//TEXTPOS = length;
-//TEXTHGT = height;
-//}
-//
-///*
-//function convert_x_point
-//
-//Tom F. October 1992
-//
-//This function converts a given x value to its point value
-//*/
-//int ConvertXPoint( double value )
-//{
-//return (int)(value*XP);
-//}
-//
-//double Verbatim( double value )
-//{
-//return value/XP;
-//}
-//
-///*
-//function convert_y_point
-//
-//Tom F. October 1992
-//
-//This function converts a given y value to its point value
-//*/
-//int ConvertYPoint( double value )
-//{
-//return (int)(value*YP);
-//}
-//
-//
-///*
-//function debug_ps
-//
-//Tom F. October 1992
-//
-//This function outputs the values and states of internal variables
-//*/
-//void debug_ps( )
-//{
-//fprintf( stderr, "PS - variables:\n" );
-//fprintf( stderr, "WIDTH     = %f\n", WIDTH );
-//fprintf( stderr, "HEIGHT    = %f\n", HEIGHT );
-//fprintf( stderr, "PWIDTH    = %f\n", PWIDTH );
-//fprintf( stderr, "PHEIGHT   = %f\n", PHEIGHT );
-//fprintf( stderr, "XMIN      = %f\n", XMIN );
-//fprintf( stderr, "XMAX      = %f\n", XMAX );
-//fprintf( stderr, "YMIN      = %f\n", YMIN );
-//fprintf( stderr, "YMAX      = %f\n", YMAX );
-//fprintf( stderr, "XP        = %f\n", XP );
-//fprintf( stderr, "YP        = %f\n", YP );
-//}
-//
-//
-//
-//}
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.List;
+
+import javax.vecmath.Point2d;
+import javax.vecmath.Vector2d;
+
+import tops.port.IntersectionCalculator;
+import tops.port.IntersectionCalculator.Intersection;
+import tops.port.IntersectionCalculator.IntersectionType;
+import tops.port.model.PlotFragInformation;
+import tops.port.model.SSE;
+
+public class TopsPrint {
+    
+    /*
+     * These variables are set for usage through out these functions and
+     * are only accessible from this file
+     */
+    static final double ITOC = 2.540; /* Inches to centimetres */
+    public static final double CTOI = 0.3937; /* Centimetres to inches */
+    public static final double PPI = 72; /* Points per inch */
+    public static final double A4_W = 21.0; /* A4 width */
+    public static final double A4_H = 29.7; /* A4 height */
+    
+    private PrintStream OUT; /* Output file */
+    private double WIDTH = A4_W; /* A4 width */
+    private double HEIGHT = A4_H; /* A4 height */
+    private double PWIDTH = A4_W; /* Picture width */
+    private double PHEIGHT = A4_H; /* Picture height */
+    private double XMIN = 0.0; /* X minimum */
+    private double YMIN = 0.0; /* Y minimum */
+    private double XMAX = A4_W; /* X default scale = centimeters */
+    private double YMAX = A4_H; /* Y default scale = centimeters */
+    private double XP = PPI / ITOC; /* X default points per centimeter */
+    private double YP = PPI / ITOC; /* Y default points per centimeter */
+    private String FONT = null; /* Default font */
+    private int POINT = 15; /* Default point size */
+    private double TEXTPOS = 0.0; /* Default text position */
+    private double TEXTHGT = 0.0; /* Default text position */
+
+    private static final double PI2 = 0;
+    /* Hard coded but will change */
+    int Radius;
+    double Scale = 0.60;
+    StringBuffer buffer;
+
+    boolean Small;
+
+    SSE Root;
+
+    int GridUnitSize;
+
+    private double PSxy(double v) {
+        return ((double) (v) / (double) GridUnitSize);
+    }
+
+    private double iPSxy(double v) {
+        return ((double) (v) * (double) GridUnitSize);
+    }
+
+    private final double VERT_SEP = 2.0;
+    private final double BORDER = 5.0;
+    private final String TITLE_PREF = "TOPS Cartoon: ";
+    
+    private IntersectionCalculator intersectionCalculator;
+    
+    public TopsPrint() {
+        this.intersectionCalculator = new IntersectionCalculator();
+    }
+
+    public boolean PrintCartoons(int NCartoons, List<SSE> CartoonStarts,
+            String FileName, String ProtName, PlotFragInformation pfi,
+            int ErrorStat) {
+
+        int i;
+        double Xmax= 0;
+        double Xmin = 0;
+        double Ymax = 0;
+        double Ymin = 0;
+        double[] CartoonTransX, CartoonTransY;
+        double RubricSpace;
+        String Title;
+        int lt;
+
+        ErrorStat = 0;
+
+        if ((NCartoons < 1) || CartoonStarts.isEmpty())
+            return false;
+
+        /* Open file */
+        try {
+            OpenPostscript(FileName);
+        } catch (FileNotFoundException fnf) { 
+            return false;
+        }
+
+        /* Find size of space required for cartoons */
+        CartoonTransX = new double[NCartoons];
+
+        CartoonTransY = new double[NCartoons];
+
+        FindTotSize(NCartoons, CartoonStarts, Xmin, Xmax, Ymin, Ymax,
+                CartoonTransX, CartoonTransY);
+
+        /* Find space needed for rubric */
+        RubricSpace = 1.0 + (pfi.getNumberOfFragments()) * 0.5;
+
+        /* Print bounding box command */
+        if (Small) {
+            PageSize(Xmax - Xmin + BORDER, Ymax - Ymin + BORDER + RubricSpace
+                    + VERT_SEP * (NCartoons - 1));
+        } else {
+            PageSize(21.9, 29.0);
+        }
+
+        /* Define cartoon symbols */
+        DefCartoonSymbols();
+
+        /* Prepare plotting area */
+        PictureSize(Xmax - Xmin + BORDER, Ymax - Ymin + BORDER + RubricSpace
+                + VERT_SEP * (NCartoons - 1));
+        if (!Small)
+            CentrePage();
+        ScalePage(Xmin - (BORDER / 2.0), Xmax + (BORDER / 2.0),
+                Ymin - (BORDER / 2.0) - VERT_SEP * (NCartoons - 1),
+                Ymax + RubricSpace + (BORDER / 2.0));
+        if (!Small)
+            Perimeter();
+        ChooseFont("Courier", ConvertXPoint(PSxy(Radius)));
+        TextCentre(0.5, 0.38);
+        LineWidth(0.01);
+
+        /* Print title */
+        lt = TITLE_PREF.length() + ProtName.length() + 1;
+        if (lt > 0) {
+            Title = TITLE_PREF + ProtName;
+            PrintText(Title, (Xmax + Xmin) / 2.0,
+                    Ymax + RubricSpace + (BORDER / 4.0));
+        }
+
+        /* Print plot rubric */
+        PrintPlotRubric(pfi, (Xmax + Xmin) / 2.0, Ymax + RubricSpace);
+
+        /* Print the Cartoons */
+        for (i = 0; i < NCartoons; i++) {
+            Translate(PSxy(CartoonTransX[i]), PSxy(CartoonTransY[i]));
+            PrintCartoon(CartoonStarts.get(i));
+        }
+
+        /* Done */
+        EndPostscript();
+
+        return true;
+    }
+
+    /*
+     * a function to find the total size of the cartoon diagrams with the
+     * cartoons stacked in the y direction centred in the x direction on the
+     * centre of the first
+     */
+    private void FindTotSize(int NCartoons, List<SSE> CartoonStarts, double Xmin,
+            double Xmax, double Ymin, double Ymax, double[] CartoonTransX,
+            double[] CartoonTransY) {
+
+        SSE p;
+        double xmax = 0;
+        double xmin = 0;
+        double ymax = 0;
+        double ymin = 0;
+        double cxmax, cxmin, cymax, cymin = 0;
+        double cyminp, tx;
+        double exwid, wid;
+
+        for (int i = 0; i < NCartoons; i++) {
+            CartoonTransX[i] = 0.0;
+            CartoonTransY[i] = 0.0;
+        }
+
+        for (int i = 0; i < NCartoons; i++) {
+
+            cyminp = cymin;
+
+            for (p = CartoonStarts.get(i), cxmax = cxmin = (double) p.getCartoonX(), 
+                    cymax = cymin = (double) p.getCartoonY(); p != null; p = p.To) {
+                if (p.isSymbolPlaced()) {
+                    if ((double) p.getCartoonX() > cxmax)
+                        cxmax = (double) p.getCartoonX();
+                    if ((double) p.getCartoonX() < cxmin)
+                        cxmin = (double) p.getCartoonX();
+                    if ((double) p.getCartoonY() > cymax)
+                        cymax = (double) p.getCartoonY();
+                    if ((double) p.getCartoonY() < cymin)
+                        cymin = (double) p.getCartoonY();
+                }
+            }
+
+            if (i == 0) {
+                xmin = PSxy(cxmin);
+                xmax = PSxy(cxmax);
+                ymin = PSxy(cymin);
+                ymax = PSxy(cymax);
+                CartoonTransY[0] = 0.0;
+            } else {
+                wid = PSxy(cxmax - cxmin);
+                exwid = wid - xmax + xmin;
+                if (exwid > 0.0) {
+                    xmin -= exwid / 2.0;
+                    xmax += exwid / 2.0;
+                }
+                ymin -= PSxy(cymax - cymin);
+
+                CartoonTransY[i] -= (cymax + iPSxy(VERT_SEP) - cyminp);
+
+            }
+
+        }
+
+        Xmin = xmin;
+        Xmax = xmax;
+        Ymin = ymin;
+        Ymax = ymax;
+
+        tx = 0.0;
+        for (int i = 0; i < NCartoons; i++) {
+
+            for (p = CartoonStarts.get(i), cxmin = p.getCartoonX(); p != null; p = p.To) {
+                if (p.isSymbolPlaced()) {
+                    if ((double) p.getCartoonX() < cxmin) {
+                        cxmin = (double) p.getCartoonX();
+                    }
+                }
+            }
+
+            CartoonTransX[i] = iPSxy(xmin) - cxmin - tx;
+
+            tx += CartoonTransX[i];
+
+        }
+
+        return;
+
+    }
+
+    /*
+     * Function to Print a rubric for the plot
+     */
+    private void PrintPlotRubric(PlotFragInformation pfi, double xpos, double ypos) {
+        StringBuffer buffer = new StringBuffer();
+        double y = ypos;
+
+        for (int i = 0; i < pfi.getNumberOfFragments(); i++) {
+            buffer.append('N');
+            buffer.append(i + 1);
+            buffer.append(pfi.getFragmentChainLimit0(i));
+            buffer.append(pfi.getFragmentResidueLimit0(i));
+            buffer.append('C');
+            buffer.append(i + 2);
+            buffer.append(pfi.getFragmentChainLimit1(i));
+            buffer.append(pfi.getFragmentResidueLimit1(i));
+
+            PrintText(buffer.toString(), xpos, y);
+            y = y - 0.5;
+        }
+    }
+
+    /*
+     * a function which prints a single Cartoon
+     */
+    private void PrintCartoon(SSE Start) {
+
+        int i, ncp;
+        SSE p;
+        SSE.SSEType FromSSType, ToSSType;
+
+        /* set the Root to the current cartoon */
+        Root = Start;
+
+        /* Loop through symbols */
+        for (p = Start; p != null; p = p.To) {
+            if (p.isSymbolPlaced()) {
+                switch (p.getSSEType()) {
+                    case EXTENDED:
+                        MakeObject(
+                                p.getDirection() == 'U' ? "UpTriangle" : "DownTriangle",
+                                3, Verbatim(1.0 - (p.getFill()? 0 : 1)), /// XXX Fill?
+                                PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
+                        break;
+                    case HELIX:
+                        MakeObject("Circle", 3, Verbatim(1.0 - (p.getFill()? 0 : 1)), /// XXX Fill?
+                                PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /* Loop Through lines */
+        for (p = Start; p != null; p = p.To) {
+            if (p.isSymbolPlaced()) {
+
+                ToSSType = p.getSSEType();
+
+                if (p.From != null) {
+
+                    FromSSType = p.From.getSSEType();
+                    if (!(ToSSType == SSE.SSEType.CTERMINUS || ToSSType == SSE.SSEType.NTERMINUS)
+                      && (FromSSType == SSE.SSEType.CTERMINUS) || (FromSSType == SSE.SSEType.NTERMINUS)) {
+
+                        if (p.From.getNConnectionPoints() > 0) {
+                            ncp = p.From.getNConnectionPoints();
+
+                            JoinPoints(PSxy(p.From.getCartoonX()),
+                                    PSxy(p.From.getCartoonY()),
+                                    PSxy(p.From.getConnectionTo(0).x),
+                                    PSxy(p.From.getConnectionTo(0).y),
+                                    p.From.getDirection(), '*',
+                                    p.From.getSSEType(),
+                                    p.getSSEType());
+
+                            for (i = 0; i < (ncp - 1); i++) {
+                                JoinPoints(PSxy(p.From.getConnectionTo(i).x),
+                                        PSxy(p.From.getConnectionTo(i).y),
+                                        PSxy(p.From.getConnectionTo(i + 1).x),
+                                        PSxy(p.From.getConnectionTo(i + 1).y),
+                                        '*', '*', p.From.getSSEType(),
+                                        p.getSSEType());
+                            }
+
+                            JoinPoints(PSxy(p.From.getConnectionTo(ncp - 1).x),
+                                    PSxy(p.From.getConnectionTo(ncp - 1).y),
+                                    PSxy(p.getCartoonX()),
+                                    PSxy(p.getCartoonY()), '*', p.getDirection(),
+                                    p.From.getSSEType(),
+                                    p.getSSEType());
+
+                        } else {
+                            JoinPoints(PSxy(p.From.getCartoonX()),
+                                    PSxy(p.From.getCartoonY()),
+                                    PSxy(p.getCartoonX()),
+                                    PSxy(p.getCartoonY()), p.From.getDirection(),
+                                    p.getDirection(), p.From.getSSEType(),
+                                    p.getSSEType());
+                        }
+
+                    }
+
+                    if (FromSSType == SSE.SSEType.NTERMINUS) {
+                        MakeObject("Square", 2, PSxy(p.From.getCartoonX()),
+                                PSxy(p.From.getCartoonY()));
+                        PrintText(p.From.getLabel(), PSxy(p.From.getCartoonX()),
+                                PSxy(p.From.getCartoonY()));
+                    }
+
+                }
+
+                if (ToSSType == SSE.SSEType.CTERMINUS) {
+                    MakeObject("Square", 2, PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
+                    PrintText(p.getLabel(), PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
+                }
+
+            }
+
+        }
+
+        return;
+
+    }
+
+    /*
+     * a function which writes out postscript code to define the symbols used in
+     * cartoons
+     */
+    private void DefCartoonSymbols() {
+
+        DefineObject("Square");
+        Literal("moveto");
+        MoveRelative(PSxy(-Radius) / 2.0, PSxy(Radius) / 2.0);
+        LineRelative(PSxy(Radius), 0.0);
+        LineRelative(0.0, PSxy(-Radius));
+        LineRelative(PSxy(-Radius), 0.0);
+        ClosePath();
+        Fill(1.0);
+        EndObject();
+
+        DefineObject("Circle");
+        buffer.append(String.format(" %d %d %d arc", ConvertXPoint(PSxy(Radius) * Scale), 0,360));
+        Literal(buffer.toString());
+        Fill(-1.0);
+        OutLine();
+        EndObject();
+
+        DefineObject("UpTriangle");
+        Literal("moveto");
+        MoveRelative(0.0, PSxy(Radius));
+        LineRelative(PSxy(Radius) * Math.sin(PI2 / 3.0),
+                PSxy(Radius) * (Math.cos(PI2 / 3.0) - 1.0));
+        LineRelative(-2.0 * PSxy(Radius) * Math.sin(PI2 / 3.0), 0.0);
+        ClosePath();
+        Fill(-1.0);
+        OutLine();
+        EndObject();
+
+        DefineObject("DownTriangle");
+        Literal("moveto");
+        MoveRelative(0.0, PSxy(-Radius));
+        LineRelative(PSxy(Radius) * Math.sin(PI2 / 3.0),
+                PSxy(-Radius) * (Math.cos(PI2 / 3.0) - 1.0));
+        LineRelative(-2.0 * PSxy(Radius) * Math.sin(Math.PI / 3.0), 0.0);
+        ClosePath();
+        Fill(-1.0);
+        OutLine();
+        EndObject();
+
+        DefineObject("Line");
+        Literal("moveto");
+        Literal("lineto");
+        OutLine();
+        EndObject();
+
+    }
+
+    /*
+     * function cross_circle
+     * 
+     * Tom F. August 1992
+     * 
+     * Function to return crossing point at which a line from A, B crosses the
+     * circle X and Y are replaced by the crossing point
+     */
+    private Vector2d CrossCircle(double X, double Y, double A, double B) {
+        int i;
+        double itv = 20.0; 
+
+        Point2d lp = new Point2d(0, 0);
+        Point2d AB = new Point2d(A, B);
+        Point2d XY = new Point2d(X, Y);
+        for (i = 0; i <= itv; i++) {
+            double rx = X + PSxy(Radius) * Math.sin((double) i * PI2 / itv) * Scale;
+            double ry = Y + PSxy(Radius) * Math.cos((double) i * PI2 / itv) * Scale;
+            if (i > 0) {
+                Intersection intersection = 
+                        intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
+                if (intersection.type != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
+                    return intersection.point;
+                }
+            }
+            lp = new Point2d(rx, ry);
+        }
+        return null;
+    }
+
+    /*
+     * function cross_up_triangle
+     * 
+     * Tom F. August 1992
+     * 
+     * Function to return crossing point at which a line from A, B crosses the
+     * triangle X and Y are replaced by the crossing point
+     */
+
+    private Vector2d CrossUpTriangle(double X, double Y, double A, double B) {
+        int i;
+        double itv = 3.0;
+        Point2d lp = new Point2d(0, 0);
+        Point2d AB = new Point2d(A, B);
+        Point2d XY = new Point2d(X, Y);
+        
+        for (i = 0; i <= itv; i++) {
+            double rx = X + PSxy(Radius) * Math.sin((double) i * PI2 / itv);
+            double ry = Y + PSxy(Radius) * Math.cos((double) i * PI2 / itv);
+            if (i > 0) {
+                Intersection intersection = intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
+                if (intersection.type != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
+                    return intersection.point;
+                }
+            }
+            lp = new Point2d(rx, ry);
+        }
+        return null;
+    }
+
+    /*
+     * function cross_down_triangle
+     * 
+     * Tom F. August 1992
+     * 
+     * Function to return crossing point at which a line from A, B crosses the
+     * triangle X and Y are replaced by the crossing point
+     */
+    private Vector2d CrossDownTriangle(double X, double Y, double A, double B) {
+        double itv = 3.0;
+
+        Point2d lp = new Point2d(0, 0);
+        Point2d AB = new Point2d(A, B);
+        Point2d XY = new Point2d(X, Y);
+        for (int i = 0; i <= itv; i++) {
+            double rx = X + PSxy(Radius) * Math.sin((double) i * PI2 / itv);
+            double ry = Y - PSxy(Radius) * Math.cos((double) i * PI2 / itv);
+            if (i > 0) {
+                Intersection intersection =
+                        intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
+                if (intersection.type != IntersectionType.NOT_CROSSING) {
+                    return intersection.point;
+                }
+            }
+            lp = new Point2d(rx, ry);
+        }
+        return null;
+    }
+
+    /*
+     * function join_points
+     * 
+     * Tom F. September 1992
+     * 
+     * Function to join two points
+     */
+    private void JoinPoints(double px, double py, double qx, double qy, char pd,
+            char qd, SSE.SSEType pt, SSE.SSEType qt) {
+        if (pd != 'U' && pd != '*') {
+            if (pt == SSE.SSEType.EXTENDED)
+                CrossDownTriangle(px, py, qx, qy);
+            if (pt == SSE.SSEType.HELIX)
+                CrossCircle(px, py, qx, qy);
+        }
+        if (qd != 'D' && qd != '*') {
+            if (pt == SSE.SSEType.EXTENDED)
+                CrossUpTriangle(qx, qy, px, py);
+            if (pt == SSE.SSEType.HELIX)
+                CrossCircle(qx, qy, px, py);
+        }
+        MakeObject("Line", 4, px, py, qx, qy);
+    }
+
+    /*
+     * function point_to_cm
+     * 
+     * Tom F. November 1992
+     * 
+     * Function to convert pointsize to centremetres (useful with text)
+     */
+    private double PointToCm(double point) {
+        return point * ITOC / PPI;
+    }
+
+    /*
+     * function open_postscript
+     * 
+     * Tom F. October 1992
+     * 
+     * This function opens a postscript file for output. The file requires the
+     * output device. If the file is "" ie. no name then output is sent to
+     * stdout. Function returns false on failure. This function writes all the
+     * header parts to the file
+     */
+    private boolean OpenPostscript(String output_file) throws FileNotFoundException {
+        if ("".equals(output_file)) {
+            OUT = System.out;
+        } else {
+            OUT = new PrintStream(new File(output_file));
+        }
+        fprintf(OUT, "%%!PS-Adobe-1.0\n");
+        fprintf(OUT, "%%%%Creator: postgen written by Tom Flores\n");
+        fprintf(OUT, "%%%%Title: postscript procedure\n");
+        fprintf(OUT, "%%%%CreationDate: Unknown\n");
+        fprintf(OUT, "%%%%Pages: 1\n");
+
+        return true;    // XXX TODO
+    }
+
+    /*
+     * function page_size
+     * 
+     * Tom F. October 1992
+     * 
+     * This function sets the page size
+     */
+    private void PageSize(double width, double height) {
+
+        if (width > 0.0)
+            WIDTH = width;
+        if (height > 0.0)
+            HEIGHT = height;
+        if (WIDTH < PWIDTH)
+            PWIDTH = WIDTH;
+        if (HEIGHT < PHEIGHT)
+            PHEIGHT = HEIGHT;
+        fprintf(OUT, "%%%%BoundingBox: %.1f %.1f %.1f %.1f\n", 0.0, 0.0,
+                WIDTH * PPI * CTOI, HEIGHT * PPI * CTOI);
+    }
+
+    /*
+     * function picture_size
+     * 
+     * Tom F. October 1992
+     * 
+     * This function sets up the picture size
+     */
+    private void PictureSize(double width, double height) {
+        if (width > 0.0)
+            PWIDTH = width;
+        if (height > 0.0)
+            PHEIGHT = height;
+    }
+
+    /*
+     * function scale_page
+     * 
+     * Tom F. October 1992
+     * 
+     * This function sets the page scale
+     */
+    private void ScalePage(double xmin, double xmax, double ymin, double ymax) {
+
+        if (xmin < xmax) {
+            XMIN = xmin;
+            XMAX = xmax;
+        }
+        if (ymin < ymax) {
+            YMIN = ymin;
+            YMAX = ymax;
+        }
+        XP = (PWIDTH * PPI) / ((XMAX - XMIN) * ITOC);
+        YP = (PHEIGHT * PPI) / ((YMAX - YMIN) * ITOC);
+        if (XMIN != 0.0 && YMIN != 0.0)
+            fprintf(OUT, "%.1f %.1f  translate\n",
+                    -XMIN * PWIDTH / (XMAX - XMIN) * PPI * CTOI,
+                    -YMIN * PHEIGHT / (YMAX - YMIN) * PPI * CTOI);
+    }
+
+    /*
+     * function centre_page
+     * 
+     * Tom F. October 1992
+     * 
+     * This function centres a picture on a page
+     */
+    private void CentrePage() {
+        fprintf(OUT, "%.1f %.1f translate\n",
+                ((WIDTH - PWIDTH) / 2.0 * PPI * CTOI),
+                ((HEIGHT - PHEIGHT) / 2.0 * PPI * CTOI));
+    }
+
+    /*
+     * function perimeter
+     * 
+     * Tom F. October 1992
+     * 
+     * This function draws a box round the picture
+     */
+    private void Perimeter() {
+        fprintf(OUT, "newpath\n");
+        fprintf(OUT, "  %.1f %.1f moveto\n", (XMIN * XP), (YMIN * YP));
+        fprintf(OUT, "  %.1f %.1f lineto\n", (XMIN * XP), (YMAX * YP));
+        fprintf(OUT, "  %.1f %.1f lineto\n", (XMAX * XP), (YMAX * YP));
+        fprintf(OUT, "  %.1f %.1f lineto\n", (XMAX * XP), (YMIN * YP));
+        fprintf(OUT, "  %.1f %.1f lineto\n", (XMIN * XP), (YMIN * YP));
+        fprintf(OUT, "  closepath\n");
+        fprintf(OUT, "stroke\n");
+    }
+
+    /*
+     * function define_object
+     * 
+     * Tom F. October 1992
+     * 
+     * Function to begin an object definition
+     */
+    private void DefineObject(String object_name) {
+        fprintf(OUT, "/%s\n{ newpath\n", object_name);
+    }
+
+    /*
+     * function end_object
+     * 
+     * Tom F. OCtober 1992
+     * 
+     * Function to finish object definition
+     */
+    private void EndObject() {
+        fprintf(OUT, " } def\n");
+    }
+
+    /*
+     * function make_object
+     * 
+     * Tom F. October 1992
+     * 
+     * This function uses a variable argument list, the first member represents
+     * the object to be placed, the next is an integer that represents the
+     * number of of parameters to be stacked before the object is drawn these
+     * must all be doubles!
+     */
+    private void MakeObject(String object_name, int i, double... args) {
+        fprintf(OUT, "  ");
+        for (double arg : args) {
+            fprintf(OUT, "%.1f ", (double) (arg * XP));
+        }
+        fprintf(OUT, "%s\n", object_name);
+    }
+
+    /*
+     * function translate D. Westhead 11/09/96
+     */
+    private void Translate(double x, double y) {
+        fprintf(OUT, "  %.1f %.1f translate\n", (x * XP), (y * YP));
+    }
+
+    /*
+     * function move_to
+     * 
+     * Tom F. October 1992
+     */
+    private void MoveTo(double x, double y) {
+        fprintf(OUT, "  %.1f %.1f moveto\n", (x * XP), (y * YP));
+    }
+
+    /*
+     * Function move_relative
+     * 
+     * Tom F. October 1992
+     */
+    private void MoveRelative(double x, double y) {
+        fprintf(OUT, "  %.1f %.1f rmoveto\n", (x * XP), (y * YP));
+    }
+
+    /*
+     * function line_to
+     * 
+     * Tom F. October 1992
+     */
+    private void LineTo(double x, double y) {
+        fprintf(OUT, "  %.1f %.1f lineto\n", (x * XP), (y * YP));
+    }
+
+    /*
+     * function line_relative
+     * 
+     * Tom F. October 1992
+     */
+    private void LineRelative(double x, double y) {
+        fprintf(OUT, "  %.1f %.1f rlineto\n", (x * XP), (y * YP));
+    }
+
+    /*
+     * function close_path
+     * 
+     * Tom F. October 1992
+     */
+    private void ClosePath() {
+        fprintf(OUT, "  closepath\n");
+    }
+
+    /*
+     * function newpath
+     * 
+     * Tom F. October 1992
+     */
+    private void NewPath() {
+        fprintf(OUT, "newpath\n");
+    }
+
+    /*
+     * function end_postscript
+     * 
+     * Tom F. October 1992
+     * 
+     * Function to complete postscript picture
+     */
+    private void EndPostscript() {
+        fprintf(OUT, "showpage\n");
+        if (OUT != System.out)
+            OUT.close();
+    }
+
+    /*
+     * function outline
+     * 
+     * TOm F. October 1992
+     */
+    private void OutLine() {
+        fprintf(OUT, "  stroke\n");
+    }
+
+    /*
+     * function fill
+     * 
+     * Tom F. October 1992
+     */
+    private void Fill(double level) {
+        if (level >= 0.0)
+            fprintf(OUT, "  gsave\n  %.2f setgray fill\n  grestore\n", level);
+        else
+            fprintf(OUT, "  gsave\n  setgray fill\n  grestore\n");
+    }
+
+    /*
+     * function line_width
+     * 
+     * Tom F. October 1992
+     */
+    private void LineWidth(double width) {
+        fprintf(OUT, "  %.1f setlinewidth\n", (width * XP));
+    }
+
+    /*
+     * function literal
+     * 
+     * Tom F. October 1992
+     * 
+     * Function to allow literal translation of postscript ie. written to file
+     * directly - this allows for any additional bits to be added freely
+     */
+    private void Literal(String postlit) {
+        fprintf(OUT, "  %s\n", postlit);
+    }
+
+    /*
+     * function choose_font
+     * 
+     * Tom F. October 1992
+     * 
+     * function to select font
+     */
+    private void ChooseFont(String font, int point_size) {
+        FONT = font;
+        if (point_size > 0)
+            POINT = point_size;
+        fprintf(OUT, "/%s findfont %d scalefont setfont\n", FONT, POINT);
+    }
+
+    /*
+     * function character_height
+     * 
+     * Tom F. October 1992
+     * 
+     * This function set the character height
+     */
+    private void CharacterHeight(double height) {
+        if (POINT != height * YP && height * YP > 0.0) {
+            POINT = (int) (height * YP);
+            ChooseFont(FONT, POINT);
+        }
+    }
+
+    /*
+     * function print_text
+     * 
+     * Tom F. October 1992
+     * 
+     * Function to output text
+     */
+    private void PrintText(String text, double x, double y) {
+        fprintf(OUT, "  %.1f %.1f moveto\n", (x * XP),
+                (y * YP - TEXTHGT * POINT));
+        fprintf(OUT, "  (%s) dup stringwidth pop\n", text);
+        fprintf(OUT, "  %.2f mul 0 rmoveto\n", -TEXTPOS);
+        fprintf(OUT, "   show\n");
+    }
+
+    /*
+     * function text_centre
+     * 
+     * Tom F. October 1992
+     * 
+     * Function to determine text centre value as fraction
+     */
+    private void TextCentre(double length, double height) {
+        TEXTPOS = length;
+        TEXTHGT = height;
+    }
+
+    /*
+     * function convert_x_point
+     * 
+     * Tom F. October 1992
+     * 
+     * This function converts a given x value to its point value
+     */
+    private int ConvertXPoint(double value) {
+        return (int) (value * XP);
+    }
+
+    private double Verbatim(double value) {
+        return value / XP;
+    }
+
+    /*
+     * function convert_y_point
+     * 
+     * Tom F. October 1992
+     * 
+     * This function converts a given y value to its point value
+     */
+    private int ConvertYPoint(double value) {
+        return (int) (value * YP);
+    }
+
+    /*
+     * function debug_ps
+     * 
+     * Tom F. October 1992
+     * 
+     * This function outputs the values and states of internal variables
+     */
+    void debug_ps() {
+        fprintf(System.err, "PS - variables:\n");
+        fprintf(System.err, "WIDTH     = %f\n", WIDTH);
+        fprintf(System.err, "HEIGHT    = %f\n", HEIGHT);
+        fprintf(System.err, "PWIDTH    = %f\n", PWIDTH);
+        fprintf(System.err, "PHEIGHT   = %f\n", PHEIGHT);
+        fprintf(System.err, "XMIN      = %f\n", XMIN);
+        fprintf(System.err, "XMAX      = %f\n", XMAX);
+        fprintf(System.err, "YMIN      = %f\n", YMIN);
+        fprintf(System.err, "YMAX      = %f\n", YMAX);
+        fprintf(System.err, "XP        = %f\n", XP);
+        fprintf(System.err, "YP        = %f\n", YP);
+    }
+
+    private void fprintf(PrintStream stream, String message,
+            Object... inserts) {
+
+    }
+
+}

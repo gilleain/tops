@@ -19,6 +19,22 @@ public class PlotFragInformation {
         }
     }
     
+    public char getFragmentChainLimit0(int index) {
+        return fragmentChainLimits[index][0];
+    }
+    
+    public char getFragmentChainLimit1(int index) {
+        return fragmentChainLimits[index][1];
+    }
+    
+    public int getFragmentResidueLimit0(int index) {
+        return fragmentResidueLimits[index][0];
+    }
+    
+    public int getFragmentResidueLimit1(int index) {
+        return fragmentResidueLimits[index][1];
+    }
+    
     public void setFragDomain(int index, int domain) {
         this.fragmentDomains[index] = domain;
     }
