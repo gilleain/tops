@@ -15,25 +15,28 @@ public class PostscriptFileWriter {
     public void makePostscript(
             List<Cartoon> cartoons, 
             Protein protein, 
-            int nDomainsToPlot, 
             PlotFragInformation plotFragInf,
             Options options) {
         String postscript = options.getPostscript();
         if (postscript != null) {
-
+            int nDomainsToPlot = cartoons.size();
             if (options.isVerbose()) System.out.println("Writing postscript file\n");
 
             int npages = nDomainsToPlot / DOMS_PER_PAGE;
             int nLastPage = nDomainsToPlot % DOMS_PER_PAGE;
             npages += (nLastPage > 0 ? 1 : 0);  // add an extra page if necessary
 
+            TopsPrint topsPrint = new TopsPrint();
+            String proteinCode = protein.getProteinCode();
             for (int i = 0; i < npages; i++) {
-                File psfile = getPSFile(postscript, i);
-                int nplot = DOMS_PER_PAGE;
+                String psfile = getPSFile(postscript, i).getAbsolutePath();
+                int nplot = DOMS_PER_PAGE;  // XXX regression?
                 if ((i == (npages - 1)) && nLastPage > 0)
                     nplot = nLastPage;
-//                PrintCartoons(
-//                   nplot, cartoons, DOMS_PER_PAGE * i, psfile, protein.getProteinCode(), PlotFragInf);
+                int pageStartIndex = i * DOMS_PER_PAGE;
+                int pageEndIndex = pageStartIndex + DOMS_PER_PAGE;
+                List<Cartoon> page = cartoons.subList(pageStartIndex, pageEndIndex);
+                topsPrint.printCartoons(page, psfile, proteinCode, plotFragInf);
             }
         }
     }

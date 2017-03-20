@@ -11,6 +11,7 @@ import javax.vecmath.Vector2d;
 import tops.port.IntersectionCalculator;
 import tops.port.IntersectionCalculator.Intersection;
 import tops.port.IntersectionCalculator.IntersectionType;
+import tops.port.model.Cartoon;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.SSE;
 
@@ -72,9 +73,8 @@ public class TopsPrint {
         this.intersectionCalculator = new IntersectionCalculator();
     }
 
-    public boolean PrintCartoons(int NCartoons, List<SSE> CartoonStarts,
-            String FileName, String ProtName, PlotFragInformation pfi,
-            int ErrorStat) {
+    public boolean printCartoons(List<Cartoon> cartoons,
+            String FileName, String ProtName, PlotFragInformation pfi) {
 
         int i;
         double Xmax= 0;
@@ -86,10 +86,7 @@ public class TopsPrint {
         String Title;
         int lt;
 
-        ErrorStat = 0;
-
-        if ((NCartoons < 1) || CartoonStarts.isEmpty())
-            return false;
+        if (cartoons.isEmpty()) { return false; }
 
         /* Open file */
         try {
@@ -99,12 +96,10 @@ public class TopsPrint {
         }
 
         /* Find size of space required for cartoons */
-        CartoonTransX = new double[NCartoons];
+        CartoonTransX = new double[cartoons.size()];
+        CartoonTransY = new double[cartoons.size()];
 
-        CartoonTransY = new double[NCartoons];
-
-        FindTotSize(NCartoons, CartoonStarts, Xmin, Xmax, Ymin, Ymax,
-                CartoonTransX, CartoonTransY);
+        FindTotSize(cartoons, Xmin, Xmax, Ymin, Ymax, CartoonTransX, CartoonTransY);
 
         /* Find space needed for rubric */
         RubricSpace = 1.0 + (pfi.getNumberOfFragments()) * 0.5;
@@ -112,7 +107,7 @@ public class TopsPrint {
         /* Print bounding box command */
         if (Small) {
             PageSize(Xmax - Xmin + BORDER, Ymax - Ymin + BORDER + RubricSpace
-                    + VERT_SEP * (NCartoons - 1));
+                    + VERT_SEP * (cartoons.size() - 1));
         } else {
             PageSize(21.9, 29.0);
         }
@@ -122,11 +117,11 @@ public class TopsPrint {
 
         /* Prepare plotting area */
         PictureSize(Xmax - Xmin + BORDER, Ymax - Ymin + BORDER + RubricSpace
-                + VERT_SEP * (NCartoons - 1));
+                + VERT_SEP * (cartoons.size() - 1));
         if (!Small)
             CentrePage();
         ScalePage(Xmin - (BORDER / 2.0), Xmax + (BORDER / 2.0),
-                Ymin - (BORDER / 2.0) - VERT_SEP * (NCartoons - 1),
+                Ymin - (BORDER / 2.0) - VERT_SEP * (cartoons.size() - 1),
                 Ymax + RubricSpace + (BORDER / 2.0));
         if (!Small)
             Perimeter();
@@ -146,9 +141,9 @@ public class TopsPrint {
         PrintPlotRubric(pfi, (Xmax + Xmin) / 2.0, Ymax + RubricSpace);
 
         /* Print the Cartoons */
-        for (i = 0; i < NCartoons; i++) {
+        for (i = 0; i < cartoons.size(); i++) {
             Translate(PSxy(CartoonTransX[i]), PSxy(CartoonTransY[i]));
-            PrintCartoon(CartoonStarts.get(i));
+            PrintCartoon(cartoons.get(i));
         }
 
         /* Done */
@@ -162,11 +157,10 @@ public class TopsPrint {
      * cartoons stacked in the y direction centred in the x direction on the
      * centre of the first
      */
-    private void FindTotSize(int NCartoons, List<SSE> CartoonStarts, double Xmin,
+    private void FindTotSize(List<Cartoon> cartoons, double Xmin,
             double Xmax, double Ymin, double Ymax, double[] CartoonTransX,
             double[] CartoonTransY) {
 
-        SSE p;
         double xmax = 0;
         double xmin = 0;
         double ymax = 0;
@@ -175,26 +169,27 @@ public class TopsPrint {
         double cyminp, tx;
         double exwid, wid;
 
-        for (int i = 0; i < NCartoons; i++) {
+        for (int i = 0; i < cartoons.size(); i++) {
             CartoonTransX[i] = 0.0;
             CartoonTransY[i] = 0.0;
         }
 
-        for (int i = 0; i < NCartoons; i++) {
-
+        for (int i = 0; i < cartoons.size(); i++) {
+            Cartoon cartoon = cartoons.get(i); 
             cyminp = cymin;
-
-            for (p = CartoonStarts.get(i), cxmax = cxmin = (double) p.getCartoonX(), 
-                    cymax = cymin = (double) p.getCartoonY(); p != null; p = p.To) {
-                if (p.isSymbolPlaced()) {
-                    if ((double) p.getCartoonX() > cxmax)
-                        cxmax = (double) p.getCartoonX();
-                    if ((double) p.getCartoonX() < cxmin)
-                        cxmin = (double) p.getCartoonX();
-                    if ((double) p.getCartoonY() > cymax)
-                        cymax = (double) p.getCartoonY();
-                    if ((double) p.getCartoonY() < cymin)
-                        cymin = (double) p.getCartoonY();
+            SSE p = cartoon.getSSEs().get(0);
+            cxmax = cxmin = (double) p.getCartoonX();
+            cymax = cymin = (double) p.getCartoonY();
+            for (SSE q : cartoon.getSSEs().subList(1, cartoon.getSSEs().size())) {
+                if (q.isSymbolPlaced()) {
+                    if ((double) q.getCartoonX() > cxmax)
+                        cxmax = (double) q.getCartoonX();
+                    if ((double) q.getCartoonX() < cxmin)
+                        cxmin = (double) q.getCartoonX();
+                    if ((double) q.getCartoonY() > cymax)
+                        cymax = (double) q.getCartoonY();
+                    if ((double) q.getCartoonY() < cymin)
+                        cymin = (double) q.getCartoonY();
                 }
             }
 
@@ -214,9 +209,7 @@ public class TopsPrint {
                 ymin -= PSxy(cymax - cymin);
 
                 CartoonTransY[i] -= (cymax + iPSxy(VERT_SEP) - cyminp);
-
             }
-
         }
 
         Xmin = xmin;
@@ -225,9 +218,10 @@ public class TopsPrint {
         Ymax = ymax;
 
         tx = 0.0;
-        for (int i = 0; i < NCartoons; i++) {
-
-            for (p = CartoonStarts.get(i), cxmin = p.getCartoonX(); p != null; p = p.To) {
+        for (int i = 0; i < cartoons.size(); i++) {
+            Cartoon cartoon = cartoons.get(i);
+            cxmin = cartoon.getSSEs().get(0).getCartoonX();
+            for (SSE p : cartoon.getSSEs()) {
                 if (p.isSymbolPlaced()) {
                     if ((double) p.getCartoonX() < cxmin) {
                         cxmin = (double) p.getCartoonX();
@@ -270,17 +264,13 @@ public class TopsPrint {
     /*
      * a function which prints a single Cartoon
      */
-    private void PrintCartoon(SSE Start) {
+    private void PrintCartoon(Cartoon cartoon) {
 
         int i, ncp;
-        SSE p;
         SSE.SSEType FromSSType, ToSSType;
 
-        /* set the Root to the current cartoon */
-        Root = Start;
-
-        /* Loop through symbols */
-        for (p = Start; p != null; p = p.To) {
+        // Symbols
+        for (SSE p : cartoon.getSSEs()) {
             if (p.isSymbolPlaced()) {
                 switch (p.getSSEType()) {
                     case EXTENDED:
@@ -299,8 +289,8 @@ public class TopsPrint {
             }
         }
 
-        /* Loop Through lines */
-        for (p = Start; p != null; p = p.To) {
+        // Lines
+        for (SSE p : cartoon.getSSEs()) {
             if (p.isSymbolPlaced()) {
 
                 ToSSType = p.getSSEType();
@@ -362,13 +352,8 @@ public class TopsPrint {
                     MakeObject("Square", 2, PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
                     PrintText(p.getLabel(), PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
                 }
-
             }
-
         }
-
-        return;
-
     }
 
     /*

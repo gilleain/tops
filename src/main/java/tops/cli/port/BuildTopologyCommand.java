@@ -213,7 +213,7 @@ public class BuildTopologyCommand implements Command {
         new TopsFileWriter().writeTOPSFile(topsFilename, cartoons, protein, domainsToPlot);
 
         /* Create postscript files for each Cartoon */
-        new PostscriptFileWriter().makePostscript(cartoons, protein, domainsToPlot.size(), plotFragInf, options);
+        new PostscriptFileWriter().makePostscript(cartoons, protein, plotFragInf, options);
 
         if (options.isVerbose()) {
             System.out.println("\n");
