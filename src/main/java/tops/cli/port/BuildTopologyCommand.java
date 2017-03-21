@@ -157,7 +157,7 @@ public class BuildTopologyCommand implements Command {
                 domainCalculator.defaultDomains(protein, options.getChainToPlot().charAt(0));
 
         /* check domain definitions */
-        Protein.DomDefError ddep  = protein.checkDomainDefs();
+        DomainCalculator.DomDefError ddep  = domainCalculator.checkDomainDefs(domains, protein);
         if (ddep != null) {
             if (ddep.ErrorType != null) {
                 log("Tops warning: problem with domain definitions type %d\n", ddep.ErrorType);
@@ -169,14 +169,14 @@ public class BuildTopologyCommand implements Command {
          * information on plotted chain fragments is held in PlotFragInf for use
          * in output postscript
          */
-        PlotFragInformation plotFragInf = new PlotFragInformation();
 
         /* set up the domain breaks and PlotFragInfo */
         if (options.isVerbose()) {
             System.out.println("Setting domain breaks and domains to plot\n");
         }
         SSE root = null;
-        domainCalculator.setDomBreaks(domains, protein, root, plotFragInf);    // TODO - Root will be null here!! XXX
+        // TODO - Root will be null here!! XXX
+        PlotFragInformation plotFragInf = domainCalculator.setDomBreaks(domains, protein, root);    
 
         List<Integer> domainsToPlot = domainCalculator.fixDomainsToPlot(
                 domains, options.getChainToPlot().charAt(0), options.getDomainToPlot());
