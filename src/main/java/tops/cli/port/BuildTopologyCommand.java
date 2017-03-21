@@ -12,11 +12,13 @@ import org.apache.commons.cli.ParseException;
 
 import tops.cli.Command;
 import tops.port.DomainBoundaryFileReader;
+import tops.port.DomainCalculator;
 import tops.port.Optimise;
 import tops.port.Options;
 import tops.port.io.PostscriptFileWriter;
 import tops.port.io.TopsFileWriter;
 import tops.port.model.Cartoon;
+import tops.port.model.DomainDefinition;
 import tops.port.model.DsspReader;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
@@ -150,7 +152,9 @@ public class BuildTopologyCommand implements Command {
         if (options.isVerbose()) {
             System.out.println("Setting default domains\n");
         }
-        protein.defaultDomains(options.getChainToPlot().charAt(0));
+        DomainCalculator domainCalculator = new DomainCalculator();
+        List<DomainDefinition> domains = 
+                domainCalculator.defaultDomains(protein, options.getChainToPlot().charAt(0));
 
         /* check domain definitions */
         Protein.DomDefError ddep  = protein.checkDomainDefs();
@@ -172,9 +176,11 @@ public class BuildTopologyCommand implements Command {
             System.out.println("Setting domain breaks and domains to plot\n");
         }
         SSE root = null;
-        protein.setDomBreaks(root, plotFragInf);    // TODO - Root will be null here!! XXX
+        domainCalculator.setDomBreaks(domains, protein, root, plotFragInf);    // TODO - Root will be null here!! XXX
 
-        List<Integer> domainsToPlot = protein.fixDomainsToPlot(options.getChainToPlot().charAt(0), options.getDomainToPlot());
+        List<Integer> domainsToPlot = domainCalculator.fixDomainsToPlot(
+                domains, options.getChainToPlot().charAt(0), options.getDomainToPlot());
+        
         if (domainsToPlot.isEmpty()) {
             log("Tops error: fixing domains to plot\n");
             return;
@@ -189,7 +195,7 @@ public class BuildTopologyCommand implements Command {
             }
 
             /* Set the domain to plot */
-            Cartoon cartoon = protein.setDomain(root, protein.getDomain(domainToPlot));
+            Cartoon cartoon = domainCalculator.setDomain(root, protein, protein.getDomain(domainToPlot));
 
             // TODO - factor this out
             new Optimise().optimise(cartoon);
@@ -213,7 +219,7 @@ public class BuildTopologyCommand implements Command {
         new TopsFileWriter().writeTOPSFile(topsFilename, cartoons, protein, domainsToPlot);
 
         /* Create postscript files for each Cartoon */
-        new PostscriptFileWriter().makePostscript(cartoons, protein, plotFragInf, options);
+        new PostscriptFileWriter(options).makePostscript(cartoons, protein, plotFragInf);
 
         if (options.isVerbose()) {
             System.out.println("\n");

@@ -11,12 +11,14 @@ import tops.port.model.Protein;
 public class PostscriptFileWriter {
     
     private final int DOMS_PER_PAGE = 2;
+    
+    private Options options;
+    
+    public PostscriptFileWriter(Options options) {
+        this.options = options;
+    }
 
-    public void makePostscript(
-            List<Cartoon> cartoons, 
-            Protein protein, 
-            PlotFragInformation plotFragInf,
-            Options options) {
+    public void makePostscript(List<Cartoon> cartoons, Protein protein, PlotFragInformation plotFragInf) {
         String postscript = options.getPostscript();
         if (postscript != null) {
             int nDomainsToPlot = cartoons.size();
