@@ -85,35 +85,6 @@ public class Chain {
         return null;
     }
     
-    public void forceConsistent(Protein protein) {
-        for (int i = 0; i < sequenceLength(); i++) {
-
-            if ( isSSelement(i) ) {
-                int start = i;
-                SSEType thissstype = getSSEType(i);
-                int Dom = protein.residueDomain(i);
-                int DBreak = -1;
-                int LastDom = -1;
-                while ( isSSelement(i) && getSSEType(i) == thissstype ) {
-                    i++;
-                    LastDom = Dom;
-                    Dom = protein.residueDomain(i);
-                    if ( Dom != LastDom ) DBreak = i;
-                }
-
-                int finish = --i;
-
-                if ( DBreak > -1 ) {
-
-                    if ( (DBreak-start) > (finish-DBreak) ) {
-                        for (int j=DBreak ; j<=finish ; j++) setSSEType(i, SSEType.COIL);
-                    } else {
-                        for (int j=start ; j<DBreak ; j++) setSSEType(j, SSEType.COIL);
-                    }
-                }
-            }
-        }
-    }
     
     /**
      * XXX intended to be the same as Protein.PdbIndex[Protein.ChainStarts[i]]

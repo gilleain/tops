@@ -195,7 +195,7 @@ public class BuildTopologyCommand implements Command {
             }
 
             /* Set the domain to plot */
-            Cartoon cartoon = domainCalculator.setDomain(root, protein, protein.getDomain(domainToPlot));
+            Cartoon cartoon = domainCalculator.setDomain(root, protein, domains.get(domainToPlot));
 
             // TODO - factor this out
             new Optimise().optimise(cartoon);
@@ -216,7 +216,7 @@ public class BuildTopologyCommand implements Command {
             topsFilename = options.getTOPSFileName(proteinCode, options.getChainToPlot(), options.getDomainToPlot());
         }
         
-        new TopsFileWriter().writeTOPSFile(topsFilename, cartoons, protein, domainsToPlot);
+        new TopsFileWriter().writeTOPSFile(topsFilename, cartoons, protein, domains, domainsToPlot);
 
         /* Create postscript files for each Cartoon */
         new PostscriptFileWriter(options).makePostscript(cartoons, protein, plotFragInf);

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import tops.port.calculate.chirality.ChiralityCalculator;
+import tops.port.model.BridgePartner;
 import tops.port.model.Cartoon;
 import tops.port.model.Chain;
 import tops.port.model.DomainBreakType;
@@ -485,6 +486,109 @@ public class DomainCalculator {
 
         /* Now re-set the root */
         return new Cartoon(newRoot);
+    }
+    
+    /*
+    This function forces consistency between domain definitions and secondary structure information 
+    in the protein data structure.
+    Bridge partner relationships which cross domain boundaries are removed 
+    ss elements which cross domain boundaries are limited to the domain they are mostly in
+     */
+    public void forceConsistent(Protein p, List<DomainDefinition> domains) {
+
+        for (Chain chain : p.getChains()) {
+            for (int i = 0; i < chain.sequenceLength(); i++) {
+                if ( chain.isExtended(i) ) {
+
+                    int Dom = residueDomain(p, i, domains);
+
+                    // TODO
+                    BridgePartner bpl = chain.getBridgePartner(i).get(0);
+                    BridgePartner bpr = chain.getBridgePartner(i).get(1);
+
+                    if ( residueDomain(p, bpl.partnerResidue, domains) != Dom || Dom<0  ) {
+//                        chain.removeLeftBridge(i);
+                    }
+
+                    if ( residueDomain(p, bpr.partnerResidue, domains) != Dom||Dom<0 ) {
+//                        chain.removeRightBridge(i);
+                    }
+                }
+            }
+        }
+
+        for (Chain chain : p.getChains()) {
+            forceConsistent(p, chain, domains);
+        }
+    }
+
+    private void forceConsistent(Protein protein, Chain chain, List<DomainDefinition> domains) {
+        for (int i = 0; i < chain.sequenceLength(); i++) {
+
+            if (chain.isSSelement(i) ) {
+                int start = i;
+                SSEType thissstype = chain.getSSEType(i);
+                int Dom = residueDomain(protein, i, domains);
+                int DBreak = -1;
+                int LastDom = -1;
+                while (chain.isSSelement(i) && chain.getSSEType(i) == thissstype ) {
+                    i++;
+                    LastDom = Dom;
+                    Dom = residueDomain(protein, i, domains);
+                    if ( Dom != LastDom ) DBreak = i;
+                }
+
+                int finish = --i;
+
+                if ( DBreak > -1 ) {
+
+                    if ( (DBreak-start) > (finish-DBreak) ) {
+                        for (int j=DBreak ; j<=finish ; j++) chain.setSSEType(i, SSEType.COIL);
+                    } else {
+                        for (int j=start ; j<DBreak ; j++) chain.setSSEType(j, SSEType.COIL);
+                    }
+                }
+            }
+        }
+    }
+
+    private int residueDomain(Protein protein, int Residue, List<DomainDefinition> domains) {
+        for (Chain chain : protein.getChains()) {
+            if ((Residue >= chain.sequenceLength()) || (Residue < 0)) {
+                return -1;
+            }
+    
+            int PDBRes = chain.getPDBIndex(Residue);
+            char PDBChain = chain.getName();
+    
+            for (int i = 0; i < domains.size(); i++) {
+                if (resIsInDomain(PDBRes, PDBChain, domains.get(i))) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private boolean resIsInDomain( int PDBRes, char PDBChain, DomainDefinition Domain) {
+        if ( Domain == null) return false;
+
+        for ( int i=0 ; i<Domain.numberOfSegments ; i++) {
+
+            if ( Domain.domainType == DomainType.SEGMENT_SET ) {
+                if ( (PDBChain==Domain.segmentChains[0][i])&&(PDBChain==Domain.segmentChains[1][i]) ) {
+                    if ( (PDBRes>=(Domain.segmentIndices[0][i]))&&(PDBRes<=(Domain.segmentIndices[1][i])) ) return true;
+                } else if ( PDBChain==Domain.segmentChains[0][i] ) {
+                    if ( PDBRes>=(Domain.segmentIndices[0][i]) ) return true;
+                } else if ( PDBChain==Domain.segmentChains[1][i] ) {
+                    if ( PDBRes<=(Domain.segmentIndices[1][i]) ) return true;
+                }
+            } else if ( Domain.domainType == DomainType.CHAIN_SET ) {
+                if ( (PDBChain==Domain.segmentChains[0][i])||(PDBChain==Domain.segmentChains[1][i]) ) return true;
+            }
+        }
+        return false;
     }
 
     private boolean segmentsOverlap(char[] Seg1Chains, int[] Seg1Range, char[] Seg2Chains, int[] Seg2Range) {

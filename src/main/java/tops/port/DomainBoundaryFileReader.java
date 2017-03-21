@@ -3,6 +3,8 @@ package tops.port;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -11,8 +13,10 @@ import tops.port.model.Protein;
 
 public class DomainBoundaryFileReader {
 
-    public void readDomBoundaryFile(String DomBoundaryFile, Protein protein) throws IOException {
+    public List<DomainDefinition> readDomBoundaryFile(String DomBoundaryFile, Protein protein) throws IOException {
 
+        List<DomainDefinition> domains = new ArrayList<DomainDefinition>();
+        
         int nsegs, res;
         int NDoms, CountDoms, DomsFrom;
         char CodeChain, chain;
@@ -40,7 +44,7 @@ public class DomainBoundaryFileReader {
                             "Error: reading domain boundary file %s\n",
                             DomBoundaryFile));
                     bufferedReader.close();
-                    return;
+                    return domains;
                 }
 
                 if (CurrentToken.substring(0, 4).equals(protein.getProteinCode())) {
@@ -54,7 +58,7 @@ public class DomainBoundaryFileReader {
                     } catch (Exception e) {
                         System.err.print(String.format("Error: reading domain boundary file %s\n", DomBoundaryFile));
                         bufferedReader.close();
-                        return;
+                        return domains;
                     }
 
                     DomsFrom = CountDoms;
@@ -69,7 +73,7 @@ public class DomainBoundaryFileReader {
                     for (int i = DomsFrom; i < CountDoms; i++) {
 
                         DomainDefinition domain = new DomainDefinition(DomainDefinition.DomainType.SEGMENT_SET);
-                        protein.addDomain(domain);
+                        domains.add(domain);
                         domain.domainCATHCode = String.format("%s%s%d",
                                 protein.getProteinCode(), CodeChain,
                                 (i - DomsFrom + 1) % 10);
@@ -80,7 +84,7 @@ public class DomainBoundaryFileReader {
                         } catch (Exception e) {
                             System.err.print(String.format("Error: reading domain boundary file %s\n", DomBoundaryFile));
                             bufferedReader.close();
-                            return;
+                            return domains;
                         }
 
                         domain.numberOfSegments = nsegs;
@@ -95,7 +99,7 @@ public class DomainBoundaryFileReader {
                                         "Error: reading domain boundary file %s\n",
                                         DomBoundaryFile));
                                 bufferedReader.close();
-                                return;
+                                return domains;
                             }
 
                             CurrentToken = tokenizer.nextToken();
@@ -106,7 +110,7 @@ public class DomainBoundaryFileReader {
                                         "Error: reading domain boundary file %s\n",
                                         DomBoundaryFile));
                                 bufferedReader.close();
-                                return;
+                                return domains;
                             }
 
                             domain.segmentChains[0][j] = chain;
@@ -120,7 +124,7 @@ public class DomainBoundaryFileReader {
                                         "Error: reading domain boundary file %s\n",
                                         DomBoundaryFile));
                                 bufferedReader.close();
-                                return;
+                                return domains;
                             }
 
                             CurrentToken = tokenizer.nextToken();
@@ -131,7 +135,7 @@ public class DomainBoundaryFileReader {
                                         "Error: reading domain boundary file %s\n",
                                         DomBoundaryFile));
                                 bufferedReader.close();
-                                return;
+                                return domains;
                             }
                             domain.segmentChains[1][j] = chain;
                             domain.segmentIndices[1][j] = res;
@@ -143,6 +147,8 @@ public class DomainBoundaryFileReader {
             }
         }
         bufferedReader.close();
+        
+        return domains;
     }
 
 }
