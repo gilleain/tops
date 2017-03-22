@@ -34,11 +34,10 @@ public class TopsFileWriter {
 
         for (i = 0; i < cartoons.size(); i++) {
             dompt = domains.get(domainsToPlot.get(i));
-            out.print(String.format("DOMAIN_NUMBER %d %s", i, dompt.domainCATHCode));
-            for (j = 0; j < dompt.numberOfSegments; j++)
+            out.print(String.format("DOMAIN_NUMBER %d %s", i, dompt.getCode()));
+            for (j = 0; j < dompt.getNumberOfSegments(); j++)
                 out.print(
-                  String.format(" %d %d %d", 
-                          dompt.segmentStartIndex[j], dompt.segmentIndices[0][j], dompt.segmentIndices[1][j])
+                  String.format(" %d %d", dompt.getStartSegmentIndex(j), dompt.getEndSegmentIndex(j))
                 );
             out.println();
             appendLinkedList(out, cartoons.get(i));

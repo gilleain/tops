@@ -1,5 +1,8 @@
 package tops.port;
 
+import static tops.port.model.DomainDefinition.DomainType.CHAIN_SET;
+import static tops.port.model.DomainDefinition.DomainType.SEGMENT_SET;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +14,6 @@ import tops.port.model.Cartoon;
 import tops.port.model.Chain;
 import tops.port.model.DomainBreakType;
 import tops.port.model.DomainDefinition;
-import tops.port.model.DomainDefinition.DomainType;
 import tops.port.model.Hand;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
@@ -58,34 +60,19 @@ public class DomainCalculator {
         // RemoveDuplicateChains(protein); XXX what to do in this case?
 
         if (chainToPlot == '*') { // XXX used to be 'ALL'
-
-            DomainDefinition domain = new DomainDefinition(DomainType.CHAIN_SET);
-
-            domain.domainCATHCode = protein.getProteinCode();
-            domain.numberOfSegments = protein.getChains().size();
-
-            int i = 0;
+            DomainDefinition domain = new DomainDefinition(protein.getProteinCode(), CHAIN_SET);
             for (Chain chain : protein.getChains()) {
                 char chainId = chain.getName();
-                domain.segmentChains[0][i] = chainId;
-                domain.segmentChains[1][i] = chainId;
-                domain.segmentIndices[0][i] = chain.getStartIndex();
-                domain.segmentIndices[1][i] = chain.getFinishIndex();
-                i++;
+                domain.addSegment(chainId, chain.getStartIndex(), chainId, chain.getFinishIndex());
             }
             domains.add(domain);
         } else {
             for (Chain chain : protein.getChains()) {
                 char chainId = chain.getName();
                 if (!isChainRepresented(domains, chainId)) {
-                    DomainDefinition domain = new DomainDefinition(DomainType.CHAIN_SET);
-
-                    domain.domainCATHCode = protein.getProteinCode().substring(0, 4) + chainId + '0';
-                    domain.numberOfSegments = 1;
-                    domain.segmentChains[0][0] = chainId;
-                    domain.segmentChains[1][0] = chainId;
-                    domain.segmentIndices[0][0] = chain.getStartIndex();
-                    domain.segmentIndices[1][0] = chain.getFinishIndex();
+                    String code = protein.getProteinCode().substring(0, 4) + chainId + '0';
+                    DomainDefinition domain = new DomainDefinition(code, CHAIN_SET);
+                    domain.addSegment(chainId, chain.getStartIndex(), chainId, chain.getFinishIndex());
                     domains.add(domain);
                 }
             }
@@ -98,10 +85,10 @@ public class DomainCalculator {
         char dm_chain = ' ';
         int numberOfDomains = domains.size();
 
-        char[] Seg1Chains = new char[2];
-        char[] Seg2Chains = new char[2];
-        int[] Seg1Range = new int[2];
-        int[] Seg2Range = new int[2];
+        char[] seg1Chains = new char[2];
+        char[] seg2Chains = new char[2];
+        int[] seg1Range = new int[2];
+        int[] seg2Range = new int[2];
 
         DomDefError ddep = new DomDefError();
 
@@ -113,9 +100,9 @@ public class DomainCalculator {
             for (int i = 0; i < numberOfDomains; i++) {
 
                 DomainDefinition dm = domains.get(i);
-                for (int j = 0; j < dm.numberOfSegments; j++) {
+                for (int j = 0; j < dm.getNumberOfSegments(); j++) {
                     for (int k = 0; k < 2; k++) {
-                        dm_chain = dm.segmentChains[k][j];
+                        dm_chain = (k == 0)? dm.getStartSegmentChain(j) : dm.getEndSegmentChain(j);
                         found = false;
                         for (int l = 0; l < protein.getChains().size(); l++) {
                             if (dm_chain == protein.getChains().get(l).getName()) {
@@ -143,19 +130,18 @@ public class DomainCalculator {
         for (int i = 0; i < numberOfDomains; i++) {
 
             DomainDefinition dm = domains.get(i);
-            if (dm.domainType == DomainType.SEGMENT_SET) {
-
-                for (int j = 0; j < dm.numberOfSegments; j++) {
-
+            if (dm.is(SEGMENT_SET)) {
+                for (int j = 0; j < dm.getNumberOfSegments(); j++) {
                     for (int k = 0; k < 2; k++) {
-
-                        if (protein.getSequenceNumber(dm.segmentIndices[k][j], dm.segmentChains[k][j]) < 0) {
+                        int segmentIndex = (k == 0)? dm.getStartSegmentIndex(j) : dm.getEndSegmentIndex(j);
+                        char segmentChain = (k == 0)? dm.getStartSegmentChain(j) : dm.getEndSegmentChain(j);
+                        if (protein.getSequenceNumber(segmentIndex, segmentChain) < 0) {
 
                             ddep.ErrorType = ErrorType.DOMAIN_RESIDUE_ERROR;
                             System.out.println(ddep.ErrorString + 
-                                    String.format("Residue %c %d for domain definition not found in protein",
-                                    dm.segmentChains[k][j],
-                                    dm.segmentIndices[k][j]));
+                                    String.format(
+                                            "Residue %c %d for domain definition not found in protein",
+                                            segmentIndex, segmentChain));
                             return ddep;
                         }
                     }
@@ -167,31 +153,27 @@ public class DomainCalculator {
             for (i = 0; i < numberOfDomains; i++) {
 
                 DomainDefinition dm1 = domains.get(i);
-                if (dm1.domainType == DomainType.SEGMENT_SET) {
-
+                if (dm1.is(SEGMENT_SET)) {
                     for (int j = i; j < numberOfDomains; j++) {
-
                         DomainDefinition dm2 = domains.get(j);
-                        if (dm2.domainType == DomainType.SEGMENT_SET) {
-
-                            for (int l = 0; l < dm1.numberOfSegments; l++) {
-
+                        if (dm2.is(SEGMENT_SET)) {
+                            for (int l = 0; l < dm1.getNumberOfSegments(); l++) {
                                 for (int k = 0; k < 2; k++)
-                                    Seg1Chains[k] = dm1.segmentChains[k][l];
+                                    seg1Chains[k] = (k == 0)? dm1.getStartSegmentChain(l) : dm1.getEndSegmentChain(l);
                                 for (int k = 0; k < 2; k++)
-                                    Seg1Range[k] = dm1.segmentIndices[k][l];
+                                    seg1Range[k] = (k == 0)? dm1.getStartSegmentIndex(l) : dm1.getEndSegmentIndex(l);
 
-                                for (int m = 0; m < dm2.numberOfSegments; m++) {
+                                for (int m = 0; m < dm2.getNumberOfSegments(); m++) {
 
                                     for (int k = 0; k < 2; k++)
-                                        Seg2Chains[k] = dm2.segmentChains[k][m];
+                                        seg2Chains[k] = (k == 0)? dm2.getStartSegmentChain(m) : dm2.getEndSegmentChain(m);
                                     for (int k = 0; k < 2; k++)
-                                        Seg2Range[k] = dm2.segmentIndices[k][m];
+                                        seg2Range[k] = (k == 0)? dm2.getStartSegmentIndex(l) : dm2.getEndSegmentIndex(l);
 
                                     if ((dm1 == dm2) && (l == m))
                                         continue;
 
-                                    if (segmentsOverlap(Seg1Chains, Seg1Range, Seg2Chains, Seg2Range)) {
+                                    if (segmentsOverlap(seg1Chains, seg1Range, seg2Chains, seg2Range)) {
 
                                         ddep.ErrorType = ErrorType.DOMAIN_RANGE_OVERLAP_ERROR;
                                         System.out.println(ddep.ErrorString
@@ -253,11 +235,6 @@ public class DomainCalculator {
             plotFragmentInformation.setChainLim0(nf - 1, sse.getChain());
             plotFragmentInformation.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
             plotFragmentInformation.setFragDomain(nf - 1, LastDom + 1);
-            /*
-             * this will be done later in a Protein.c func. it is easier here
-             * for now
-             */
-            domains.get(LastDom).segmentStartIndex[LastSegment] = nf;
         }
     
         LastCTerm = sse;
@@ -301,7 +278,6 @@ public class DomainCalculator {
                             plotFragmentInformation.setChainLim0(nf - 1, sse.getChain());
                             plotFragmentInformation.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
                             plotFragmentInformation.setFragDomain(nf - 1, Dom + 1);
-                            domains.get(Dom).segmentStartIndex[segment] = nf;
                         }
                     }
                     LastDom = Dom;
@@ -333,10 +309,8 @@ public class DomainCalculator {
         } else {
             for (int i = 0; i < domains.size(); i++) {
                 DomainDefinition domain = domains.get(i);
-                if (ChainToPlot == 0
-                        || ChainToPlot == getChain(domain.domainCATHCode)) {
-                    if (DomainToPlot == 0 
-                            || DomainToPlot == getDomainNumber(domain.domainCATHCode)) {
+                if (ChainToPlot == 0 || ChainToPlot == getChain(domain.getCode())) {
+                    if (DomainToPlot == 0 || DomainToPlot == getDomainNumber(domain.getCode())) {
                         DomainsToPlot.add(i);
                     }
                 }
@@ -500,17 +474,17 @@ public class DomainCalculator {
             for (int i = 0; i < chain.sequenceLength(); i++) {
                 if ( chain.isExtended(i) ) {
 
-                    int Dom = residueDomain(p, i, domains);
+                    int Dom = residueDomain(chain, i, domains);
 
                     // TODO
                     BridgePartner bpl = chain.getBridgePartner(i).get(0);
                     BridgePartner bpr = chain.getBridgePartner(i).get(1);
 
-                    if ( residueDomain(p, bpl.partnerResidue, domains) != Dom || Dom<0  ) {
+                    if ( residueDomain(chain, bpl.partnerResidue, domains) != Dom || Dom<0  ) {
 //                        chain.removeLeftBridge(i);
                     }
 
-                    if ( residueDomain(p, bpr.partnerResidue, domains) != Dom||Dom<0 ) {
+                    if ( residueDomain(chain, bpr.partnerResidue, domains) != Dom||Dom<0 ) {
 //                        chain.removeRightBridge(i);
                     }
                 }
@@ -528,13 +502,13 @@ public class DomainCalculator {
             if (chain.isSSelement(i) ) {
                 int start = i;
                 SSEType thissstype = chain.getSSEType(i);
-                int Dom = residueDomain(protein, i, domains);
+                int Dom = residueDomain(chain, i, domains);
                 int DBreak = -1;
                 int LastDom = -1;
                 while (chain.isSSelement(i) && chain.getSSEType(i) == thissstype ) {
                     i++;
                     LastDom = Dom;
-                    Dom = residueDomain(protein, i, domains);
+                    Dom = residueDomain(chain, i, domains);
                     if ( Dom != LastDom ) DBreak = i;
                 }
 
@@ -552,8 +526,8 @@ public class DomainCalculator {
         }
     }
 
-    private int residueDomain(Protein protein, int Residue, List<DomainDefinition> domains) {
-        for (Chain chain : protein.getChains()) {
+    private int residueDomain(Chain chain, int Residue, List<DomainDefinition> domains) {
+//        for (Chain chain : protein.getChains()) {
             if ((Residue >= chain.sequenceLength()) || (Residue < 0)) {
                 return -1;
             }
@@ -566,7 +540,7 @@ public class DomainCalculator {
                     return i;
                 }
             }
-        }
+//        }
 
         return -1;
     }
@@ -574,18 +548,22 @@ public class DomainCalculator {
     private boolean resIsInDomain( int PDBRes, char PDBChain, DomainDefinition Domain) {
         if ( Domain == null) return false;
 
-        for ( int i=0 ; i<Domain.numberOfSegments ; i++) {
+        for (int i = 0; i < Domain.getNumberOfSegments(); i++) {
 
-            if ( Domain.domainType == DomainType.SEGMENT_SET ) {
-                if ( (PDBChain==Domain.segmentChains[0][i])&&(PDBChain==Domain.segmentChains[1][i]) ) {
-                    if ( (PDBRes>=(Domain.segmentIndices[0][i]))&&(PDBRes<=(Domain.segmentIndices[1][i])) ) return true;
-                } else if ( PDBChain==Domain.segmentChains[0][i] ) {
-                    if ( PDBRes>=(Domain.segmentIndices[0][i]) ) return true;
-                } else if ( PDBChain==Domain.segmentChains[1][i] ) {
-                    if ( PDBRes<=(Domain.segmentIndices[1][i]) ) return true;
+            if (Domain.is(SEGMENT_SET)) {
+                if (PDBChain == Domain.getStartSegmentChain(i) && PDBChain == Domain.getEndSegmentChain(i)) {
+                    if (PDBRes >= Domain.getStartSegmentIndex(i) && PDBRes <= Domain.getEndSegmentIndex(i))
+                        return true;
+                } else if (PDBChain == Domain.getStartSegmentChain(i)) {
+                    if (PDBRes >= Domain.getStartSegmentIndex(i))
+                        return true;
+                } else if (PDBChain == Domain.getEndSegmentChain(i)) {
+                    if (PDBRes <= Domain.getEndSegmentIndex(i))
+                        return true;
                 }
-            } else if ( Domain.domainType == DomainType.CHAIN_SET ) {
-                if ( (PDBChain==Domain.segmentChains[0][i])||(PDBChain==Domain.segmentChains[1][i]) ) return true;
+            } else if (Domain.is(CHAIN_SET)) {
+                if (PDBChain == Domain.getStartSegmentChain(i)|| PDBChain == Domain.getEndSegmentChain(i))
+                    return true;
             }
         }
         return false;
@@ -640,7 +618,7 @@ public class DomainCalculator {
 
     private boolean isChainRepresented(List<DomainDefinition> domains, char chain) {
         for (int i = 0; i < domains.size(); i++) {
-            if (chain == domains.get(i).domainCATHCode.charAt(4)) {
+            if (chain == domains.get(i).getCode().charAt(4)) {
                 return true;
             }
         }
@@ -718,27 +696,24 @@ public class DomainCalculator {
         int PDBStart = p.sseData.PDBStartResidue;
         int PDBFinish = p.sseData.PDBFinishResidue;
 
-        for (i = 0; i < Domain.numberOfSegments; i++) {
+        for (i = 0; i < Domain.getNumberOfSegments(); i++) {
 
-            if (Domain.domainType == DomainDefinition.DomainType.SEGMENT_SET) {
-                if ((chain == Domain.segmentChains[0][i])
-                        && (chain == Domain.segmentChains[1][i])) {
-                    if ((PDBStart >= (Domain.segmentIndices[0][i]))
-                            && (PDBFinish <= (Domain.segmentIndices[1][i]))) {
+            if (Domain.is(SEGMENT_SET)) {
+                if (chain == Domain.getStartSegmentChain(i) && chain == Domain.getEndSegmentChain(i)) {
+                    if (PDBStart >= Domain.getStartSegmentIndex(i) && PDBFinish <= Domain.getEndSegmentIndex(i)) {
                         return i;
                     }
-                } else if (chain == Domain.segmentChains[0][i]) {
-                    if (PDBStart >= (Domain.segmentIndices[0][i])) {
+                } else if (chain == Domain.getStartSegmentChain(i)) {
+                    if (PDBStart >= Domain.getStartSegmentIndex(i)) {
                         return i;
                     }
-                } else if (chain == Domain.segmentChains[1][i]) {
-                    if (PDBFinish <= (Domain.segmentIndices[1][i])) {
+                } else if (chain == Domain.getEndSegmentChain(i)) {
+                    if (PDBFinish <= Domain.getEndSegmentIndex(i)) {
                         return i;
                     }
                 }
-            } else
-                if (Domain.domainType == DomainDefinition.DomainType.CHAIN_SET) {
-                if (chain == Domain.segmentChains[0][i] || chain == Domain.segmentChains[1][i]) {
+            } else if (Domain.is(DomainDefinition.DomainType.CHAIN_SET)) {
+                if (chain == Domain.getStartSegmentChain(i) || chain == Domain.getEndSegmentChain(i)) {
                     return i;
                 }
             }

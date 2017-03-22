@@ -1,5 +1,7 @@
 package tops.port;
 
+import static tops.port.model.DomainDefinition.DomainType.SEGMENT_SET;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,25 +11,23 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import tops.port.model.DomainDefinition;
+import tops.port.model.DomainDefinition.DomainType;
 import tops.port.model.Protein;
 
 public class DomainBoundaryFileReader {
 
-    public List<DomainDefinition> readDomBoundaryFile(String DomBoundaryFile, Protein protein) throws IOException {
+    public List<DomainDefinition> readDomBoundaryFile(String domBoundaryFile, Protein protein) throws IOException {
 
         List<DomainDefinition> domains = new ArrayList<DomainDefinition>();
         
         int nsegs, res;
-        int NDoms, CountDoms, DomsFrom;
-        char CodeChain, chain;
+        char codeChain, chain;
 
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(DomBoundaryFile));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(domBoundaryFile));
 
-        String CurrentToken;
-
-        CountDoms = 0;
-        NDoms = 0;
-        DomsFrom = 0;
+        int countDoms = 0;
+        int nDoms = 0;
+        int domsFrom = 0;
 
         String line = bufferedReader.readLine();
         while (line != null) {
@@ -37,113 +37,54 @@ public class DomainBoundaryFileReader {
             }
             StringTokenizer tokenizer = new StringTokenizer(line);
             try {
-                CurrentToken = tokenizer.nextToken();
+                String currentToken = tokenizer.nextToken();
 
-                if (CurrentToken.length() < 6) {
-                    System.err.print(String.format(
-                            "Error: reading domain boundary file %s\n",
-                            DomBoundaryFile));
+                if (currentToken.length() < 6) {
+                    System.err.print(String.format("Error: reading domain boundary file %s\n", domBoundaryFile));
                     bufferedReader.close();
                     return domains;
                 }
 
-                if (CurrentToken.substring(0, 4).equals(protein.getProteinCode())) {
+                if (currentToken.substring(0, 4).equals(protein.getProteinCode())) {
 
-                    CodeChain = CurrentToken.charAt(4);
+                    codeChain = currentToken.charAt(4);
 
                     // read number of domains listed on line /
-                    CurrentToken = tokenizer.nextToken();
-                    try {
-                        NDoms = Integer.parseInt(CurrentToken);
-                    } catch (Exception e) {
-                        System.err.print(String.format("Error: reading domain boundary file %s\n", DomBoundaryFile));
-                        bufferedReader.close();
-                        return domains;
-                    }
+                    currentToken = tokenizer.nextToken();
+                    nDoms = Integer.parseInt(currentToken);
 
-                    DomsFrom = CountDoms;
-                    CountDoms += NDoms;
-
-                    protein.numberOfDomains = CountDoms;
+                    domsFrom = countDoms;
+                    countDoms += nDoms;
 
                     // read number of fragments listed on line /
-                    CurrentToken = tokenizer.nextToken();
+                    currentToken = tokenizer.nextToken();
 
                     // read all the domains /
-                    for (int i = DomsFrom; i < CountDoms; i++) {
+                    String proteinCode = protein.getProteinCode();
+                    for (int i = domsFrom; i < countDoms; i++) {
+                        String code = String.format("%s%s%d", proteinCode, codeChain, (i - domsFrom + 1) % 10);
+                        DomainDefinition domain = new DomainDefinition(code, SEGMENT_SET);
 
-                        DomainDefinition domain = new DomainDefinition(DomainDefinition.DomainType.SEGMENT_SET);
-                        domains.add(domain);
-                        domain.domainCATHCode = String.format("%s%s%d",
-                                protein.getProteinCode(), CodeChain,
-                                (i - DomsFrom + 1) % 10);
-
-                        CurrentToken = tokenizer.nextToken();
-                        try {
-                            nsegs = Integer.parseInt(CurrentToken);
-                        } catch (Exception e) {
-                            System.err.print(String.format("Error: reading domain boundary file %s\n", DomBoundaryFile));
-                            bufferedReader.close();
-                            return domains;
-                        }
-
-                        domain.numberOfSegments = nsegs;
+                        currentToken = tokenizer.nextToken();
+                        nsegs = Integer.parseInt(currentToken);
 
                         for (int j = 0; j < nsegs; j++) {
-
-                            CurrentToken = tokenizer.nextToken();
-                            try {
-                                chain = CurrentToken.charAt(0);
-                            } catch (Exception e) {
-                                System.err.print(String.format(
-                                        "Error: reading domain boundary file %s\n",
-                                        DomBoundaryFile));
-                                bufferedReader.close();
-                                return domains;
-                            }
-
-                            CurrentToken = tokenizer.nextToken();
-                            try {
-                                res = Integer.parseInt(CurrentToken);
-                            } catch (Exception e) {
-                                System.err.print(String.format(
-                                        "Error: reading domain boundary file %s\n",
-                                        DomBoundaryFile));
-                                bufferedReader.close();
-                                return domains;
-                            }
-
-                            domain.segmentChains[0][j] = chain;
-                            domain.segmentIndices[0][j] = res;
-
-                            CurrentToken = tokenizer.nextToken();
-                            try {
-                                chain = CurrentToken.charAt(0);
-                            } catch (Exception e) {
-                                System.err.print(String.format(
-                                        "Error: reading domain boundary file %s\n",
-                                        DomBoundaryFile));
-                                bufferedReader.close();
-                                return domains;
-                            }
-
-                            CurrentToken = tokenizer.nextToken();
-                            try {
-                                res = Integer.parseInt(CurrentToken);
-                            } catch (Exception e) {
-                                System.err.print(String.format(
-                                        "Error: reading domain boundary file %s\n",
-                                        DomBoundaryFile));
-                                bufferedReader.close();
-                                return domains;
-                            }
-                            domain.segmentChains[1][j] = chain;
-                            domain.segmentIndices[1][j] = res;
+                            char chain1 = tokenizer.nextToken().charAt(0);
+                            int res1 = Integer.parseInt(tokenizer.nextToken());
+                            char chain2 = tokenizer.nextToken().charAt(0);
+                            int res2 = Integer.parseInt(tokenizer.nextToken());
+                            
+                            domain.addSegment(chain1, res1, chain2, res2);
                         }
+                        domains.add(domain);
                     }
                 }
-            } catch (NoSuchElementException n) {
+            } catch (NoSuchElementException nse) {
                 continue;
+            } catch (NumberFormatException nfe) {
+                System.err.print(String.format("Error: reading domain boundary file %s\n", domBoundaryFile));
+                bufferedReader.close();
+                return domains;
             }
         }
         bufferedReader.close();
