@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.commons.cli.ParseException;
 
 import tops.cli.Command;
+import tops.dw.io.TopsFileReader;
 import tops.dw.protein.Protein;
 import tops.translation.CompressedFileHandler;
 import tops.translation.PDBToCartoon;
@@ -106,7 +107,8 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon, Command {
 	public Protein convertToCartoon(
 			String pdbFilename, String fileType, String fourLetterCode) throws IOException {
     	File topsFile = toTopsFile(pdbFilename, fileType, fourLetterCode);
-		return new tops.dw.protein.Protein(topsFile);
+    	TopsFileReader topsFileReader = new TopsFileReader();
+		return topsFileReader.readTopsFile(topsFile);
 	}
 
 	public void convertAndPrint(String pdbFilename) throws IOException {

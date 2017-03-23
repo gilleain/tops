@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import tops.dw.io.TopsFileReader;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
@@ -27,7 +28,8 @@ public class BatchAnnotater {
 	        int h = 500;
 	        int b = 20;
 			
-			Protein p = new Protein(inFile);
+	        TopsFileReader topsFileReader = new TopsFileReader();
+			Protein p = topsFileReader.readTopsFile(inFile);
 			Vector<DomainDefinition> names = p.getDomainDefs();
 			for (int i = 0; i < p.numberDomains(); i++) {
 				SecStrucElement domain = p.getDomain(i);

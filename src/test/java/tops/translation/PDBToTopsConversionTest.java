@@ -7,6 +7,7 @@ import java.net.URL;
 
 import org.junit.Test;
 
+import tops.dw.io.TopsFileWriter;
 import tops.translation.model.Protein;
 
 public class PDBToTopsConversionTest {
@@ -18,9 +19,13 @@ public class PDBToTopsConversionTest {
 		String id = file.getName().substring(0, file.getName().indexOf("."));
 		protein.setID(id);
 		tops.dw.protein.Protein oldStyleProtein = ProteinConverter.convert(protein);
+		
 		File outputFile = new File(outputDir, id + ".tops");
 		FileOutputStream outputStream = new FileOutputStream(outputFile);
-		oldStyleProtein.writeTopsFile(outputStream);
+		
+		TopsFileWriter topsFileWriter = new TopsFileWriter();
+		topsFileWriter.writeTopsFile(oldStyleProtein, System.out);
+		
 		outputStream.flush();
 		outputStream.close();
 	}

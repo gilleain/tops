@@ -2,6 +2,7 @@ package tops.port;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -10,6 +11,7 @@ import java.util.Vector;
 
 import org.junit.Test;
 
+import tops.dw.io.TopsFileReader;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
@@ -67,14 +69,18 @@ public class TestOptimise {
         TopsFileWriter fileWriter = new TopsFileWriter();
         fileWriter.writeTOPSFile(filename, protein);
         
-        return new tops.dw.protein.Protein("tmp.tops");
+        TopsFileReader topsFileReader = new TopsFileReader();
+        return topsFileReader.readTopsFile(new File("tmp.tops"));
     }
     
     private tops.dw.protein.Protein convertInMemory(String name, Protein protein) throws TopsFileFormatException, IOException {
-        TopsFileWriter fileWriter = new TopsFileWriter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        TopsFileWriter fileWriter = new TopsFileWriter();
         fileWriter.writeTOPSFile(new PrintStream(baos), protein);
-        return new tops.dw.protein.Protein(new BufferedReader(new StringReader(baos.toString())));
+        
+        TopsFileReader topsFileReader = new TopsFileReader();
+        return topsFileReader.readTopsFile(new BufferedReader(new StringReader(baos.toString())));
     }
 
 }

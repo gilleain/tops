@@ -31,6 +31,8 @@ import java.util.Properties;
 import java.util.Vector;
 
 import tops.dw.app.ImagePrinter;
+import tops.dw.io.TopsFileReader;
+import tops.dw.io.TopsFileWriter;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.ProteinChoice;
@@ -483,8 +485,10 @@ public class TopsEditor implements ActionListener {
                         dc = (TopsDrawCanvas) dcenum.nextElement();
                         dc.SetCCodeCoordinates();
                     }
-                    if (wr_prot != null)
-                        wr_prot.writeTopsFile(fos);
+                    if (wr_prot != null) {
+                        TopsFileWriter topsFileWriter = new TopsFileWriter();
+                        topsFileWriter.writeTopsFile(wr_prot, fos);
+                    }
                     dcenum = dcs.elements();
                     while (dcenum.hasMoreElements()) {
                         dc = (TopsDrawCanvas) dcenum.nextElement();
@@ -929,9 +933,9 @@ public class TopsEditor implements ActionListener {
     private Protein readTopsFile(File f) {
 
         Protein p = null;
-
+        TopsFileReader topsFileReader = new TopsFileReader();
         try {
-            p = new Protein(f);
+            p = topsFileReader.readTopsFile(f);
         } catch (FileNotFoundException e) {
             this.error("Unable to find file " + f);
             return null;

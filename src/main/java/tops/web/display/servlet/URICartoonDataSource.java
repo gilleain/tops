@@ -9,6 +9,7 @@ import java.util.Vector;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
+import tops.dw.io.TopsFileReader;
 import tops.dw.protein.CATHcode;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
@@ -75,7 +76,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 	}
 
 	private Protein getProtein(String domid, File f) throws IOException {
-		Protein p = new Protein(f);
+		Protein p = new TopsFileReader().readTopsFile(f);
 //		System.out.println("Got protein " + p.getName());
 
 		Vector<SecStrucElement> doms = p.getLinkedLists();

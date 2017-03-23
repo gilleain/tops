@@ -13,6 +13,7 @@ import org.apache.commons.cli.ParseException;
 
 import tops.cli.BaseCLIHandler;
 import tops.cli.Command;
+import tops.dw.io.TopsFileReader;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
@@ -46,7 +47,8 @@ public class CartoonCommand implements Command {
         CartoonDrawer drawer = new CartoonDrawer();
         
         try {
-            Protein protein = new Protein(new File(handler.topsFilepath));
+            TopsFileReader topsFileReader = new TopsFileReader();
+            Protein protein = topsFileReader.readTopsFile(new File(handler.topsFilepath));
             Vector<DomainDefinition> dd = protein.getDomainDefs();
             Vector<SecStrucElement> ll = protein.getLinkedLists();
 

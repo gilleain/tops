@@ -1,21 +1,18 @@
 package tops.dw;
 
 import java.applet.Applet;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import tops.dw.editor.TopsEditor;
+import tops.dw.io.TopsFileReader;
 import tops.dw.protein.Protein;
 
 public class LaunchButton extends Applet implements MouseListener {
@@ -120,7 +117,8 @@ public class LaunchButton extends Applet implements MouseListener {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     servlet.openStream()));
-            p = new Protein(br);
+            TopsFileReader topsFileReader = new TopsFileReader();
+            p = topsFileReader.readTopsFile(br);
         } catch (IOException ioe) {
             System.out.println("IOE : " + ioe);
         }

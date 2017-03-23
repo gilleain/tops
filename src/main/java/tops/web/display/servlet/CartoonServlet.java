@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import tops.dw.io.TopsFileWriter;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.view.cartoon.CartoonDrawer;
@@ -53,7 +54,8 @@ public class CartoonServlet extends HttpServlet {
         if (params.get("fileType").equals("tops")) { // TOPS! file format (basically, old-style tops file!)
             response.setContentType("text/plain");
             ServletOutputStream out = response.getOutputStream();
-            protein.writeTopsFile(out);
+            TopsFileWriter topsFileWriter = new TopsFileWriter();
+            topsFileWriter.writeTopsFile(protein, out);
             return;
         }
 

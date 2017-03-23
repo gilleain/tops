@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import tops.dw.io.TopsFileReader;
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
@@ -62,6 +63,7 @@ public class FindFilesServlet extends HttpServlet {
         } 
 
         try {
+            TopsFileReader topsFileReader = new TopsFileReader();
 	        if ((cid != null) && (cid.equals(""))) { // no chain, search for chain files
 	        	// get the file names from the directory
 	        	String[] names = this.tfm.getNames(cla, pid, cid);
@@ -69,7 +71,7 @@ public class FindFilesServlet extends HttpServlet {
 	        	// for each file name, read in the file, and add to a single protein object
 	        	Protein mergedProtein = new Protein();
 	        	for (String name : names) {
-	        		Protein chain = new Protein(this.tfm.getStreamFromDir(cla, name));
+	        		Protein chain = topsFileReader.readTopsFile(this.tfm.getStreamFromDir(cla, name));
 	        		for (DomainDefinition dd : chain.getDomainDefs()) {
 	        			SecStrucElement root = chain.getDomain(chain.getDomainIndex(dd.getCATHcode()));
 	        			mergedProtein.addTopsLinkedList(root, dd);
@@ -79,7 +81,7 @@ public class FindFilesServlet extends HttpServlet {
 
 	        } else if ((cid != null && !cid.equals("")) && (did != null && !did.equals(""))) { // all parameters supplied
 	        	String topsfile = pid + cid + ".tops";	// Uhm, then what happens here if either are blank??
-	        	Protein protein = new Protein(this.tfm.getStreamFromDir(cla, topsfile));
+	        	Protein protein = topsFileReader.readTopsFile(this.tfm.getStreamFromDir(cla, topsfile));
 	        	handle(protein, action, request, response);
 	        } else {
 	        	// TODO - no chain or domain?

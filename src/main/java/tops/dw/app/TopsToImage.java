@@ -1,14 +1,24 @@
 package tops.dw.app;
 
-import java.io.*;
-import java.util.*;
-import java.awt.image.*;
-import java.awt.*;
+import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Panel;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
 import tops.dw.editor.TopsDrawCanvas;
-import tops.dw.protein.*;
+import tops.dw.io.TopsFileReader;
+import tops.dw.protein.DomainDefinition;
+import tops.dw.protein.Protein;
+import tops.dw.protein.SecStrucElement;
+import tops.dw.protein.TopsFileFormatException;
 
 public class TopsToImage {
 
@@ -37,7 +47,7 @@ public class TopsToImage {
         Protein p;
 
         try {
-            p = new Protein(inFile);
+            p = new TopsFileReader().readTopsFile(inFile);
         } catch (FileNotFoundException e1) {
             System.out
                     .println("Error: file " + inFile.toString() + "not found");

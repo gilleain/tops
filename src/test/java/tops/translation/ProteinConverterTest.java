@@ -2,6 +2,7 @@ package tops.translation;
 
 import org.junit.Test;
 
+import tops.dw.io.TopsFileWriter;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
 import tops.translation.model.Helix;
@@ -46,23 +47,26 @@ public class ProteinConverterTest {
 	
 	@Test
 	public void singleSSE() {
+	    TopsFileWriter topsFileWriter = new TopsFileWriter();
 		tops.translation.model.Protein p = makeNewProtein("N", "E", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		q.writeTopsFile(System.out);
+		topsFileWriter.writeTopsFile(q, System.out);
 	}
 	
 	@Test
 	public void twoSSE() {
+	    TopsFileWriter topsFileWriter = new TopsFileWriter();
 		tops.translation.model.Protein p = makeNewProtein("N", "E", "H", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		q.writeTopsFile(System.out);
+		topsFileWriter.writeTopsFile(q, System.out);
 	}
 	
 	@Test
 	public void threeSSE() {
+	    TopsFileWriter topsFileWriter = new TopsFileWriter();
 		tops.translation.model.Protein p = makeNewProtein("N", "E", "H", "e", "C");
 		tops.dw.protein.Protein q = ProteinConverter.convert(p);
-		q.writeTopsFile(System.out);
+		topsFileWriter.writeTopsFile(q, System.out);
 	}
 
 }
