@@ -13,8 +13,6 @@ public class Protein {
 
     private Vector<DomainDefinition> domainDefs;
 
-    public int NChains;
-
     public Protein() {
         this.domainDefs = new Vector<DomainDefinition>();
         this.topsLinkedLists = new Vector<SecStrucElement>();
@@ -83,11 +81,11 @@ public class Protein {
         int i;
         int ind = -1;
         Enumeration<DomainDefinition> e = this.domainDefs.elements();
-        CATHcode CompareCathCode;
+        CATHcode compareCathCode;
 
         for (i = 0; e.hasMoreElements(); i++) {
-            CompareCathCode = ((DomainDefinition) e.nextElement()).getCATHcode();
-            if (cc.equals(CompareCathCode)) {
+            compareCathCode = e.nextElement().getCATHcode();
+            if (cc.equals(compareCathCode)) {
                 ind = i;
                 break;
             }
@@ -99,9 +97,9 @@ public class Protein {
     
     public SecStrucElement getRootSSE(String domainName) {
     	for (int i = 0; i < this.domainDefs.size(); i++) {
-    		CATHcode code = ((DomainDefinition) this.domainDefs.get(i)).getCATHcode();
+    		CATHcode code = this.domainDefs.get(i).getCATHcode();
     		if (code.toString().equals(domainName)) {
-    			return (SecStrucElement) this.topsLinkedLists.get(i);
+    			return this.topsLinkedLists.get(i);
     		}
     	}
     	return null;
@@ -120,7 +118,7 @@ public class Protein {
     }
     
     public SecStrucElement getDomain(int i) {
-    	return (SecStrucElement) this.topsLinkedLists.get(i);
+    	return this.topsLinkedLists.get(i);
     }
 
     @Override
@@ -145,20 +143,18 @@ public class Protein {
             int i;
             for (i = 0; ddefs.hasMoreElements(); i++) {
 
-                DomainDefinition dd = (DomainDefinition) ddefs.nextElement();
-                pw.print("DOMAIN_NUMBER " + i + " " + dd.CathCode);
+                DomainDefinition dd = ddefs.nextElement();
+                pw.print("DOMAIN_NUMBER " + i + " " + dd.getCATHcode());
                 Enumeration<IntegerInterval> sfs = dd.getSequenceFragments();
-                Enumeration<Integer> fis = dd.getFragmentIndices();
                 while (sfs.hasMoreElements()) {
-                    int fi = fis.nextElement();
                     IntegerInterval sf = sfs.nextElement();
-                    pw.print(" " + fi + " " + sf.getLower() + " " + sf.getUpper());
+                    // XXX currently printing a 0 fragment index
+                    pw.print(" " + 0 + " " + sf.getLower() + " " + sf.getUpper());
                 }
                 pw.print("\n\n");
 
                 SecStrucElement s;
-                for (s = (SecStrucElement) lls.nextElement(); s != null; s = s
-                        .GetTo()) {
+                for (s = lls.nextElement(); s != null; s = s.GetTo()) {
                     s.PrintAsText(pw);
                     pw.print("\n");
                 }
@@ -247,7 +243,8 @@ public class Protein {
                                 throw new TopsFileFormatException();
                             }
                         }
-                        ddef.addSequenceFragment(new IntegerInterval(tmp_int[1], tmp_int[2]), tmp_int[0]);
+                        // XXX currently throwing away the seq frag start
+                        ddef.addSequenceFragment(new IntegerInterval(tmp_int[1], tmp_int[2]));
                     }
 
                     countss = 0;

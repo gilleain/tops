@@ -25,7 +25,7 @@ public class ProteinTest {
 		protein.setName("2BOP");
 		CATHcode c = new CATHcode("2bopA0");
 		DomainDefinition dd = new DomainDefinition(c);
-		dd.addSequenceFragment(new IntegerInterval(10, 100), 5);
+		dd.addSequenceFragment(new IntegerInterval(10, 100));
 		SecStrucElement root = make("A", Color.BLACK, "UP", "N1", 10, 11, 1, "N");
 		SecStrucElement e1 = make("A", Color.RED, "UP", "E1", 12, 16, 2, "E");
 		SecStrucElement h2 = make("A", Color.BLACK, "DOWN", "H2", 17, 25, 3, "H");
@@ -50,7 +50,7 @@ public class ProteinTest {
 		protein.setName("2BOP");
 		CATHcode c = new CATHcode("2bopA0");
 		DomainDefinition dd = new DomainDefinition(c);
-		dd.addSequenceFragment(new IntegerInterval(10, 100), 5);
+		dd.addSequenceFragment(new IntegerInterval(10, 100));
 		SecStrucElement root = make("A", Color.BLACK, "UP", "N1", 10, 11, 1, "N");
 		SecStrucElement e1 = make("A", Color.RED, "UP", "E1", 12, 16, 2, "E");
 		SecStrucElement h2 = make("A", Color.BLACK, "DOWN", "H2", 17, 25, 3, "H");
@@ -69,7 +69,7 @@ public class ProteinTest {
 		
 		CATHcode c2 = new CATHcode("2bopB0");
 		DomainDefinition dd2 = new DomainDefinition(c2);
-		dd2.addSequenceFragment(new IntegerInterval(110, 200), 5);
+		dd2.addSequenceFragment(new IntegerInterval(110, 200));
 		SecStrucElement root2 = make("B", Color.BLACK, "UP", "N5", 10, 11, 1, "N");
 		SecStrucElement e6 = make("B", Color.RED, "UP", "E6", 12, 16, 2, "E");
 		SecStrucElement h7 = make("B", Color.BLACK, "DOWN", "H7", 17, 25, 3, "H");

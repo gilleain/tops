@@ -143,20 +143,16 @@ class DomainInfoCommand implements ActionListener {
             ta.append("\n");
 
             Enumeration<IntegerInterval> sfrags = this.domain.getSequenceFragments();
-            Enumeration<Integer> fragis = this.domain.getFragmentIndices();
 
-            int index;
             IntegerInterval interval;
             String StartLab, EndLab, StartRes, EndRes;
             String s;
             char chain = this.domain.getChain();
             ta.append("Fragment     Start        Finish\n\n");
+            
+            int index = 0; // XXX generating fragment index here
             while (sfrags.hasMoreElements()) {
-
-                index = 0;
-                if ((fragis != null) && fragis.hasMoreElements()) {
-                    index = ((Integer) fragis.nextElement()).intValue();
-                }
+                
                 StartLab = "N" + index;
                 EndLab = "C" + (index + 1);
 
@@ -172,7 +168,7 @@ class DomainInfoCommand implements ActionListener {
                 s = this.SetOutputString(index, StartLab, StartRes, EndLab, EndRes);
                 ta.append(s);
                 ta.append("\n");
-
+                index++;
             }
             this.InfoFrame.add("Center", ta);
 

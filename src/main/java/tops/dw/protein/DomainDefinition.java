@@ -10,58 +10,46 @@ import java.util.*;
  */
 public class DomainDefinition {
 
-    CATHcode CathCode = new CATHcode("1xxx00");
+    private CATHcode cathCode = new CATHcode("1xxx00");
 
-    Vector<IntegerInterval> SequenceFragments = new Vector<IntegerInterval>();
+    private Vector<IntegerInterval> sequenceFragments = new Vector<IntegerInterval>();
 
-    Vector<Integer> FragmentIndices = new Vector<Integer>();
-
-    /* START constructors */
     public DomainDefinition(CATHcode c) {
-        this.CathCode = c;
+        this.cathCode = c;
     }
 
     public DomainDefinition(char chain) {
-        this.CathCode = new CATHcode("1xxx" + chain + "0");
+        this.cathCode = new CATHcode("1xxx" + chain + "0");
     }
-
-    /* END constructors */
-
-    /* START get/set/add methods */
 
     public CATHcode getCATHcode() {
-        return this.CathCode;
+        return this.cathCode;
     }
 
-    public void addSequenceFragment(IntegerInterval Frag, int StartIndex) {
-        this.SequenceFragments.addElement(Frag);
-        this.FragmentIndices.addElement(new Integer(StartIndex));
+    public void addSequenceFragment(IntegerInterval frag) {
+        this.sequenceFragments.addElement(frag);
     }
 
     public Enumeration<IntegerInterval> getSequenceFragments() {
-        return this.SequenceFragments.elements();
-    }
-
-    public Enumeration<Integer> getFragmentIndices() {
-        return this.FragmentIndices.elements();
+        return this.sequenceFragments.elements();
     }
 
     public char getChain() {
         char c = '\0';
-        if (this.CathCode != null)
-            c = this.CathCode.getChain();
+        if (this.cathCode != null)
+            c = this.cathCode.getChain();
         return c;
     }
     
     public int getDomainID() {
-        return this.CathCode.getDomain();
+        return this.cathCode.getDomain();
     }
 
     @Override
     public String toString() {
         String s = null;
-        if (this.CathCode != null)
-            s = this.CathCode.toString();
+        if (this.cathCode != null)
+            s = this.cathCode.toString();
         return s;
     }
 
