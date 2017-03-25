@@ -19,6 +19,7 @@ import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
 import tops.port.model.SSE.SSEType;
+import tops.port.model.Segment;
 
 /**
  * Handle domain information in proteins.
@@ -82,44 +83,19 @@ public class DomainCalculator {
     
     public DomDefError checkDomainDefs(List<DomainDefinition> domains, Protein protein) {
 
-        char dm_chain = ' ';
-        int numberOfDomains = domains.size();
-
-        char[] seg1Chains = new char[2];
-        char[] seg2Chains = new char[2];
-        int[] seg1Range = new int[2];
-        int[] seg2Range = new int[2];
-
         DomDefError ddep = new DomDefError();
 
         ddep.ErrorType = ErrorType.NO_DOMAIN_ERRORS;
-        boolean found = false;
-        if (numberOfDomains > 0) {
-
-            /* check each domain in turn for chains not in protein */
-            for (int i = 0; i < numberOfDomains; i++) {
-
-                DomainDefinition dm = domains.get(i);
-                for (int j = 0; j < dm.getNumberOfSegments(); j++) {
-                    for (int k = 0; k < 2; k++) {
-                        dm_chain = (k == 0)? dm.getStartSegmentChain(j) : dm.getEndSegmentChain(j);
-                        found = false;
-                        for (int l = 0; l < protein.getChains().size(); l++) {
-                            if (dm_chain == protein.getChains().get(l).getName()) {
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (!found) {
-                    ddep.ErrorType = ErrorType.DOMAIN_CHAIN_ERROR;
-                    System.out.println(ddep.ErrorString + String.format(
-                            "Chain %c for domain definition not found in protein",
-                            dm_chain));
-                    return ddep;
-                }
+        
+        int numberOfDomains = domains.size();
+      
+        /* check each domain in turn for chains not in protein */
+        for (DomainDefinition dm : domains) {
+            if (!dm.hasChain(protein.getChains())) {
+                ddep.ErrorType = ErrorType.DOMAIN_CHAIN_ERROR;
+                System.out.println(ddep.ErrorString + String.format(
+                        "Chain not found for domain definition %s ", dm));
+                return ddep;
             }
         }
 
@@ -128,58 +104,28 @@ public class DomainCalculator {
          * protein
          */
         for (int i = 0; i < numberOfDomains; i++) {
-
             DomainDefinition dm = domains.get(i);
             if (dm.is(SEGMENT_SET)) {
-                for (int j = 0; j < dm.getNumberOfSegments(); j++) {
-                    for (int k = 0; k < 2; k++) {
-                        int segmentIndex = (k == 0)? dm.getStartSegmentIndex(j) : dm.getEndSegmentIndex(j);
-                        char segmentChain = (k == 0)? dm.getStartSegmentChain(j) : dm.getEndSegmentChain(j);
-                        if (protein.getSequenceNumber(segmentIndex, segmentChain) < 0) {
-
-                            ddep.ErrorType = ErrorType.DOMAIN_RESIDUE_ERROR;
-                            System.out.println(ddep.ErrorString + 
-                                    String.format(
-                                            "Residue %c %d for domain definition not found in protein",
-                                            segmentIndex, segmentChain));
-                            return ddep;
-                        }
-                    }
+                if (!dm.hasResidues(protein, ddep)) {
+                    return ddep;
                 }
             }
+        }
 
-            /* cross check segments for overlaps */
-
-            for (i = 0; i < numberOfDomains; i++) {
-
-                DomainDefinition dm1 = domains.get(i);
-                if (dm1.is(SEGMENT_SET)) {
-                    for (int j = i; j < numberOfDomains; j++) {
-                        DomainDefinition dm2 = domains.get(j);
-                        if (dm2.is(SEGMENT_SET)) {
-                            for (int l = 0; l < dm1.getNumberOfSegments(); l++) {
-                                for (int k = 0; k < 2; k++)
-                                    seg1Chains[k] = (k == 0)? dm1.getStartSegmentChain(l) : dm1.getEndSegmentChain(l);
-                                for (int k = 0; k < 2; k++)
-                                    seg1Range[k] = (k == 0)? dm1.getStartSegmentIndex(l) : dm1.getEndSegmentIndex(l);
-
-                                for (int m = 0; m < dm2.getNumberOfSegments(); m++) {
-
-                                    for (int k = 0; k < 2; k++)
-                                        seg2Chains[k] = (k == 0)? dm2.getStartSegmentChain(m) : dm2.getEndSegmentChain(m);
-                                    for (int k = 0; k < 2; k++)
-                                        seg2Range[k] = (k == 0)? dm2.getStartSegmentIndex(l) : dm2.getEndSegmentIndex(l);
-
-                                    if ((dm1 == dm2) && (l == m))
-                                        continue;
-
-                                    if (segmentsOverlap(seg1Chains, seg1Range, seg2Chains, seg2Range)) {
-
-                                        ddep.ErrorType = ErrorType.DOMAIN_RANGE_OVERLAP_ERROR;
-                                        System.out.println(ddep.ErrorString
-                                                + " Overlaps were found in residue ranges specifying domains");
-                                        return ddep;
-                                    }
+        /* cross check segments for overlaps */
+        for (int i = 0; i < numberOfDomains; i++) {
+            DomainDefinition dm1 = domains.get(i);
+            if (dm1.is(SEGMENT_SET)) {
+                for (int j = i + 1; j < numberOfDomains; j++) {
+                    DomainDefinition dm2 = domains.get(j);
+                    if (dm2.is(SEGMENT_SET)) {
+                        for (Segment segment1 : dm1.getSegments()) {
+                            for (Segment segment2 : dm2.getSegments()) {
+                                if (segment1.overlaps(segment2)) {
+                                    ddep.ErrorType = ErrorType.DOMAIN_RANGE_OVERLAP_ERROR;
+                                    System.out.println(ddep.ErrorString
+                                            + " Overlaps were found in residue ranges specifying domains");
+                                    return ddep;
                                 }
                             }
                         }
@@ -194,39 +140,39 @@ public class DomainCalculator {
     /*
      * Function to set up DomainBreakNumbers in the master linked list
      */
-    public PlotFragInformation setDomBreaks(List<DomainDefinition> domains, Protein protein, SSE Root) {
+    public PlotFragInformation setDomBreaks(List<DomainDefinition> domains, Protein protein, SSE root) {
         PlotFragInformation plotFragmentInformation = new PlotFragInformation();
         
-        int Count = 0;
+        int count = 0;
         int nf = 0;
-        int Dom, LastDom;
-        int LastSegment;
-        SSE sse, LastCTerm;
+        int domain, lastDomain;
+        int lastSegment;
+        SSE sse, lastCTerm;
     
-        for (sse = Root; sse != null; sse = sse.To)
+        for (sse = root; sse != null; sse = sse.To)
             sse.DomainBreakNumber = 0;
-        for (sse = Root; sse != null; sse = sse.To)
+        for (sse = root; sse != null; sse = sse.To)
             sse.domainBreakType = DomainBreakType.NOT_DOM_BREAK;
     
         /* advance to the first ss element in a real domain */
         int segment = -1;
-        for (sse = Root.To; sse != null && segment < 0; sse = sse.To) {
+        for (sse = root.To; sse != null && segment < 0; sse = sse.To) {
             segment = findDomain(domains, protein, sse).segment;
         }
     
         if (sse == null)
             return plotFragmentInformation;
     
-        Count++;
-        sse.DomainBreakNumber = Count;
+        count++;
+        sse.DomainBreakNumber = count;
         sse.domainBreakType = DomainBreakType.N_DOM_BREAK;
     
         DomainId result = findDomain(domains, protein, sse);
-        LastDom = -1;
-        LastSegment = -1;
+        lastDomain = -1;
+        lastSegment = -1;
         if (result.segment > -1) {
-            LastDom = result.domain;
-            LastSegment = result.segment;
+            lastDomain = result.domain;
+            lastSegment = result.segment;
         }
     
         nf = 1;
@@ -234,57 +180,57 @@ public class DomainCalculator {
             plotFragmentInformation.setNumberOfFragments(nf);
             plotFragmentInformation.setChainLim0(nf - 1, sse.getChain());
             plotFragmentInformation.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
-            plotFragmentInformation.setFragDomain(nf - 1, LastDom + 1);
+            plotFragmentInformation.setFragDomain(nf - 1, lastDomain + 1);
         }
     
-        LastCTerm = sse;
+        lastCTerm = sse;
     
         while (sse != null) {
             sse = sse.To;
             DomainId result2 = findDomain(domains, protein, sse);
-            Dom = result2.domain;
+            domain = result2.domain;
     
-            if ((Dom != LastDom) || (segment != LastSegment)) {
+            if ((domain != lastDomain) || (segment != lastSegment)) {
     
-                DomainId did = ssIsInDomain(protein, sse, domains.get(LastDom));
+                DomainId did = ssIsInDomain(protein, sse, domains.get(lastDomain));
     
-                if ((did.exclusionType == 0) || (Dom == LastDom)) {
+                if ((did.exclusionType == 0) || (domain == lastDomain)) {
     
-                    Count++;
+                    count++;
     
-                    if (LastCTerm.DomainBreakNumber == 0) {
-                        LastCTerm.DomainBreakNumber = Count;
-                        LastCTerm.domainBreakType = DomainBreakType.C_DOM_BREAK;
+                    if (lastCTerm.DomainBreakNumber == 0) {
+                        lastCTerm.DomainBreakNumber = count;
+                        lastCTerm.domainBreakType = DomainBreakType.C_DOM_BREAK;
                     } else {
-                        LastCTerm.domainBreakType = DomainBreakType.NC_DOM_BREAK;
+                        lastCTerm.domainBreakType = DomainBreakType.NC_DOM_BREAK;
                     }
     
-                    plotFragmentInformation.setChainLim1(nf - 1, LastCTerm.getChain());
-                    plotFragmentInformation.setResLim1(nf - 1, LastCTerm.sseData.PDBFinishResidue);
+                    plotFragmentInformation.setChainLim1(nf - 1, lastCTerm.getChain());
+                    plotFragmentInformation.setResLim1(nf - 1, lastCTerm.sseData.PDBFinishResidue);
     
-                    Dom = -1;
-                    while (sse != null && Dom < 0) {
+                    domain = -1;
+                    while (sse != null && domain < 0) {
                         sse = sse.To;
-                        Dom = findDomain(domains, protein, sse).domain;
+                        domain = findDomain(domains, protein, sse).domain;
                     }
                     if (sse != null) {
-                        sse.DomainBreakNumber = Count;
+                        sse.DomainBreakNumber = count;
                         sse.domainBreakType = DomainBreakType.N_DOM_BREAK;
-                        LastCTerm = sse;
+                        lastCTerm = sse;
     
                         nf++;
                         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
                             plotFragmentInformation.setNumberOfFragments(nf);
                             plotFragmentInformation.setChainLim0(nf - 1, sse.getChain());
                             plotFragmentInformation.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
-                            plotFragmentInformation.setFragDomain(nf - 1, Dom + 1);
+                            plotFragmentInformation.setFragDomain(nf - 1, domain + 1);
                         }
                     }
-                    LastDom = Dom;
-                    LastSegment = segment;
+                    lastDomain = domain;
+                    lastSegment = segment;
                 }
             } else {
-                LastCTerm = sse;
+                lastCTerm = sse;
             }
         }
         
@@ -526,95 +472,23 @@ public class DomainCalculator {
         }
     }
 
-    private int residueDomain(Chain chain, int Residue, List<DomainDefinition> domains) {
-//        for (Chain chain : protein.getChains()) {
-            if ((Residue >= chain.sequenceLength()) || (Residue < 0)) {
-                return -1;
+    private int residueDomain(Chain chain, int residue, List<DomainDefinition> domains) {
+        if (residue >= chain.sequenceLength() || residue < 0) {
+            return -1;
+        }
+
+        int pdbRes = chain.getPDBIndex(residue);
+        char pdbChain = chain.getName();
+
+        for (int i = 0; i < domains.size(); i++) {
+            DomainDefinition domain = domains.get(i);
+            if (domain.resIsInDomain(pdbRes, pdbChain)) {
+                return i;
             }
-    
-            int PDBRes = chain.getPDBIndex(Residue);
-            char PDBChain = chain.getName();
-    
-            for (int i = 0; i < domains.size(); i++) {
-                if (resIsInDomain(PDBRes, PDBChain, domains.get(i))) {
-                    return i;
-                }
-            }
-//        }
+        }
 
         return -1;
     }
-
-    private boolean resIsInDomain( int PDBRes, char PDBChain, DomainDefinition Domain) {
-        if ( Domain == null) return false;
-
-        for (int i = 0; i < Domain.getNumberOfSegments(); i++) {
-
-            if (Domain.is(SEGMENT_SET)) {
-                if (PDBChain == Domain.getStartSegmentChain(i) && PDBChain == Domain.getEndSegmentChain(i)) {
-                    if (PDBRes >= Domain.getStartSegmentIndex(i) && PDBRes <= Domain.getEndSegmentIndex(i))
-                        return true;
-                } else if (PDBChain == Domain.getStartSegmentChain(i)) {
-                    if (PDBRes >= Domain.getStartSegmentIndex(i))
-                        return true;
-                } else if (PDBChain == Domain.getEndSegmentChain(i)) {
-                    if (PDBRes <= Domain.getEndSegmentIndex(i))
-                        return true;
-                }
-            } else if (Domain.is(CHAIN_SET)) {
-                if (PDBChain == Domain.getStartSegmentChain(i)|| PDBChain == Domain.getEndSegmentChain(i))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean segmentsOverlap(char[] Seg1Chains, int[] Seg1Range, char[] Seg2Chains, int[] Seg2Range) {
-
-        if (Seg1Chains[0] == Seg1Chains[1]) {
-            if (Seg2Chains[0] == Seg2Chains[1]) {
-                if (Seg2Chains[0] == Seg1Chains[0]) {
-                    if ((Seg2Range[0] >= Seg1Range[0]) && (Seg2Range[0] <= Seg1Range[1]))
-                        return true;
-                    if ((Seg2Range[1] >= Seg1Range[0]) && (Seg2Range[1] <= Seg1Range[1]))
-                        return true;
-                } else {
-                    if (Seg2Chains[0] == Seg1Chains[0]) {
-                        if (Seg2Range[0] <= Seg1Range[1])
-                            return true;
-                    } else if ((Seg2Chains[1] == Seg1Chains[0])) {
-                        if (Seg2Range[1] >= Seg1Range[0])
-                            return true;
-                    }
-                }
-            }
-        } else {
-            if (Seg2Chains[0] == Seg2Chains[1]) {
-                if (Seg1Chains[0] == Seg2Chains[0]) {
-                    if (Seg1Range[0] <= Seg2Range[1])
-                        return true;
-                }
-            } else if ((Seg1Chains[1] == Seg2Chains[0])) {
-                if (Seg1Range[1] >= Seg2Range[0])
-                    return true;
-            } else {
-                if (Seg1Chains[0] == Seg2Chains[0])
-                    return true;
-                if (Seg1Chains[1] == Seg2Chains[1])
-                    return true;
-                if (Seg1Chains[1] == Seg2Chains[0]) {
-                    if (Seg1Range[1] >= Seg2Range[0])
-                        return true;
-                }
-                if (Seg1Chains[0] == Seg2Chains[1]) {
-                    if (Seg1Range[0] <= Seg2Range[1])
-                        return true;
-                }
-            }
-        }
-        return false;
-    }
-
 
     private boolean isChainRepresented(List<DomainDefinition> domains, char chain) {
         for (int i = 0; i < domains.size(); i++) {
