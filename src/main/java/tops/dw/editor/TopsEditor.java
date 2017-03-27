@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -510,12 +511,12 @@ public class TopsEditor implements ActionListener {
 
         Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
-            Protein p = (Protein) prots.nextElement();
-            Enumeration<DomainDefinition> doms = p.getDomainDefs().elements();
-            Enumeration<SecStrucElement> lls = p.getLinkedLists().elements();
-            while (doms.hasMoreElements() && lls.hasMoreElements()) {
-                strs.addElement(doms.nextElement().toString());
-                diags.addElement(lls.nextElement());
+            Protein p = prots.nextElement();
+            List<DomainDefinition> doms = p.getDomainDefs();
+            List<SecStrucElement> lls = p.getLinkedLists();
+            for (int i = 0; i < doms.size(); i++) {
+                strs.addElement(doms.get(i).toString());
+                diags.addElement(lls.get(i));
             }
         }
 
@@ -803,11 +804,11 @@ public class TopsEditor implements ActionListener {
         Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
             Protein p = (Protein) prots.nextElement();
-            Enumeration<DomainDefinition> doms = p.getDomainDefs().elements();
-            Enumeration<SecStrucElement> lls = p.getLinkedLists().elements();
-            while (doms.hasMoreElements() && lls.hasMoreElements()) {
-                strs.addElement(doms.nextElement().toString());
-                diags.addElement(lls.nextElement());
+            List<DomainDefinition> doms = p.getDomainDefs();
+            List<SecStrucElement> lls = p.getLinkedLists();
+            for (int i = 0; i < doms.size(); i++) {
+                strs.addElement(doms.get(i).toString());
+                diags.addElement(lls.get(i));
             }
         }
 

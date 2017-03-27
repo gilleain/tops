@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -49,8 +49,8 @@ public class CartoonCommand implements Command {
         try {
             TopsFileReader topsFileReader = new TopsFileReader();
             Protein protein = topsFileReader.readTopsFile(new File(handler.topsFilepath));
-            Vector<DomainDefinition> dd = protein.getDomainDefs();
-            Vector<SecStrucElement> ll = protein.getLinkedLists();
+            List<DomainDefinition> dd = protein.getDomainDefs();
+            List<SecStrucElement> ll = protein.getLinkedLists();
 
             if (handler.outputType.equals("PDF") || handler.outputType.equals("IMG")) {
                 FileOutputStream fos = new FileOutputStream(handler.outputFilepath);

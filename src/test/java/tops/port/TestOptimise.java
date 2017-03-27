@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
-import java.util.Vector;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -50,8 +50,8 @@ public class TestOptimise {
     private void draw(String name, Protein protein, String outputFilepath) throws TopsFileFormatException, IOException {
 //        tops.dw.protein.Protein dwProtein = convertOnDisk(name, chain);
         tops.dw.protein.Protein dwProtein = convertInMemory(name, protein);
-        Vector<DomainDefinition> dd = dwProtein.getDomainDefs();
-        Vector<SecStrucElement> ll = dwProtein.getLinkedLists();
+        List<DomainDefinition> dd = dwProtein.getDomainDefs();
+        List<SecStrucElement> ll = dwProtein.getLinkedLists();
         CartoonDrawer drawer = new CartoonDrawer();
         
         FileOutputStream fos = new FileOutputStream(outputFilepath);

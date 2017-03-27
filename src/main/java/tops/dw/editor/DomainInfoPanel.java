@@ -1,10 +1,24 @@
 package tops.dw.editor;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
-import tops.dw.protein.*;
+import tops.dw.protein.DomainDefinition;
+import tops.dw.protein.IntegerInterval;
+import tops.dw.protein.Protein;
+import tops.dw.protein.SecStrucElement;
 
 /**
  * this class displays domain information for a Protein
@@ -37,22 +51,18 @@ public class DomainInfoPanel extends Panel {
 
         this.proteins.addElement(p);
 
-        Enumeration<DomainDefinition> DomainDefs = p.getDomainDefs().elements();
-        Enumeration<SecStrucElement> Diagrams = p.getLinkedLists().elements();
+        List<DomainDefinition> DomainDefs = p.getDomainDefs();
+        List<SecStrucElement> Diagrams = p.getLinkedLists();
 
-        DomainDefinition dd;
-        SecStrucElement ss;
+        ;
         Button b;
         Choice ch;
         Panel panel;
 
-        while (DomainDefs.hasMoreElements()) {
+        int index = 0;
+        for (DomainDefinition dd : DomainDefs) {
 
-            dd = (DomainDefinition) DomainDefs.nextElement();
-
-            ss = null;
-            if (Diagrams.hasMoreElements())
-                ss = (SecStrucElement) Diagrams.nextElement();
+            SecStrucElement ss = Diagrams.get(index);
 
             b = new Button("Domain information");
             b.addActionListener(new DomainInfoCommand(dd));
@@ -90,6 +100,7 @@ public class DomainInfoPanel extends Panel {
             panel = new Panel();
             panel.add(ch);
             this.add(panel);
+            index++;
         }
     }
 

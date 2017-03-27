@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -22,7 +23,7 @@ import tops.dw.protein.TopsFileFormatException;
 
 public class TopsToImage {
 
-    static public void main(String args[]) {
+    public static void main(String args[]) {    // TODO: make this a command
 
         TopsToImage tti = new TopsToImage();
 
@@ -68,16 +69,16 @@ public class TopsToImage {
         TopsDrawCanvas.PREF_HEIGHT = 280;
         TopsDrawCanvas.PREF_WIDTH = 360;
 
-        Enumeration<SecStrucElement> Diagrams = p.getLinkedLists().elements();
-        Enumeration<DomainDefinition> Domains = p.getDomainDefs().elements();
+        List<SecStrucElement> diagrams = p.getLinkedLists();
+        List<DomainDefinition> domains = p.getDomainDefs();
 
         int n = 0;
         Vector<TopsDrawCanvas> draw_canvs = new Vector<TopsDrawCanvas>();
         float MinScale = 1.0F, scale;
-        while (Diagrams.hasMoreElements() && Domains.hasMoreElements()) {
-            SecStrucElement root_sse = Diagrams.nextElement();
-            DomainDefinition DomDef = Domains.nextElement();
-            TopsDrawCanvas tdc = new TopsDrawCanvas(root_sse, DomDef.toString());
+        int index = 0;
+        for (SecStrucElement rootSSE : diagrams) {
+            DomainDefinition domDefinition = domains.get(index);
+            TopsDrawCanvas tdc = new TopsDrawCanvas(rootSSE, domDefinition.toString());
             tdc.setUseBorder(false);
             tdc.setSize(tdc.getPreferredSize());
 
@@ -86,6 +87,7 @@ public class TopsToImage {
                 MinScale = scale;
 
             draw_canvs.addElement(tdc);
+            index++;
         }
 
         Enumeration<TopsDrawCanvas> canvs = draw_canvs.elements();

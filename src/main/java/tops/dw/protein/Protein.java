@@ -1,20 +1,20 @@
 package tops.dw.protein;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Protein {
 
     private String name;
 
-    private Vector<SecStrucElement> topsLinkedLists;
+    private List<SecStrucElement> topsLinkedLists;
 
-    private Vector<DomainDefinition> domainDefs;
+    private List<DomainDefinition> domainDefs;
 
     public Protein() {
-        this.domainDefs = new Vector<DomainDefinition>();
-        this.topsLinkedLists = new Vector<SecStrucElement>();
+        this.domainDefs = new ArrayList<DomainDefinition>();
+        this.topsLinkedLists = new ArrayList<SecStrucElement>();
         this.name = "Unknown";
     }
     
@@ -27,33 +27,23 @@ public class Protein {
     }
 
     public void addTopsLinkedList(SecStrucElement s, DomainDefinition d) {
-
-        if (this.topsLinkedLists == null) {
-            this.topsLinkedLists = new Vector<SecStrucElement>();
-            this.domainDefs = new Vector<DomainDefinition>();
-        }
-        this.topsLinkedLists.addElement(s);
-        this.domainDefs.addElement(d);
-
+        this.topsLinkedLists.add(s);
+        this.domainDefs.add(d);
     }
 
     public int getDomainIndex(CATHcode cc) {
 
-        int i;
-        int ind = -1;
-        Enumeration<DomainDefinition> e = this.domainDefs.elements();
+        int index = -1;
         CATHcode compareCathCode;
 
-        for (i = 0; e.hasMoreElements(); i++) {
-            compareCathCode = e.nextElement().getCATHcode();
+        for (DomainDefinition domainDef : domainDefs) {
+            compareCathCode = domainDef.getCATHcode();
             if (cc.equals(compareCathCode)) {
-                ind = i;
-                break;
+                return index;
             }
+            index++;
         }
-
-        return (ind);
-
+        return index;
     }
     
     public SecStrucElement getRootSSE(String domainName) {
@@ -66,7 +56,7 @@ public class Protein {
     	return null;
     }
 
-    public Vector<SecStrucElement> getLinkedLists() {
+    public List<SecStrucElement> getLinkedLists() {
         return this.topsLinkedLists;
     }
 
@@ -74,7 +64,7 @@ public class Protein {
         return this.domainDefs.size();
     }
 
-    public Vector<DomainDefinition> getDomainDefs() {
+    public List<DomainDefinition> getDomainDefs() {
         return this.domainDefs;
     }
     

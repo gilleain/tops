@@ -3,6 +3,7 @@ package tops.dw.io;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.List;
 
 import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.IntegerInterval;
@@ -23,13 +24,13 @@ public class TopsFileWriter {
 
         if ((protein.getDomainDefs() != null) && (protein.getLinkedLists() != null)) {
 
-            Enumeration<DomainDefinition> ddefs = protein.getDomainDefs().elements();
-            Enumeration<SecStrucElement> lls = protein.getLinkedLists().elements();
+            List<DomainDefinition> ddefs = protein.getDomainDefs();
+            List<SecStrucElement> lls = protein.getLinkedLists();
 
             int i;
-            for (i = 0; ddefs.hasMoreElements(); i++) {
+            for (i = 0; i < ddefs.size(); i++) {
 
-                DomainDefinition dd = ddefs.nextElement();
+                DomainDefinition dd = ddefs.get(i);
                 pw.print("DOMAIN_NUMBER " + i + " " + dd.getCATHcode());
                 Enumeration<IntegerInterval> sfs = dd.getSequenceFragments();
                 while (sfs.hasMoreElements()) {
@@ -40,7 +41,7 @@ public class TopsFileWriter {
                 pw.print("\n\n");
 
                 SecStrucElement s;
-                for (s = lls.nextElement(); s != null; s = s.GetTo()) {
+                for (s = lls.get(0); s != null; s = s.GetTo()) {
                     s.PrintAsText(pw);
                     pw.print("\n");
                 }

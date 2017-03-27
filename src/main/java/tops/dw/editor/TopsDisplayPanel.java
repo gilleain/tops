@@ -1,9 +1,16 @@
 package tops.dw.editor;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Panel;
+import java.util.List;
+import java.util.Vector;
 
-import tops.dw.protein.*;
+import tops.dw.protein.DomainDefinition;
+import tops.dw.protein.Protein;
+import tops.dw.protein.SecStrucElement;
 
 /**
  * This class is a java bean which displays a number of Tops diagrams in a panel
@@ -54,12 +61,12 @@ public class TopsDisplayPanel extends Panel {
     /**
      * Construct for a set of Tops diagrams and labels
      * 
-     * @param Diagrams - a vector of Tops diagrams
-     * @param Labels - a vector of labels concurrent with the Tops diagrams
+     * @param diagrams - a vector of Tops diagrams
+     * @param labels - a vector of labels concurrent with the Tops diagrams
      */
-    public TopsDisplayPanel(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
+    public TopsDisplayPanel(List<SecStrucElement> diagrams, List<DomainDefinition> labels) {
         this();
-        this.setDiagrams(Diagrams, Labels);
+        this.setDiagrams(diagrams, labels);
     }
 
     /**
@@ -146,7 +153,7 @@ public class TopsDisplayPanel extends Panel {
      * @param Labels -
      *            the new set of labels
      */
-    public void setDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
+    public void setDiagrams(List<SecStrucElement> Diagrams, List<DomainDefinition> Labels) {
         this.clear();
         this.addDiagrams(Diagrams, Labels);
     }
@@ -169,7 +176,7 @@ public class TopsDisplayPanel extends Panel {
      * @param Labels -
      *            the new set of labels
      */
-    public void addDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
+    public void addDiagrams(List<SecStrucElement> Diagrams, List<DomainDefinition> Labels) {
 
         int i;
 
@@ -182,10 +189,10 @@ public class TopsDisplayPanel extends Panel {
         }
 
         for (i = 0; i < Diagrams.size(); i++) {
-            SecStrucElement el = Diagrams.elementAt(i);
+            SecStrucElement el = Diagrams.get(i);
             DomainDefinition lab = null;
             if (i < Labels.size())
-            	lab = Labels.elementAt(i);
+            	lab = Labels.get(i);
             this.addDiagram(el, lab);
         }
 

@@ -3,8 +3,8 @@ package tops.web.display.servlet;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -79,15 +79,15 @@ public class URICartoonDataSource implements CartoonDataSource {
 		Protein p = new TopsFileReader().readTopsFile(f);
 //		System.out.println("Got protein " + p.getName());
 
-		Vector<SecStrucElement> doms = p.getLinkedLists();
+		List<SecStrucElement> doms = p.getLinkedLists();
 		int domainIndex = p.getDomainIndex(new CATHcode(domid));
 		if (domainIndex == -1) {
 			return p;
 		}
 
 		Protein pp = new Protein();
-		SecStrucElement s = doms.elementAt(domainIndex);
-		DomainDefinition d = p.getDomainDefs().elementAt(domainIndex);
+		SecStrucElement s = doms.get(domainIndex);
+		DomainDefinition d = p.getDomainDefs().get(domainIndex);
         pp.addTopsLinkedList(s, d);
 //        System.out.println("Made protein " + pp.getName());
         return pp;

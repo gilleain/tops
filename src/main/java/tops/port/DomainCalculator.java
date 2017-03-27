@@ -190,11 +190,11 @@ public class DomainCalculator {
             DomainId result2 = findDomain(domains, protein, sse);
             domain = result2.domain;
     
-            if ((domain != lastDomain) || (segment != lastSegment)) {
+            if (domain != lastDomain || segment != lastSegment) {
     
                 DomainId did = ssIsInDomain(protein, sse, domains.get(lastDomain));
     
-                if ((did.exclusionType == 0) || (domain == lastDomain)) {
+                if (did.exclusionType == 0 || domain == lastDomain) {
     
                     count++;
     
@@ -237,38 +237,33 @@ public class DomainCalculator {
         return plotFragmentInformation;
     }
 
-    public List<Integer> fixDomainsToPlot(List<DomainDefinition> domains, char ChainToPlot, int DomainToPlot) {
-    
-        int ndp;
+    public List<DomainDefinition> selectDomainsToPlot(List<DomainDefinition> domains, char chainToPlot, int domainToPlot) {
     
         /*
          * if ChainToPlot==ALL or ( ChainToPlot = NULL and DomainToPlot=0 ) then
          * all domains set up by by ReadDomBoundaryFile or DefaultDomains should
          * be plotted
          */
-        List<Integer> DomainsToPlot = new ArrayList<Integer>();
-        if ((ChainToPlot == 0 && DomainToPlot == 0) || ChainToPlot == '*') {
-            ndp = domains.size();
-            for (int i = 0; i < ndp; i++) {
-                DomainsToPlot.add(i);
-            }
+        List<DomainDefinition> domainsToPlot = new ArrayList<DomainDefinition>();
+        if ((chainToPlot == 0 && domainToPlot == 0) || chainToPlot == '*') {
+            domainsToPlot = domains;
         } else {
             for (int i = 0; i < domains.size(); i++) {
                 DomainDefinition domain = domains.get(i);
-                if (ChainToPlot == 0 || ChainToPlot == getChain(domain.getCode())) {
-                    if (DomainToPlot == 0 || DomainToPlot == getDomainNumber(domain.getCode())) {
-                        DomainsToPlot.add(i);
+                if (chainToPlot == 0 || chainToPlot == getChain(domain.getCode())) {
+                    if (domainToPlot == 0 || domainToPlot == getDomainNumber(domain.getCode())) {
+                        domainsToPlot.add(domain);
                     }
                 }
             }
         }
     
-        if (DomainsToPlot.isEmpty()) {
+        if (domainsToPlot.isEmpty()) {
             System.out.println("Tops Error: no domains found to plot\n");
             System.err.println("Tops Error: no domains found to plot\n");
         }
     
-        return DomainsToPlot;
+        return domainsToPlot;
     }
 
     /*
@@ -532,25 +527,25 @@ public class DomainCalculator {
 
 
     private DomainId ssIsInDomain(Chain chain, SSE p, DomainDefinition domain) {
-        int ExclusionType = -1;
-        int Segment = -1;
+        int exclusionType = -1;
+        int segment = -1;
 
         /* First check the element passed in */
-        Segment = singleSSIsInDomain(p, domain);
-        if (Segment > 0) {
-            ExclusionType = 0;
-            return new DomainId(Segment, -1, ExclusionType);
+        segment = singleSSIsInDomain(p, domain);
+        if (segment > 0) {
+            exclusionType = 0;
+            return new DomainId(segment, -1, exclusionType);
         }
 
         /* Now check the whole associated fixed list */
         for (p = chain.findFixedStart(p); p != null; p = p.getFixed()) {
-            Segment = singleSSIsInDomain(p, domain);
-            if (Segment > 0) {
-                ExclusionType = 1;
-                return new DomainId(Segment, -1, ExclusionType);
+            segment = singleSSIsInDomain(p, domain);
+            if (segment > 0) {
+                exclusionType = 1;
+                return new DomainId(segment, -1, exclusionType);
             }
         }
-        return new DomainId(Segment, -1, ExclusionType);
+        return new DomainId(segment, -1, exclusionType);
     }
 
     private DomainId ssIsInDomain(Protein protein, SSE p, DomainDefinition domain) {

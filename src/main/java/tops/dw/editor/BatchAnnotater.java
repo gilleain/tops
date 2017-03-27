@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
@@ -30,7 +29,7 @@ public class BatchAnnotater {
 			
 	        TopsFileReader topsFileReader = new TopsFileReader();
 			Protein p = topsFileReader.readTopsFile(inFile);
-			Vector<DomainDefinition> names = p.getDomainDefs();
+			List<DomainDefinition> names = p.getDomainDefs();
 			for (int i = 0; i < p.numberDomains(); i++) {
 				SecStrucElement domain = p.getDomain(i);
 				domain.fitToRectangle(0, 0, w, h, b);

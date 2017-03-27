@@ -178,8 +178,9 @@ public class BuildTopologyCommand implements Command {
         // TODO - Root will be null here!! XXX
         PlotFragInformation plotFragInf = domainCalculator.setDomBreaks(domains, protein, root);    
 
-        List<Integer> domainsToPlot = domainCalculator.fixDomainsToPlot(
-                domains, options.getChainToPlot().charAt(0), options.getDomainToPlot());
+        List<DomainDefinition> domainsToPlot = 
+                domainCalculator.selectDomainsToPlot(
+                        domains, options.getChainToPlot().charAt(0), options.getDomainToPlot());
         
         if (domainsToPlot.isEmpty()) {
             log("Tops error: fixing domains to plot\n");
@@ -188,14 +189,14 @@ public class BuildTopologyCommand implements Command {
 
         /* Loop over domains to plot */
         List<Cartoon> cartoons = new ArrayList<Cartoon>();
-        for (int domainToPlot : domainsToPlot) {
+        for (DomainDefinition domainToPlot : domainsToPlot) {
 
             if (options.isVerbose()) {
-                log("\nPlotting domain %d\n", domainToPlot + 1);
+                log("\nPlotting domain %d\n", domainToPlot.getCode());
             }
 
             /* Set the domain to plot */
-            Cartoon cartoon = domainCalculator.setDomain(root, protein, domains.get(domainToPlot));
+            Cartoon cartoon = domainCalculator.setDomain(root, protein, domainToPlot);
 
             // TODO - factor this out
             new Optimise().optimise(cartoon);
@@ -216,7 +217,7 @@ public class BuildTopologyCommand implements Command {
             topsFilename = options.getTOPSFileName(proteinCode, options.getChainToPlot(), options.getDomainToPlot());
         }
         
-        new TopsFileWriter().writeTOPSFile(topsFilename, cartoons, protein, domains, domainsToPlot);
+        new TopsFileWriter().writeTOPSFile(topsFilename, cartoons, protein, domainsToPlot);
 
         /* Create postscript files for each Cartoon */
         new PostscriptFileWriter(options).makePostscript(cartoons, protein, plotFragInf);

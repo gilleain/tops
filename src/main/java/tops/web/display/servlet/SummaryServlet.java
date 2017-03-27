@@ -3,7 +3,7 @@ package tops.web.display.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -53,7 +53,7 @@ public class SummaryServlet extends HttpServlet {
     }
 
     private void displayDomains(Protein protein, String group, HttpServletResponse response) {
-        Vector<DomainDefinition> domainNames = protein.getDomainDefs();
+        List<DomainDefinition> domainNames = protein.getDomainDefs();
         response.setContentType("text/html");
         PrintWriter pout = null;
         try {
@@ -64,9 +64,7 @@ public class SummaryServlet extends HttpServlet {
 
         String proteinName = protein.getName();
         pout.println("<html><head><title>Domains for : " + proteinName + "</title></head><body><table align=\"center\">");
-        Enumeration<DomainDefinition> e = domainNames.elements();
-        while (e.hasMoreElements()) {
-            DomainDefinition dd = e.nextElement();
+        for (DomainDefinition dd : domainNames) {
             String name = dd.toString();
             String filename = name + ".gif"; // eg '2bopA0' + '.' +  'gif' = '2bopA0.gif'
             String url = this.viewPath + "/" + group + "/" + filename;

@@ -24,7 +24,7 @@ public class TopsFileWriter {
     }
     
     public void writeTOPSFile(String filename, List<Cartoon> cartoons,
-             Protein protein, List<DomainDefinition> domains, List<Integer> domainsToPlot) throws FileNotFoundException {
+             Protein protein, List<DomainDefinition> domains) throws FileNotFoundException {
 
         int i, j;
         PrintStream out = new PrintStream(new FileOutputStream(filename));
@@ -33,7 +33,7 @@ public class TopsFileWriter {
         writeTOPSHeader(out, protein.getProteinCode(), cartoons.size());
 
         for (i = 0; i < cartoons.size(); i++) {
-            dompt = domains.get(domainsToPlot.get(i));
+            dompt = domains.get(i);
             out.print(String.format("DOMAIN_NUMBER %d %s", i, dompt.getCode()));
             for (j = 0; j < dompt.getNumberOfSegments(); j++)
                 out.print(
