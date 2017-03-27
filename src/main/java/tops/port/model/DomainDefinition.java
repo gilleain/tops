@@ -6,6 +6,7 @@ import static tops.port.model.DomainDefinition.DomainType.SEGMENT_SET;
 import java.util.ArrayList;
 import java.util.List;
 
+import tops.dw.protein.CATHcode;
 import tops.port.DomainCalculator.DomDefError;
 import tops.port.DomainCalculator.ErrorType;
 
@@ -17,10 +18,10 @@ public class DomainDefinition {
     }
     
     private DomainType domainType;
-    private String domainCATHCode = "";
+    private CATHcode domainCATHCode = new CATHcode("");
     private List<Segment> segments;
     
-    public DomainDefinition(String code, DomainType domainType) {
+    public DomainDefinition(CATHcode code, DomainType domainType) {
         this.segments = new ArrayList<Segment>();
         this.domainCATHCode = code;
         this.domainType = domainType;
@@ -30,6 +31,10 @@ public class DomainDefinition {
         return this.segments;
     }
 
+    public void addSegment(char chainId, int startIndex, int endIndex) {
+        addSegment(chainId, startIndex, chainId, endIndex);
+    }
+    
     public void addSegment(char startChainId, int startIndex, char endChainId, int endIndex) {
         segments.add(new Segment(startChainId, startIndex, endChainId, endIndex));
     }
@@ -81,7 +86,7 @@ public class DomainDefinition {
     }
     
     public String getCode() {
-        return this.domainCATHCode;
+        return this.domainCATHCode.toString();
     }
     
     public boolean is(DomainType type) {
@@ -134,6 +139,10 @@ public class DomainDefinition {
             }
         }
         return false;
+    }
+
+    public CATHcode getCATHcode() {
+        return domainCATHCode;
     }
 
 }

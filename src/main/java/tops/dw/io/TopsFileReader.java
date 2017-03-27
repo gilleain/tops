@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import tops.dw.protein.CATHcode;
-import tops.dw.protein.DomainDefinition;
-import tops.dw.protein.IntegerInterval;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
+import tops.port.model.DomainDefinition;
+import tops.port.model.DomainDefinition.DomainType;
 
 public class TopsFileReader {
 
@@ -83,7 +83,7 @@ public class TopsFileReader {
                         throw new TopsFileFormatException();
                     st.nextToken();
                     ccode = new CATHcode(st.nextToken());
-                    ddef = new DomainDefinition(ccode);
+                    ddef = new DomainDefinition(ccode, DomainType.CHAIN_SET);   // XXX? CHAIN or SEGMENT?
                     while (st.hasMoreTokens()) {
                         for (j = 0; j < 3; j++) {
                             if (st.hasMoreTokens()) {
@@ -98,8 +98,7 @@ public class TopsFileReader {
                             }
                         }
                         // XXX currently throwing away the seq frag start
-                        ddef.addSequenceFragment(
-                                new IntegerInterval(tmp_int[1], tmp_int[2]));
+                        ddef.addSegment(ccode.getChain(), tmp_int[1], tmp_int[2]);
                     }
 
                     countss = 0;

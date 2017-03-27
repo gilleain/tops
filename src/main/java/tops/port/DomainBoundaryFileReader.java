@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import tops.dw.protein.CATHcode;
 import tops.port.model.DomainDefinition;
-import tops.port.model.DomainDefinition.DomainType;
 import tops.port.model.Protein;
 
 public class DomainBoundaryFileReader {
@@ -63,7 +63,7 @@ public class DomainBoundaryFileReader {
                     String proteinCode = protein.getProteinCode();
                     for (int i = domsFrom; i < countDoms; i++) {
                         String code = String.format("%s%s%d", proteinCode, codeChain, (i - domsFrom + 1) % 10);
-                        DomainDefinition domain = new DomainDefinition(code, SEGMENT_SET);
+                        DomainDefinition domain = new DomainDefinition(new CATHcode(code), SEGMENT_SET);
 
                         currentToken = tokenizer.nextToken();
                         nsegs = Integer.parseInt(currentToken);

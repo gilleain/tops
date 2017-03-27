@@ -1,9 +1,14 @@
 package tops.dw.editor;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Adjustable;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.ScrollPane;
+import java.util.Vector;
 
-import tops.dw.protein.*;
+import tops.dw.protein.Protein;
+import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
 
 /**
  * This class is a java bean which displays a TopsDisplay panel and scrollbars

@@ -34,12 +34,12 @@ import java.util.Vector;
 import tops.dw.app.ImagePrinter;
 import tops.dw.io.TopsFileReader;
 import tops.dw.io.TopsFileWriter;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.ProteinChoice;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.dw.protein.TopsLinkedListException;
+import tops.port.model.DomainDefinition;
 
 /**
  * the Tops diagram editor (controls various java bean components which do

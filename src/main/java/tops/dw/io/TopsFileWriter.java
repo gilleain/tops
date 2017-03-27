@@ -2,13 +2,12 @@ package tops.dw.io;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.util.List;
 
-import tops.dw.protein.DomainDefinition;
-import tops.dw.protein.IntegerInterval;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
+import tops.port.model.Segment;
 
 public class TopsFileWriter {
     
@@ -32,11 +31,9 @@ public class TopsFileWriter {
 
                 DomainDefinition dd = ddefs.get(i);
                 pw.print("DOMAIN_NUMBER " + i + " " + dd.getCATHcode());
-                Enumeration<IntegerInterval> sfs = dd.getSequenceFragments();
-                while (sfs.hasMoreElements()) {
-                    IntegerInterval sf = sfs.nextElement();
+                for (Segment segment : dd.getSegments()) {
                     // XXX currently printing a 0 fragment index
-                    pw.print(" " + 0 + " " + sf.getLower() + " " + sf.getUpper());
+                    pw.print(" " + 0 + " " + segment.startIndex + " " + segment.endIndex);
                 }
                 pw.print("\n\n");
 

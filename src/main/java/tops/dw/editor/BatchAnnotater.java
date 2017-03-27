@@ -15,9 +15,9 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import tops.dw.io.TopsFileReader;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
 
 public class BatchAnnotater {
 	

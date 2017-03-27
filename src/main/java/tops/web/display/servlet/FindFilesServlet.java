@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import tops.dw.io.TopsFileReader;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
 
 public class FindFilesServlet extends HttpServlet {
 

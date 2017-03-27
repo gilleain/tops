@@ -11,14 +11,13 @@ import java.awt.Panel;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-import tops.dw.protein.DomainDefinition;
-import tops.dw.protein.IntegerInterval;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
+import tops.port.model.Segment;
 
 /**
  * this class displays domain information for a Protein
@@ -152,32 +151,14 @@ class DomainInfoCommand implements ActionListener {
             ta.append("Domain " + this.domain
                     + " contains the following fragments\n");
             ta.append("\n");
-
-            Enumeration<IntegerInterval> sfrags = this.domain.getSequenceFragments();
-
-            IntegerInterval interval;
-            String StartLab, EndLab, StartRes, EndRes;
-            String s;
-            char chain = this.domain.getChain();
             ta.append("Fragment     Start        Finish\n\n");
             
             int index = 0; // XXX generating fragment index here
-            while (sfrags.hasMoreElements()) {
+            for (Segment segment : this.domain.getSegments()) {
                 
-                StartLab = "N" + index;
-                EndLab = "C" + (index + 1);
-
-                interval = (IntegerInterval) sfrags.nextElement();
-                if ((chain != ' ') && (chain != '0')) {
-                    StartRes = "" + chain + interval.getLower();
-                    EndRes = "" + chain + interval.getUpper();
-                } else {
-                    StartRes = "" + interval.getLower();
-                    EndRes = "" + interval.getUpper();
-                }
-
-                s = this.SetOutputString(index, StartLab, StartRes, EndLab, EndRes);
-                ta.append(s);
+                String StartLab = "N" + index;
+                String EndLab = "C" + (index + 1);
+                ta.append(String.format("%s", StartLab, segment, EndLab));
                 ta.append("\n");
                 index++;
             }
@@ -192,41 +173,4 @@ class DomainInfoCommand implements ActionListener {
         }
 
     }
-
-    /* surely there is a better way to do formatted output in java then this!!! */
-    /* MUST look into it, leave it for now */
-    private String SetOutputString(int index, String slab, String sres,
-            String elab, String eres) {
-
-        int BUFFER_LEN = 80;
-        StringBuffer sb = new StringBuffer();
-
-        int i;
-        for (i = 0; i < BUFFER_LEN; i++)
-            sb.append(' ');
-
-        String ind = (new Integer(index)).toString();
-        for (i = 0; i < ind.length(); i++)
-            sb.setCharAt(i + 3, ind.charAt(i));
-
-        for (i = 0; i < slab.length(); i++)
-            sb.setCharAt(i + 12, slab.charAt(i));
-
-        sb.setCharAt(14, '(');
-        for (i = 0; i < sres.length(); i++)
-            sb.setCharAt(i + 15, sres.charAt(i));
-        sb.setCharAt(20, ')');
-
-        for (i = 0; i < elab.length(); i++)
-            sb.setCharAt(i + 25, elab.charAt(i));
-
-        sb.setCharAt(27, '(');
-        for (i = 0; i < eres.length(); i++)
-            sb.setCharAt(i + 28, eres.charAt(i));
-        sb.setCharAt(33, ')');
-
-        return sb.toString();
-
-    }
-
 }

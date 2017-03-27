@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tops.dw.protein.CATHcode;
 import tops.port.calculate.chirality.ChiralityCalculator;
 import tops.port.model.BridgePartner;
 import tops.port.model.Cartoon;
@@ -61,7 +62,7 @@ public class DomainCalculator {
         // RemoveDuplicateChains(protein); XXX what to do in this case?
 
         if (chainToPlot == '*') { // XXX used to be 'ALL'
-            DomainDefinition domain = new DomainDefinition(protein.getProteinCode(), CHAIN_SET);
+            DomainDefinition domain = new DomainDefinition(new CATHcode(protein.getProteinCode()), CHAIN_SET);
             for (Chain chain : protein.getChains()) {
                 char chainId = chain.getName();
                 domain.addSegment(chainId, chain.getStartIndex(), chainId, chain.getFinishIndex());
@@ -72,7 +73,7 @@ public class DomainCalculator {
                 char chainId = chain.getName();
                 if (!isChainRepresented(domains, chainId)) {
                     String code = protein.getProteinCode().substring(0, 4) + chainId + '0';
-                    DomainDefinition domain = new DomainDefinition(code, CHAIN_SET);
+                    DomainDefinition domain = new DomainDefinition(new CATHcode(code), CHAIN_SET);
                     domain.addSegment(chainId, chain.getStartIndex(), chainId, chain.getFinishIndex());
                     domains.add(domain);
                 }

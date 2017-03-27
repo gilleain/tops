@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import tops.dw.io.TopsFileReader;
 import tops.dw.protein.CATHcode;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
 
 /**
  * Get the location for a protein-cartoon from a URI like "/cath/1.2/2bopA0.gif" or

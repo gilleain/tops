@@ -2,7 +2,6 @@ package tops.web.display.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
+import tops.port.model.DomainDefinition;
 
 /**
  * Display an HTML page, summarizing a protein.

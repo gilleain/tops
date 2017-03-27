@@ -16,10 +16,10 @@ import javax.imageio.ImageIO;
 
 import tops.dw.editor.TopsDrawCanvas;
 import tops.dw.io.TopsFileReader;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
+import tops.port.model.DomainDefinition;
 
 public class TopsToImage {
 

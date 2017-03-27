@@ -3,6 +3,8 @@ package tops.dw.protein;
 import java.util.ArrayList;
 import java.util.List;
 
+import tops.port.model.DomainDefinition;
+
 
 public class Protein {
 

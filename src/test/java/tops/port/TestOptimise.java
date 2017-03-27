@@ -12,12 +12,12 @@ import java.util.List;
 import org.junit.Test;
 
 import tops.dw.io.TopsFileReader;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.port.calculate.Configure;
 import tops.port.io.TopsFileWriter;
 import tops.port.model.Chain;
+import tops.port.model.DomainDefinition;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
 import tops.view.cartoon.CartoonDrawer;

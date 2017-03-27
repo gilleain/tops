@@ -14,10 +14,10 @@ import org.apache.commons.cli.ParseException;
 import tops.cli.BaseCLIHandler;
 import tops.cli.Command;
 import tops.dw.io.TopsFileReader;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
+import tops.port.model.DomainDefinition;
 import tops.view.cartoon.CartoonDrawer;
 
 public class CartoonCommand implements Command {

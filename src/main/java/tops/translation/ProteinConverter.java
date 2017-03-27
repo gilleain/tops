@@ -5,8 +5,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import tops.dw.protein.CATHcode;
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
+import tops.port.model.DomainDefinition.DomainType;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
 import tops.translation.model.Helix;
@@ -29,7 +30,8 @@ public class ProteinConverter {
 		for (Chain chain : newProtein) {
 			SecStrucElement s = toSSE(chain);
 			char chainLabel = chain.getCathCompatibleLabel().charAt(0);
-			DomainDefinition d = new DomainDefinition(new CATHcode(newProtein.getID() + String.valueOf(chainLabel)));
+			DomainDefinition d = new DomainDefinition(
+			        new CATHcode(newProtein.getID() + String.valueOf(chainLabel)), DomainType.CHAIN_SET);
 			oldProtein.addTopsLinkedList(s, d);
 		}
 		

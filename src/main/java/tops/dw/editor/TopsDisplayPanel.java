@@ -8,9 +8,9 @@ import java.awt.Panel;
 import java.util.List;
 import java.util.Vector;
 
-import tops.dw.protein.DomainDefinition;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.DomainDefinition;
 
 /**
  * This class is a java bean which displays a number of Tops diagrams in a panel
