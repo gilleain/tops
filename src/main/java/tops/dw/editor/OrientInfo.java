@@ -72,7 +72,7 @@ public class OrientInfo {
 	 * @throws TopsLinkedListException
 	 */
 	public void orient_consensus(SecStrucElement refroot,
-	        SecStrucElement root, int equiv_ref[], int equiv[], TopsDrawCanvas tdc)
+	        SecStrucElement root, int equiv_ref[], int equiv[], tops.web.display.applet.TopsDrawCanvas tdc)
 	        throws TopsLinkedListException {
 	
 	    SecStrucElement ref[] = new SecStrucElement[2];

@@ -9,6 +9,7 @@ import java.util.Vector;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
+import tops.web.display.applet.TopsDrawCanvas;
 
 /**
  * This class is a java bean which displays a TopsDisplay panel and scrollbars

@@ -478,12 +478,12 @@ public class TopsEditor implements ActionListener {
             }
 
             if (this.topsDisplay != null) {
-                Vector<TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
+                Vector<tops.web.display.applet.TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
                 if (dcs != null) {
-                    Enumeration<TopsDrawCanvas> dcenum = dcs.elements();
-                    TopsDrawCanvas dc;
+                    Enumeration<tops.web.display.applet.TopsDrawCanvas> dcenum = dcs.elements();
+                    tops.web.display.applet.TopsDrawCanvas dc;
                     while (dcenum.hasMoreElements()) {
-                        dc = (TopsDrawCanvas) dcenum.nextElement();
+                        dc =  dcenum.nextElement();
                         dc.SetCCodeCoordinates();
                     }
                     if (wr_prot != null) {
@@ -492,7 +492,7 @@ public class TopsEditor implements ActionListener {
                     }
                     dcenum = dcs.elements();
                     while (dcenum.hasMoreElements()) {
-                        dc = (TopsDrawCanvas) dcenum.nextElement();
+                        dc = dcenum.nextElement();
                         dc.SetCanvasCoordinates();
                     }
 
@@ -526,7 +526,7 @@ public class TopsEditor implements ActionListener {
         int ChosenNum = stc.getChoiceNumber();
 
         if (Chosen != null) {
-            TopsDrawCanvas DrawCanvToPrint = this.topsDisplay
+            tops.web.display.applet.TopsDrawCanvas DrawCanvToPrint = this.topsDisplay
                     .GetDrawCanvas((SecStrucElement) diags.elementAt(ChosenNum));
 
             if (DrawCanvToPrint != null) {
@@ -582,13 +582,13 @@ public class TopsEditor implements ActionListener {
     public void writePSFile() {
 
         // form the postscript
-        Vector<TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
+        Vector<tops.web.display.applet.TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
         Vector<Vector<String>> EPSS = new Vector<Vector<String>>();
         Vector<String> titles = new Vector<String>();
-        Enumeration<TopsDrawCanvas> endcs = dcs.elements();
-        TopsDrawCanvas tdc;
+        Enumeration<tops.web.display.applet.TopsDrawCanvas> endcs = dcs.elements();
+        tops.web.display.applet.TopsDrawCanvas tdc;
         while (endcs.hasMoreElements()) {
-        	tdc = (TopsDrawCanvas) endcs.nextElement();
+        	tdc = endcs.nextElement();
         	EPSS.addElement(tdc.getEPS());
         	titles.addElement(tdc.getLabel());
         }
@@ -762,7 +762,7 @@ public class TopsEditor implements ActionListener {
                     this.error("Domain " + domname + " not found");
                     break;
                 }
-                TopsDrawCanvas tdc = this.topsDisplay.GetDrawCanvas(root);
+                tops.web.display.applet.TopsDrawCanvas tdc = this.topsDisplay.GetDrawCanvas(root);
                 oi.orient_consensus(refdomroot, root, oi.getMapping(0),
                         oi.getMapping(i), tdc);
             }
@@ -818,7 +818,7 @@ public class TopsEditor implements ActionListener {
         int ChosenNum = stc.getChoiceNumber();
 
         if (Chosen != null) {
-            TopsDrawCanvas DrawCanvToPrint = this.topsDisplay
+            tops.web.display.applet.TopsDrawCanvas DrawCanvToPrint = this.topsDisplay
                     .GetDrawCanvas((SecStrucElement) diags.elementAt(ChosenNum));
 
             if (DrawCanvToPrint != null) {

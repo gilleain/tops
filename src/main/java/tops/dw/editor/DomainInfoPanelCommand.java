@@ -1,8 +1,10 @@
 package tops.dw.editor;
 
-import java.awt.event.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-import tops.dw.protein.*;
+import tops.dw.protein.SecStrucElement;
+import tops.web.display.applet.TopsDrawCanvas;
 
 /**
  * a class which handles editor commands issued by the DomainInfoPanel

@@ -1,10 +1,30 @@
 package tops.web.display.applet;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import tops.dw.protein.*;
+import tops.dw.editor.PostscriptFactory;
+import tops.dw.editor.UserArrow;
+import tops.dw.editor.UserLabel;
+import tops.dw.protein.Cartoon;
+import tops.dw.protein.SecStrucElement;
+import tops.dw.protein.TopsLinkedListException;
 
 /**
  * This class is a java bean which displays and permits editing of a single Tops
@@ -27,61 +47,62 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public static int PREF_WIDTH = 500;
 
-    // static final int INFO_MODE = 0; //don't need
-    // static final int COLOUR_SYMBOLS_MODE = 1; //don't need
-    static final int MOVE_SYMBOLS_MODE = 2;
+    public static final int INFO_MODE = 0; //don't need
+    public static final int COLOUR_SYMBOLS_MODE = 1; //don't need
+    public static final int MOVE_SYMBOLS_MODE = 2;
 
-    static final int MOVE_FIXEDS_MODE = 3;
+    public static final int MOVE_FIXEDS_MODE = 3;
 
-    static final int REDRAW_CONNECTIONS_MODE = 4;
+    public static final int REDRAW_CONNECTIONS_MODE = 4;
 
-    static final int DELETE_SYMBOLS_MODE = 5;
+    public static final int DELETE_SYMBOLS_MODE = 5;
 
-    static final int ROTATE_X_MODE = 6;
+    public static final int ROTATE_X_MODE = 6;
 
-    static final int ROTATE_Y_MODE = 7;
+    public static final int ROTATE_Y_MODE = 7;
 
-    static final int ROTATE_Z_MODE = 8;
+    public static final int ROTATE_Z_MODE = 8;
 
-    static final int REFLECT_XY_MODE = 9;
+    public static final int REFLECT_XY_MODE = 9;
 
-    // static final int TOGGLE_SIZE_DISPLAY = 10;//don't need
-    // static final int ADD_USER_LABEL = 11; //don't need
-    // static final int DELETE_USER_LABEL = 12; //don't need
-    // static final int MOVE_USER_LABEL = 13; //don't need
-    // static final int ADD_USER_ARROW = 14; //don't need
-    // static final int DELETE_USER_ARROW = 15; //don't need
-    // static final int ALIGN_X_MODE = 16; //don't need
-    // static final int ALIGN_Y_MODE = 17; //don't need
+    public static final int TOGGLE_SIZE_DISPLAY = 10;//don't need
+    public static final int ADD_USER_LABEL = 11; //don't need
+    public static final int DELETE_USER_LABEL = 12; //don't need
+    public static final int MOVE_USER_LABEL = 13; //don't need
+    public static final int ADD_USER_ARROW = 14; //don't need
+    public static final int DELETE_USER_ARROW = 15; //don't need
+    public static final int ALIGN_X_MODE = 16; //don't need
+    public static final int ALIGN_Y_MODE = 17; //don't need
+     
     /* *************NEW!************** */
-    static final int ADD_STRAND_MODE = 18;
+    public static final int ADD_STRAND_MODE = 18;
 
-    static final int ADD_HELIX_MODE = 19;
+    public static final int ADD_HELIX_MODE = 19;
 
-    static final int FLIP_MODE = 20; // woo-ha, got'cha'll in check
+    public static final int FLIP_MODE = 20; // woo-ha, got'cha'll in check
 
-    static final int SELECT_SYMBOL_MODE = 21;
+    public static final int SELECT_SYMBOL_MODE = 21;
 
-    static final int MOVE_STRAND_MODE = 22; // ok, this is annoying, but
+    public static final int MOVE_STRAND_MODE = 22; // ok, this is annoying, but
                                             // essential
 
-    static final int MOVE_HELIX_MODE = 23; // ok, this is annoying, but
+    public static final int MOVE_HELIX_MODE = 23; // ok, this is annoying, but
                                             // essential
 
     /* Multiple Select Modes */
-    static final int ADD_HBOND_MODE = 24;
+    public static final int ADD_HBOND_MODE = 24;
 
-    static final int LINEAR_LAYOUT_MODE = 25;
+    public static final int LINEAR_LAYOUT_MODE = 25;
 
-    static final int CIRCULAR_LAYOUT_MODE = 26;
+    public static final int CIRCULAR_LAYOUT_MODE = 26;
 
-    static final int FLIP_MULTIPLE_MODE = 27;
+    public static final int FLIP_MULTIPLE_MODE = 27;
 
     /* END of class variables */
 
     /* START private instance variables */
 
-    private SecStrucElement RootSecStruc = null;
+    private Cartoon RootSecStruc = null;
 
     private String Label = "Tops diagram";
 
@@ -89,7 +110,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     private Rectangle selectBox;
 
-    private ArrayList<SecStrucElement> selectBoxList;
+    private List<SecStrucElement> selectBoxList;
 
     private int minimumSeparation = 10;;
 
@@ -122,10 +143,11 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     private Font Font18, Font12;
 
     private boolean UseBorder = true;
+    
+    private Vector<UserLabel> UserLabels = new Vector<UserLabel>();
 
-    /* END of private instance variables */
+    private Vector<UserArrow> UserArrows = new Vector<UserArrow>();
 
-    /* START Constructors */
     public TopsDrawCanvas() {
         this.setBackground(Color.white);
         this.addMouseListener(this);
@@ -147,6 +169,110 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
         this.selectBoxList = new ArrayList<SecStrucElement>();
     }
+    
+    public Vector<String> getEPS() {
+
+        if (this.RootSecStruc == null)
+            return null;
+
+        int w = this.getSize().width;
+        int h = this.getSize().height;
+
+        Vector<String> EPS = new Vector<String>();
+
+        EPS = PostscriptFactory.makeEPSHeader(EPS, 0, 0, w, h);
+        this.RootSecStruc.getEPS(w, h, EPS);
+        
+        // draw user labels
+        if (this.UserLabels != null) {
+            Enumeration<UserLabel> labs = this.UserLabels.elements();
+            while (labs.hasMoreElements()) {
+                UserLabel ul = labs.nextElement();
+                EPS = ul.Draw(EPS, h);
+            }
+        }
+
+        // draw user arrows
+        if (this.UserArrows != null) {
+            Enumeration<UserArrow> arrows = this.UserArrows.elements();
+            while (arrows.hasMoreElements()) {
+                UserArrow ua = arrows.nextElement();
+                EPS = ua.Draw(EPS, h);
+            }
+        }
+
+        // determine actual bounding box
+        Rectangle bbox = RootSecStruc.EPSBoundingBox(h);
+        bbox = this.expandEPSBoundingBox(bbox, h);
+        EPS = PostscriptFactory.addBoundingBox(EPS, bbox.x, bbox.y, bbox.x
+                + bbox.width, bbox.y + bbox.height);
+
+        EPS.addElement(PostscriptFactory.showpage());
+        EPS.addElement(PostscriptFactory.EndDocument());
+        EPS.addElement(PostscriptFactory.EOF());
+
+        return EPS;
+
+    }
+    
+
+    private Rectangle expandEPSBoundingBox(Rectangle r, int h) {
+
+        int xmin = r.x;
+        int xmax = r.x + r.width;
+        int ymin = r.y;
+        int ymax = r.y + r.height;
+       
+        int x, y;
+        int sw, sh;
+        if (this.UserLabels != null) {
+            Enumeration<UserLabel> labs = this.UserLabels.elements();
+            while (labs.hasMoreElements()) {
+                UserLabel ul = labs.nextElement();
+                x = ul.getPosition().x;
+                y = h - ul.getPosition().y;
+                sw = ul.getPSWidth();
+                sh = ul.getPSHeight();
+                if (x + sw > xmax)
+                    xmax = x + sw;
+                if (x < xmin)
+                    xmin = x;
+                if (y + sh > ymax)
+                    ymax = y + sh;
+                if (y - sh < ymin)
+                    ymin = y - sh;
+            }
+        }
+
+        if (this.UserArrows != null) {
+            Enumeration<UserArrow> arrows = this.UserArrows.elements();
+            while (arrows.hasMoreElements()) {
+                UserArrow ua = arrows.nextElement();
+                x = ua.getStart().x;
+                y = h - ua.getStart().y;
+                if (x > xmax)
+                    xmax = x;
+                if (y > ymax)
+                    ymax = y;
+                if (x < xmin)
+                    xmin = x;
+                if (y < ymin)
+                    ymin = y;
+                x = ua.getEnd().x;
+                y = h - ua.getEnd().y;
+                if (x > xmax)
+                    xmax = x;
+                if (y > ymax)
+                    ymax = y;
+                if (x < xmin)
+                    xmin = x;
+                if (y < ymin)
+                    ymin = y;
+            }
+        }
+
+        return new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin);
+    }
 
     /**
      * @param sse
@@ -155,7 +281,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      */
     public TopsDrawCanvas(SecStrucElement sse) {
         this();
-        this.RootSecStruc = sse;
+        this.RootSecStruc = new Cartoon(sse);
 //        SizeDisplay = true;
     }
 
@@ -221,7 +347,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      *            the root secondary structure for the diagram
      */
     public synchronized void setRootSecStruc(SecStrucElement Root) {
-        this.RootSecStruc = Root;
+        this.RootSecStruc = new Cartoon(Root);
         this.repaint();
     }
 
@@ -229,7 +355,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * @return the root secondary structure for the diagram
      */
     public synchronized SecStrucElement getRootSecStruc() {
-        return this.RootSecStruc;
+        return this.RootSecStruc.getRoot();
     }
 
     /* the Scale - a bound property */
@@ -312,17 +438,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     }
 
     public String convertStructureToString() {
-        if (this.RootSecStruc == null)
-            return new String();
-
-        StringBuffer topsString = new StringBuffer();
-        for (SecStrucElement s = this.RootSecStruc; s != null; s = s.GetTo()) {
-            char type = s.getType().charAt(0);
-            type = (s.getDirection().equals("D")) ? Character.toLowerCase(type)
-                    : type;
-            topsString.append(type);
-        }
-        return topsString.toString();
+        return RootSecStruc.convertStructureToString();
     }
 
     /* END of methods to get and set properties */
@@ -388,7 +504,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         switch (this.EditMode) {
 
             case FLIP_MODE:
-                this.flip(this.SelectedSymbol);
+                RootSecStruc.flip(this.SelectedSymbol);
+                this.repaint();
                 break;
 
             case MOVE_STRAND_MODE:
@@ -421,7 +538,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             case DELETE_SYMBOLS_MODE:
                 this.DeleteSelected();
                 // UnSelect();
-                this.SelectedSymbol = this.RootSecStruc;
+                this.SelectedSymbol = this.RootSecStruc.getRoot();
                 this.repaint();
                 break;
         }
@@ -507,24 +624,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         }
     }
 
-    public void flip(SecStrucElement s) {
-        if (s.getDirection().equals("U")) {
-            s.setDirection("D");
-        } else if (s.getDirection().equals("D")) {
-            s.setDirection("U");
-        }
-        this.repaint();
-    }
 
-    public void flipMultiple(ArrayList<SecStrucElement> list) {
-        Iterator<SecStrucElement> itr = list.iterator();
-        while (itr.hasNext()) {
-            SecStrucElement s = (SecStrucElement) itr.next();
-            this.flip(s);
-        }
-    }
-
-    public void linearLayout(ArrayList<SecStrucElement> list, int minX, int maxX) {
+    public void linearLayout(List<SecStrucElement> list, int minX, int maxX) {
         int numberOfSymbols = list.size();
         if (numberOfSymbols < 2)
             return;
@@ -557,7 +658,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         this.CenterDiagram();
     }
 
-    public void circularLayout(ArrayList<SecStrucElement> list, Rectangle bounds) {
+    public void circularLayout(List<SecStrucElement> list, Rectangle bounds) {
         int numberOfSymbols = list.size();
         if (numberOfSymbols < 3)
             return; // be ruth-less
@@ -666,7 +767,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public synchronized void selectBoxDoAction() {
         switch (this.EditMode) {
             case FLIP_MULTIPLE_MODE:
-                this.flipMultiple(this.selectBoxList);
+                RootSecStruc.flipMultiple(this.selectBoxList);
                 break;
 
             case LINEAR_LAYOUT_MODE:
@@ -681,7 +782,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         // finished, so clean up
         this.selectBox = null;
         this.selectBoxList.clear();
-        this.SelectedSymbol = this.RootSecStruc;
+        this.SelectedSymbol = this.RootSecStruc.getRoot();
     }
 
     public synchronized void addSymbol(String type, String direction, int x,
@@ -719,7 +820,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
             newSSE.SetTo(cTerminus);
 
-            this.RootSecStruc = nTerminus;
+            this.RootSecStruc = new Cartoon(nTerminus);
         } else {
             // deal with the C-terminus in a special way - add the new SSE
             // _before_ it
@@ -757,7 +858,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         }
 
         if (this.SelectedSymbol != null) {
-            this.RootSecStruc = this.SelectedSymbol.Delete();
+            this.RootSecStruc = new Cartoon();
         }
     }
 
@@ -767,36 +868,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         this.SelectedSymbol = null;
     }
 
-    public synchronized void selectContained(Rectangle r, ArrayList<SecStrucElement> list) {
+    public synchronized void selectContained(Rectangle r, List<SecStrucElement> list) {
         list.clear();
-
-        for (SecStrucElement s = this.RootSecStruc; s != null; s = s.GetTo()) {
-            Point pos = s.GetPosition();
-            if (r.contains(pos))
-                list.add(s);
-        }
+        list.addAll(RootSecStruc.selectContained(r));
     }
 
     public synchronized void SelectByPosition(Point p) {
-
-        SecStrucElement selected = null;
-
-        if (p != null) {
-
-            SecStrucElement s;
-            double minsep = Double.POSITIVE_INFINITY;
-            double sep;
-            Point ps;
-
-            for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
-                ps = s.GetPosition();
-                sep = this.Separation(p, ps);
-                if ((sep < s.GetSymbolRadius()) && (sep < minsep)) {
-                    minsep = sep;
-                    selected = s;
-                }
-            }
-        }
+        SecStrucElement selected = RootSecStruc.SelectByPosition(p);
 
         if (selected != null) {
             System.out.println("selected : " + selected.toString());
@@ -816,91 +894,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         float scale = this.getScale();
         if (scale <= 0.0)
             scale = 1.0F;
-        this.ApplyScale(scale);
+        RootSecStruc.ApplyScale(scale);
     }
 
-    /**
-     * this methods applies the inverse of the scale to the diagram, it does not
-     * do a repaint
-     */
-    public synchronized void InvertScale() {
-        float scale = this.getScale();
-        if (scale > 0.0)
-            scale = 1.0F / scale;
-        else
-            scale = 1.0F;
-        this.ApplyScale(scale);
-    }
-
-    /* private method to apply a scaling value to the diagram */
-    public synchronized void ApplyScale(float scale) {
-
-        SecStrucElement s;
-        Point p;
-        int x, y, r;
-        Vector<Point> conns;
-        Enumeration<Point> en;
-
-        for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
-
-            p = s.GetPosition();
-            x = p.x;
-            y = p.y;
-            x = Math.round(scale * x);
-            y = Math.round(scale * y);
-            p.x = x;
-            p.y = y;
-
-            r = s.GetSymbolRadius();
-            s.SetSymbolRadius(Math.round(r * scale));
-
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = en.nextElement();
-                    x = p.x;
-                    y = p.y;
-                    x = Math.round(scale * x);
-                    y = Math.round(scale * y);
-                    p.x = x;
-                    p.y = y;
-                }
-            }
-
-        }
-
-    }
-
-    /**
-     * this method translates the diagram, it does not do a repaint
-     * 
-     * @param x -
-     *            the x translation to apply
-     * @param y -
-     *            the y translation to apply
-     */
-    public synchronized void TranslateDiagram(int x, int y) {
-        SecStrucElement s;
-        Vector<Point> conns;
-        Enumeration<Point> en;
-        Point p;
-
-        for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
-            s.GetPosition().x += x;
-            s.GetPosition().y += y;
-
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    p.x += x;
-                    p.y += y;
-                }
-            }
-
-        }
-
-    }
 
     /**
      * this method sets up screen coordinates from the input ones it also sets
@@ -925,31 +921,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * inversion of y direction is required because the canvas coordinate
          * system changes the handedness of the input diagram
          */
-        this.InvertY();
+        RootSecStruc.InvertY();
 
         this.CenterDiagram();
-    }
-
-    /* private method to invert the diagrams Y coordinates */
-    private synchronized void InvertY() {
-    	Vector<Point> conns;
-        Enumeration<Point> en;
-        Point p;
-        SecStrucElement s;
-
-        for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
-
-            s.GetPosition().y *= -1;
-
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    p.y *= -1;
-                }
-            }
-        }
-
     }
 
     /**
@@ -957,22 +931,18 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * writing the file
      */
     public void SetCCodeCoordinates() {
-        this.InvertScale();
-        this.InvertY();
+        RootSecStruc.InvertScale(getScale());
+        RootSecStruc.InvertY();
     }
 
     /**
      * a method to centre the diagram on the canvas
      */
     public void CenterDiagram() {
-
-        try {
-            Point cent = this.RootSecStruc.TopsCentroid();
-            this.TranslateDiagram(-cent.x + this.getSize().width / 2, -cent.y
-                    + this.getSize().height / 2);
-        } catch (TopsLinkedListException e) {
-        }
-
+        Point cent = this.RootSecStruc.TopsCentroid();
+        RootSecStruc.TranslateDiagram(-cent.x + this.getSize().width / 2, -cent.y
+                + this.getSize().height / 2);
+        
     }
 
     /**
@@ -1086,7 +1056,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         if (this.Label != null)
             this.DrawLabel(g);
         if (this.RootSecStruc != null)
-            this.DrawTopsDiagram(g);
+            RootSecStruc.paint(g);
         if (this.InfoString != null)
             this.DrawInfoString(g);
         if (this.selectBox != null)
@@ -1126,21 +1096,6 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     }
 
-    /* this private method draws a TOPS diagram, symbols first then connections */
-    private void DrawTopsDiagram(Graphics g) {
-
-        SecStrucElement s;
-
-        for (s = this.RootSecStruc; s != null; s = s.GetTo()) {
-            this.DrawSecStruc(s, g);
-        }
-
-        for (s = this.RootSecStruc; (s != null) && (s.GetTo() != null); s = s
-                .GetTo()) {
-            this.DrawConnection(s, g);
-        }
-
-    }
 
     /*
      * this private method draws the master label for the TOPS diagram as a

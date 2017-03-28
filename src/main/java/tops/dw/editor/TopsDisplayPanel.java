@@ -11,6 +11,7 @@ import java.util.Vector;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
+import tops.web.display.applet.TopsDrawCanvas;
 
 /**
  * This class is a java bean which displays a number of Tops diagrams in a panel
@@ -105,7 +106,7 @@ public class TopsDisplayPanel extends Panel {
         int i;
 
         for (i = 0; i < this.numberDrawCanvases(); i++) {
-        		((TopsDrawCanvas)this.drawCanvases.get(i)).repaint();
+            this.drawCanvases.get(i).repaint();
         }
 
     }
@@ -135,7 +136,7 @@ public class TopsDisplayPanel extends Panel {
     private void addDiagram(SecStrucElement s, DomainDefinition Label) {
         if (s != null) {
         	String lab = (Label == null)? "Tops Diagram" : Label.toString();
-            TopsDrawCanvas tdc = new TopsDrawCanvas(s, lab);
+        	TopsDrawCanvas tdc = new TopsDrawCanvas(s, lab);
             this.drawCanvases.addElement(tdc);
             tdc.setSize(this.canvasDimension);
             Panel p = new Panel();
@@ -281,10 +282,10 @@ public class TopsDisplayPanel extends Panel {
         TopsDrawCanvas tdc = null;
 
         if ((index >= 0) && (index < this.numberDrawCanvases())) {
-            tdc = (TopsDrawCanvas) this.drawCanvases.elementAt(index);
+            tdc = this.drawCanvases.elementAt(index);
         }
 
-        return (tdc);
+        return tdc;
 
     }
 

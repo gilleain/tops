@@ -15,8 +15,8 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import tops.dw.io.TopsFileReader;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
-import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
 
 public class BatchAnnotater {
@@ -31,7 +31,7 @@ public class BatchAnnotater {
 			Protein p = topsFileReader.readTopsFile(inFile);
 			List<DomainDefinition> names = p.getDomainDefs();
 			for (int i = 0; i < p.numberDomains(); i++) {
-				SecStrucElement domain = p.getDomain(i);
+				Cartoon domain = new Cartoon(p.getDomain(i));   // XXX FIXME
 				domain.fitToRectangle(0, 0, w, h, b);
 				
 				domain.highlightByResidueNumber(residuesToAnnotate);
