@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.junit.Test;
 
 import tops.dw.protein.CATHcode;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
@@ -36,7 +37,7 @@ public class TestTopsFileWriter {
         e3.SetTo(c4);
         c4.SetFrom(e3);
         
-        protein.addTopsLinkedList(root, dd);
+        protein.addTopsLinkedList(new Cartoon(root), dd);
         topsFileWriter.writeTopsFile(protein, System.out);
     }
     
@@ -63,7 +64,7 @@ public class TestTopsFileWriter {
         e3.SetTo(c4);
         c4.SetFrom(e3);
         
-        protein.addTopsLinkedList(root, dd);
+        protein.addTopsLinkedList(new Cartoon(root), dd);
         
         CATHcode c2 = new CATHcode("2bopB0");
         DomainDefinition dd2 = new DomainDefinition(c2, DomainType.CHAIN_SET);
@@ -82,7 +83,7 @@ public class TestTopsFileWriter {
         e8.SetTo(c9);
         c9.SetFrom(e8);
         
-        protein.addTopsLinkedList(root2, dd2);
+        protein.addTopsLinkedList(new Cartoon(root2), dd2);
         
         topsFileWriter.writeTopsFile(protein, System.out);
     }

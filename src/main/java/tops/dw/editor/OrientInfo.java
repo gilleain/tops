@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsLinkedListException;
+import tops.web.display.applet.TopsDrawCanvas;
 
 public class OrientInfo {
 
@@ -71,8 +73,7 @@ public class OrientInfo {
 	 * @param tdc
 	 * @throws TopsLinkedListException
 	 */
-	public void orient_consensus(SecStrucElement refroot,
-	        SecStrucElement root, int equiv_ref[], int equiv[], tops.web.display.applet.TopsDrawCanvas tdc)
+	public void orientConsensus(Cartoon refroot, Cartoon root, int equiv_ref[], int equiv[], TopsDrawCanvas tdc)
 	        throws TopsLinkedListException {
 	
 	    SecStrucElement ref[] = new SecStrucElement[2];

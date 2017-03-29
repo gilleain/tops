@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import tops.dw.io.TopsFileReader;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
-import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
 
 public class FindFilesServlet extends HttpServlet {
@@ -73,8 +73,8 @@ public class FindFilesServlet extends HttpServlet {
 	        	for (String name : names) {
 	        		Protein chain = topsFileReader.readTopsFile(this.tfm.getStreamFromDir(cla, name));
 	        		for (DomainDefinition dd : chain.getDomainDefs()) {
-	        			SecStrucElement root = chain.getDomain(chain.getDomainIndex(dd.getCATHcode()));
-	        			mergedProtein.addTopsLinkedList(root, dd);
+	        		    Cartoon cartoon = chain.getDomain(chain.getDomainIndex(dd.getCATHcode()));
+	        			mergedProtein.addTopsLinkedList(cartoon, dd);
 	        		}
 	        	}
 	        	handle(mergedProtein, action, request, response);

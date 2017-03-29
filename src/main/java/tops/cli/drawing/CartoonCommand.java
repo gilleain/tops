@@ -14,8 +14,8 @@ import org.apache.commons.cli.ParseException;
 import tops.cli.BaseCLIHandler;
 import tops.cli.Command;
 import tops.dw.io.TopsFileReader;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
-import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.port.model.DomainDefinition;
 import tops.view.cartoon.CartoonDrawer;
@@ -50,15 +50,15 @@ public class CartoonCommand implements Command {
             TopsFileReader topsFileReader = new TopsFileReader();
             Protein protein = topsFileReader.readTopsFile(new File(handler.topsFilepath));
             List<DomainDefinition> dd = protein.getDomainDefs();
-            List<SecStrucElement> ll = protein.getLinkedLists();
+            List<Cartoon> ll = protein.getLinkedLists();
 
             if (handler.outputType.equals("PDF") || handler.outputType.equals("IMG")) {
                 FileOutputStream fos = new FileOutputStream(handler.outputFilepath);
                 
                 for (int i = 0; i < dd.size(); i++) {
 //                    DomainDefinition d = (DomainDefinition) dd.get(i);
-                    SecStrucElement root = ll.get(i);
-                    drawer.draw(handler.topsFilepath, handler.outputType, w, h, root, fos);
+                    Cartoon cartoon = ll.get(i);
+                    drawer.draw(handler.topsFilepath, handler.outputType, w, h, cartoon, fos);
                 }
                 
             } else if (handler.outputType.equals("SVG") || handler.outputType.equals("PS")) {
@@ -66,8 +66,8 @@ public class CartoonCommand implements Command {
 
                 for (int i = 0; i < dd.size(); i++) {
 //                    DomainDefinition d = (DomainDefinition) dd.get(i);
-                    SecStrucElement root = ll.get(i);
-                    drawer.draw(handler.topsFilepath, handler.outputType, root, pw);
+                    Cartoon cartoon = ll.get(i);
+                    drawer.draw(handler.topsFilepath, handler.outputType, cartoon, pw);
                 }
                 pw.flush();
                 pw.close();

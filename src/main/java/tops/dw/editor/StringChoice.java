@@ -1,14 +1,26 @@
 package tops.dw.editor;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.ScrollPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 public class StringChoice extends Dialog implements ActionListener {
 
     private static int WIDTH = 250, HEIGHT = 300;
 
-    private Vector<String> Strings = null;
+    private List<String> Strings = null;
 
     private String RetString = null;
 
@@ -20,10 +32,10 @@ public class StringChoice extends Dialog implements ActionListener {
 
     private CheckboxGroup cbg = null;
 
-    public StringChoice(Frame f, String Message, Vector<String> strngs) {
+    public StringChoice(Frame f, String Message, List<String> strs) {
         super(f, "StringChoice", true);
 
-        this.Strings = strngs;
+        this.Strings = strs;
 
         this.setFont(new Font("TimesRoman", Font.BOLD, 12));
         this.setLayout(new BorderLayout());
@@ -36,12 +48,9 @@ public class StringChoice extends Dialog implements ActionListener {
         pan.setLayout(new GridLayout(0, 1));
 
         if (this.Strings != null) {
-            Enumeration<String> en = this.Strings.elements();
-            String str;
             this.cbg = new CheckboxGroup();
             boolean st = true;
-            while (en.hasMoreElements()) {
-                str = en.nextElement();
+            for (String str : Strings) {
                 Checkbox cb = new Checkbox(str, this.cbg, st);
                 pan.add(cb);
                 st = false;
@@ -93,12 +102,8 @@ public class StringChoice extends Dialog implements ActionListener {
             Checkbox cb = this.cbg.getSelectedCheckbox();
             if (cb != null) {
                 String nm = cb.getLabel();
-                Enumeration<String> en = this.Strings.elements();
-                String str;
                 i = 0;
-                while (en.hasMoreElements()) {
-                    str = (String) en.nextElement();
-
+                for (String str : Strings) {
                     if (nm.equals(str)) {
                         this.RetString = str;
                         this.RetInt = i;

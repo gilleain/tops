@@ -14,8 +14,8 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
-import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
 import tops.port.model.Segment;
 
@@ -51,9 +51,8 @@ public class DomainInfoPanel extends Panel {
         this.proteins.addElement(p);
 
         List<DomainDefinition> DomainDefs = p.getDomainDefs();
-        List<SecStrucElement> Diagrams = p.getLinkedLists();
+        List<Cartoon> Diagrams = p.getLinkedLists();
 
-        ;
         Button b;
         Choice ch;
         Panel panel;
@@ -61,7 +60,7 @@ public class DomainInfoPanel extends Panel {
         int index = 0;
         for (DomainDefinition dd : DomainDefs) {
 
-            SecStrucElement ss = Diagrams.get(index);
+            Cartoon cartoon = Diagrams.get(index);
 
             b = new Button("Domain information");
             b.addActionListener(new DomainInfoCommand(dd));
@@ -93,7 +92,7 @@ public class DomainInfoPanel extends Panel {
             ch.addItem("Add arrow");
             ch.addItem("Delete arrow");
 
-            ch.addItemListener(new DomainInfoPanelCommand(this.TopsEd, ss,
+            ch.addItemListener(new DomainInfoPanelCommand(this.TopsEd, cartoon,
                     DomainInfoPanelCommand.CHANGE_EDIT_MODE_COMMAND));
 
             panel = new Panel();

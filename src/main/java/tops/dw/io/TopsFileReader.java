@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import tops.dw.protein.CATHcode;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
@@ -113,7 +114,7 @@ public class TopsFileReader {
                     CurrentSS = new SecStrucElement();
 
                     if (countss == 1) {
-                        protein.addTopsLinkedList(CurrentSS, ddef);
+                        protein.addTopsLinkedList(new Cartoon(CurrentSS), ddef);
                     }
 
                     CurrentSS.SetFrom(LastSS);
@@ -357,10 +358,10 @@ public class TopsFileReader {
 
         }
 
-        List<SecStrucElement> lls = protein.getLinkedLists();
-        for (SecStrucElement ll : lls) {
-            protein.fixedFromFixedIndex(ll);
-            protein.nextFromNextIndex(ll);
+        List<Cartoon> lls = protein.getLinkedLists();
+        for (Cartoon ll : lls) {
+            protein.fixedFromFixedIndex(ll.getRoot());
+            protein.nextFromNextIndex(ll.getRoot());
         }
 
         return protein;

@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import tops.dw.io.TopsFileWriter;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
-import tops.dw.protein.SecStrucElement;
 import tops.view.cartoon.CartoonDrawer;
 
 public class CartoonServlet extends HttpServlet {
@@ -59,10 +59,10 @@ public class CartoonServlet extends HttpServlet {
             return;
         }
 
-        SecStrucElement root = protein.getDomain(0);	// for now...
+        Cartoon cartoon = protein.getDomain(0);	// for now...
         String domain = params.get("domain");
 
-        if (root == null) {
+        if (cartoon == null) {
             this.error("Domain not found : " + domain, response);
             return;
         }
@@ -78,28 +78,28 @@ public class CartoonServlet extends HttpServlet {
             response.setContentType("image/gif");
             OutputStream out = response.getOutputStream();
 
-            drawer.draw(domain, "IMG", width, height, root, out);
+            drawer.draw(domain, "IMG", width, height, cartoon, out);
 
         } else if (fileType.equals("pdf")) { // Portable Document Format, using iText library
 
             response.setContentType("application/pdf");
             OutputStream out = response.getOutputStream();
 
-            drawer.draw(domain, "PDF", width, height, root, out);
+            drawer.draw(domain, "PDF", width, height, cartoon, out);
 
         } else if (fileType.equals("svg")) { // Support Vector Graphics - basically XML
 
             response.setContentType("image/svg+xml");
             PrintWriter writer = response.getWriter();
 
-            drawer.draw(domain, "SVG", root, writer);
+            drawer.draw(domain, "SVG", cartoon, writer);
 
         } else if (fileType.equals("ps")) { // Postscript - basically text
 
             response.setContentType("application/ps");
             PrintWriter writer = response.getWriter();
 
-            drawer.draw(domain, "PS", root, writer);
+            drawer.draw(domain, "PS", cartoon, writer);
 
         } else {
             this.error("filetype is not supported", response);

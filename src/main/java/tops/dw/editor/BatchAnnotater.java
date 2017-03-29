@@ -31,7 +31,7 @@ public class BatchAnnotater {
 			Protein p = topsFileReader.readTopsFile(inFile);
 			List<DomainDefinition> names = p.getDomainDefs();
 			for (int i = 0; i < p.numberDomains(); i++) {
-				Cartoon domain = new Cartoon(p.getDomain(i));   // XXX FIXME
+				Cartoon domain = p.getDomain(i);
 				domain.fitToRectangle(0, 0, w, h, b);
 				
 				domain.highlightByResidueNumber(residuesToAnnotate);

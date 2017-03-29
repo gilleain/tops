@@ -397,27 +397,13 @@ public class SecStrucElement {
 
     }
 
-    public SecStrucElement GetSSEByNumber(int num) {
-
-        SecStrucElement ss;
-        int i = 0;
-        for (ss = this; ss != null && i < num; ss = ss.To, i++)
-            ;
-
-        return ss;
-
-    }
-
+  
     public String getRelDirection(SecStrucElement s) {
         if (this.Direction.equals(s.Direction))
             return "P";
         else
             return "A";
     }
-
-  
-
-    
 
     public int getSymbolNumber() {
 		return SymbolNumber;

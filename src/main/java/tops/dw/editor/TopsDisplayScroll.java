@@ -4,8 +4,10 @@ import java.awt.Adjustable;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.ScrollPane;
+import java.util.List;
 import java.util.Vector;
 
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
@@ -68,7 +70,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param Labels -
      *            a vector of labels concurrent with the Tops diagrams
      */
-    public TopsDisplayScroll(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
+    public TopsDisplayScroll(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
         this();
         this.setDiagrams(Diagrams, Labels);
         this.doLayout();
@@ -124,7 +126,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param Labels -
      *            the new set of labels
      */
-    public void setDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
+    public void setDiagrams(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
         if (this.DisplayPanel != null)
             this.DisplayPanel.setDiagrams(Diagrams, Labels);
         this.doLayout();
@@ -150,7 +152,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param Labels -
      *            the new set of labels
      */
-    public void addDiagrams(Vector<SecStrucElement> Diagrams, Vector<DomainDefinition> Labels) {
+    public void addDiagrams(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
         if (this.DisplayPanel != null)
             this.DisplayPanel.addDiagrams(Diagrams, Labels);
         this.doLayout();
@@ -201,7 +203,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param EditMode -
      *            the required edit mode
      */
-    public void setEditMode(SecStrucElement s, int EditMode) {
+    public void setEditMode(Cartoon s, int EditMode) {
         if (this.DisplayPanel != null)
             this.DisplayPanel.setEditMode(s, EditMode);
     }
@@ -238,7 +240,7 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param s -
      *            the root SecStrucElement
      */
-    public TopsDrawCanvas GetDrawCanvas(SecStrucElement s) {
+    public TopsDrawCanvas GetDrawCanvas(Cartoon s) {
         TopsDrawCanvas tdc = null;
         if (this.DisplayPanel != null)
             tdc = this.DisplayPanel.getDrawCanvas(s);

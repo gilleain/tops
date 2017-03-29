@@ -24,7 +24,6 @@ import tops.dw.editor.UserArrow;
 import tops.dw.editor.UserLabel;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
-import tops.dw.protein.TopsLinkedListException;
 
 /**
  * This class is a java bean which displays and permits editing of a single Tops
@@ -279,9 +278,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      *            The SecStructElement serving as linked list root for the Tops
      *            diagram
      */
-    public TopsDrawCanvas(SecStrucElement sse) {
+    public TopsDrawCanvas(Cartoon cartoon) {
         this();
-        this.RootSecStruc = new Cartoon(sse);
+        this.RootSecStruc = cartoon;
 //        SizeDisplay = true;
     }
 
@@ -292,8 +291,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * @param lab
      *            the Label string for the diagram
      */
-    public TopsDrawCanvas(SecStrucElement sse, String lab) {
-        this(sse);
+    public TopsDrawCanvas(Cartoon cartoon, String lab) {
+        this(cartoon);
         this.Label = lab;
     }
 
@@ -957,11 +956,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         float cwidth = (cd.width - 2 * TopsDrawCanvas.BORDER);
 
         if (this.RootSecStruc != null) {
-            try {
-                bb = this.RootSecStruc.TopsBoundingBox();
-            } catch (TopsLinkedListException e) {
-                return s;
-            }
+            bb = this.RootSecStruc.TopsBoundingBox();
 
             float s1 = cwidth / (bb.width);
             float s2 = cheight / (bb.height);

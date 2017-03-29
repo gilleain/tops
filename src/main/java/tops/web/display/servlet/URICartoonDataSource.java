@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import tops.dw.io.TopsFileReader;
 import tops.dw.protein.CATHcode;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
@@ -79,21 +80,21 @@ public class URICartoonDataSource implements CartoonDataSource {
 		Protein p = new TopsFileReader().readTopsFile(f);
 //		System.out.println("Got protein " + p.getName());
 
-		List<SecStrucElement> doms = p.getLinkedLists();
+		List<Cartoon> doms = p.getLinkedLists();
 		int domainIndex = p.getDomainIndex(new CATHcode(domid));
 		if (domainIndex == -1) {
 			return p;
 		}
 
 		Protein pp = new Protein();
-		SecStrucElement s = doms.get(domainIndex);
+		Cartoon s = doms.get(domainIndex);
 		DomainDefinition d = p.getDomainDefs().get(domainIndex);
         pp.addTopsLinkedList(s, d);
 //        System.out.println("Made protein " + pp.getName());
         return pp;
 	}
 
-	private void highlight(SecStrucElement root, String highlight) {
+	private void highlight(Cartoon cartoon, String highlight) {
 		Color strandColor = Color.yellow;
 		Color helixColor = Color.red;
 		Color otherColor = Color.blue;
@@ -102,7 +103,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 		if (highlight.equals("none")) {
 			return;
 		} else if (highlight.equals("all")) {
-			for (SecStrucElement s = root; s != null; s = s.GetTo()) {
+			for (SecStrucElement s = cartoon.getRoot(); s != null; s = s.GetTo()) {
 				if (s.getType().equals("E")) {
 					s.setColour(strandColor);
 				} else if (s.getType().equals("H")) {
@@ -117,7 +118,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 		String[] bits = highlight.split("\\.");
 		for (int i = 0; i < bits.length; i++) {
 			int index = Integer.parseInt(bits[i]);
-			SecStrucElement s = root.GetSSEByNumber(index);
+			SecStrucElement s = cartoon.GetSSEByNumber(index);
 			if (s.getType().equals("E")) {
 				s.setColour(strandColor);
 			} else if (s.getType().equals("H")) {

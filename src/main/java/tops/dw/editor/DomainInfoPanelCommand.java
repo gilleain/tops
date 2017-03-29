@@ -3,7 +3,7 @@ package tops.dw.editor;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import tops.dw.protein.SecStrucElement;
+import tops.dw.protein.Cartoon;
 import tops.web.display.applet.TopsDrawCanvas;
 
 /**
@@ -23,14 +23,14 @@ class DomainInfoPanelCommand implements ItemListener {
 
     private TopsEditor TopsEd;
 
-    private SecStrucElement DiagramSS;
+    private Cartoon DiagramSS;
 
     private int CommandID;
 
     /* END instance variables */
 
     /* START constructors */
-    public DomainInfoPanelCommand(TopsEditor te, SecStrucElement s, int id) {
+    public DomainInfoPanelCommand(TopsEditor te, Cartoon s, int id) {
         this.TopsEd = te;
         this.DiagramSS = s;
         this.CommandID = id;

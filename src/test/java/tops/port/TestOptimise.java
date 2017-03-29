@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.Test;
 
 import tops.dw.io.TopsFileReader;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.port.calculate.Configure;
@@ -51,14 +52,14 @@ public class TestOptimise {
 //        tops.dw.protein.Protein dwProtein = convertOnDisk(name, chain);
         tops.dw.protein.Protein dwProtein = convertInMemory(name, protein);
         List<DomainDefinition> dd = dwProtein.getDomainDefs();
-        List<SecStrucElement> ll = dwProtein.getLinkedLists();
+        List<Cartoon> ll = dwProtein.getLinkedLists();
         CartoonDrawer drawer = new CartoonDrawer();
         
         FileOutputStream fos = new FileOutputStream(outputFilepath);
         final int w = 300;
         final int h = 300;
         for (int i = 0; i < dd.size(); i++) {
-            SecStrucElement root = (SecStrucElement) ll.get(i);
+            Cartoon root = ll.get(i);
             System.out.println("drawing");
             drawer.draw(name, "IMG", w, h, root, fos);
         }

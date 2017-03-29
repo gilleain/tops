@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.view.cartoon.builder.IMGBuilder;
 import tops.view.cartoon.builder.PDFBuilder;
@@ -34,8 +35,8 @@ public class CartoonDrawer {
     }
 
     // this method is for byte representations
-    public void draw(String name, String type, int w, int h, SecStrucElement root, OutputStream os) throws IOException {
-        Rectangle bb = this.init(root, w - (2 * CartoonDrawer.BORDER_WIDTH), w, h);
+    public void draw(String name, String type, int w, int h, Cartoon cartoon, OutputStream os) throws IOException {
+        Rectangle bb = this.init(cartoon, w - (2 * CartoonDrawer.BORDER_WIDTH), w, h);
         if (type.equals("IMG")) {
             this.builder = new IMGBuilder(name, bb, os, w, h);
         } else if (type.equals("PDF")) {
@@ -43,13 +44,13 @@ public class CartoonDrawer {
         } else {
             throw new IOException("Unsupported output type : " + type);
         }
-        this.draw(root);
+        this.draw(cartoon);
         this.builder.printProduct();
     }
 
     // this method is for text representations
-    public void draw(String name, String type, SecStrucElement root, PrintWriter pw) throws IOException {
-        Rectangle bb = this.init(root);
+    public void draw(String name, String type, Cartoon cartoon, PrintWriter pw) throws IOException {
+        Rectangle bb = this.init(cartoon);
         if (type.equals("SVG")) {
             this.builder = new SVGBuilder(bb, pw);
         } else if (type.equals("PS")) {
@@ -58,25 +59,25 @@ public class CartoonDrawer {
             throw new IOException("Unsupported output type : " + type);
         }
         //System.err.println("drawing");
-        this.draw(root);
+        this.draw(cartoon);
         //System.err.println("printing");
         this.builder.printProduct();
     }
 
-    private Rectangle init(SecStrucElement root) {
+    private Rectangle init(Cartoon cartoon) {
         // neded to convert c tops coordinates to Java coordinates
-        this.invertY(root); 
-        Rectangle bb = this.getBoundingBox(root);
+        cartoon.InvertY(); 
+        Rectangle bb = cartoon.TopsBoundingBox();
         System.err.println("bb before = " + bb);
 
-        this.centerDiagram(root, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, bb.width, bb.height, bb);
+        this.centerDiagram(cartoon, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, bb.width, bb.height, bb);
         Point currentCorner = bb.getLocation();
         bb.translate(CartoonDrawer.BORDER_WIDTH - currentCorner.x, CartoonDrawer.BORDER_WIDTH - currentCorner.y);
         return bb;
     }
 
-    private Rectangle init(SecStrucElement root, int length, int w, int h) {
-        Rectangle bb = this.getBoundingBox(root);
+    private Rectangle init(Cartoon cartoon, int length, int w, int h) {
+        Rectangle bb = cartoon.TopsBoundingBox();
         //System.err.println("bb before = " + bb);
 
         // get the largest dimension
@@ -88,25 +89,25 @@ public class CartoonDrawer {
         float scale = ((float) length / (float) largestDimension); 
 
         //System.err.println("scale = " + scale);
-        this.applyScale(root, scale);
-        this.invertY(root); // neded to convert c tops coordinates to Java  coordinates
-        if (scale != 1.0) bb = this.getBoundingBox(root); // get the new bounds
+        cartoon.ApplyScale(scale);
+        cartoon.InvertY(); // needed to convert c tops coordinates to Java  coordinates
+        if (scale != 1.0) bb = cartoon.TopsBoundingBox(); // get the new bounds
 
         //System.err.println("bb after = " + bb);
         Point currentCorner = bb.getLocation();
 
         //System.err.println("location of current corner = " + currentCorner);
 
-        this.centerDiagram(root, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, w, h, bb);
+        this.centerDiagram(cartoon, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, w, h, bb);
 
         // translate bb /after/ moving the SSEs! (BE  BETTER!)
         bb.translate(0 - currentCorner.x, 0 - currentCorner.y); 
         return bb;
     }
 
-    private void draw(SecStrucElement root) {
+    private void draw(Cartoon root) {
         SecStrucElement s;
-        for (s = root; s != null; s = s.GetTo()) {
+        for (s = root.getRoot(); s != null; s = s.GetTo()) {
             this.drawSecStruc(s);
             if (s.GetTo() != null)
                 this.drawConnection(s);
@@ -161,7 +162,7 @@ public class CartoonDrawer {
         }
     }
 
-    private void centerDiagram(SecStrucElement root, int x, int y, int width, int height, Rectangle bounds) {
+    private void centerDiagram(Cartoon cartoon, int x, int y, int width, int height, Rectangle bounds) {
         Point currentCenter = new Point(bounds.x + (bounds.width / 2), bounds.y + (bounds.height / 2));
         Point trueCenter = new Point((x + width) / 2, (y + height) / 2);
 
@@ -171,28 +172,7 @@ public class CartoonDrawer {
         int shiftX = trueCenter.x - currentCenter.x;
         int shiftY = trueCenter.y - currentCenter.y;
 
-        this.translateDiagram(root, shiftX, shiftY);
-    }
-
-    private void translateDiagram(SecStrucElement root, int x, int y) {
-        System.err.println("translating by " + x + " " + y);
-        SecStrucElement s;
-        Vector<Point> conns;
-        Enumeration<Point> en;
-        Point p;
-
-        for (s = root; s != null; s = s.GetTo()) {
-            s.Translate(x, y);
-
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    p.translate(x, y);
-                }
-            }
-
-        }
+        cartoon.TranslateDiagram(shiftX, shiftY);
     }
 
     private Rectangle getBoundingBox(SecStrucElement root) {

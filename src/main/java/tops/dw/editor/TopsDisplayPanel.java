@@ -8,8 +8,8 @@ import java.awt.Panel;
 import java.util.List;
 import java.util.Vector;
 
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
-import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
 import tops.web.display.applet.TopsDrawCanvas;
 
@@ -65,7 +65,7 @@ public class TopsDisplayPanel extends Panel {
      * @param diagrams - a vector of Tops diagrams
      * @param labels - a vector of labels concurrent with the Tops diagrams
      */
-    public TopsDisplayPanel(List<SecStrucElement> diagrams, List<DomainDefinition> labels) {
+    public TopsDisplayPanel(List<Cartoon> diagrams, List<DomainDefinition> labels) {
         this();
         this.setDiagrams(diagrams, labels);
     }
@@ -133,10 +133,10 @@ public class TopsDisplayPanel extends Panel {
      * @param s - the root secondary structure for the diagram
      * @param Label - the label for the diagram
      */
-    private void addDiagram(SecStrucElement s, DomainDefinition Label) {
-        if (s != null) {
+    private void addDiagram(Cartoon cartoon, DomainDefinition Label) {
+        if (cartoon != null) {
         	String lab = (Label == null)? "Tops Diagram" : Label.toString();
-        	TopsDrawCanvas tdc = new TopsDrawCanvas(s, lab);
+        	TopsDrawCanvas tdc = new TopsDrawCanvas(cartoon, lab);
             this.drawCanvases.addElement(tdc);
             tdc.setSize(this.canvasDimension);
             Panel p = new Panel();
@@ -154,9 +154,9 @@ public class TopsDisplayPanel extends Panel {
      * @param Labels -
      *            the new set of labels
      */
-    public void setDiagrams(List<SecStrucElement> Diagrams, List<DomainDefinition> Labels) {
+    public void setDiagrams(List<Cartoon> diagrams, List<DomainDefinition> labels) {
         this.clear();
-        this.addDiagrams(Diagrams, Labels);
+        this.addDiagrams(diagrams, labels);
     }
 
     /**
@@ -173,11 +173,11 @@ public class TopsDisplayPanel extends Panel {
      * method adds to the diagrams being managed
      * 
      * @param Diagrams -
-     *            the new set of diagrams (all SecStrucElements)
+     *            the new set of diagrams (all Cartoons)
      * @param Labels -
      *            the new set of labels
      */
-    public void addDiagrams(List<SecStrucElement> Diagrams, List<DomainDefinition> Labels) {
+    public void addDiagrams(List<Cartoon> Diagrams, List<DomainDefinition> Labels) {
 
         int i;
 
@@ -190,7 +190,7 @@ public class TopsDisplayPanel extends Panel {
         }
 
         for (i = 0; i < Diagrams.size(); i++) {
-            SecStrucElement el = Diagrams.get(i);
+            Cartoon el = Diagrams.get(i);
             DomainDefinition lab = null;
             if (i < Labels.size())
             	lab = Labels.get(i);
@@ -256,7 +256,7 @@ public class TopsDisplayPanel extends Panel {
      * @param EditMode -
      *            the required edit mode
      */
-    public void setEditMode(SecStrucElement s, int EditMode) {
+    public void setEditMode(Cartoon s, int EditMode) {
         TopsDrawCanvas dc = this.getDrawCanvas(s);
         if (dc != null)
             dc.setEditMode(EditMode);
@@ -312,14 +312,14 @@ public class TopsDisplayPanel extends Panel {
      * @param s -
      *            the root SecStrucElement
      */
-    public TopsDrawCanvas getDrawCanvas(SecStrucElement s) {
+    public TopsDrawCanvas getDrawCanvas(Cartoon s) {
 
         TopsDrawCanvas tdc = null;
 
         int i;
         for (i = 0; i < this.numberDrawCanvases(); i++) {
             TopsDrawCanvas tdc1 = this.getDrawCanvas(i);
-            if (s == tdc1.getRootSecStruc()) {
+            if (s.getRoot() == tdc1.getRootSecStruc()) {
                 tdc = tdc1;
                 break;
             }

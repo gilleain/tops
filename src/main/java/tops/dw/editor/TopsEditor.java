@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -34,12 +35,14 @@ import java.util.Vector;
 import tops.dw.app.ImagePrinter;
 import tops.dw.io.TopsFileReader;
 import tops.dw.io.TopsFileWriter;
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.ProteinChoice;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.dw.protein.TopsLinkedListException;
 import tops.port.model.DomainDefinition;
+import tops.web.display.applet.TopsDrawCanvas;
 
 /**
  * the Tops diagram editor (controls various java bean components which do
@@ -506,17 +509,17 @@ public class TopsEditor implements ActionListener {
         if (this.proteins == null)
             this.proteins = new Vector<Protein>();
 
-        Vector<String> strs = new Vector<String>();
-        Vector<SecStrucElement> diags = new Vector<SecStrucElement>();
+        List<String> strs = new ArrayList<String>();
+        List<Cartoon> diags = new ArrayList<Cartoon>();
 
         Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
             Protein p = prots.nextElement();
             List<DomainDefinition> doms = p.getDomainDefs();
-            List<SecStrucElement> lls = p.getLinkedLists();
+            List<Cartoon> lls = p.getLinkedLists();
             for (int i = 0; i < doms.size(); i++) {
-                strs.addElement(doms.get(i).toString());
-                diags.addElement(lls.get(i));
+                strs.add(doms.get(i).toString());
+                diags.add(lls.get(i));
             }
         }
 
@@ -526,8 +529,7 @@ public class TopsEditor implements ActionListener {
         int ChosenNum = stc.getChoiceNumber();
 
         if (Chosen != null) {
-            tops.web.display.applet.TopsDrawCanvas DrawCanvToPrint = this.topsDisplay
-                    .GetDrawCanvas((SecStrucElement) diags.elementAt(ChosenNum));
+            TopsDrawCanvas DrawCanvToPrint = this.topsDisplay.GetDrawCanvas(diags.get(ChosenNum));
 
             if (DrawCanvToPrint != null) {
 
@@ -681,7 +683,7 @@ public class TopsEditor implements ActionListener {
         Enumeration<String> orient_names = oi.getNames();
         while (orient_names.hasMoreElements()) {
             String domname = (String) orient_names.nextElement();
-            SecStrucElement root = this.getRootSSE(domname);
+            Cartoon root = this.getRootSSE(domname);
             if (root == null) {
                 this.error("Domain " + domname + " not found");
                 break;
@@ -742,29 +744,29 @@ public class TopsEditor implements ActionListener {
         // everything is oriented w.r.t. a reference - the first domain in the
         // equivalence file
         Enumeration<String> orient_names = oi.getNames();
-        String refdomname = (String) orient_names.nextElement();
-        SecStrucElement refdomroot = this.getRootSSE(refdomname);
+        String refdomname = orient_names.nextElement();
+        Cartoon refdomroot = this.getRootSSE(refdomname);
         if (refdomroot == null) {
             this.error("Domain " + refdomname + " not found");
             return;
         }
 
         // orient all other domains in equivalence file w.r.t. reference
-        SecStrucElement root;
+        Cartoon root;
         String domname;
         int i = 0;
         try {
+            int[] reference = oi.getMapping(0);
             while (orient_names.hasMoreElements()) {
                 i++;
-                domname = (String) orient_names.nextElement();
+                domname = orient_names.nextElement();
                 root = this.getRootSSE(domname);
                 if (root == null) {
                     this.error("Domain " + domname + " not found");
                     break;
                 }
-                tops.web.display.applet.TopsDrawCanvas tdc = this.topsDisplay.GetDrawCanvas(root);
-                oi.orient_consensus(refdomroot, root, oi.getMapping(0),
-                        oi.getMapping(i), tdc);
+                TopsDrawCanvas tdc = this.topsDisplay.GetDrawCanvas(root);
+                oi.orientConsensus(refdomroot, root, reference, oi.getMapping(i), tdc);
             }
         } catch (TopsLinkedListException tle) {
             System.out.println("Exception caught in orientCartoons");
@@ -775,7 +777,7 @@ public class TopsEditor implements ActionListener {
 
     }
 
-    private SecStrucElement getRootSSE(String dom_name) {
+    private Cartoon getRootSSE(String dom_name) {
         if (this.proteins == null)
             return null;
 
@@ -783,7 +785,7 @@ public class TopsEditor implements ActionListener {
 
         while (ps.hasMoreElements()) {
             Protein p = (Protein) ps.nextElement();
-            SecStrucElement sseRoot = p.getRootSSE(dom_name);
+            Cartoon sseRoot = p.getRootSSE(dom_name);
             if (sseRoot != null) {
             	return sseRoot;
             }
@@ -798,17 +800,17 @@ public class TopsEditor implements ActionListener {
         if (this.proteins == null)
             this.proteins = new Vector<Protein>();
 
-        Vector<String> strs = new Vector<String>();
-        Vector<SecStrucElement> diags = new Vector<SecStrucElement>();
+        List<String> strs = new ArrayList<String>();
+        List<Cartoon> diags = new ArrayList<Cartoon>();
 
         Enumeration<Protein> prots = this.proteins.elements();
         while (prots.hasMoreElements()) {
             Protein p = (Protein) prots.nextElement();
             List<DomainDefinition> doms = p.getDomainDefs();
-            List<SecStrucElement> lls = p.getLinkedLists();
+            List<Cartoon> lls = p.getLinkedLists();
             for (int i = 0; i < doms.size(); i++) {
-                strs.addElement(doms.get(i).toString());
-                diags.addElement(lls.get(i));
+                strs.add(doms.get(i).toString());
+                diags.add(lls.get(i));
             }
         }
 
@@ -818,8 +820,8 @@ public class TopsEditor implements ActionListener {
         int ChosenNum = stc.getChoiceNumber();
 
         if (Chosen != null) {
-            tops.web.display.applet.TopsDrawCanvas DrawCanvToPrint = this.topsDisplay
-                    .GetDrawCanvas((SecStrucElement) diags.elementAt(ChosenNum));
+            TopsDrawCanvas DrawCanvToPrint = 
+                    this.topsDisplay.GetDrawCanvas(diags.get(ChosenNum));
 
             if (DrawCanvToPrint != null) {
 

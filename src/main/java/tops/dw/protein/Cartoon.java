@@ -21,23 +21,23 @@ public class Cartoon {
     
     private List<Annotation> annotations;  
     
-    private boolean start_new_connection = true;
+    private boolean startNewConnection = true;
     
-    private Font[] FontsArr = new Font[10];
+    private Font[] fontsArr = new Font[10];
     
     private Font currentFont;
 
-    private Font Font12;
+    private Font font12;
     
     public Cartoon(SecStrucElement root) {
         this.root = root;
         
         this.annotations = new ArrayList<Annotation>();
         int fs, i;
-        for (fs = 48, i = 0; (fs > 11) && i < this.FontsArr.length; fs -= 4, i++) {
-            this.FontsArr[i] = new Font("TimesRoman", Font.PLAIN, fs);
+        for (fs = 48, i = 0; (fs > 11) && i < this.fontsArr.length; fs -= 4, i++) {
+            this.fontsArr[i] = new Font("TimesRoman", Font.PLAIN, fs);
         }
-        this.Font12 = new Font("TimesRoman", Font.PLAIN, 12);
+        this.font12 = new Font("TimesRoman", Font.PLAIN, 12);
         this.currentFont = null; 
     }
     
@@ -209,7 +209,7 @@ public class Cartoon {
     private void ConnectionsEPS(Vector<String> EPS, int w, int h) {
         SecStrucElement s;
         for (s = root; (s != null) && (s.GetTo() != null); s = s.GetTo()) {
-            this.start_new_connection = true;
+            this.startNewConnection = true;
             this.DrawConnection(s, EPS);
             EPS.addElement(PostscriptFactory.stroke());
         }
@@ -334,7 +334,7 @@ public class Cartoon {
     private FontMetrics setFontSize(String lab, int r, Graphics g) {
         try {
             if (this.currentFont == null) {
-                g.setFont(this.FontsArr[0]);
+                g.setFont(this.fontsArr[0]);
             } else {
                 g.setFont(this.currentFont);
             }
@@ -343,19 +343,19 @@ public class Cartoon {
             int h = fm.getHeight();
 
             int i = 1;
-            while (i < this.FontsArr.length && (Math.max(w, h) > r)) {
-                if (this.FontsArr[i] == null) {
+            while (i < this.fontsArr.length && (Math.max(w, h) > r)) {
+                if (this.fontsArr[i] == null) {
                     break;
                 }
-                this.currentFont = this.FontsArr[i];
-                g.setFont(this.FontsArr[i]);
+                this.currentFont = this.fontsArr[i];
+                g.setFont(this.fontsArr[i]);
                 fm = g.getFontMetrics();
                 w = fm.stringWidth(lab);
                 i++;
             }
         } catch (Exception e) {
             System.err.println(e.toString());
-            g.setFont(this.Font12);
+            g.setFont(this.font12);
         }
         return g.getFontMetrics();
     }
@@ -466,9 +466,9 @@ public class Cartoon {
         } else if (GraphicsOutput instanceof Vector) {
             @SuppressWarnings("unchecked")
             Vector<String> ps = (Vector<String>) GraphicsOutput;
-            if (this.start_new_connection) {
+            if (this.startNewConnection) {
                 ps.addElement(PostscriptFactory.makeMove(From.x, 0 - From.y));  //FIXME
-                this.start_new_connection = false;
+                this.startNewConnection = false;
             }
             ps.addElement(PostscriptFactory.makeLine(To.x, 0 - To.y)); //FIXME
         }
@@ -605,6 +605,13 @@ public class Cartoon {
 
         return new Point((int) xb, (int) yb);
 
+    }
+    
+    public SecStrucElement GetSSEByNumber(int num) {
+        SecStrucElement ss;
+        int i = 0;
+        for (ss = root; ss != null && i < num; ss = ss.To, i++) ;
+        return ss;
     }
     
 
@@ -816,24 +823,20 @@ public class Cartoon {
      * @param b the border
      */
     public void fitToRectangle(int x, int y, int w, int h, int b) {
-        try {
-            Rectangle bb = this.TopsBoundingBox();
-            float s1 = (float)(w - (2 * b)) / (float)(bb.width);
-            float s2 = (float)(h - (2 * b)) / (float)(bb.height);
-            float s = Math.min(s1, s2);
-            if (s > 1.0F) { s = 1.0F; }
-            System.out.print(s);
-            this.ApplyScale(s);
-            Point centroid = this.TopsCentroid();
-            int dy = -centroid.y + (h / 2);
-            int dx = -centroid.x + (w / 2);
-            this.TranslateDiagram(dx, dy);
-        } catch (TopsLinkedListException tlle) {
-            
-        }
+        Rectangle bb = this.TopsBoundingBox();
+        float s1 = (float)(w - (2 * b)) / (float)(bb.width);
+        float s2 = (float)(h - (2 * b)) / (float)(bb.height);
+        float s = Math.min(s1, s2);
+        if (s > 1.0F) { s = 1.0F; }
+        System.out.print(s);
+        this.ApplyScale(s);
+        Point centroid = this.TopsCentroid();
+        int dy = -centroid.y + (h / 2);
+        int dx = -centroid.x + (w / 2);
+        this.TranslateDiagram(dx, dy);
     }
     
-    public Rectangle TopsBoundingBox() throws TopsLinkedListException {
+    public Rectangle TopsBoundingBox() {
 
         int x, y, minx, maxx, miny, maxy, r, maxr;
 

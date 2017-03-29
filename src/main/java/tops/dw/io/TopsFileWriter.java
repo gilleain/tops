@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
+import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
@@ -24,7 +25,7 @@ public class TopsFileWriter {
         if ((protein.getDomainDefs() != null) && (protein.getLinkedLists() != null)) {
 
             List<DomainDefinition> ddefs = protein.getDomainDefs();
-            List<SecStrucElement> lls = protein.getLinkedLists();
+            List<Cartoon> lls = protein.getLinkedLists();
 
             int i;
             for (i = 0; i < ddefs.size(); i++) {
@@ -38,7 +39,7 @@ public class TopsFileWriter {
                 pw.print("\n\n");
 
                 SecStrucElement s;
-                for (s = lls.get(0); s != null; s = s.GetTo()) {
+                for (s = lls.get(0).getRoot(); s != null; s = s.GetTo()) {
                     s.PrintAsText(pw);
                     pw.print("\n");
                 }

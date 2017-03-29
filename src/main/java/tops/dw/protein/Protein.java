@@ -10,13 +10,13 @@ public class Protein {
 
     private String name;
 
-    private List<SecStrucElement> topsLinkedLists;
+    private List<Cartoon> topsLinkedLists;
 
     private List<DomainDefinition> domainDefs;
 
     public Protein() {
         this.domainDefs = new ArrayList<DomainDefinition>();
-        this.topsLinkedLists = new ArrayList<SecStrucElement>();
+        this.topsLinkedLists = new ArrayList<Cartoon>();
         this.name = "Unknown";
     }
     
@@ -28,8 +28,8 @@ public class Protein {
     	this.name = name;
     }
 
-    public void addTopsLinkedList(SecStrucElement s, DomainDefinition d) {
-        this.topsLinkedLists.add(s);
+    public void addTopsLinkedList(Cartoon cartoon, DomainDefinition d) {
+        this.topsLinkedLists.add(cartoon);
         this.domainDefs.add(d);
     }
 
@@ -48,7 +48,7 @@ public class Protein {
         return index;
     }
     
-    public SecStrucElement getRootSSE(String domainName) {
+    public Cartoon getRootSSE(String domainName) {
     	for (int i = 0; i < this.domainDefs.size(); i++) {
     		CATHcode code = this.domainDefs.get(i).getCATHcode();
     		if (code.toString().equals(domainName)) {
@@ -58,7 +58,7 @@ public class Protein {
     	return null;
     }
 
-    public List<SecStrucElement> getLinkedLists() {
+    public List<Cartoon> getLinkedLists() {
         return this.topsLinkedLists;
     }
 
@@ -70,7 +70,7 @@ public class Protein {
         return this.domainDefs;
     }
     
-    public SecStrucElement getDomain(int i) {
+    public Cartoon getDomain(int i) {
     	return this.topsLinkedLists.get(i);
     }
 
