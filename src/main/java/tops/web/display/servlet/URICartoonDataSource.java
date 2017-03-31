@@ -103,7 +103,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 		if (highlight.equals("none")) {
 			return;
 		} else if (highlight.equals("all")) {
-			for (SecStrucElement s = cartoon.getRoot(); s != null; s = s.GetTo()) {
+			for (SecStrucElement s : cartoon.getSSEs()) {
 				if (s.getType().equals("E")) {
 					s.setColour(strandColor);
 				} else if (s.getType().equals("H")) {

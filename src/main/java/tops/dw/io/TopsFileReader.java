@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import tops.dw.protein.CATHcode;
@@ -52,7 +51,7 @@ public class TopsFileReader {
         int x, y, r;
         int j;
 
-        SecStrucElement LastSS = null, CurrentSS = null;
+        SecStrucElement CurrentSS = null;
 
         int i;
         // int headerSize = 1; // XXX tmp - was 5
@@ -103,8 +102,6 @@ public class TopsFileReader {
                     }
 
                     countss = 0;
-                    LastSS = null;
-
                 } else if (FirstToken.equals("SecondaryStructureType")) {
 
                     if (nTokens != 2)
@@ -116,11 +113,6 @@ public class TopsFileReader {
                     if (countss == 1) {
                         protein.addTopsLinkedList(new Cartoon(CurrentSS), ddef);
                     }
-
-                    CurrentSS.SetFrom(LastSS);
-                    if (LastSS != null)
-                        LastSS.SetTo(CurrentSS);
-                    LastSS = CurrentSS;
 
                     CurrentSS.setType(st.nextToken());
                     CurrentSS.setSymbolNumber(countss - 1);
@@ -356,12 +348,6 @@ public class TopsFileReader {
 
             line = br.readLine();
 
-        }
-
-        List<Cartoon> lls = protein.getLinkedLists();
-        for (Cartoon ll : lls) {
-            protein.fixedFromFixedIndex(ll.getRoot());
-            protein.nextFromNextIndex(ll.getRoot());
         }
 
         return protein;

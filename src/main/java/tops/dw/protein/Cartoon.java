@@ -19,6 +19,10 @@ public class Cartoon {
     
     private SecStrucElement root;   // XXX TODO : refactor!
     
+    private List<SecStrucElement> sses;
+    
+    private List<SecStrucElement> fixed;
+    
     private List<Annotation> annotations;  
     
     private boolean startNewConnection = true;
@@ -29,8 +33,13 @@ public class Cartoon {
 
     private Font font12;
     
-    public Cartoon(SecStrucElement root) {
-        this.root = root;
+    public Cartoon(SecStrucElement... elements) {
+        this.sses = new ArrayList<SecStrucElement>();
+        for (SecStrucElement element : elements) {
+            sses.add(element);
+        }
+        
+        this.fixed = new ArrayList<SecStrucElement>();
         
         this.annotations = new ArrayList<Annotation>();
         int fs, i;
@@ -43,7 +52,79 @@ public class Cartoon {
     
     public Cartoon() {
         // TODO Auto-generated constructor stub
-        this(null); // XXX ugh
+        this(new SecStrucElement[]{}); // XXX ugh
+    }
+    
+
+    public void TranslateFixed(int tx, int ty) {
+        for (SecStrucElement s : fixed) {
+            s.Translate(tx, ty);
+        }
+    }
+    
+    public int GetFixNumRes() {
+        int size = 0;
+
+        for (SecStrucElement t : fixed) {
+            size += t.Length();
+        }
+
+        return size;
+    }
+    
+
+    
+    public SecStrucElement addSymbol(String type, String direction, int x, int y, SecStrucElement selectedSymbol) {
+        int defaultSeparation = 30; // ARBITRARY!
+        int defaultRadius = 10; // ARBITRARY!
+        
+        SecStrucElement newSSE = new SecStrucElement();
+        newSSE.setType(type);
+        newSSE.setDirection(direction);
+        newSSE.PlaceElement(x, y);
+        newSSE.SetSymbolRadius(defaultRadius);
+        
+        if (this.sses.isEmpty()) {
+            // make N and C terminii
+            SecStrucElement nTerminus = new SecStrucElement();
+            nTerminus.setType("N");
+            nTerminus.setDirection("U");
+            nTerminus.setLabel("N");
+            nTerminus.PlaceElement(x - defaultSeparation, y); // ARBITRARY!
+            nTerminus.SetSymbolRadius(defaultRadius);
+
+            SecStrucElement cTerminus = new SecStrucElement();
+            cTerminus.setType("C");
+            cTerminus.setDirection("U");
+            cTerminus.setLabel("C");
+            cTerminus.PlaceElement(x + defaultSeparation, y); // ARBITRARY!
+            cTerminus.SetSymbolRadius(defaultRadius);
+
+        } else {
+            // deal with the C-terminus in a special way - add the new SSE
+            // _before_ it
+            if (selectedSymbol.getType().equals("C")) {
+                sses.add(sses.indexOf(selectedSymbol), newSSE);
+            } else {
+                sses.add(sses.indexOf(selectedSymbol), newSSE);
+            }
+        }
+        
+        return newSSE;
+    }
+    
+    public void delete(SecStrucElement SelectedSymbol) {
+        // can't delete terminii!
+        if (SelectedSymbol.getType().equals("N") || SelectedSymbol.getType().equals("C")) {
+            System.err.println("can't delete terminii!");
+            return;
+        }
+
+        // delete terminii if we delete the final symbol
+        if (sses.size() == 3) { // selected symbol plus two terminii
+            sses.remove(SelectedSymbol);
+            return;
+        }
     }
 
     public void flipMultiple(List<SecStrucElement> list) {
@@ -62,7 +143,7 @@ public class Cartoon {
     
     public List<SecStrucElement> selectContained(Rectangle r) {
         List<SecStrucElement> list = new ArrayList<SecStrucElement>();
-        for (SecStrucElement s = this.root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             Point pos = s.GetPosition();
             if (r.contains(pos)) {
                 list.add(s);
@@ -75,16 +156,11 @@ public class Cartoon {
         SecStrucElement selected = null;
     
         if (p != null) {
-    
-            SecStrucElement s;
             double minsep = Double.POSITIVE_INFINITY;
-            double sep;
-            Point ps;
-    
-            for (s = this.root; s != null; s = s.GetTo()) {
-                ps = s.GetPosition();
-                sep = separation(p, ps);
-                if ((sep < s.GetSymbolRadius()) && (sep < minsep)) {
+            for (SecStrucElement s : sses) {
+                Point ps = s.GetPosition();
+                double sep = separation(p, ps);
+                if (sep < s.GetSymbolRadius() && sep < minsep) {
                     minsep = sep;
                     selected = s;
                 }
@@ -98,7 +174,7 @@ public class Cartoon {
             return new String();
 
         StringBuffer topsString = new StringBuffer();
-        for (SecStrucElement s = this.root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             char type = s.getType().charAt(0);
             type = (s.getDirection().equals("D")) ? Character.toLowerCase(type)
                     : type;
@@ -122,33 +198,37 @@ public class Cartoon {
     
     public void highlightByResidueNumber(int[] residueNumbers) {
         int index = 0;
-        for (SecStrucElement s = root; s != null; s = s.GetTo()) {
+        SecStrucElement last = null;
+        for (SecStrucElement s : sses) {
             System.out.println("sse " + s + " trying residue " + residueNumbers[index]);
-            while (tryHighlightingByResidueNumber(root, residueNumbers[index])) {
+            while (tryHighlightingByResidueNumber(s, last, residueNumbers[index])) {
                 System.out.println("highlighting " + residueNumbers[index]);
                 index++;
                 if (index >= residueNumbers.length) {
                     return;
                 }
             }
+            last = s;
         }
     }
     
     public void highlightByResidueNumber(int residueNumber) {
-        for (SecStrucElement s = root; s != null; s = s.GetTo()) {
-            if (tryHighlightingByResidueNumber(root, residueNumber)) {
+        SecStrucElement last = null;
+        for (int index = 0; index < sses.size(); index++) {
+            SecStrucElement ss = sses.get(index);
+            if (tryHighlightingByResidueNumber(ss, last, residueNumber)) {
                 return;
             }
+            last = ss;
         }
     }
     
-    private boolean tryHighlightingByResidueNumber(SecStrucElement sse, int residueNumber) {
+    private boolean tryHighlightingByResidueNumber(SecStrucElement sse, SecStrucElement last, int residueNumber) {
         if (sse.containsResidue(residueNumber)) {
             sse.setColour(Color.YELLOW);
             return true;
         } else {
             int loopStart;
-            SecStrucElement last = sse.GetFrom();
             if (last == null) {
                 loopStart = 0;
             } else {
@@ -169,11 +249,11 @@ public class Cartoon {
             return;
 
         // draw secondary structures
-        SecStrucElement s;
+        ;
         Point pos;
         int rad;
         Color c;
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             pos = s.GetPosition();
             rad = s.GetSymbolRadius();
 
@@ -207,10 +287,10 @@ public class Cartoon {
     }
     
     private void ConnectionsEPS(Vector<String> EPS, int w, int h) {
-        SecStrucElement s;
-        for (s = root; (s != null) && (s.GetTo() != null); s = s.GetTo()) {
-            this.startNewConnection = true;
-            this.DrawConnection(s, EPS);
+        for (int index = 0; index < sses.size() - 1; index++) {
+            SecStrucElement s = sses.get(index);
+            SecStrucElement t = sses.get(index + 1);
+            this.DrawConnection(s, t, EPS);
             EPS.addElement(PostscriptFactory.stroke());
         }
     }
@@ -219,12 +299,14 @@ public class Cartoon {
 //      System.out.println("painting...");
         
         g.setColor(Color.BLACK);
-        for (SecStrucElement s = root; s != null; s = s.GetTo()) {
-            this.DrawSecStruc(s, g);
+        for (SecStrucElement ss : sses) {
+            this.DrawSecStruc(ss, g);
         }
 
-        for (SecStrucElement s = root; (s != null) && (s.GetTo() != null); s = s.GetTo()) {
-            this.DrawConnection(s, g);
+        for (int index = 0; index < sses.size() - 1; index++) {
+            SecStrucElement s = sses.get(index);
+            SecStrucElement t = sses.get(index + 1);
+            this.DrawConnection(s, t, g);
         }
         
         g.setColor(Color.RED);
@@ -243,10 +325,9 @@ public class Cartoon {
         int ymax = Integer.MIN_VALUE;
         int rmax = Integer.MIN_VALUE;
 
-        SecStrucElement s;
         Point pos;
         int rad, x, y;
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             pos = s.GetPosition();
             x = pos.x;
             y = h - pos.y;
@@ -267,7 +348,7 @@ public class Cartoon {
         xmin -= rmax;
         ymin -= rmax;
 
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             if (!(s.GetConnectionTo().isEmpty())) {
                 Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
                 Point PointTo;
@@ -365,7 +446,7 @@ public class Cartoon {
      * private method to draw the connection between two secondary structure
      * elements
      */
-    private void DrawConnection(SecStrucElement s, Object GraphicsOutput) {
+    private void DrawConnection(SecStrucElement s, SecStrucElement t, Object GraphicsOutput) {
 
         SecStrucElement To;
         int FromScreenR, ToScreenR;
@@ -373,24 +454,20 @@ public class Cartoon {
         if ((GraphicsOutput == null) || (s == null))
             return;
 
-        To = s.GetTo();
-        if (To == null)
-            return;
-
         /* Don't connect from a C terminus or to an N terminus */
-        if (s.getType().equals("C") || To.getType().equals("N"))
+        if (s.getType().equals("C") || t.getType().equals("N"))
             return;
 
         FromScreenR = s.GetSymbolRadius();
-        ToScreenR = To.GetSymbolRadius();
+        ToScreenR = t.GetSymbolRadius();
 
         /*
          * in the case of no intervening connection points just join between the
          * two symbols
          */
         if (s.GetConnectionTo().isEmpty()) {
-            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR, To
-                    .GetPosition(), To.getDirection(), To.getType(), ToScreenR,
+            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR, 
+                    t.GetPosition(), t.getDirection(), t.getType(), ToScreenR,
                     GraphicsOutput);
         }
         /* the case where there are some intervening connection points */
@@ -411,8 +488,8 @@ public class Cartoon {
             }
 
             PointFrom = PointTo;
-            this.JoinPoints(PointFrom, "*", "*", 0, To.GetPosition(), To.getDirection(),
-                    To.getType(), ToScreenR, GraphicsOutput);
+            this.JoinPoints(PointFrom, "*", "*", 0, t.GetPosition(), t.getDirection(),
+                    t.getType(), ToScreenR, GraphicsOutput);
 
         }
 
@@ -608,23 +685,18 @@ public class Cartoon {
     }
     
     public SecStrucElement GetSSEByNumber(int num) {
-        SecStrucElement ss;
-        int i = 0;
-        for (ss = root; ss != null && i < num; ss = ss.To, i++) ;
-        return ss;
+        return sses.get(num);
     }
     
 
     /* private method to apply a scaling value to the diagram */
     public void ApplyScale(float scale) {
-
-        SecStrucElement s;
         Point p;
         int x, y, r;
         Vector<Point> conns;
         Enumeration<Point> en;
 
-        for (s = this.root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
 
             p = s.GetPosition();
             x = p.x;
@@ -669,9 +741,7 @@ public class Cartoon {
         Vector<Point> conns;
         Enumeration<Point> en;
         Point p;
-        SecStrucElement s;
-
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
 
             s.GetPosition().y *= -1;
 
@@ -742,10 +812,7 @@ public class Cartoon {
     
 
     public void ReflectXY() {
-
-        SecStrucElement s;
-
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             if (s.getDirection().equals("D")) {
                 s.setDirection("U");
             } else if (s.getDirection().equals("U")) {
@@ -756,12 +823,11 @@ public class Cartoon {
 
     public void ReflectZX() {
 
-        SecStrucElement s;
         Point p;
         int y;
         Enumeration<Point> en;
 
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             p = s.GetPosition();
             y = p.y * (-1);
             p.y = y;
@@ -778,17 +844,16 @@ public class Cartoon {
 
     public void ReflectYZ() {
 
-        SecStrucElement s;
         Point p;
         int x;
         Enumeration<Point> en;
 
-        for (s = root; s != null; s = s.GetTo()) {
-            p = s.GetPosition();
+        for (SecStrucElement ss : sses) {
+            p = ss.GetPosition();
             x = p.x * (-1);
             p.x = x;
-            if (s.GetConnectionTo() != null) {
-                en = s.GetConnectionTo().elements();
+            if (ss.GetConnectionTo() != null) {
+                en = ss.GetConnectionTo().elements();
                 while (en.hasMoreElements()) {
                     p = (Point) en.nextElement();
                     x = p.x * (-1);
@@ -840,8 +905,6 @@ public class Cartoon {
 
         int x, y, minx, maxx, miny, maxy, r, maxr;
 
-        SecStrucElement ss;
-
         if (root.GetPosition() == null)
             root.SetPosition(new Point(0, 0));
 
@@ -854,7 +917,7 @@ public class Cartoon {
         maxy = y;
         maxr = root.GetSymbolRadius();
 
-        for (ss = root.To; ss != null; ss = ss.To) {
+        for (SecStrucElement ss : sses) {
 
             x = ss.GetPosition().x;
             y = ss.GetPosition().y;
@@ -879,15 +942,11 @@ public class Cartoon {
     }
     
     public Point TopsCentroid() {
-        
-        int centx, centy, n;
-        SecStrucElement ss;
+        int n = 1;
+        int centx = root.GetPosition().x;
+        int centy = root.GetPosition().y;
 
-        n = 1;
-        centx = root.GetPosition().x;
-        centy = root.GetPosition().y;
-
-        for (ss = root.To; ss != null; ss = ss.To) {
+        for (SecStrucElement ss : sses) {
             n++;
             centx += ss.GetPosition().x;
             centy += ss.GetPosition().y;
@@ -909,12 +968,11 @@ public class Cartoon {
      *            the y translation to apply
      */
     public synchronized void TranslateDiagram(int x, int y) {
-        SecStrucElement s;
         Vector<Point> conns;
         Enumeration<Point> en;
         Point p;
 
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : sses) {
             s.GetPosition().x += x;
             s.GetPosition().y += y;
 
@@ -927,6 +985,14 @@ public class Cartoon {
                 }
             }
         }
+    }
+
+    public List<SecStrucElement> getSSEs() {
+        return sses;
+    }
+
+    public void addSSE(SecStrucElement s) {
+        sses.add(s);
     }
     
 

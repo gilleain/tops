@@ -3,11 +3,10 @@ package tops.view.cartoon;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -105,12 +104,14 @@ public class CartoonDrawer {
         return bb;
     }
 
-    private void draw(Cartoon root) {
-        SecStrucElement s;
-        for (s = root.getRoot(); s != null; s = s.GetTo()) {
+    private void draw(Cartoon cartoon) {
+        SecStrucElement last = null;
+        for (SecStrucElement s : cartoon.getSSEs()) {
             this.drawSecStruc(s);
-            if (s.GetTo() != null)
-                this.drawConnection(s);
+            if (last != null) {
+                this.drawConnection(last, s);
+            }
+            last = s;
         }
     }
 
@@ -118,9 +119,8 @@ public class CartoonDrawer {
         Vector<Point> conns;
         Enumeration<Point> en;
         Point p;
-        SecStrucElement s;
 
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : new ArrayList<SecStrucElement>()) { // TODO
             s.GetPosition().y *= -1;
 
             if ((conns = s.GetConnectionTo()) != null) {
@@ -133,16 +133,16 @@ public class CartoonDrawer {
         }
     }
 
-    public void applyScale(SecStrucElement root, float scale) {
+    public void applyScale(Cartoon cartoon, float scale) {
 
-        SecStrucElement s;
+        ;
         Point p;
         //int x, y;
         int r;
         Vector<Point> conns;
         Enumeration<Point> en;
 
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : cartoon.getSSEs()) {
 
             p = s.GetPosition();
             p.x = Math.round(scale * p.x);
@@ -175,7 +175,7 @@ public class CartoonDrawer {
         cartoon.TranslateDiagram(shiftX, shiftY);
     }
 
-    private Rectangle getBoundingBox(SecStrucElement root) {
+    private Rectangle getBoundingBox(Cartoon cartoon) {
         // without the 'int h' parameter, this is the same as
         // root.TopsBoundingBox()?
         // not sure why EPSBoundingBox has to have 'y = h - pos.y'??
@@ -186,10 +186,9 @@ public class CartoonDrawer {
         int ymax = Integer.MIN_VALUE;
         int rmax = Integer.MIN_VALUE;
 
-        SecStrucElement s;
         Point pos;
         int rad, x, y;
-        for (s = root; s != null; s = s.GetTo()) {
+        for (SecStrucElement s : cartoon.getSSEs()) {
             pos = s.GetPosition();
             x = pos.x;
             y = pos.y;
@@ -282,12 +281,11 @@ public class CartoonDrawer {
         this.builder.drawStrand(pointX, pointY, leftX, leftY, rightX, rightY, c);
     }
 
-    private void drawConnection(SecStrucElement from) {
+    private void drawConnection(SecStrucElement from, SecStrucElement to) {
 
         if ((from == null))
             return;
 
-        SecStrucElement to = from.GetTo();
         /* Don't connect from a C terminus or to an N terminus */
         if (from.getType().equals("C") || to.getType().equals("N"))
             return;

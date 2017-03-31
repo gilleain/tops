@@ -79,47 +79,4 @@ public class Protein {
         return this.name;
     }
 
-   
-
-    public void fixedFromFixedIndex(SecStrucElement root) {
-
-        if (!root.IsRoot())
-            return;
-
-        SecStrucElement s;
-        for (s = root; s != null; s = s.GetTo()) {
-            s.SetFixed(this.getListElement(root, s.GetFixedIndex()));
-        }
-
-    }
-
-    public void nextFromNextIndex(SecStrucElement root) {
-
-        if (!root.IsRoot())
-            return;
-
-        SecStrucElement s;
-        for (s = root; s != null; s = s.GetTo()) {
-            s.SetNext(this.getListElement(root, s.GetNextIndex()));
-        }
-
-    }
-
-    private SecStrucElement getListElement(SecStrucElement root, int index) {
-
-        if (!root.IsRoot())
-            return null;
-
-        SecStrucElement s;
-        int i;
-        for (s = root, i = 0; (s != null) && (i < index); s = s.GetTo(), i++)
-            ;
-
-        if (i != index)
-            return null;
-
-        return s;
-
-    }
-
 }

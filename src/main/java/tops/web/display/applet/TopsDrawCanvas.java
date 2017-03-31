@@ -736,8 +736,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 if (this.SelectedSymbol != null) {
                     Point oldp = this.SelectedSymbol.GetPosition();
                     Point newp = pos;
-                    this.SelectedSymbol.TranslateFixed(newp.x - oldp.x, newp.y
-                            - oldp.y);
+                    RootSecStruc.TranslateFixed(newp.x - oldp.x, newp.y - oldp.y);
                     this.repaint();
                 }
                 break;
@@ -784,81 +783,16 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         this.SelectedSymbol = this.RootSecStruc.getRoot();
     }
 
-    public synchronized void addSymbol(String type, String direction, int x,
-            int y) {
-        int defaultSeparation = 30; // ARBITRARY!
-        int defaultRadius = 10; // ARBITRARY!
+    public void addSymbol(String type, String direction, int x, int y) {
         System.out.println("adding symbol : " + type + ", " + direction
                 + " at (" + x + ", " + y + ")");
-
-        SecStrucElement newSSE = new SecStrucElement();
-        newSSE.setType(type);
-        newSSE.setDirection(direction);
-        newSSE.PlaceElement(x, y);
-        newSSE.SetSymbolRadius(defaultRadius);
-
-        if (this.RootSecStruc == null) {
-            // make N and C terminii
-            SecStrucElement nTerminus = new SecStrucElement();
-            nTerminus.setType("N");
-            nTerminus.setDirection("U");
-            nTerminus.setLabel("N");
-            nTerminus.PlaceElement(x - defaultSeparation, y); // ARBITRARY!
-            nTerminus.SetSymbolRadius(defaultRadius);
-            nTerminus.SetTo(newSSE);
-
-            newSSE.SetFrom(nTerminus);
-
-            SecStrucElement cTerminus = new SecStrucElement();
-            cTerminus.setType("C");
-            cTerminus.setDirection("U");
-            cTerminus.setLabel("C");
-            cTerminus.PlaceElement(x + defaultSeparation, y); // ARBITRARY!
-            cTerminus.SetSymbolRadius(defaultRadius);
-            cTerminus.SetFrom(newSSE);
-
-            newSSE.SetTo(cTerminus);
-
-            this.RootSecStruc = new Cartoon(nTerminus);
-        } else {
-            // deal with the C-terminus in a special way - add the new SSE
-            // _before_ it
-            if (this.SelectedSymbol.getType().equals("C")) {
-                newSSE.SetTo(this.SelectedSymbol);
-                this.SelectedSymbol.SetFrom(newSSE);
-                newSSE.SetFrom(this.SelectedSymbol.GetFrom());
-                this.SelectedSymbol.GetFrom().SetTo(newSSE);
-            } else {
-                this.SelectedSymbol.GetTo().SetFrom(newSSE);
-                newSSE.SetTo(this.SelectedSymbol.GetTo());
-                newSSE.SetFrom(this.SelectedSymbol);
-                this.SelectedSymbol.SetTo(newSSE);
-            }
-        }
-
-        this.SelectedSymbol = newSSE;
+        this.SelectedSymbol = RootSecStruc.addSymbol(type, direction, x, y, SelectedSymbol);
         this.CenterDiagram();
         this.ScaleDiagram();
     }
 
     public synchronized void DeleteSelected() {
-        // can't delete terminii!
-        if ((this.SelectedSymbol.getType().equals("N"))
-                || (this.SelectedSymbol.getType().equals("C"))) {
-            System.err.println("can't delete terminii!");
-            return;
-        }
-
-        // delete terminii if we delete the final symbol
-        if ((this.SelectedSymbol.GetFrom().getType().equals("N"))
-                && (this.SelectedSymbol.GetTo().getType().equals("C"))) {
-            this.RootSecStruc = null;
-            return;
-        }
-
-        if (this.SelectedSymbol != null) {
-            this.RootSecStruc = new Cartoon();
-        }
+        RootSecStruc.delete(SelectedSymbol);
     }
 
     public synchronized void UnSelect() {
@@ -1239,15 +1173,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * private method to draw the connection between two secondary structure
      * elements
      */
-    private void DrawConnection(SecStrucElement s, Object GraphicsOutput) {
+    private void DrawConnection(SecStrucElement s, SecStrucElement To, Object GraphicsOutput) {
 
-        SecStrucElement To;
         int FromScreenR, ToScreenR;
 
         if ((GraphicsOutput == null) || (s == null))
             return;
 
-        To = s.GetTo();
         if (To == null)
             return;
 

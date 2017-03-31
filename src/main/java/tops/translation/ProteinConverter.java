@@ -40,17 +40,14 @@ public class ProteinConverter {
 	}
 	
 	private static Cartoon toCartoon(Chain chain) {
-		SecStrucElement s = null;
-		SecStrucElement head = null;
-		SecStrucElement prev = null;
+	    Cartoon cartoon = new Cartoon();
 		int i = 1;
 		Map<BackboneSegment, SecStrucElement> segmentElementMap = new HashMap<BackboneSegment, SecStrucElement>();
 		for (BackboneSegment backboneSegment : chain) {
-			s = new SecStrucElement();
+		    SecStrucElement s = new SecStrucElement();
+		    cartoon.addSSE(s);
 			segmentElementMap.put(backboneSegment, s);
-			if (head == null) {
-				head = s;
-			}
+			
 			if (backboneSegment instanceof Strand) {
 				s.setType("E");
 			} else if (backboneSegment instanceof Helix) {
@@ -67,11 +64,6 @@ public class ProteinConverter {
 			s.setPDBFinishResidue(backboneSegment.lastPDB());
 			s.setSymbolNumber(i);
 			i++;
-			s.SetFrom(prev);
-			if (prev != null) {
-				prev.SetTo(s);
-			}
-			prev = s;
 		}
 		Iterator<Sheet> sheetIterator = chain.sheetIterator(); 
 		while (sheetIterator.hasNext()) {
@@ -92,7 +84,7 @@ public class ProteinConverter {
 				prevStrand = strand;
 			}
 		}
-		return new Cartoon(head);
+		return cartoon;
 	}
 }
 

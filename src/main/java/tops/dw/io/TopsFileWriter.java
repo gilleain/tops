@@ -38,8 +38,7 @@ public class TopsFileWriter {
                 }
                 pw.print("\n\n");
 
-                SecStrucElement s;
-                for (s = lls.get(0).getRoot(); s != null; s = s.GetTo()) {
+                for (SecStrucElement s : lls.get(0).getSSEs()) {
                     s.PrintAsText(pw);
                     pw.print("\n");
                 }

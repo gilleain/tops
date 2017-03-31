@@ -25,8 +25,6 @@ public class SecStrucElement {
 
     private Color Colour;
 
-    public SecStrucElement From = null, To = null;
-
     private SecStrucElement Fixed = null;
 
     private int FixedIndex;
@@ -224,13 +222,6 @@ public class SecStrucElement {
         this.Position.y += ty;
     }
 
-    public void TranslateFixed(int tx, int ty) {
-        SecStrucElement s;
-        for (s = this.GetFixedStart(); s != null; s = s.GetFixed()) {
-            s.Translate(tx, ty);
-        }
-
-    }
 
     public void SetSymbolRadius(int r) {
         this.SymbolRadius = r;
@@ -238,50 +229,6 @@ public class SecStrucElement {
 
     public int GetSymbolRadius() {
         return this.SymbolRadius;
-    }
-
-    public SecStrucElement Delete() {
-
-        SecStrucElement root = this.GetRoot();
-        if (root == this) {
-            if (this.To != null)
-                this.To.SetFrom(null);
-            return this.To;
-        }
-
-        if (this.From != null)
-            this.From.SetTo(this.To);
-
-        if (this.To != null)
-            this.To.SetFrom(this.From);
-
-        return root;
-
-    }
-
-    public SecStrucElement GetRoot() {
-        SecStrucElement s;
-        for (s = this; s.GetFrom() != null; s = s.GetFrom())
-            ;
-        return s;
-    }
-
-    public SecStrucElement GetFixedStart() {
-
-        SecStrucElement s = null, t = null;
-
-        for (s = this.GetRoot(); s != null; s = s.GetNext()) {
-            for (t = s; t != null; t = t.GetFixed()) {
-                if (t == this)
-                    break;
-            }
-        }
-
-        if (t == this)
-            return s;
-        else
-            return null;
-
     }
 
     public void AddConnectionTo(int x, int y) {
@@ -344,29 +291,11 @@ public class SecStrucElement {
     public SecStrucElement GetNext() {
         return this.Next;
     }
-
-    public void SetTo(SecStrucElement s) {
-        this.To = s;
-    }
-
-    public void SetFrom(SecStrucElement s) {
-        this.From = s;
-    }
-
-    public SecStrucElement GetTo() {
-        return this.To;
-    }
-
-    public SecStrucElement GetFrom() {
-        return this.From;
-    }
+    
+    private boolean isRoot; // TODO
 
     public boolean IsRoot() {
-        if (this.From == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return isRoot;
     }
 
     public boolean IsTerminus() {
@@ -383,19 +312,7 @@ public class SecStrucElement {
         return (this.PDBFinishResidue - this.PDBStartResidue + 1);
     }
 
-    public int GetFixNumRes() {
-
-        SecStrucElement t;
-        int size = 0;
-
-        if (this.Type.equals("H") || this.Type.equals("E")) {
-            for (t = this.GetFixedStart(), size = 0; t != null; t = t.GetFixed())
-                size += t.Length();
-        }
-
-        return size;
-
-    }
+   
 
   
     public String getRelDirection(SecStrucElement s) {
@@ -609,44 +526,4 @@ public class SecStrucElement {
         ps.println("Fill " + this.Fill);
 
     }
-
-    /* END I/O methods */
-
-    /* START debugging methods */
-
-    public void PrintLists() {
-
-        SecStrucElement s, root;
-
-        root = this.GetRoot();
-
-        System.out.println("To list");
-        System.out.println(" ");
-
-        for (s = root; s != null; s = s.GetTo()) {
-            s.PrintElement();
-        }
-
-        System.out.println(" ");
-        System.out.println(" ");
-
-    }
-
-    public void PrintElement() {
-        System.out.println("SymbolNumber " + this.SymbolNumber);
-        if (this.To != null)
-            System.out.println("To " + this.To.SymbolNumber);
-        if (this.From != null)
-            System.out.println("From " + this.From.SymbolNumber);
-        System.out.println("NextIndex " + this.NextIndex);
-        if (this.Next != null)
-            System.out.println("Next " + this.Next.SymbolNumber);
-        System.out.println("FixedIndex " + this.FixedIndex);
-        if (this.Fixed != null)
-            System.out.println("Fixed " + this.Fixed.SymbolNumber);
-        System.out.println(" ");
-    }
-
-    /* END debugging methods */
-
 }
