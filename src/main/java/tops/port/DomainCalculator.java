@@ -19,7 +19,7 @@ import tops.port.model.Hand;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
-import tops.port.model.SSE.SSEType;
+import tops.port.model.SSEType;
 import tops.port.model.Segment;
 
 /**

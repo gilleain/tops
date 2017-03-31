@@ -11,7 +11,7 @@ import tops.port.model.BridgeType;
 import tops.port.model.Chain;
 import tops.port.model.HBond;
 import tops.port.model.SSE;
-import tops.port.model.SSE.SSEType;
+import tops.port.model.SSEType;
 
 public class CalculateBridgePartners implements Calculation {
     

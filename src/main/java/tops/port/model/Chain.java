@@ -11,7 +11,6 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
 import tops.port.calculate.util.DistanceCalculator;
-import tops.port.model.SSE.SSEType;
 import tops.port.model.tse.BaseTSE;
 
 public class Chain {

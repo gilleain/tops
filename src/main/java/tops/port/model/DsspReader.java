@@ -2,8 +2,8 @@ package tops.port.model;
 
 import static java.lang.Character.isAlphabetic;
 import static java.lang.Integer.parseInt;
-import static tops.port.model.SSE.SSEType.CTERMINUS;
-import static tops.port.model.SSE.SSEType.NTERMINUS;
+import static tops.port.model.SSEType.CTERMINUS;
+import static tops.port.model.SSEType.NTERMINUS;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.vecmath.Point3d;
-
-import tops.port.model.SSE.SSEType;
 
 public class DsspReader {
     

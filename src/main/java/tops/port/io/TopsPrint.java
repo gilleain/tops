@@ -14,6 +14,7 @@ import tops.port.IntersectionCalculator.IntersectionType;
 import tops.port.model.Cartoon;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.SSE;
+import tops.port.model.SSEType;
 
 public class TopsPrint {
     
@@ -267,7 +268,7 @@ public class TopsPrint {
     private void PrintCartoon(Cartoon cartoon) {
 
         int i, ncp;
-        SSE.SSEType FromSSType, ToSSType;
+        SSEType FromSSType, ToSSType;
 
         // Symbols
         for (SSE p : cartoon.getSSEs()) {
@@ -298,8 +299,8 @@ public class TopsPrint {
                 if (p.From != null) {
 
                     FromSSType = p.From.getSSEType();
-                    if (!(ToSSType == SSE.SSEType.CTERMINUS || ToSSType == SSE.SSEType.NTERMINUS)
-                      && (FromSSType == SSE.SSEType.CTERMINUS) || (FromSSType == SSE.SSEType.NTERMINUS)) {
+                    if (!(ToSSType == SSEType.CTERMINUS || ToSSType == SSEType.NTERMINUS)
+                      && (FromSSType == SSEType.CTERMINUS) || (FromSSType == SSEType.NTERMINUS)) {
 
                         if (p.From.getNConnectionPoints() > 0) {
                             ncp = p.From.getNConnectionPoints();
@@ -339,7 +340,7 @@ public class TopsPrint {
 
                     }
 
-                    if (FromSSType == SSE.SSEType.NTERMINUS) {
+                    if (FromSSType == SSEType.NTERMINUS) {
                         MakeObject("Square", 2, PSxy(p.From.getCartoonX()),
                                 PSxy(p.From.getCartoonY()));
                         PrintText(p.From.getLabel(), PSxy(p.From.getCartoonX()),
@@ -348,7 +349,7 @@ public class TopsPrint {
 
                 }
 
-                if (ToSSType == SSE.SSEType.CTERMINUS) {
+                if (ToSSType == SSEType.CTERMINUS) {
                     MakeObject("Square", 2, PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
                     PrintText(p.getLabel(), PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
                 }
@@ -506,17 +507,17 @@ public class TopsPrint {
      * Function to join two points
      */
     private void JoinPoints(double px, double py, double qx, double qy, char pd,
-            char qd, SSE.SSEType pt, SSE.SSEType qt) {
+            char qd, SSEType pt, SSEType qt) {
         if (pd != 'U' && pd != '*') {
-            if (pt == SSE.SSEType.EXTENDED)
+            if (pt == SSEType.EXTENDED)
                 CrossDownTriangle(px, py, qx, qy);
-            if (pt == SSE.SSEType.HELIX)
+            if (pt == SSEType.HELIX)
                 CrossCircle(px, py, qx, qy);
         }
         if (qd != 'D' && qd != '*') {
-            if (pt == SSE.SSEType.EXTENDED)
+            if (pt == SSEType.EXTENDED)
                 CrossUpTriangle(qx, qy, px, py);
-            if (pt == SSE.SSEType.HELIX)
+            if (pt == SSEType.HELIX)
                 CrossCircle(qx, qy, px, py);
         }
         MakeObject("Line", 4, px, py, qx, qy);

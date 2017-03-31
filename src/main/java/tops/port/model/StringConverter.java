@@ -3,7 +3,6 @@ package tops.port.model;
 import java.util.List;
 
 import tops.engine.TParser;
-import tops.port.model.SSE.SSEType;
 
 public class StringConverter {
     

@@ -10,7 +10,7 @@ import java.util.List;
 import tops.port.model.Chain;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
-import tops.port.model.SSE.SSEType;
+import tops.port.model.SSEType;
 
 public class TopsReader {
     
