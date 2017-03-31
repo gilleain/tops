@@ -39,19 +39,16 @@ public class TopsFileReader {
     public Protein readTopsFile(BufferedReader br) throws IOException, TopsFileFormatException {
         Protein protein = new Protein();
 
-        String line = null, FirstToken;
+        String line = null, firstToken;
         StringTokenizer st;
-        DomainDefinition ddef = null;
-        CATHcode ccode = null;
-
-        int[] tmp_int = new int[3];
 
         int countss = 0;
         int nTokens;
         int x, y, r;
         int j;
 
-        SecStrucElement CurrentSS = null;
+        SecStrucElement currentSS = null;
+        DomainDefinition ddef = null;
 
         int i;
         // int headerSize = 1; // XXX tmp - was 5
@@ -75,59 +72,31 @@ public class TopsFileReader {
 
             if (nTokens > 0) {
 
-                FirstToken = st.nextToken();
-                // System.out.println(line.trim() + " Token: " + FirstToken);
+                firstToken = st.nextToken();
+                // System.out.println(line.trim() + " Token: " + firstToken);
 
-                if (FirstToken.equals("DOMAIN_NUMBER")) {
-                    if (nTokens < 3)
-                        throw new TopsFileFormatException();
-                    st.nextToken();
-                    ccode = new CATHcode(st.nextToken());
-                    ddef = new DomainDefinition(ccode, DomainType.CHAIN_SET);   // XXX? CHAIN or SEGMENT?
-                    while (st.hasMoreTokens()) {
-                        for (j = 0; j < 3; j++) {
-                            if (st.hasMoreTokens()) {
-                                try {
-                                    tmp_int[j] = Integer
-                                            .parseInt(st.nextToken());
-                                } catch (NumberFormatException e) {
-                                    throw new TopsFileFormatException();
-                                }
-                            } else {
-                                throw new TopsFileFormatException();
-                            }
-                        }
-                        // XXX currently throwing away the seq frag start
-                        ddef.addSegment(ccode.getChain(), tmp_int[1], tmp_int[2]);
-                    }
-
+                if (firstToken.equals("DOMAIN_NUMBER")) {
+                    ddef = handleDomainNumber(st, nTokens);
                     countss = 0;
-                } else if (FirstToken.equals("SecondaryStructureType")) {
-
-                    if (nTokens != 2)
-                        throw new TopsFileFormatException();
-
+                } else if (firstToken.equals("SecondaryStructureType")) {
+                    currentSS = handleSecStrucType(st, nTokens);
+                    currentSS.setSymbolNumber(countss);
                     countss++;
-                    CurrentSS = new SecStrucElement();
-
                     if (countss == 1) {
-                        protein.addTopsLinkedList(new Cartoon(CurrentSS), ddef);
+                        protein.addTopsLinkedList(new Cartoon(currentSS), ddef);
                     }
-
-                    CurrentSS.setType(st.nextToken());
-                    CurrentSS.setSymbolNumber(countss - 1);
-
-                } else if (FirstToken.equals("Direction")) {
+                } else if (firstToken.equals("Direction")) {
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
-                    CurrentSS.setDirection(st.nextToken());
-                } else if (FirstToken.equals("Label")) {
+                    currentSS.setDirection(st.nextToken());
+                } else if (firstToken.equals("Label")) {
                     if (nTokens > 1) {
-                        CurrentSS.setLabel(st.nextToken());
+                        currentSS.setLabel(st.nextToken());
                     } else {
-                        CurrentSS.setLabel(null);
+                        currentSS.setLabel(null);
                     }
-                } else if (FirstToken.equals("Colour")) {
+                } else if (firstToken.equals("Colour")) {
+                    int[] tmp_int = new int[3];
                     for (j = 0; j < 3; j++) {
                         tmp_int[j] = 255;
                         if (st.hasMoreTokens()) {
@@ -136,14 +105,16 @@ public class TopsFileReader {
                             } catch (NumberFormatException e) {
                             }
                         }
-                        if (tmp_int[j] < 0)
+                        if (tmp_int[j] < 0) {
                             tmp_int[j] = 0;
-                        if (tmp_int[j] > 255)
+                        }
+                        if (tmp_int[j] > 255) {
                             tmp_int[j] = 255;
+                        }
                     }
-                    CurrentSS.setColour(
+                    currentSS.setColour(
                             new Color(tmp_int[0], tmp_int[1], tmp_int[2]));
-                } else if (FirstToken.equals("Fixed")) {
+                } else if (firstToken.equals("Fixed")) {
                     int fs;
                     if (nTokens > 1) {
                         fs = -1;
@@ -155,8 +126,8 @@ public class TopsFileReader {
                     } else {
                         throw new TopsFileFormatException();
                     }
-                    CurrentSS.SetFixedIndex(fs);
-                } else if (FirstToken.equals("Next")) {
+                    currentSS.SetFixedIndex(fs);
+                } else if (firstToken.equals("Next")) {
                     int ns;
                     if (nTokens > 1) {
                         ns = -1;
@@ -168,14 +139,14 @@ public class TopsFileReader {
                     } else {
                         throw new TopsFileFormatException();
                     }
-                    CurrentSS.SetNextIndex(ns);
-                } else if (FirstToken.equals("FixedType")) {
+                    currentSS.SetNextIndex(ns);
+                } else if (firstToken.equals("FixedType")) {
                     if (nTokens > 1) {
-                        CurrentSS.SetFixedType(st.nextToken());
+                        currentSS.setFixedType(st.nextToken());
                     } else {
-                        CurrentSS.SetFixedType("UNKNOWN");
+                        currentSS.setFixedType("UNKNOWN");
                     }
-                } else if (FirstToken.equals("BridgePartner")) {
+                } else if (firstToken.equals("BridgePartner")) {
                     int bp;
                     while (st.hasMoreTokens()) {
                         try {
@@ -183,17 +154,17 @@ public class TopsFileReader {
                         } catch (NumberFormatException nfe) {
                             throw new TopsFileFormatException();
                         }
-                        CurrentSS.AddBridgePartner(bp);
+                        currentSS.addBridgePartner(bp);
                     }
-                } else if (FirstToken.equals("BridgePartnerSide")) {
+                } else if (firstToken.equals("BridgePartnerSide")) {
                     while (st.hasMoreTokens()) {
-                        CurrentSS.AddBridgePartnerSide(st.nextToken());
+                        currentSS.addBridgePartnerSide(st.nextToken());
                     }
-                } else if (FirstToken.equals("BridgePartnerType")) {
+                } else if (firstToken.equals("BridgePartnerType")) {
                     while (st.hasMoreTokens()) {
-                        CurrentSS.AddBridgePartnerType(st.nextToken());
+                        currentSS.addBridgePartnerType(st.nextToken());
                     }
-                } else if (FirstToken.equals("Neighbour")) {
+                } else if (firstToken.equals("Neighbour")) {
                     int nb;
                     while (st.hasMoreTokens()) {
                         try {
@@ -201,9 +172,9 @@ public class TopsFileReader {
                         } catch (NumberFormatException nfe) {
                             throw new TopsFileFormatException();
                         }
-                        CurrentSS.AddNeighbour(nb);
+                        currentSS.addNeighbour(nb);
                     }
-                } else if (FirstToken.equals("SeqStartResidue")) {
+                } else if (firstToken.equals("SeqStartResidue")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
@@ -213,9 +184,9 @@ public class TopsFileReader {
                     } catch (NumberFormatException nfe) {
                         throw new TopsFileFormatException();
                     }
-                    CurrentSS.SetSeqStartResidue(res);
+                    currentSS.setSeqStartResidue(res);
 
-                } else if (FirstToken.equals("SeqFinishResidue")) {
+                } else if (firstToken.equals("SeqFinishResidue")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
@@ -225,9 +196,9 @@ public class TopsFileReader {
                     } catch (NumberFormatException nfe) {
                         throw new TopsFileFormatException();
                     }
-                    CurrentSS.SetSeqFinishResidue(res);
+                    currentSS.setSeqFinishResidue(res);
 
-                } else if (FirstToken.equals("Chirality")) {
+                } else if (firstToken.equals("Chirality")) {
 
                     int chi = 0;
                     if (nTokens > 1) {
@@ -237,9 +208,9 @@ public class TopsFileReader {
                             throw new TopsFileFormatException();
                         }
                     }
-                    CurrentSS.SetChirality(chi);
+                    currentSS.setChirality(chi);
 
-                } else if (FirstToken.equals("AxesStartPoint")) {
+                } else if (firstToken.equals("AxesStartPoint")) {
                     if (nTokens != 4)
                         throw new TopsFileFormatException();
                     float sp[] = new float[3];
@@ -252,8 +223,8 @@ public class TopsFileReader {
                             throw new TopsFileFormatException();
                         }
                     }
-                    CurrentSS.SetAxesStartPoint(sp[0], sp[1], sp[2]);
-                } else if (FirstToken.equals("AxesFinishPoint")) {
+                    currentSS.setAxesStartPoint(sp[0], sp[1], sp[2]);
+                } else if (firstToken.equals("AxesFinishPoint")) {
                     if (nTokens != 4)
                         throw new TopsFileFormatException();
                     float fp[] = new float[3];
@@ -266,8 +237,8 @@ public class TopsFileReader {
                             throw new TopsFileFormatException();
                         }
                     }
-                    CurrentSS.SetAxesFinishPoint(fp[0], fp[1], fp[2]);
-                } else if (FirstToken.equals("AxisLength")) {
+                    currentSS.setAxesFinishPoint(fp[0], fp[1], fp[2]);
+                } else if (firstToken.equals("AxisLength")) {
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
                     float al;
@@ -276,32 +247,32 @@ public class TopsFileReader {
                     } catch (NumberFormatException nfe) {
                         throw new TopsFileFormatException();
                     }
-                    CurrentSS.SetAxisLength(al);
-                } else if (FirstToken.equals("CartoonX")) {
+                    currentSS.setAxisLength(al);
+                } else if (firstToken.equals("CartoonX")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
 
                     x = Integer.parseInt(st.nextToken());
-                    CurrentSS.PlaceElementX(x);
+                    currentSS.placeElementX(x);
 
-                } else if (FirstToken.equals("CartoonY")) {
+                } else if (firstToken.equals("CartoonY")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
 
                     y = Integer.parseInt(st.nextToken());
-                    CurrentSS.PlaceElementY(y);
+                    currentSS.placeElementY(y);
 
-                } else if (FirstToken.equals("SymbolRadius")) {
+                } else if (firstToken.equals("SymbolRadius")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
 
                     r = Integer.parseInt(st.nextToken());
-                    CurrentSS.SetSymbolRadius(r);
+                    currentSS.setSymbolRadius(r);
 
-                } else if (FirstToken.equals("ConnectionTo")) {
+                } else if (firstToken.equals("ConnectionTo")) {
 
                     if ((nTokens % 2) != 1)
                         throw new TopsFileFormatException();
@@ -309,30 +280,30 @@ public class TopsFileReader {
                     while (st.hasMoreTokens()) {
                         x = Float.valueOf(st.nextToken()).intValue();
                         y = Float.valueOf(st.nextToken()).intValue();
-                        CurrentSS.AddConnectionTo(x, y);
+                        currentSS.addConnectionTo(x, y);
                     }
 
-                } else if (FirstToken.equals("PDBStartResidue")) {
+                } else if (firstToken.equals("PDBStartResidue")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
-                    CurrentSS.setPDBStartResidue(
+                    currentSS.setPDBStartResidue(
                             Integer.parseInt(st.nextToken()));
 
-                } else if (FirstToken.equals("PDBFinishResidue")) {
+                } else if (firstToken.equals("PDBFinishResidue")) {
 
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
-                    CurrentSS.setPDBFinishResidue(
+                    currentSS.setPDBFinishResidue(
                             Integer.parseInt(st.nextToken()));
 
-                } else if (FirstToken.equals("Chain")) {
+                } else if (firstToken.equals("Chain")) {
                     if (st.hasMoreTokens()) {
-                        CurrentSS.setChain(st.nextToken());
+                        currentSS.setChain(st.nextToken());
                     } else {
-                        CurrentSS.setChain(" ");
+                        currentSS.setChain(" ");
                     }
-                } else if (FirstToken.equals("Fill")) {
+                } else if (firstToken.equals("Fill")) {
 
                     int f = 0;
                     if (nTokens > 1) {
@@ -342,7 +313,7 @@ public class TopsFileReader {
                             throw new TopsFileFormatException();
                         }
                     }
-                    CurrentSS.SetFill(f);
+                    currentSS.setFill(f);
                 }
             }
 
@@ -351,6 +322,45 @@ public class TopsFileReader {
         }
 
         return protein;
+    }
+    
+    private DomainDefinition handleDomainNumber(StringTokenizer st, int nTokens) throws TopsFileFormatException {
+        if (nTokens < 3) {
+            throw new TopsFileFormatException();
+        }
+        st.nextToken();
+        
+        int[] tmp_int = new int[3];
+        CATHcode ccode = new CATHcode(st.nextToken());
+        
+        // XXX? CHAIN or SEGMENT?
+        DomainDefinition ddef = 
+                new DomainDefinition(ccode, DomainType.CHAIN_SET);   
+        while (st.hasMoreTokens()) {
+            for (int j = 0; j < 3; j++) {
+                if (st.hasMoreTokens()) {
+                    try {
+                        tmp_int[j] = Integer.parseInt(st.nextToken());
+                    } catch (NumberFormatException e) {
+                        throw new TopsFileFormatException();
+                    }
+                } else {
+                    throw new TopsFileFormatException();
+                }
+            }
+            // XXX currently throwing away the seq frag start
+            ddef.addSegment(ccode.getChain(), tmp_int[1], tmp_int[2]);
+        }
+        return ddef;
+    }
+    
+    private SecStrucElement handleSecStrucType(StringTokenizer st, int nTokens) throws TopsFileFormatException {
+        if (nTokens != 2) {
+            throw new TopsFileFormatException();
+        }
+        SecStrucElement currentSS = new SecStrucElement();
+        currentSS.setType(st.nextToken());
+        return currentSS;
     }
 
 }

@@ -73,13 +73,13 @@ public class ProteinConverter {
 				if (prevStrand != null) {
 					SecStrucElement prevElement = segmentElementMap.get(prevStrand);
 					SecStrucElement currElement = segmentElementMap.get(strand);
-					prevElement.AddBridgePartner(currElement.getSymbolNumber());
-					currElement.AddBridgePartner(prevElement.getSymbolNumber());
-					prevElement.AddBridgePartnerSide("R"); // XXX
-					currElement.AddBridgePartnerSide("L"); // XXX
+					prevElement.addBridgePartner(currElement.getSymbolNumber());
+					currElement.addBridgePartner(prevElement.getSymbolNumber());
+					prevElement.addBridgePartnerSide("R"); // XXX
+					currElement.addBridgePartnerSide("L"); // XXX
 					char relativeOrientation = prevStrand.getRelativeOrientation(strand);
-					prevElement.AddBridgePartnerType(String.valueOf(relativeOrientation));
-					currElement.AddBridgePartnerType(String.valueOf(relativeOrientation));
+					prevElement.addBridgePartnerType(String.valueOf(relativeOrientation));
+					currElement.addBridgePartnerType(String.valueOf(relativeOrientation));
 				}
 				prevStrand = strand;
 			}

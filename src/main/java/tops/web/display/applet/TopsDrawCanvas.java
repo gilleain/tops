@@ -201,7 +201,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         }
 
         // determine actual bounding box
-        Rectangle bbox = RootSecStruc.EPSBoundingBox(h);
+        Rectangle bbox = RootSecStruc.epsBoundingBox(h);
         bbox = this.expandEPSBoundingBox(bbox, h);
         EPS = PostscriptFactory.addBoundingBox(EPS, bbox.x, bbox.y, bbox.x
                 + bbox.width, bbox.y + bbox.height);
@@ -561,7 +561,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 if (this.SelectedSymbol == null) {
                     this.SelectByPosition(e.getPoint());
                     if (this.SelectedSymbol != null) {
-                        this.SelectedSymbol.ClearConnectionTo();
+                        this.SelectedSymbol.clearConnectionTo();
                     }
                 } else {
                     /*
@@ -569,7 +569,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                      * ClickCount = 1 the other with ClickCount = 2
                      */
                     if (e.getClickCount() == 1) {
-                        this.SelectedSymbol.AddConnectionTo(e.getPoint());
+                        this.SelectedSymbol.addConnectionTo(e.getPoint());
                         this.repaint();
                     } else {
                         this.UnSelect();
@@ -591,7 +591,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
             case REFLECT_XY_MODE:
                 if (this.RootSecStruc != null) {
-                    this.RootSecStruc.ReflectXY();
+                    this.RootSecStruc.reflectXY();
                     this.CenterDiagram();
                     this.repaint();
                 }
@@ -601,7 +601,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public void RotateX() {
         if (this.RootSecStruc != null) {
-            this.RootSecStruc.RotateX();
+            this.RootSecStruc.rotateX();
             this.CenterDiagram();
             this.repaint();
         }
@@ -609,7 +609,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public void RotateY() {
         if (this.RootSecStruc != null) {
-            this.RootSecStruc.RotateY();
+            this.RootSecStruc.rotateY();
             this.CenterDiagram();
             this.repaint();
         }
@@ -617,7 +617,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public void RotateZ() {
         if (this.RootSecStruc != null) {
-            this.RootSecStruc.RotateZ();
+            this.RootSecStruc.rotateZ();
             this.CenterDiagram();
             this.repaint();
         }
@@ -637,7 +637,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         SecStrucElement s;
         while (itr.hasNext()) {
             s = (SecStrucElement) itr.next();
-            sumY += s.GetPosition().y;
+            sumY += s.getPosition().y;
         }
 
         int averageY = (sumY / numberOfSymbols);
@@ -651,7 +651,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         itr = list.iterator();
         while (itr.hasNext()) {
             s = (SecStrucElement) itr.next();
-            s.PlaceElement(xpos, averageY);
+            s.placeElement(xpos, averageY);
             xpos += separation;
         }
         this.CenterDiagram();
@@ -696,7 +696,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 break;
             s = (SecStrucElement) itr.next();
             Point currentPoint = this.nextCirclePoint(boundsRadius, angle);
-            s.PlaceElement(currentPoint.x, currentPoint.y);
+            s.placeElement(currentPoint.x, currentPoint.y);
         }
         this.CenterDiagram();
     }
@@ -719,7 +719,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             case MOVE_HELIX_MODE:
             case MOVE_SYMBOLS_MODE:
                 if (this.SelectedSymbol != null) {
-                    this.SelectedSymbol.SetPosition(pos);
+                    this.SelectedSymbol.setPosition(pos);
                     this.repaint();
                 }
                 break;
@@ -734,9 +734,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
             case MOVE_FIXEDS_MODE:
                 if (this.SelectedSymbol != null) {
-                    Point oldp = this.SelectedSymbol.GetPosition();
+                    Point oldp = this.SelectedSymbol.getPosition();
                     Point newp = pos;
-                    RootSecStruc.TranslateFixed(newp.x - oldp.x, newp.y - oldp.y);
+                    RootSecStruc.translateFixed(newp.x - oldp.x, newp.y - oldp.y);
                     this.repaint();
                 }
                 break;
@@ -807,7 +807,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     }
 
     public synchronized void SelectByPosition(Point p) {
-        SecStrucElement selected = RootSecStruc.SelectByPosition(p);
+        SecStrucElement selected = RootSecStruc.selectByPosition(p);
 
         if (selected != null) {
             System.out.println("selected : " + selected.toString());
@@ -827,7 +827,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         float scale = this.getScale();
         if (scale <= 0.0)
             scale = 1.0F;
-        RootSecStruc.ApplyScale(scale);
+        RootSecStruc.applyScale(scale);
     }
 
 
@@ -854,7 +854,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * inversion of y direction is required because the canvas coordinate
          * system changes the handedness of the input diagram
          */
-        RootSecStruc.InvertY();
+        RootSecStruc.invertY();
 
         this.CenterDiagram();
     }
@@ -864,16 +864,16 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * writing the file
      */
     public void SetCCodeCoordinates() {
-        RootSecStruc.InvertScale(getScale());
-        RootSecStruc.InvertY();
+        RootSecStruc.invertScale(getScale());
+        RootSecStruc.invertY();
     }
 
     /**
      * a method to centre the diagram on the canvas
      */
     public void CenterDiagram() {
-        Point cent = this.RootSecStruc.TopsCentroid();
-        RootSecStruc.TranslateDiagram(-cent.x + this.getSize().width / 2, -cent.y
+        Point cent = this.RootSecStruc.topsCentroid();
+        RootSecStruc.translateDiagram(-cent.x + this.getSize().width / 2, -cent.y
                 + this.getSize().height / 2);
         
     }
@@ -890,7 +890,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         float cwidth = (cd.width - 2 * TopsDrawCanvas.BORDER);
 
         if (this.RootSecStruc != null) {
-            bb = this.RootSecStruc.TopsBoundingBox();
+            bb = this.RootSecStruc.topsBoundingBox();
 
             float s1 = cwidth / (bb.width);
             float s2 = cheight / (bb.height);
@@ -1050,8 +1050,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         Point ScreenPos;
         Color c = ss.getColour();
 
-        ScreenR = ss.GetSymbolRadius();
-        ScreenPos = ss.GetPosition();
+        ScreenR = ss.getSymbolRadius();
+        ScreenPos = ss.getPosition();
 
         if (ss.getType().equals("H")) {
             if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
@@ -1187,40 +1187,40 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         if (s.getType().equals("C") || To.getType().equals("N"))
             return;
 
-        FromScreenR = s.GetSymbolRadius();
+        FromScreenR = s.getSymbolRadius();
 //        size = s.GetFixNumRes();
 
-        ToScreenR = To.GetSymbolRadius();
+        ToScreenR = To.getSymbolRadius();
 //        size = To.GetFixNumRes();
 
         /*
          * in the case of no intervening connection points just join between the
          * two symbols
          */
-        if (s.GetConnectionTo().isEmpty()) {
-            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR, To
-                    .GetPosition(), To.getDirection(), To.getType(), ToScreenR,
+        if (s.getConnectionTo().isEmpty()) {
+            this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR, To
+                    .getPosition(), To.getDirection(), To.getType(), ToScreenR,
                     GraphicsOutput);
         }
         /* the case where there are some intervening connection points */
         else {
 
-            Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
-            Point PointTo = ConnectionEnum.nextElement();
+            Iterator<Point> connectionEnum = s.getConnectionTo().iterator();
+            Point pointTo = connectionEnum.next();
 
-            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    PointTo, "*", "*", 0, GraphicsOutput);
+            this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
+                    pointTo, "*", "*", 0, GraphicsOutput);
 
-            Point PointFrom;
-            while (ConnectionEnum.hasMoreElements()) {
-                PointFrom = PointTo;
-                PointTo = (Point) ConnectionEnum.nextElement();
-                this.JoinPoints(PointFrom, "*", "*", 0, PointTo, "*", "*", 0,
+            Point pointFrom;
+            while (connectionEnum.hasNext()) {
+                pointFrom = pointTo;
+                pointTo = connectionEnum.next();
+                this.JoinPoints(pointFrom, "*", "*", 0, pointTo, "*", "*", 0,
                         GraphicsOutput);
             }
 
-            PointFrom = PointTo;
-            this.JoinPoints(PointFrom, "*", "*", 0, To.GetPosition(), To.getDirection(),
+            pointFrom = pointTo;
+            this.JoinPoints(pointFrom, "*", "*", 0, To.getPosition(), To.getDirection(),
                     To.getType(), ToScreenR, GraphicsOutput);
 
         }

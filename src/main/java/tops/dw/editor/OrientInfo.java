@@ -86,8 +86,8 @@ public class OrientInfo {
 	        trans_counts[i] = 0;
 	
 	    for (i = 0; i < nequivs; i++) {
-	        ref[0] = refroot.GetSSEByNumber(equiv_ref[i]);
-	        orient[0] = root.GetSSEByNumber(equiv[i]);
+	        ref[0] = refroot.getSSEByNumber(equiv_ref[i]);
+	        orient[0] = root.getSSEByNumber(equiv[i]);
 	
 	        if (ref[0] == null || orient[0] == null) {
 	            System.out.println("SSE number out of range in equivalences file");
@@ -95,8 +95,8 @@ public class OrientInfo {
 	        }
 	
 	        for (j = i + 1; j < nequivs; j++) {
-	            ref[1] = refroot.GetSSEByNumber(equiv_ref[j]);
-	            orient[1] = root.GetSSEByNumber(equiv[j]);
+	            ref[1] = refroot.getSSEByNumber(equiv_ref[j]);
+	            orient[1] = root.getSSEByNumber(equiv[j]);
 	
 	            if (ref[1] == null || orient[1] == null) {
 	                System.out.println("SSE number out of range in equivalences file");
@@ -166,10 +166,10 @@ public class OrientInfo {
  
 
     private int relXOrient(SecStrucElement ref[], SecStrucElement orient[]) {
-        int ref_pos1 = ref[0].GetPosition().x;
-        int ref_pos2 = ref[1].GetPosition().x;
-        int orient_pos1 = orient[0].GetPosition().x;
-        int orient_pos2 = orient[1].GetPosition().x;
+        int ref_pos1 = ref[0].getPosition().x;
+        int ref_pos2 = ref[1].getPosition().x;
+        int orient_pos1 = orient[0].getPosition().x;
+        int orient_pos2 = orient[1].getPosition().x;
 
         if ((ref_pos2 > ref_pos1) && (orient_pos2 > orient_pos1))
             return 1;
@@ -184,10 +184,10 @@ public class OrientInfo {
     }
 
     private int relYOrient(SecStrucElement ref[], SecStrucElement orient[]) {
-        int ref_pos1 = ref[0].GetPosition().y;
-        int ref_pos2 = ref[1].GetPosition().y;
-        int orient_pos1 = orient[0].GetPosition().y;
-        int orient_pos2 = orient[1].GetPosition().y;
+        int ref_pos1 = ref[0].getPosition().y;
+        int ref_pos2 = ref[1].getPosition().y;
+        int orient_pos1 = orient[0].getPosition().y;
+        int orient_pos2 = orient[1].getPosition().y;
 
         if ((ref_pos2 > ref_pos1) && (orient_pos2 > orient_pos1))
             return 1;

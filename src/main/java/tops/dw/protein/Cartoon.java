@@ -8,7 +8,7 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -54,25 +54,22 @@ public class Cartoon {
         // TODO Auto-generated constructor stub
         this(new SecStrucElement[]{}); // XXX ugh
     }
-    
 
-    public void TranslateFixed(int tx, int ty) {
+    public void translateFixed(int tx, int ty) {
         for (SecStrucElement s : fixed) {
-            s.Translate(tx, ty);
+            s.translate(tx, ty);
         }
     }
     
-    public int GetFixNumRes() {
+    public int getFixNumRes() {
         int size = 0;
 
         for (SecStrucElement t : fixed) {
-            size += t.Length();
+            size += t.length();
         }
 
         return size;
     }
-    
-
     
     public SecStrucElement addSymbol(String type, String direction, int x, int y, SecStrucElement selectedSymbol) {
         int defaultSeparation = 30; // ARBITRARY!
@@ -81,8 +78,8 @@ public class Cartoon {
         SecStrucElement newSSE = new SecStrucElement();
         newSSE.setType(type);
         newSSE.setDirection(direction);
-        newSSE.PlaceElement(x, y);
-        newSSE.SetSymbolRadius(defaultRadius);
+        newSSE.placeElement(x, y);
+        newSSE.setSymbolRadius(defaultRadius);
         
         if (this.sses.isEmpty()) {
             // make N and C terminii
@@ -90,15 +87,15 @@ public class Cartoon {
             nTerminus.setType("N");
             nTerminus.setDirection("U");
             nTerminus.setLabel("N");
-            nTerminus.PlaceElement(x - defaultSeparation, y); // ARBITRARY!
-            nTerminus.SetSymbolRadius(defaultRadius);
+            nTerminus.placeElement(x - defaultSeparation, y); // ARBITRARY!
+            nTerminus.setSymbolRadius(defaultRadius);
 
             SecStrucElement cTerminus = new SecStrucElement();
             cTerminus.setType("C");
             cTerminus.setDirection("U");
             cTerminus.setLabel("C");
-            cTerminus.PlaceElement(x + defaultSeparation, y); // ARBITRARY!
-            cTerminus.SetSymbolRadius(defaultRadius);
+            cTerminus.placeElement(x + defaultSeparation, y); // ARBITRARY!
+            cTerminus.setSymbolRadius(defaultRadius);
 
         } else {
             // deal with the C-terminus in a special way - add the new SSE
@@ -144,7 +141,7 @@ public class Cartoon {
     public List<SecStrucElement> selectContained(Rectangle r) {
         List<SecStrucElement> list = new ArrayList<SecStrucElement>();
         for (SecStrucElement s : sses) {
-            Point pos = s.GetPosition();
+            Point pos = s.getPosition();
             if (r.contains(pos)) {
                 list.add(s);
             }
@@ -152,15 +149,15 @@ public class Cartoon {
         return list;
     }
     
-    public SecStrucElement SelectByPosition(Point p) {
+    public SecStrucElement selectByPosition(Point p) {
         SecStrucElement selected = null;
     
         if (p != null) {
             double minsep = Double.POSITIVE_INFINITY;
             for (SecStrucElement s : sses) {
-                Point ps = s.GetPosition();
+                Point ps = s.getPosition();
                 double sep = separation(p, ps);
-                if (sep < s.GetSymbolRadius() && sep < minsep) {
+                if (sep < s.getSymbolRadius() && sep < minsep) {
                     minsep = sep;
                     selected = s;
                 }
@@ -190,10 +187,10 @@ public class Cartoon {
     public void getEPS(int w, int h, Vector<String> EPS) {
 
         // draw secondary structures
-        this.SecStrucsEPS(EPS, w, h);
+        this.secStrucsEPS(EPS, w, h);
 
         // draw connections
-        this.ConnectionsEPS(EPS, w, h);
+        this.connectionsEPS(EPS, w, h);
     }
     
     public void highlightByResidueNumber(int[] residueNumbers) {
@@ -243,19 +240,18 @@ public class Cartoon {
         return false;
     }
     
-    private void SecStrucsEPS(Vector<String> EPS, int w, int h) {
+    private void secStrucsEPS(Vector<String> EPS, int w, int h) {
 
         if (EPS == null)
             return;
 
         // draw secondary structures
-        ;
         Point pos;
         int rad;
         Color c;
         for (SecStrucElement s : sses) {
-            pos = s.GetPosition();
-            rad = s.GetSymbolRadius();
+            pos = s.getPosition();
+            rad = s.getSymbolRadius();
 
             c = s.getColour();
 
@@ -276,8 +272,8 @@ public class Cartoon {
     }
     
     public void annotateConnection(SecStrucElement a, SecStrucElement b) {
-        Point pA = a.GetPosition();
-        Point pB = b.GetPosition();
+        Point pA = a.getPosition();
+        Point pB = b.getPosition();
         int x = (int)((pA.x / 2.0) + (pB.x / 2.0));
         int y = (int)((pA.y / 2.0) + (pB.y / 2.0));
         Point midPoint = new Point(x, y);
@@ -286,11 +282,11 @@ public class Cartoon {
         System.out.println("adding annotation " + annotation);
     }
     
-    private void ConnectionsEPS(Vector<String> EPS, int w, int h) {
+    private void connectionsEPS(Vector<String> EPS, int w, int h) {
         for (int index = 0; index < sses.size() - 1; index++) {
             SecStrucElement s = sses.get(index);
             SecStrucElement t = sses.get(index + 1);
-            this.DrawConnection(s, t, EPS);
+            this.drawConnection(s, t, EPS);
             EPS.addElement(PostscriptFactory.stroke());
         }
     }
@@ -300,13 +296,13 @@ public class Cartoon {
         
         g.setColor(Color.BLACK);
         for (SecStrucElement ss : sses) {
-            this.DrawSecStruc(ss, g);
+            this.drawSecStruc(ss, g);
         }
 
         for (int index = 0; index < sses.size() - 1; index++) {
             SecStrucElement s = sses.get(index);
             SecStrucElement t = sses.get(index + 1);
-            this.DrawConnection(s, t, g);
+            this.drawConnection(s, t, g);
         }
         
         g.setColor(Color.RED);
@@ -317,7 +313,7 @@ public class Cartoon {
         g.setColor(Color.BLACK);
     }
 
-    public Rectangle EPSBoundingBox(int h) {
+    public Rectangle epsBoundingBox(int h) {
 
         int xmin = Integer.MAX_VALUE;
         int xmax = Integer.MIN_VALUE;
@@ -328,10 +324,10 @@ public class Cartoon {
         Point pos;
         int rad, x, y;
         for (SecStrucElement s : sses) {
-            pos = s.GetPosition();
+            pos = s.getPosition();
             x = pos.x;
             y = h - pos.y;
-            rad = s.GetSymbolRadius();
+            rad = s.getSymbolRadius();
             if (x > xmax)
                 xmax = x;
             if (y > ymax)
@@ -349,13 +345,10 @@ public class Cartoon {
         ymin -= rmax;
 
         for (SecStrucElement s : sses) {
-            if (!(s.GetConnectionTo().isEmpty())) {
-                Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
-                Point PointTo;
-                while (ConnectionEnum.hasMoreElements()) {
-                    PointTo = (Point) ConnectionEnum.nextElement();
-                    x = PointTo.x;
-                    y = h - PointTo.y;
+            if (!(s.getConnectionTo().isEmpty())) {
+                for (Point pointTo : s.getConnectionTo()) {
+                    x = pointTo.x;
+                    y = h - pointTo.y;
                     if (x > xmax)
                         xmax = x;
                     if (y > ymax)
@@ -373,30 +366,30 @@ public class Cartoon {
     
 
     /* private method to draw a secondary structure */
-    private void DrawSecStruc(SecStrucElement ss, Graphics gc) {
+    private void drawSecStruc(SecStrucElement ss, Graphics gc) {
 
         int ScreenR;
         Point ScreenPos;
         Color c = ss.getColour();
 
-        ScreenR = ss.GetSymbolRadius();
-        ScreenPos = ss.GetPosition();
+        ScreenR = ss.getSymbolRadius();
+        ScreenPos = ss.getPosition();
 
         if (ss.getType().equals("H")) {
-            this.DrawHelix(ScreenPos.x, ScreenPos.y, ScreenR, c, gc);
+            this.drawHelix(ScreenPos.x, ScreenPos.y, ScreenR, c, gc);
         }
 
         if (ss.getType().equals("E")) {
-            this.DrawStrand(ScreenPos.x, ScreenPos.y, ScreenR, ss.getDirection(), c, gc);
+            this.drawStrand(ScreenPos.x, ScreenPos.y, ScreenR, ss.getDirection(), c, gc);
         }
 
         if ((ss.getType().equals("C")) || (ss.getType().equals("N")))
-            this.DrawTerminus(ScreenPos.x, ScreenPos.y, ScreenR, ss.getLabel(), c, gc);
+            this.drawTerminus(ScreenPos.x, ScreenPos.y, ScreenR, ss.getLabel(), c, gc);
 
     }
     
     /* private method to draw the symbol of an N or C terminus */
-    private void DrawTerminus(int x, int y, int r, String lab, Color c, Graphics g) {
+    private void drawTerminus(int x, int y, int r, String lab, Color c, Graphics g) {
         
         if (lab == null) { return; }
         
@@ -446,9 +439,8 @@ public class Cartoon {
      * private method to draw the connection between two secondary structure
      * elements
      */
-    private void DrawConnection(SecStrucElement s, SecStrucElement t, Object GraphicsOutput) {
+    private void drawConnection(SecStrucElement s, SecStrucElement t, Object GraphicsOutput) {
 
-        SecStrucElement To;
         int FromScreenR, ToScreenR;
 
         if ((GraphicsOutput == null) || (s == null))
@@ -458,37 +450,37 @@ public class Cartoon {
         if (s.getType().equals("C") || t.getType().equals("N"))
             return;
 
-        FromScreenR = s.GetSymbolRadius();
-        ToScreenR = t.GetSymbolRadius();
+        FromScreenR = s.getSymbolRadius();
+        ToScreenR = t.getSymbolRadius();
 
         /*
          * in the case of no intervening connection points just join between the
          * two symbols
          */
-        if (s.GetConnectionTo().isEmpty()) {
-            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR, 
-                    t.GetPosition(), t.getDirection(), t.getType(), ToScreenR,
+        if (s.getConnectionTo().isEmpty()) {
+            this.joinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR, 
+                    t.getPosition(), t.getDirection(), t.getType(), ToScreenR,
                     GraphicsOutput);
         }
         /* the case where there are some intervening connection points */
         else {
 
-            Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
-            Point PointTo = (Point) ConnectionEnum.nextElement();
+            Iterator<Point> connections = s.getConnectionTo().iterator();
+            Point pointTo = connections.next();
 
-            this.JoinPoints(s.GetPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    PointTo, "*", "*", 0, GraphicsOutput);
+            this.joinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
+                    pointTo, "*", "*", 0, GraphicsOutput);
 
-            Point PointFrom;
-            while (ConnectionEnum.hasMoreElements()) {
-                PointFrom = PointTo;
-                PointTo = (Point) ConnectionEnum.nextElement();
-                this.JoinPoints(PointFrom, "*", "*", 0, PointTo, "*", "*", 0,
+            Point pointFrom;
+            while (connections.hasNext()) {
+                pointFrom = pointTo;
+                pointTo = connections.next();
+                this.joinPoints(pointFrom, "*", "*", 0, pointTo, "*", "*", 0,
                         GraphicsOutput);
             }
 
-            PointFrom = PointTo;
-            this.JoinPoints(PointFrom, "*", "*", 0, t.GetPosition(), t.getDirection(),
+            pointFrom = pointTo;
+            this.joinPoints(pointFrom, "*", "*", 0, t.getPosition(), t.getDirection(),
                     t.getType(), ToScreenR, GraphicsOutput);
 
         }
@@ -501,7 +493,7 @@ public class Cartoon {
      * lines go from and the centre of the symbols except in certain cases when
      * they are drawn to/from the boundary
      */
-    private void JoinPoints(Point p1, String Dir1, String Type1, int Radius1,
+    private void joinPoints(Point p1, String Dir1, String Type1, int Radius1,
             Point p2, String Dir2, String Type2, int Radius2,
             Object GraphicsOutput) {
 
@@ -513,9 +505,9 @@ public class Cartoon {
          */
         if (Dir1.equals("D") || Type1.equals("C") || Type1.equals("N")) {
             if (Type1.equals("E")) {
-                From = this.DownTriangleBorder(p1, p2, Radius1);
+                From = this.downTriangleBorder(p1, p2, Radius1);
             } else {
-                From = this.CircleBorder(p1, p2, Radius1);
+                From = this.circleBorder(p1, p2, Radius1);
             }
         } else {
             From = p1;
@@ -527,9 +519,9 @@ public class Cartoon {
          */
         if (Dir2.equals("U") || Type2.equals("C") || Type2.equals("N")) {
             if (Type2.equals("E")) {
-                To = this.UpTriangleBorder(p2, p1, Radius2);
+                To = this.upTriangleBorder(p2, p1, Radius2);
             } else {
-                To = this.CircleBorder(p2, p1, Radius2);
+                To = this.circleBorder(p2, p1, Radius2);
             }
         } else {
             To = p2;
@@ -557,7 +549,7 @@ public class Cartoon {
      * triangle centered at p1 and with radius (of the circumscribing circle) r,
      * which lies on the line p1->p2
      */
-    private Point UpTriangleBorder(Point p1, Point p2, int r) {
+    private Point upTriangleBorder(Point p1, Point p2, int r) {
 
         double xb, yb;
         double x1, y1, x2, y2;
@@ -600,7 +592,7 @@ public class Cartoon {
     }
     
     public double separation(SecStrucElement sse, Point p) {
-        return separation(p, sse.GetPosition());
+        return separation(p, sse.getPosition());
     }
     
     /* private method calculates the separation of two points */
@@ -615,7 +607,7 @@ public class Cartoon {
      * private method calculates the point on a circle of centre p1 and radius r
      * which lies on the line p1->p2
      */
-    private Point CircleBorder(Point p1, Point p2, int r) {
+    private Point circleBorder(Point p1, Point p2, int r) {
 
         double xb, yb;
         double x1, y1, x2, y2;
@@ -642,7 +634,7 @@ public class Cartoon {
      * triangle centered at p1 and with radius (of the circumscribing circle) r,
      * which lies on the line p1->p2
      */
-    private Point DownTriangleBorder(Point p1, Point p2, int r) {
+    private Point downTriangleBorder(Point p1, Point p2, int r) {
 
         double xb, yb;
         double x1, y1, x2, y2;
@@ -684,21 +676,19 @@ public class Cartoon {
 
     }
     
-    public SecStrucElement GetSSEByNumber(int num) {
+    public SecStrucElement getSSEByNumber(int num) {
         return sses.get(num);
     }
     
 
     /* private method to apply a scaling value to the diagram */
-    public void ApplyScale(float scale) {
+    public void applyScale(float scale) {
         Point p;
         int x, y, r;
-        Vector<Point> conns;
-        Enumeration<Point> en;
-
+        
         for (SecStrucElement s : sses) {
 
-            p = s.GetPosition();
+            p = s.getPosition();
             x = p.x;
             y = p.y;
             x = Math.round(scale * x);
@@ -706,20 +696,15 @@ public class Cartoon {
             p.x = x;
             p.y = y;
 
-            r = s.GetSymbolRadius();
-            s.SetSymbolRadius(Math.round(r * scale));
-
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = en.nextElement();
-                    x = p.x;
-                    y = p.y;
-                    x = Math.round(scale * x);
-                    y = Math.round(scale * y);
-                    p.x = x;
-                    p.y = y;
-                }
+            r = s.getSymbolRadius();
+            s.setSymbolRadius(Math.round(r * scale));
+            for (Point pc : s.getConnectionTo()) {
+                x = pc.x;
+                y = pc.y;
+                x = Math.round(scale * x);
+                y = Math.round(scale * y);
+                pc.x = x;
+                pc.y = y;
             }
 
         }
@@ -729,35 +714,25 @@ public class Cartoon {
     /**
      * this methods applies the inverse of the scale to the diagram
      */
-    public void InvertScale(float scale) {
+    public void invertScale(float scale) {
         if (scale > 0.0)
             scale = 1.0F / scale;
         else
             scale = 1.0F;
-        this.ApplyScale(scale);
+        this.applyScale(scale);
     }
     
-    public void InvertY() {
-        Vector<Point> conns;
-        Enumeration<Point> en;
-        Point p;
+    public void invertY() {
         for (SecStrucElement s : sses) {
-
-            s.GetPosition().y *= -1;
-
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    p.y *= -1;
-                }
+            s.getPosition().y *= -1;
+            for (Point p : s.getConnectionTo()) {
+                p.y *= -1;
             }
         }
-
     }
 
     /* private method to draw a helix symbol (circle) */
-    private void DrawHelix(int x, int y, int r, Color c, Graphics g) {
+    private void drawHelix(int x, int y, int r, Color c, Graphics g) {
 
         int d = 2 * r;
         int ex = x - r;
@@ -778,7 +753,7 @@ public class Cartoon {
      * private method to draw a strand symbol (triangle, pointing up or down
      * according to strand direction )
      */
-    private void DrawStrand(int x, int y, int r, String dir, Color c, Graphics g) {
+    private void drawStrand(int x, int y, int r, String dir, Color c, Graphics g) {
 
         Polygon triangle = new Polygon();
 
@@ -811,7 +786,7 @@ public class Cartoon {
     }
     
 
-    public void ReflectXY() {
+    public void reflectXY() {
         for (SecStrucElement s : sses) {
             if (s.getDirection().equals("D")) {
                 s.setDirection("U");
@@ -821,61 +796,45 @@ public class Cartoon {
         }
     }
 
-    public void ReflectZX() {
-
-        Point p;
+    public void reflectZX() {
         int y;
-        Enumeration<Point> en;
-
         for (SecStrucElement s : sses) {
-            p = s.GetPosition();
+            Point p = s.getPosition();
             y = p.y * (-1);
             p.y = y;
-            if (s.GetConnectionTo() != null) {
-                en = s.GetConnectionTo().elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    y = p.y * (-1);
-                    p.y = y;
-                }
+            for (Point pc : s.getConnectionTo()) {
+                y = pc.y * (-1);
+                pc.y = y;
             }
         }
     }
 
-    public void ReflectYZ() {
-
-        Point p;
+    public void reflectYZ() {
         int x;
-        Enumeration<Point> en;
-
         for (SecStrucElement ss : sses) {
-            p = ss.GetPosition();
+            Point p = ss.getPosition();
             x = p.x * (-1);
             p.x = x;
-            if (ss.GetConnectionTo() != null) {
-                en = ss.GetConnectionTo().elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    x = p.x * (-1);
-                    p.x = x;
-                }
+            for (Point pc : ss.getConnectionTo()) {
+                x = pc.x * (-1);
+                pc.x = x;
             }
         }
     }
 
-    public void RotateX() {
-        this.ReflectZX();
-        this.ReflectXY();
+    public void rotateX() {
+        this.reflectZX();
+        this.reflectXY();
     }
 
-    public void RotateY() {
-        this.ReflectYZ();
-        this.ReflectXY();
+    public void rotateY() {
+        this.reflectYZ();
+        this.reflectXY();
     }
 
-    public void RotateZ() {
-        this.ReflectYZ();
-        this.ReflectZX();
+    public void rotateZ() {
+        this.reflectYZ();
+        this.reflectZX();
     }
     
     /**
@@ -888,40 +847,40 @@ public class Cartoon {
      * @param b the border
      */
     public void fitToRectangle(int x, int y, int w, int h, int b) {
-        Rectangle bb = this.TopsBoundingBox();
+        Rectangle bb = this.topsBoundingBox();
         float s1 = (float)(w - (2 * b)) / (float)(bb.width);
         float s2 = (float)(h - (2 * b)) / (float)(bb.height);
         float s = Math.min(s1, s2);
         if (s > 1.0F) { s = 1.0F; }
         System.out.print(s);
-        this.ApplyScale(s);
-        Point centroid = this.TopsCentroid();
+        this.applyScale(s);
+        Point centroid = this.topsCentroid();
         int dy = -centroid.y + (h / 2);
         int dx = -centroid.x + (w / 2);
-        this.TranslateDiagram(dx, dy);
+        this.translateDiagram(dx, dy);
     }
     
-    public Rectangle TopsBoundingBox() {
+    public Rectangle topsBoundingBox() {
 
         int x, y, minx, maxx, miny, maxy, r, maxr;
 
-        if (root.GetPosition() == null)
-            root.SetPosition(new Point(0, 0));
+        if (root.getPosition() == null)
+            root.setPosition(new Point(0, 0));
 
-        x = root.GetPosition().x;
-        y = root.GetPosition().y;
+        x = root.getPosition().x;
+        y = root.getPosition().y;
 
         minx = x;
         maxx = x;
         miny = y;
         maxy = y;
-        maxr = root.GetSymbolRadius();
+        maxr = root.getSymbolRadius();
 
         for (SecStrucElement ss : sses) {
 
-            x = ss.GetPosition().x;
-            y = ss.GetPosition().y;
-            r = ss.GetSymbolRadius();
+            x = ss.getPosition().x;
+            y = ss.getPosition().y;
+            r = ss.getSymbolRadius();
 
             if (x < minx)
                 minx = x;
@@ -941,15 +900,15 @@ public class Cartoon {
                 maxy - miny + 2 * maxr);
     }
     
-    public Point TopsCentroid() {
+    public Point topsCentroid() {
         int n = 1;
-        int centx = root.GetPosition().x;
-        int centy = root.GetPosition().y;
+        int centx = root.getPosition().x;
+        int centy = root.getPosition().y;
 
         for (SecStrucElement ss : sses) {
             n++;
-            centx += ss.GetPosition().x;
-            centy += ss.GetPosition().y;
+            centx += ss.getPosition().x;
+            centy += ss.getPosition().y;
         }
 
         centx = (int) (((float) centx) / ((float) n));
@@ -967,22 +926,14 @@ public class Cartoon {
      * @param y -
      *            the y translation to apply
      */
-    public synchronized void TranslateDiagram(int x, int y) {
-        Vector<Point> conns;
-        Enumeration<Point> en;
-        Point p;
-
+    public void translateDiagram(int x, int y) {
         for (SecStrucElement s : sses) {
-            s.GetPosition().x += x;
-            s.GetPosition().y += y;
+            s.getPosition().x += x;
+            s.getPosition().y += y;
 
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    p.x += x;
-                    p.y += y;
-                }
+            for (Point p : s.getConnectionTo()) {
+                p.x += x;
+                p.y += y;
             }
         }
     }
@@ -994,6 +945,4 @@ public class Cartoon {
     public void addSSE(SecStrucElement s) {
         sses.add(s);
     }
-    
-
 }

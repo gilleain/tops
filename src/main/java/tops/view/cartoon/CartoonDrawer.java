@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
@@ -65,8 +64,8 @@ public class CartoonDrawer {
 
     private Rectangle init(Cartoon cartoon) {
         // neded to convert c tops coordinates to Java coordinates
-        cartoon.InvertY(); 
-        Rectangle bb = cartoon.TopsBoundingBox();
+        cartoon.invertY(); 
+        Rectangle bb = cartoon.topsBoundingBox();
         System.err.println("bb before = " + bb);
 
         this.centerDiagram(cartoon, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, bb.width, bb.height, bb);
@@ -76,7 +75,7 @@ public class CartoonDrawer {
     }
 
     private Rectangle init(Cartoon cartoon, int length, int w, int h) {
-        Rectangle bb = cartoon.TopsBoundingBox();
+        Rectangle bb = cartoon.topsBoundingBox();
         //System.err.println("bb before = " + bb);
 
         // get the largest dimension
@@ -88,9 +87,9 @@ public class CartoonDrawer {
         float scale = ((float) length / (float) largestDimension); 
 
         //System.err.println("scale = " + scale);
-        cartoon.ApplyScale(scale);
-        cartoon.InvertY(); // needed to convert c tops coordinates to Java  coordinates
-        if (scale != 1.0) bb = cartoon.TopsBoundingBox(); // get the new bounds
+        cartoon.applyScale(scale);
+        cartoon.invertY(); // needed to convert c tops coordinates to Java  coordinates
+        if (scale != 1.0) bb = cartoon.topsBoundingBox(); // get the new bounds
 
         //System.err.println("bb after = " + bb);
         Point currentCorner = bb.getLocation();
@@ -116,48 +115,28 @@ public class CartoonDrawer {
     }
 
     private void invertY(SecStrucElement root) {
-        Vector<Point> conns;
-        Enumeration<Point> en;
-        Point p;
-
         for (SecStrucElement s : new ArrayList<SecStrucElement>()) { // TODO
-            s.GetPosition().y *= -1;
+            s.getPosition().y *= -1;
 
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    p.y *= -1;
-                }
+            for (Point p : s.getConnectionTo()) {
+                p.y *= -1;
             }
         }
     }
 
     public void applyScale(Cartoon cartoon, float scale) {
-
-        ;
-        Point p;
-        //int x, y;
-        int r;
-        Vector<Point> conns;
-        Enumeration<Point> en;
-
         for (SecStrucElement s : cartoon.getSSEs()) {
 
-            p = s.GetPosition();
+            Point p = s.getPosition();
             p.x = Math.round(scale * p.x);
             p.y = Math.round(scale * p.y);
 
-            r = s.GetSymbolRadius();
-            s.SetSymbolRadius(Math.round(r * scale));
+            int r = s.getSymbolRadius();
+            s.setSymbolRadius(Math.round(r * scale));
 
-            if ((conns = s.GetConnectionTo()) != null) {
-                en = conns.elements();
-                while (en.hasMoreElements()) {
-                    p = (Point) en.nextElement();
-                    p.x = Math.round(scale * p.x);
-                    p.y = Math.round(scale * p.y);
-                }
+            for (Point pc : s.getConnectionTo()) {
+                pc.x = Math.round(scale * pc.x);
+                pc.y = Math.round(scale * pc.y);
             }
         }
     }
@@ -172,7 +151,7 @@ public class CartoonDrawer {
         int shiftX = trueCenter.x - currentCenter.x;
         int shiftY = trueCenter.y - currentCenter.y;
 
-        cartoon.TranslateDiagram(shiftX, shiftY);
+        cartoon.translateDiagram(shiftX, shiftY);
     }
 
     private Rectangle getBoundingBox(Cartoon cartoon) {
@@ -189,21 +168,18 @@ public class CartoonDrawer {
         Point pos;
         int rad, x, y;
         for (SecStrucElement s : cartoon.getSSEs()) {
-            pos = s.GetPosition();
+            pos = s.getPosition();
             x = pos.x;
             y = pos.y;
-            rad = s.GetSymbolRadius();
+            rad = s.getSymbolRadius();
             if (x > xmax) xmax = x;
             if (y > ymax) ymax = y;
             if (x < xmin) xmin = x;
             if (y < ymin) ymin = y;
             if (rad > rmax) rmax = rad;
 
-            if (!(s.GetConnectionTo().isEmpty())) {
-                Enumeration<Point> ConnectionEnum = s.GetConnectionTo().elements();
-                Point PointTo;
-                while (ConnectionEnum.hasMoreElements()) {
-                    PointTo = (Point) ConnectionEnum.nextElement();
+            if (!(s.getConnectionTo().isEmpty())) {
+                for (Point PointTo : s.getConnectionTo()) {
                     x = PointTo.x;
                     y = PointTo.y;
                     if (x > xmax)
@@ -227,8 +203,8 @@ public class CartoonDrawer {
 
     private void drawSecStruc(SecStrucElement ss) {
 
-        int radius = ss.GetSymbolRadius();
-        Point pos = ss.GetPosition();
+        int radius = ss.getSymbolRadius();
+        Point pos = ss.getPosition();
         Color col = ss.getColour();
 
         if (ss.getType().equals("H")) {
@@ -290,11 +266,11 @@ public class CartoonDrawer {
         if (from.getType().equals("C") || to.getType().equals("N"))
             return;
 
-        int radiusFrom = from.GetSymbolRadius();
-        int radiusTo = to.GetSymbolRadius();
+        int radiusFrom = from.getSymbolRadius();
+        int radiusTo = to.getSymbolRadius();
 
-        Point pointTo = to.GetPosition();
-        Point pointFrom = from.GetPosition();
+        Point pointTo = to.getPosition();
+        Point pointFrom = from.getPosition();
 
         /*
          * draw from border rather than centre if direction is down (D) or if
@@ -303,10 +279,10 @@ public class CartoonDrawer {
         if (from.getDirection().equals("D") || from.getType().equals("C")
                 || from.getType().equals("N")) {
             if (from.getType().equals("E")) {
-                pointFrom = this.downTriangleBorder(from.GetPosition(), to
-                        .GetPosition(), radiusFrom);
+                pointFrom = this.downTriangleBorder(from.getPosition(), to
+                        .getPosition(), radiusFrom);
             } else {
-                pointFrom = this.circleBorder(from.GetPosition(), to.GetPosition(),
+                pointFrom = this.circleBorder(from.getPosition(), to.getPosition(),
                         radiusFrom);
             }
         }
@@ -318,29 +294,27 @@ public class CartoonDrawer {
         if (to.getDirection().equals("U") || to.getType().equals("C")
                 || to.getType().equals("N")) {
             if (to.getType().equals("E")) {
-                pointTo = this.upTriangleBorder(to.GetPosition(),
-                        from.GetPosition(), radiusTo);
+                pointTo = this.upTriangleBorder(to.getPosition(),
+                        from.getPosition(), radiusTo);
             } else {
-                pointTo = this.circleBorder(to.GetPosition(), from.GetPosition(),
+                pointTo = this.circleBorder(to.getPosition(), from.getPosition(),
                         radiusTo);
             }
         }
 
-        if (from.GetConnectionTo().isEmpty()) {
+        if (from.getConnectionTo().isEmpty()) {
             this.joinPoints(pointTo, pointFrom);
         } else {
 
-            Enumeration<Point> connectionEnum = from.GetConnectionTo().elements();
-            Point connectionPointTo = (Point) connectionEnum.nextElement();
+            Iterator<Point> connectionEnum = from.getConnectionTo().iterator();
+            Point connectionPointTo = connectionEnum.next();
 
             this.joinPoints(pointFrom, connectionPointTo);
 
             Point connectionPointFrom;
-            while (connectionEnum.hasMoreElements()) {
-                connectionPointFrom = connectionPointTo; // join next to
-                                                            // previous
-                connectionPointTo = (Point) connectionEnum.nextElement(); // get
-                                                                            // next
+            while (connectionEnum.hasNext()) {
+                connectionPointFrom = connectionPointTo; // join next to previous
+                connectionPointTo = connectionEnum.next(); // get next
                 this.joinPoints(connectionPointFrom, connectionPointTo); // join!
             }
             connectionPointFrom = connectionPointTo; // get the last in the

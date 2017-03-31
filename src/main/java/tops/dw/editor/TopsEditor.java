@@ -689,7 +689,7 @@ public class TopsEditor implements ActionListener {
                 break;
             }
             for (int j = 0; j < oi.numberOfMappings(); j++) {
-                SecStrucElement s = root.GetSSEByNumber(oi.getMapping(i, j));
+                SecStrucElement s = root.getSSEByNumber(oi.getMapping(i, j));
                 if (s == null) {
                     this.error("SSE number out of range in equivalences file");
                     return;

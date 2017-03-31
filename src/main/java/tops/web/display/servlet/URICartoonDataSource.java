@@ -118,7 +118,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 		String[] bits = highlight.split("\\.");
 		for (int i = 0; i < bits.length; i++) {
 			int index = Integer.parseInt(bits[i]);
-			SecStrucElement s = cartoon.GetSSEByNumber(index);
+			SecStrucElement s = cartoon.getSSEByNumber(index);
 			if (s.getType().equals("E")) {
 				s.setColour(strandColor);
 			} else if (s.getType().equals("H")) {

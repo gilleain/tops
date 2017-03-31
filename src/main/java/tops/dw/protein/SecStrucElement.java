@@ -3,7 +3,9 @@ package tops.dw.protein;
 import java.awt.Color;
 import java.awt.Point;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 
@@ -33,11 +35,11 @@ public class SecStrucElement {
 
     private int NextIndex;
 
-    private Point Position;
+    private Point position;
 
-    private int SymbolRadius;
+    private int symbolRadius;
 
-    private Vector<Point> ConnectionTo;
+    private List<Point> connectionTo;
 
 	private String FixedType;
 
@@ -62,8 +64,8 @@ public class SecStrucElement {
     private int Fill;
 
     public SecStrucElement() {
-        this.Position = new Point(0, 0);
-        this.ConnectionTo = new Vector<Point>();
+        this.position = new Point(0, 0);
+        this.connectionTo = new Vector<Point>();
         this.BridgePartner = new Vector<Integer>();
         this.BridgePartnerSide = new Vector<String>();
         this.BridgePartnerType = new Vector<String>();
@@ -75,197 +77,185 @@ public class SecStrucElement {
     	return this.PDBStartResidue <= residueNumber && this.PDBFinishResidue >= residueNumber;
     }
 
-    public void SetFixedType(String ft) {
+    public void setFixedType(String ft) {
         this.FixedType = ft;
     }
 
-    public String GetFixedType() {
+    public String getFixedType() {
         return this.FixedType;
     }
 
-    public void AddBridgePartner(int bp) {
+    public void addBridgePartner(int bp) {
         if (this.BridgePartner == null)
             this.BridgePartner = new Vector<Integer>();
         this.BridgePartner.addElement(new Integer(bp));
     }
 
-    public void AddBridgePartnerSide(String side) {
+    public void addBridgePartnerSide(String side) {
         if (this.BridgePartnerSide == null)
             this.BridgePartnerSide = new Vector<String>();
         this.BridgePartnerSide.addElement(side);
     }
 
-    public void AddBridgePartnerType(String type) {
+    public void addBridgePartnerType(String type) {
         if (this.BridgePartnerType == null)
             this.BridgePartnerType = new Vector<String>();
         this.BridgePartnerType.addElement(type);
     }
 
-    public Vector<Integer> GetBridgePartner() {
+    public Vector<Integer> getBridgePartner() {
         return this.BridgePartner;
     }
 
-    public Vector<String> GetBridgePartnerSide() {
+    public Vector<String> getBridgePartnerSide() {
         return this.BridgePartnerSide;
     }
 
-    public Vector<String> GetBridgePartnerType() {
+    public Vector<String> getBridgePartnerType() {
         return this.BridgePartnerType;
     }
 
-    public void AddNeighbour(int nb) {
+    public void addNeighbour(int nb) {
         if (this.Neighbour == null)
             this.Neighbour = new Vector<Integer>();
         this.Neighbour.addElement(new Integer(nb));
     }
 
-    public Vector<Integer> GetNeighbour() {
+    public Vector<Integer> getNeighbour() {
         return this.Neighbour;
     }
 
-    public void SetSeqStartResidue(int ssr) {
+    public void setSeqStartResidue(int ssr) {
         this.SeqStartResidue = ssr;
     }
 
-    public int GetSeqStartResidue() {
+    public int getSeqStartResidue() {
         return this.SeqStartResidue;
     }
 
-    public void SetSeqFinishResidue(int sfr) {
+    public void setSeqFinishResidue(int sfr) {
         this.SeqFinishResidue = sfr;
     }
 
-    public int GetSeqFinishResidue() {
+    public int getSeqFinishResidue() {
         return this.SeqFinishResidue;
     }
 
-    public void SetChirality(int c) {
+    public void setChirality(int c) {
         this.Chirality = c;
     }
 
-    public int GetChirality() {
+    public int getChirality() {
         return this.Chirality;
     }
 
-    public void SetAxesStartPoint(float x, float y, float z) {
+    public void setAxesStartPoint(float x, float y, float z) {
         this.AxesStartPoint[0] = x;
         this.AxesStartPoint[1] = y;
         this.AxesStartPoint[2] = z;
     }
 
-    public float[] GetAxesStartPoint() {
+    public float[] getAxesStartPoint() {
         return this.AxesStartPoint;
     }
 
-    public void SetAxesFinishPoint(float x, float y, float z) {
+    public void setAxesFinishPoint(float x, float y, float z) {
         this.AxesFinishPoint[0] = x;
         this.AxesFinishPoint[1] = y;
         this.AxesFinishPoint[2] = z;
     }
 
-    public float[] GetAxesFinishPoint() {
+    public float[] getAxesFinishPoint() {
         return this.AxesFinishPoint;
     }
 
-    public void SetAxisLength(float len) {
+    public void setAxisLength(float len) {
         this.AxisLength = len;
     }
 
-    public float GetAxisLength() {
+    public float setAxisLength() {
         return this.AxisLength;
     }
 
-    public void SetFill(int f) {
+    public void setFill(int f) {
         this.Fill = f;
     }
 
-    public int GetFill() {
+    public int getFill() {
         return this.Fill;
     }
 
-    public void PlaceElement(int x, int y) {
-        if (this.Position == null)
-            this.Position = new Point(0, 0);
-        this.Position.setLocation(x, y);
+    public void placeElement(int x, int y) {
+        if (this.position == null)
+            this.position = new Point(0, 0);
+        this.position.setLocation(x, y);
     }
 
-    public void PlaceElementX(int x) {
-        if (this.Position == null)
-            this.Position = new Point(0, 0);
-        this.Position.x = x;
+    public void placeElementX(int x) {
+        if (this.position == null)
+            this.position = new Point(0, 0);
+        this.position.x = x;
     }
 
-    public void PlaceElementY(int y) {
-        if (this.Position == null)
-            this.Position = new Point(0, 0);
-        this.Position.y = y;
+    public void placeElementY(int y) {
+        if (this.position == null)
+            this.position = new Point(0, 0);
+        this.position.y = y;
     }
 
-    public Point GetPosition() {
-        return this.Position;
+    public Point getPosition() {
+        return this.position;
     }
 
-    public void SetPosition(Point p) {
-        if (this.Position == null) {
-            this.Position = new Point(p.x, p.y);
+    public void setPosition(Point p) {
+        if (this.position == null) {
+            this.position = new Point(p.x, p.y);
         } else {
-            this.Position.x = p.x;
-            this.Position.y = p.y;
+            this.position.x = p.x;
+            this.position.y = p.y;
         }
     }
 
-    public void Translate(int tx, int ty) {
-        if (this.Position == null) {
-            this.Position = new Point();
+    public void translate(int tx, int ty) {
+        if (this.position == null) {
+            this.position = new Point();
         }
-        this.Position.x += tx;
-        this.Position.y += ty;
+        this.position.x += tx;
+        this.position.y += ty;
     }
 
 
-    public void SetSymbolRadius(int r) {
-        this.SymbolRadius = r;
+    public void setSymbolRadius(int r) {
+        this.symbolRadius = r;
     }
 
-    public int GetSymbolRadius() {
-        return this.SymbolRadius;
+    public int getSymbolRadius() {
+        return this.symbolRadius;
     }
 
-    public void AddConnectionTo(int x, int y) {
+    public void addConnectionTo(int x, int y) {
+        if (this.connectionTo == null)
+            this.connectionTo = new Vector<Point>();
 
-        Point p = new Point(x, y);
-
-        if (this.ConnectionTo == null)
-            this.ConnectionTo = new Vector<Point>();
-
-        this.ConnectionTo.addElement(p);
-
+        this.connectionTo.add(new Point(x, y));
     }
 
-    public void AddConnectionTo(Point p) {
+    public void addConnectionTo(Point p) {
         if (p != null) {
-            if (this.ConnectionTo == null)
-                this.ConnectionTo = new Vector<Point>();
-            this.ConnectionTo.addElement(p);
+            if (this.connectionTo == null)
+                this.connectionTo = new Vector<Point>();
+            this.connectionTo.add(p);
         }
     }
 
-    public Vector<Point> GetConnectionTo() {
-        if (this.ConnectionTo == null)
-            this.ConnectionTo = new Vector<Point>();
-        return this.ConnectionTo;
+    public List<Point> getConnectionTo() {
+        if (this.connectionTo == null)
+            this.connectionTo = new ArrayList<Point>();
+        return this.connectionTo;
     }
 
-    public void ClearConnectionTo() {
-        this.ConnectionTo = new Vector<Point>();
-    }
-
-    public void SetFixed(SecStrucElement s) {
-        this.Fixed = s;
-    }
-
-    public SecStrucElement GetFixed() {
-        return this.Fixed;
+    public void clearConnectionTo() {
+        this.connectionTo = new Vector<Point>();
     }
 
     public void SetFixedIndex(int i) {
@@ -308,12 +298,9 @@ public class SecStrucElement {
 
     }
 
-    public int Length() {
+    public int length() {
         return (this.PDBFinishResidue - this.PDBStartResidue + 1);
     }
-
-   
-
   
     public String getRelDirection(SecStrucElement s) {
         if (this.Direction.equals(s.Direction))
@@ -497,7 +484,7 @@ public class SecStrucElement {
 
         ps.println("Chirality " + this.Chirality);
 
-        Point p = this.Position;
+        Point p = this.position;
         if (p == null)
             p = new Point();
         ps.println("CartoonX " + p.x);
@@ -508,17 +495,14 @@ public class SecStrucElement {
         ps.println("AxesFinishPoint " + this.AxesFinishPoint[0] + " "
                 + this.AxesFinishPoint[1] + " " + this.AxesFinishPoint[2]);
 
-        ps.println("SymbolRadius " + this.SymbolRadius);
+        ps.println("SymbolRadius " + this.symbolRadius);
 
         ps.println("AxisLength " + this.AxisLength);
 
-        Vector<Point> ct = this.GetConnectionTo();
+        List<Point> ct = this.getConnectionTo();
         ps.println("NConnectionPoints " + ct.size());
         ps.print("ConnectionTo");
-        Enumeration<Point> en = ct.elements();
-        Point cp;
-        while (en.hasMoreElements()) {
-            cp = (Point) en.nextElement();
+        for (Point cp : ct) {
             ps.print(" " + cp.x + " " + cp.y);
         }
         ps.print("\n");
