@@ -1,5 +1,8 @@
 package tops.translation;
 
+import static tops.port.model.SSEType.EXTENDED;
+import static tops.port.model.SSEType.HELIX;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,6 +11,7 @@ import tops.dw.protein.CATHcode;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
+import tops.port.model.SSEType;
 import tops.port.model.DomainDefinition.DomainType;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
@@ -49,11 +53,12 @@ public class ProteinConverter {
 			segmentElementMap.put(backboneSegment, s);
 			
 			if (backboneSegment instanceof Strand) {
-				s.setType("E");
+				s.setType(EXTENDED);
 			} else if (backboneSegment instanceof Helix) {
-				s.setType("H");
+				s.setType(HELIX);
 			} else if (backboneSegment instanceof Terminus) {
-				s.setType(String.valueOf(((Terminus) backboneSegment).getTypeChar()));
+			    char type = ((Terminus) backboneSegment).getTypeChar();
+				s.setType(SSEType.fromCode(String.valueOf(type)));
 			}
 			if (backboneSegment.getOrientation().equals("UP")) {
 				s.setDirection("UP");

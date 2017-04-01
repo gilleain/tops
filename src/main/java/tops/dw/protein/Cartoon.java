@@ -1,5 +1,9 @@
 package tops.dw.protein;
 
+import static tops.port.model.SSEType.COIL;
+import static tops.port.model.SSEType.CTERMINUS;
+import static tops.port.model.SSEType.NTERMINUS;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -14,6 +18,7 @@ import java.util.Vector;
 
 import tops.dw.editor.Annotation;
 import tops.dw.editor.PostscriptFactory;
+import tops.port.model.SSEType;
 
 public class Cartoon {
     
@@ -71,7 +76,7 @@ public class Cartoon {
         return size;
     }
     
-    public SecStrucElement addSymbol(String type, String direction, int x, int y, SecStrucElement selectedSymbol) {
+    public SecStrucElement addSymbol(SSEType type, String direction, int x, int y, SecStrucElement selectedSymbol) {
         int defaultSeparation = 30; // ARBITRARY!
         int defaultRadius = 10; // ARBITRARY!
         
@@ -84,14 +89,14 @@ public class Cartoon {
         if (this.sses.isEmpty()) {
             // make N and C terminii
             SecStrucElement nTerminus = new SecStrucElement();
-            nTerminus.setType("N");
+            nTerminus.setType(NTERMINUS);
             nTerminus.setDirection("U");
             nTerminus.setLabel("N");
             nTerminus.placeElement(x - defaultSeparation, y); // ARBITRARY!
             nTerminus.setSymbolRadius(defaultRadius);
 
             SecStrucElement cTerminus = new SecStrucElement();
-            cTerminus.setType("C");
+            cTerminus.setType(CTERMINUS);
             cTerminus.setDirection("U");
             cTerminus.setLabel("C");
             cTerminus.placeElement(x + defaultSeparation, y); // ARBITRARY!
@@ -172,9 +177,9 @@ public class Cartoon {
 
         StringBuffer topsString = new StringBuffer();
         for (SecStrucElement s : sses) {
-            char type = s.getType().charAt(0);
-            type = (s.getDirection().equals("D")) ? Character.toLowerCase(type)
-                    : type;
+            char type = s.getType().getOneLetterName().charAt(0);
+            type = (s.getDirection().equals("D")) ? 
+                    Character.toLowerCase(type) : type;
             topsString.append(type);
         }
         return topsString.toString();
@@ -469,18 +474,18 @@ public class Cartoon {
             Point pointTo = connections.next();
 
             this.joinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    pointTo, "*", "*", 0, GraphicsOutput);
+                    pointTo, "*", COIL, 0, GraphicsOutput);
 
             Point pointFrom;
             while (connections.hasNext()) {
                 pointFrom = pointTo;
                 pointTo = connections.next();
-                this.joinPoints(pointFrom, "*", "*", 0, pointTo, "*", "*", 0,
+                this.joinPoints(pointFrom, "*", COIL, 0, pointTo, "*", COIL, 0,
                         GraphicsOutput);
             }
 
             pointFrom = pointTo;
-            this.joinPoints(pointFrom, "*", "*", 0, t.getPosition(), t.getDirection(),
+            this.joinPoints(pointFrom, "*", COIL, 0, t.getPosition(), t.getDirection(),
                     t.getType(), ToScreenR, GraphicsOutput);
 
         }
@@ -493,8 +498,8 @@ public class Cartoon {
      * lines go from and the centre of the symbols except in certain cases when
      * they are drawn to/from the boundary
      */
-    private void joinPoints(Point p1, String Dir1, String Type1, int Radius1,
-            Point p2, String Dir2, String Type2, int Radius2,
+    private void joinPoints(Point p1, String Dir1, SSEType sseType, int Radius1,
+            Point p2, String Dir2, SSEType sseType2, int Radius2,
             Object GraphicsOutput) {
 
         Point To, From;
@@ -503,8 +508,8 @@ public class Cartoon {
          * draw from border rather than centre if direction is down (D) or if
          * Type is N or C
          */
-        if (Dir1.equals("D") || Type1.equals("C") || Type1.equals("N")) {
-            if (Type1.equals("E")) {
+        if (Dir1.equals("D") || sseType.equals("C") || sseType.equals("N")) {
+            if (sseType.equals("E")) {
                 From = this.downTriangleBorder(p1, p2, Radius1);
             } else {
                 From = this.circleBorder(p1, p2, Radius1);
@@ -517,8 +522,8 @@ public class Cartoon {
          * draw to border rather than centre if direction is up (U) or if Type
          * is N or C
          */
-        if (Dir2.equals("U") || Type2.equals("C") || Type2.equals("N")) {
-            if (Type2.equals("E")) {
+        if (Dir2.equals("U") || sseType2.equals("C") || sseType2.equals("N")) {
+            if (sseType2.equals("E")) {
                 To = this.upTriangleBorder(p2, p1, Radius2);
             } else {
                 To = this.circleBorder(p2, p1, Radius2);

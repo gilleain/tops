@@ -1,5 +1,11 @@
 package tops.web.display.applet;
 
+import static tops.port.model.SSEType.COIL;
+import static tops.port.model.SSEType.CTERMINUS;
+import static tops.port.model.SSEType.EXTENDED;
+import static tops.port.model.SSEType.HELIX;
+import static tops.port.model.SSEType.NTERMINUS;
+
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,6 +30,7 @@ import tops.dw.editor.UserArrow;
 import tops.dw.editor.UserLabel;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.SSEType;
 
 /**
  * This class is a java bean which displays and permits editing of a single Tops
@@ -461,13 +468,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 break;
 
             case ADD_STRAND_MODE:
-                this.addSymbol("E", "U", pos.x, pos.y);
+                this.addSymbol(EXTENDED, "U", pos.x, pos.y);
                 this.repaint();
                 this.setEditMode(TopsDrawCanvas.MOVE_STRAND_MODE);
                 break;
 
             case ADD_HELIX_MODE:
-                this.addSymbol("H", "U", pos.x, pos.y);
+                this.addSymbol(HELIX, "U", pos.x, pos.y);
                 this.repaint();
                 this.setEditMode(TopsDrawCanvas.MOVE_HELIX_MODE);
                 break;
@@ -783,7 +790,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         this.SelectedSymbol = this.RootSecStruc.getRoot();
     }
 
-    public void addSymbol(String type, String direction, int x, int y) {
+    public void addSymbol(SSEType type, String direction, int x, int y) {
         System.out.println("adding symbol : " + type + ", " + direction
                 + " at (" + x + ", " + y + ")");
         this.SelectedSymbol = RootSecStruc.addSymbol(type, direction, x, y, SelectedSymbol);
@@ -1209,18 +1216,18 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             Point pointTo = connectionEnum.next();
 
             this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    pointTo, "*", "*", 0, GraphicsOutput);
+                    pointTo, "*", COIL, 0, GraphicsOutput);
 
             Point pointFrom;
             while (connectionEnum.hasNext()) {
                 pointFrom = pointTo;
                 pointTo = connectionEnum.next();
-                this.JoinPoints(pointFrom, "*", "*", 0, pointTo, "*", "*", 0,
+                this.JoinPoints(pointFrom, "*", COIL, 0, pointTo, "*", COIL, 0,
                         GraphicsOutput);
             }
 
             pointFrom = pointTo;
-            this.JoinPoints(pointFrom, "*", "*", 0, To.getPosition(), To.getDirection(),
+            this.JoinPoints(pointFrom, "*", COIL, 0, To.getPosition(), To.getDirection(),
                     To.getType(), ToScreenR, GraphicsOutput);
 
         }
@@ -1235,8 +1242,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * lines go from and the centre of the symbols except in certain cases when
      * they are drawn to/from the boundary
      */
-    private void JoinPoints(Point p1, String Dir1, String Type1, int Radius1,
-            Point p2, String Dir2, String Type2, int Radius2,
+    private void JoinPoints(Point p1, String Dir1, SSEType sseType, int Radius1,
+            Point p2, String Dir2, SSEType sseType2, int Radius2,
             Object GraphicsOutput) {
 
         Point To, From;
@@ -1245,8 +1252,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * draw from border rather than centre if direction is down (D) or if
          * Type is N or C
          */
-        if (Dir1.equals("D") || Type1.equals("C") || Type1.equals("N")) {
-            if (Type1.equals("E")) {
+        if (Dir1.equals("D") || sseType == CTERMINUS || sseType == NTERMINUS) {
+            if (sseType == SSEType.EXTENDED) {
                 From = this.DownTriangleBorder(p1, p2, Radius1);
             } else {
                 From = this.CircleBorder(p1, p2, Radius1);
@@ -1259,8 +1266,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * draw to border rather than centre if direction is up (U) or if Type
          * is N or C
          */
-        if (Dir2.equals("U") || Type2.equals("C") || Type2.equals("N")) {
-            if (Type2.equals("E")) {
+        if (Dir2.equals("U") || sseType2.equals("C") || sseType2.equals("N")) {
+            if (sseType2.equals("E")) {
                 To = this.UpTriangleBorder(p2, p1, Radius2);
             } else {
                 To = this.CircleBorder(p2, p1, Radius2);

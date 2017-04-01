@@ -16,6 +16,7 @@ import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.port.model.DomainDefinition;
 import tops.port.model.DomainDefinition.DomainType;
+import tops.port.model.SSEType;
 
 public class TopsFileReader {
 
@@ -359,7 +360,7 @@ public class TopsFileReader {
             throw new TopsFileFormatException();
         }
         SecStrucElement currentSS = new SecStrucElement();
-        currentSS.setType(st.nextToken());
+        currentSS.setType(SSEType.fromCode(st.nextToken()));
         return currentSS;
     }
 

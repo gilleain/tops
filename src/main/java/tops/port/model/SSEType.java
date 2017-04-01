@@ -11,7 +11,8 @@ public enum SSEType {
     ISO_BRIDGE("I"), 
     LEFT_ALPHA_HELIX("H"), 
     NTERMINUS("N"), 
-    CTERMINUS("C");
+    CTERMINUS("C"),
+    UNKNOWN("?");
     
     private String oneLetterName;
     
@@ -21,5 +22,14 @@ public enum SSEType {
     
     public String getOneLetterName() {
         return oneLetterName;
+    }
+    
+    public static SSEType fromCode(String code) {
+        for (SSEType type : SSEType.values()) {
+            if (type.oneLetterName.equals(code)) {
+                return type;
+            }
+        }
+        return SSEType.UNKNOWN;
     }
 }

@@ -8,12 +8,14 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import tops.port.model.SSEType;
+
 
 public class SecStrucElement {
 
     private int SymbolNumber;
 
-    private String Type;
+    private SSEType type;
 
     private String Direction;
 
@@ -290,7 +292,7 @@ public class SecStrucElement {
 
     public boolean IsTerminus() {
 
-        if (this.Type.equals("N") || this.Type.equals("C")) {
+        if (this.type.equals("N") || this.type.equals("C")) {
             return true;
         } else {
             return false;
@@ -317,12 +319,12 @@ public class SecStrucElement {
 		SymbolNumber = symbolNumber;
 	}
 
-	public String getType() {
-		return Type;
+	public SSEType getType() {
+		return type;
 	}
 
-	public void setType(String type) {
-		Type = type;
+	public void setType(SSEType type) {
+		this.type = type;
 	}
 
 	public String getDirection() {
@@ -369,13 +371,13 @@ public class SecStrucElement {
     public String toString() {
         StringBuffer sb = new StringBuffer();
 
-        if (this.Type.equals("H"))
+        if (this.type.equals("H"))
             sb.append("Helix");
-        else if (this.Type.equals("E"))
+        else if (this.type.equals("E"))
             sb.append("Strand");
-        else if (this.Type.equals("N"))
+        else if (this.type.equals("N"))
             sb.append("N terminus");
-        else if (this.Type.equals("C"))
+        else if (this.type.equals("C"))
             sb.append("C terminus");
 
         String ch;
@@ -384,7 +386,7 @@ public class SecStrucElement {
         else
             ch = this.Chain;
 
-        if (this.Type.equals("H") || this.Type.equals("E")) {
+        if (this.type.equals("H") || this.type.equals("E")) {
             sb.append(" " + ch + this.PDBStartResidue + " to " + ch
                     + this.PDBFinishResidue);
         }
@@ -405,7 +407,7 @@ public class SecStrucElement {
 
     public void PrintAsText(PrintWriter ps) {
 
-        ps.println("SecondaryStructureType " + this.Type);
+        ps.println("SecondaryStructureType " + this.type);
         ps.println("Direction " + this.Direction);
         if (this.Label != null)
             ps.println("Label " + this.Label);
