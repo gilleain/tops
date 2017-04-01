@@ -1,5 +1,8 @@
 package tops.web.display.servlet;
 
+import static tops.port.model.SSEType.EXTENDED;
+import static tops.port.model.SSEType.HELIX;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -104,9 +107,9 @@ public class URICartoonDataSource implements CartoonDataSource {
 			return;
 		} else if (highlight.equals("all")) {
 			for (SecStrucElement s : cartoon.getSSEs()) {
-				if (s.getType().equals("E")) {
+				if (s.getType() == EXTENDED) {
 					s.setColour(strandColor);
-				} else if (s.getType().equals("H")) {
+				} else if (s.getType() == HELIX) {
 					s.setColour(helixColor);
 				} else {
 					s.setColour(otherColor);

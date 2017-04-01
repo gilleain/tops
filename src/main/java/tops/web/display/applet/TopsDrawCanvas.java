@@ -1060,19 +1060,19 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         ScreenR = ss.getSymbolRadius();
         ScreenPos = ss.getPosition();
 
-        if (ss.getType().equals("H")) {
+        if (ss.getType() == HELIX) {
             if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
                 c = this.selectedHelixColor;
             this.DrawHelix(ScreenPos.x, ScreenPos.y, ScreenR, c, gc);
         }
 
-        if (ss.getType().equals("E")) {
+        if (ss.getType() == EXTENDED) {
             if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
                 c = this.selectedStrandColor;
             this.DrawStrand(ScreenPos.x, ScreenPos.y, ScreenR, ss.getDirection(), c, gc);
         }
 
-        if ((ss.getType().equals("C")) || (ss.getType().equals("N"))) {
+        if (ss.getType() == CTERMINUS || ss.getType() == NTERMINUS) {
             if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
                 c = this.selectedTerminusColor;
             this.DrawTerminus(ScreenPos.x, ScreenPos.y, ScreenR, ss.getLabel(), c, gc);
@@ -1191,7 +1191,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             return;
 
         /* Don't connect from a C terminus or to an N terminus */
-        if (s.getType().equals("C") || To.getType().equals("N"))
+        if (s.getType() == CTERMINUS || To.getType() == NTERMINUS)
             return;
 
         FromScreenR = s.getSymbolRadius();

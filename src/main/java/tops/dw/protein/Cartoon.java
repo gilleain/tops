@@ -2,6 +2,8 @@ package tops.dw.protein;
 
 import static tops.port.model.SSEType.COIL;
 import static tops.port.model.SSEType.CTERMINUS;
+import static tops.port.model.SSEType.EXTENDED;
+import static tops.port.model.SSEType.HELIX;
 import static tops.port.model.SSEType.NTERMINUS;
 
 import java.awt.Color;
@@ -105,7 +107,7 @@ public class Cartoon {
         } else {
             // deal with the C-terminus in a special way - add the new SSE
             // _before_ it
-            if (selectedSymbol.getType().equals("C")) {
+            if (selectedSymbol.getType() == CTERMINUS) {
                 sses.add(sses.indexOf(selectedSymbol), newSSE);
             } else {
                 sses.add(sses.indexOf(selectedSymbol), newSSE);
@@ -117,7 +119,7 @@ public class Cartoon {
     
     public void delete(SecStrucElement SelectedSymbol) {
         // can't delete terminii!
-        if (SelectedSymbol.getType().equals("N") || SelectedSymbol.getType().equals("C")) {
+        if (SelectedSymbol.getType() == NTERMINUS || SelectedSymbol.getType() == CTERMINUS) {
             System.err.println("can't delete terminii!");
             return;
         }
@@ -260,15 +262,15 @@ public class Cartoon {
 
             c = s.getColour();
 
-            if (s.getType().equals("H")) {
+            if (s.getType() == HELIX) {
                 EPS = PostscriptFactory.makeCircle(pos.x, h - pos.y, rad, c, EPS);
-            } else if (s.getType().equals("E")) {
+            } else if (s.getType() == EXTENDED) {
                 if (s.getDirection().equals("U")) {
                     EPS = PostscriptFactory.makeUpTriangle(pos.x, h - pos.y, rad, c, EPS);
                 } else {
                     EPS = PostscriptFactory.makeDownTriangle(pos.x, h - pos.y, rad, c, EPS);
                 }
-            } else if (s.getType().equals("C") || s.getType().equals("N")) {
+            } else if (s.getType() == CTERMINUS || s.getType() == NTERMINUS) {
                 EPS = PostscriptFactory.makeText(
                         "Times-Roman", (3 * rad) / 4, pos.x, h - pos.y, s.getLabel(), EPS);
             }
@@ -380,15 +382,15 @@ public class Cartoon {
         ScreenR = ss.getSymbolRadius();
         ScreenPos = ss.getPosition();
 
-        if (ss.getType().equals("H")) {
+        if (ss.getType() == HELIX) {
             this.drawHelix(ScreenPos.x, ScreenPos.y, ScreenR, c, gc);
         }
 
-        if (ss.getType().equals("E")) {
+        if (ss.getType() == EXTENDED) {
             this.drawStrand(ScreenPos.x, ScreenPos.y, ScreenR, ss.getDirection(), c, gc);
         }
 
-        if ((ss.getType().equals("C")) || (ss.getType().equals("N")))
+        if (ss.getType() == CTERMINUS || ss.getType() == NTERMINUS)
             this.drawTerminus(ScreenPos.x, ScreenPos.y, ScreenR, ss.getLabel(), c, gc);
 
     }
@@ -452,7 +454,7 @@ public class Cartoon {
             return;
 
         /* Don't connect from a C terminus or to an N terminus */
-        if (s.getType().equals("C") || t.getType().equals("N"))
+        if (s.getType() == CTERMINUS || t.getType() == NTERMINUS)
             return;
 
         FromScreenR = s.getSymbolRadius();

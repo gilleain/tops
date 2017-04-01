@@ -1,5 +1,10 @@
 package tops.view.cartoon;
 
+import static tops.port.model.SSEType.CTERMINUS;
+import static tops.port.model.SSEType.EXTENDED;
+import static tops.port.model.SSEType.HELIX;
+import static tops.port.model.SSEType.NTERMINUS;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -11,6 +16,7 @@ import java.util.Iterator;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.SSEType;
 import tops.view.cartoon.builder.IMGBuilder;
 import tops.view.cartoon.builder.PDFBuilder;
 import tops.view.cartoon.builder.PSBuilder;
@@ -207,11 +213,11 @@ public class CartoonDrawer {
         Point pos = ss.getPosition();
         Color col = ss.getColour();
 
-        if (ss.getType().equals("H")) {
+        if (ss.getType() == HELIX) {
             this.drawHelix(pos.x, pos.y, radius, col);
-        } else if (ss.getType().equals("E")) {
+        } else if (ss.getType() == EXTENDED) {
             this.drawStrand(pos.x, pos.y, radius, ss.getDirection(), col);
-        } else if ((ss.getType().equals("C")) || (ss.getType().equals("N"))) {
+        } else if (ss.getType() == CTERMINUS || ss.getType() == NTERMINUS) {
             this.drawTerminus(pos.x, pos.y, radius, ss.getLabel());
         }
 
@@ -263,8 +269,9 @@ public class CartoonDrawer {
             return;
 
         /* Don't connect from a C terminus or to an N terminus */
-        if (from.getType().equals("C") || to.getType().equals("N"))
+        if (from.getType() == CTERMINUS || from.getType() == NTERMINUS) {
             return;
+        }
 
         int radiusFrom = from.getSymbolRadius();
         int radiusTo = to.getSymbolRadius();
@@ -276,14 +283,13 @@ public class CartoonDrawer {
          * draw from border rather than centre if direction is down (D) or if
          * Type is N or C
          */
-        if (from.getDirection().equals("D") || from.getType().equals("C")
-                || from.getType().equals("N")) {
-            if (from.getType().equals("E")) {
-                pointFrom = this.downTriangleBorder(from.getPosition(), to
-                        .getPosition(), radiusFrom);
+        if (from.getDirection().equals("D") || from.getType() == CTERMINUS || from.getType() == NTERMINUS) {
+            if (from.getType() == EXTENDED) {
+                pointFrom = this.downTriangleBorder(
+                        from.getPosition(), to.getPosition(), radiusFrom);
             } else {
-                pointFrom = this.circleBorder(from.getPosition(), to.getPosition(),
-                        radiusFrom);
+                pointFrom = this.circleBorder(
+                        from.getPosition(), to.getPosition(), radiusFrom);
             }
         }
 
@@ -291,9 +297,8 @@ public class CartoonDrawer {
          * draw to border rather than centre if direction is up (U) or if Type
          * is N or C
          */
-        if (to.getDirection().equals("U") || to.getType().equals("C")
-                || to.getType().equals("N")) {
-            if (to.getType().equals("E")) {
+        if (to.getDirection().equals("U") || to.getType() == CTERMINUS || to.getType() == NTERMINUS) {
+            if (to.getType() == EXTENDED) {
                 pointTo = this.upTriangleBorder(to.getPosition(),
                         from.getPosition(), radiusTo);
             } else {
