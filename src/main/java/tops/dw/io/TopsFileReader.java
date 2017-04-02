@@ -130,26 +130,27 @@ public class TopsFileReader {
                     } else {
                         throw new TopsFileFormatException();
                     }
-                    currentSS.setFixedIndex(fs);
+//                    currentSS.setFixedIndex(fs); TODO
                 } else if (firstToken.equals("Next")) {
-                    int ns;
-                    if (nTokens > 1) {
-                        ns = -1;
-                        try {
-                            ns = Integer.parseInt(st.nextToken());
-                        } catch (NumberFormatException e) {
-                            throw new TopsFileFormatException();
-                        }
-                    } else {
-                        throw new TopsFileFormatException();
-                    }
-                    currentSS.setNextIndex(ns);
+//                    int ns; // TODO
+//                    if (nTokens > 1) {
+//                        ns = -1;
+//                        try {
+//                            ns = Integer.parseInt(st.nextToken());
+//                        } catch (NumberFormatException e) {
+//                            throw new TopsFileFormatException();
+//                        }
+//                    } else {
+//                        throw new TopsFileFormatException();
+//                    }
+//                    currentSS.setNextIndex(ns);
                 } else if (firstToken.equals("FixedType")) {
-                    if (nTokens > 1) {
-                        currentSS.setFixedType(st.nextToken());
-                    } else {
-                        currentSS.setFixedType("UNKNOWN");
-                    }
+                    // TODO
+//                    if (nTokens > 1) {
+//                        currentSS.setFixedType(st.nextToken());
+//                    } else {
+//                        currentSS.setFixedType("UNKNOWN");
+//                    }
                 } else if (firstToken.equals("BridgePartner")) {
                     int bp;
                     while (st.hasMoreTokens()) {
@@ -243,15 +244,15 @@ public class TopsFileReader {
                     }
                     currentSS.setAxesFinishPoint(fp[0], fp[1], fp[2]);
                 } else if (firstToken.equals("AxisLength")) {
-                    if (nTokens != 2)
-                        throw new TopsFileFormatException();
-                    float al;
-                    try {
-                        al = Float.valueOf(st.nextToken()).floatValue();
-                    } catch (NumberFormatException nfe) {
-                        throw new TopsFileFormatException();
-                    }
-                    currentSS.setAxisLength(al);
+//                    if (nTokens != 2) TODO - why would we set this?
+//                        throw new TopsFileFormatException();
+//                    float al;
+//                    try {
+//                        al = Float.valueOf(st.nextToken()).floatValue();
+//                    } catch (NumberFormatException nfe) {
+//                        throw new TopsFileFormatException();
+//                    }
+//                    currentSS.setAxisLength(al);
                 } else if (firstToken.equals("CartoonX")) {
 
                     if (nTokens != 2)

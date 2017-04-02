@@ -24,8 +24,6 @@ import tops.port.model.SSEType;
 
 public class Cartoon {
     
-    private SecStrucElement root;   // XXX TODO : refactor!
-    
     private List<SecStrucElement> sses;
     
     private List<SecStrucElement> fixed;
@@ -174,9 +172,6 @@ public class Cartoon {
     }
     
     public String convertStructureToString() {
-        if (this.root == null)
-            return new String();
-
         StringBuffer topsString = new StringBuffer();
         for (SecStrucElement s : sses) {
             char type = s.getType().getOneLetterName().charAt(0);
@@ -185,10 +180,6 @@ public class Cartoon {
             topsString.append(type);
         }
         return topsString.toString();
-    }
-    
-    public SecStrucElement getRoot() {
-        return root;
     }
 
     public void getEPS(int w, int h, Vector<String> EPS) {
@@ -868,26 +859,17 @@ public class Cartoon {
     }
     
     public Rectangle topsBoundingBox() {
-
-        int x, y, minx, maxx, miny, maxy, r, maxr;
-
-        if (root.getPosition() == null)
-            root.setPosition(new Point(0, 0));
-
-        x = root.getPosition().x;
-        y = root.getPosition().y;
-
-        minx = x;
-        maxx = x;
-        miny = y;
-        maxy = y;
-        maxr = root.getSymbolRadius();
+        int minx = 0;
+        int maxx = 0;
+        int miny = 0;
+        int maxy = 0;
+        int maxr = 0;
 
         for (SecStrucElement ss : sses) {
 
-            x = ss.getPosition().x;
-            y = ss.getPosition().y;
-            r = ss.getSymbolRadius();
+            int x = ss.getPosition().x;
+            int y = ss.getPosition().y;
+            int r = ss.getSymbolRadius();
 
             if (x < minx)
                 minx = x;
@@ -900,7 +882,6 @@ public class Cartoon {
 
             if (r > maxr)
                 maxr = r;
-
         }
 
         return new Rectangle(minx - maxr, miny - maxr, maxx - minx + 2 * maxr,
@@ -909,9 +890,8 @@ public class Cartoon {
     
     public Point topsCentroid() {
         int n = 1;
-        int centx = root.getPosition().x;
-        int centy = root.getPosition().y;
-
+        int centx = 0;
+        int centy = 0;
         for (SecStrucElement ss : sses) {
             n++;
             centx += ss.getPosition().x;

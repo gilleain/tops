@@ -7,38 +7,31 @@ import static tops.port.model.SSEType.NTERMINUS;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import javax.vecmath.Vector3d;
+
+import tops.port.model.Axis;
 import tops.port.model.SSEType;
 
 
 public class SecStrucElement {
 
-    private int SymbolNumber;
+    private int symbolNumber;
 
     private SSEType type;
 
-    private String Direction;
+    private String direction;
 
-    private int PDBStartResidue;
+    private int pdbStartResidue;
 
-    private int PDBFinishResidue;
+    private int pdbFinishResidue;
 
-    private String Label;
+    private String label;
 
-    private Color Colour;
-
-    private SecStrucElement Fixed = null;
-
-    private int FixedIndex;
-
-    private SecStrucElement Next = null;
-
-    private int NextIndex;
+    private Color colour;
 
     private Point position;
 
@@ -46,153 +39,123 @@ public class SecStrucElement {
 
     private List<Point> connectionTo;
 
-	private String FixedType;
+    private List<Integer> bridgePartner;
 
-    private Vector<Integer> BridgePartner;
+    private List<String> bridgePartnerSide;
 
-    private Vector<String> BridgePartnerSide;
+    private List<String> bridgePartnerType;
 
-    private Vector<String> BridgePartnerType;
+    private List<Integer> neighbour;
 
-    private Vector<Integer> Neighbour;
+    private int seqStartResidue, seqFinishResidue;
 
-    private int SeqStartResidue, SeqFinishResidue;
+    private int chirality;
+    
+    private Axis axis;
 
-    private int Chirality;
-
-    private float AxesStartPoint[] = new float[3];
-
-    private float AxesFinishPoint[] = new float[3];
-
-    private float AxisLength;
-
-    private int Fill;
+    private int fill;
 
     public SecStrucElement() {
         this.position = new Point(0, 0);
-        this.connectionTo = new Vector<Point>();
-        this.BridgePartner = new Vector<Integer>();
-        this.BridgePartnerSide = new Vector<String>();
-        this.BridgePartnerType = new Vector<String>();
-        this.Neighbour = new Vector<Integer>();
-        this.Colour = null;
+        this.connectionTo = new ArrayList<Point>();
+        this.bridgePartner = new ArrayList<Integer>();
+        this.bridgePartnerSide = new ArrayList<String>();
+        this.bridgePartnerType = new ArrayList<String>();
+        this.neighbour = new ArrayList<Integer>();
+        this.colour = null;
     }
     
     public boolean containsResidue(int residueNumber) {
-    	return this.PDBStartResidue <= residueNumber && this.PDBFinishResidue >= residueNumber;
-    }
-
-    public void setFixedType(String ft) {
-        this.FixedType = ft;
-    }
-
-    public String getFixedType() {
-        return this.FixedType;
+    	return this.pdbStartResidue <= residueNumber && this.pdbFinishResidue >= residueNumber;
     }
 
     public void addBridgePartner(int bp) {
-        if (this.BridgePartner == null)
-            this.BridgePartner = new Vector<Integer>();
-        this.BridgePartner.addElement(new Integer(bp));
+        this.bridgePartner.add(new Integer(bp));
     }
 
     public void addBridgePartnerSide(String side) {
-        if (this.BridgePartnerSide == null)
-            this.BridgePartnerSide = new Vector<String>();
-        this.BridgePartnerSide.addElement(side);
+        this.bridgePartnerSide.add(side);
     }
 
     public void addBridgePartnerType(String type) {
-        if (this.BridgePartnerType == null)
-            this.BridgePartnerType = new Vector<String>();
-        this.BridgePartnerType.addElement(type);
+        this.bridgePartnerType.add(type);
     }
 
     public List<Integer> getBridgePartner() {
-        return this.BridgePartner;
+        return this.bridgePartner;
     }
 
     public List<String> getBridgePartnerSide() {
-        return this.BridgePartnerSide;
+        return this.bridgePartnerSide;
     }
 
     public List<String> getBridgePartnerType() {
-        return this.BridgePartnerType;
+        return this.bridgePartnerType;
     }
 
     public void addNeighbour(int nb) {
-        if (this.Neighbour == null)
-            this.Neighbour = new Vector<Integer>();
-        this.Neighbour.addElement(new Integer(nb));
+        this.neighbour.add(new Integer(nb));
     }
 
     public List<Integer> getNeighbour() {
-        return this.Neighbour;
+        return this.neighbour;
     }
 
     public void setSeqStartResidue(int ssr) {
-        this.SeqStartResidue = ssr;
+        this.seqStartResidue = ssr;
     }
 
     public int getSeqStartResidue() {
-        return this.SeqStartResidue;
+        return this.seqStartResidue;
     }
 
     public void setSeqFinishResidue(int sfr) {
-        this.SeqFinishResidue = sfr;
+        this.seqFinishResidue = sfr;
     }
 
     public int getSeqFinishResidue() {
-        return this.SeqFinishResidue;
+        return this.seqFinishResidue;
     }
 
     public void setChirality(int c) {
-        this.Chirality = c;
+        this.chirality = c;
     }
 
     public int getChirality() {
-        return this.Chirality;
+        return this.chirality;
     }
 
-    public void setAxesStartPoint(float x, float y, float z) {
-        this.AxesStartPoint[0] = x;
-        this.AxesStartPoint[1] = y;
-        this.AxesStartPoint[2] = z;
+    public void setAxesStartPoint(double x, double y, double z) {
+        axis.AxisStartPoint = new Vector3d(x, y, z);
     }
 
-    public float[] getAxesStartPoint() {
-        return this.AxesStartPoint;
+    public double[] getAxesStartPoint() {
+        double[] ret = new double[3];
+        this.axis.AxisStartPoint.get(ret);
+        return ret;
     }
 
-    public void setAxesFinishPoint(float x, float y, float z) {
-        this.AxesFinishPoint[0] = x;
-        this.AxesFinishPoint[1] = y;
-        this.AxesFinishPoint[2] = z;
+    public void setAxesFinishPoint(double x, double y, double z) {
+        axis.AxisFinishPoint = new Vector3d(x, y, z);
     }
     
 
-    public float[] getAxesFinishPoint() {
-        return this.AxesFinishPoint;
+    public double[] getAxesFinishPoint() {
+        double[] ret = new double[3];
+        this.axis.AxisFinishPoint.get(ret);
+        return ret;
     }
 
-    public float getAxisLength() {
-        return AxisLength;
-    }
-    
-    public void setAxisLength(float len) {
-        this.AxisLength = len;
-    }
-
-    public float setAxisLength() {
-        return this.AxisLength;
+    public double getAxisLength() {
+        return axis.getLength();
     }
 
     public void setFill(int f) {
-        this.Fill = f;
+        this.fill = f;
     }
 
     public int getFill() {
-        return this.Fill;
+        return this.fill;
     }
 
     public void placeElement(int x, int y) {
@@ -267,58 +230,28 @@ public class SecStrucElement {
     public void clearConnectionTo() {
         this.connectionTo = new Vector<Point>();
     }
-
-    public void setFixedIndex(int i) {
-        this.FixedIndex = i;
-    }
-
-    public int getFixedIndex() {
-        return this.FixedIndex;
-    }
-
-    public void setNextIndex(int i) {
-        this.NextIndex = i;
-    }
-
-    public int getNextIndex() {
-        return this.NextIndex;
-    }
-
-    public void setNext(SecStrucElement s) {
-        this.Next = s;
-    }
-
-    public SecStrucElement getNext() {
-        return this.Next;
-    }
    
     public boolean isTerminus() {
-
-        if (this.type == NTERMINUS || this.type == SSEType.CTERMINUS) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return this.type == NTERMINUS || this.type == SSEType.CTERMINUS;
     }
 
     public int length() {
-        return (this.PDBFinishResidue - this.PDBStartResidue + 1);
+        return this.pdbFinishResidue - this.pdbStartResidue + 1;
     }
   
     public String getRelDirection(SecStrucElement s) {
-        if (this.Direction.equals(s.Direction))
+        if (this.direction.equals(s.direction))
             return "P";
         else
             return "A";
     }
 
     public int getSymbolNumber() {
-		return SymbolNumber;
+		return symbolNumber;
 	}
 
 	public void setSymbolNumber(int symbolNumber) {
-		SymbolNumber = symbolNumber;
+		this.symbolNumber = symbolNumber;
 	}
 
 	public SSEType getType() {
@@ -330,35 +263,35 @@ public class SecStrucElement {
 	}
 
 	public String getDirection() {
-		return Direction;
+		return direction;
 	}
 
 	public void setDirection(String direction) {
-		Direction = direction;
+		this.direction = direction;
 	}
 
 	public int getPDBStartResidue() {
-		return PDBStartResidue;
+		return pdbStartResidue;
 	}
 
 	public void setPDBStartResidue(int pDBStartResidue) {
-		PDBStartResidue = pDBStartResidue;
+		pdbStartResidue = pDBStartResidue;
 	}
 
 	public int getPDBFinishResidue() {
-		return PDBFinishResidue;
+		return pdbFinishResidue;
 	}
 
 	public void setPDBFinishResidue(int pDBFinishResidue) {
-		PDBFinishResidue = pDBFinishResidue;
+		pdbFinishResidue = pDBFinishResidue;
 	}
 
     public String getLabel() {
-		return Label;
+		return label;
 	}
 
 	public void setLabel(String label) {
-		Label = label;
+		this.label = label;
 	}
 
 	@Override
@@ -376,7 +309,7 @@ public class SecStrucElement {
         }
 
         if (this.type == HELIX || this.type == EXTENDED) {
-            sb.append(" " + PDBStartResidue + " to " + PDBFinishResidue);
+            sb.append(" " + pdbStartResidue + " to " + pdbFinishResidue);
         }
 
         return sb.toString();
@@ -384,11 +317,11 @@ public class SecStrucElement {
     }
 
     public void setColour(Color c) {
-        this.Colour = c;
+        this.colour = c;
     }
 
     public Color getColour() {
-        return this.Colour;
+        return this.colour;
     }
 
     /* START I/O methods */

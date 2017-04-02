@@ -14,7 +14,7 @@ public class Axis {
 
     public Axis(List<Point3d> coords) { 
         int n = coords.size();
-        boolean isE = (this.SSEType == 'E');
+        boolean isE = (this.SSEType == 'E');    /// XXX TODO
         if ((n < 3 && isE) || (n < 5 && !isE)) {
             this.AxisStartPoint = new Vector3d(coords.get(0));
             this.AxisFinishPoint = new Vector3d(coords.get(n - 1));

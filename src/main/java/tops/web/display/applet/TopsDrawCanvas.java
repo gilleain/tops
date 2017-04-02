@@ -108,7 +108,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     /* START private instance variables */
 
-    private Cartoon RootSecStruc = null;
+    private Cartoon cartoon = null;
 
     private String Label = "Tops diagram";
 
@@ -178,7 +178,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     
     public Vector<String> getEPS() {
 
-        if (this.RootSecStruc == null)
+        if (this.cartoon == null)
             return null;
 
         int w = this.getSize().width;
@@ -187,7 +187,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         Vector<String> EPS = new Vector<String>();
 
         EPS = PostscriptFactory.makeEPSHeader(EPS, 0, 0, w, h);
-        this.RootSecStruc.getEPS(w, h, EPS);
+        this.cartoon.getEPS(w, h, EPS);
         
         // draw user labels
         if (this.UserLabels != null) {
@@ -208,7 +208,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         }
 
         // determine actual bounding box
-        Rectangle bbox = RootSecStruc.epsBoundingBox(h);
+        Rectangle bbox = cartoon.epsBoundingBox(h);
         bbox = this.expandEPSBoundingBox(bbox, h);
         EPS = PostscriptFactory.addBoundingBox(EPS, bbox.x, bbox.y, bbox.x
                 + bbox.width, bbox.y + bbox.height);
@@ -287,7 +287,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      */
     public TopsDrawCanvas(Cartoon cartoon) {
         this();
-        this.RootSecStruc = cartoon;
+        this.cartoon = cartoon;
 //        SizeDisplay = true;
     }
 
@@ -353,16 +353,10 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      *            the root secondary structure for the diagram
      */
     public synchronized void setRootSecStruc(SecStrucElement Root) {
-        this.RootSecStruc = new Cartoon(Root);
+        this.cartoon = new Cartoon(Root);
         this.repaint();
     }
 
-    /**
-     * @return the root secondary structure for the diagram
-     */
-    public synchronized SecStrucElement getRootSecStruc() {
-        return this.RootSecStruc.getRoot();
-    }
 
     /* the Scale - a bound property */
     /**
@@ -439,12 +433,12 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * deletes the current diagram
      */
     public void clear() {
-        this.RootSecStruc = null;
+        this.cartoon = null;
         this.repaint();
     }
 
     public String convertStructureToString() {
-        return RootSecStruc.convertStructureToString();
+        return cartoon.convertStructureToString();
     }
 
     /* END of methods to get and set properties */
@@ -510,7 +504,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         switch (this.EditMode) {
 
             case FLIP_MODE:
-                RootSecStruc.flip(this.SelectedSymbol);
+                cartoon.flip(this.SelectedSymbol);
                 this.repaint();
                 break;
 
@@ -544,7 +538,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             case DELETE_SYMBOLS_MODE:
                 this.DeleteSelected();
                 // UnSelect();
-                this.SelectedSymbol = this.RootSecStruc.getRoot();
+                this.SelectedSymbol = null;
                 this.repaint();
                 break;
         }
@@ -597,8 +591,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 break;
 
             case REFLECT_XY_MODE:
-                if (this.RootSecStruc != null) {
-                    this.RootSecStruc.reflectXY();
+                if (this.cartoon != null) {
+                    this.cartoon.reflectXY();
                     this.CenterDiagram();
                     this.repaint();
                 }
@@ -607,24 +601,24 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     }
 
     public void RotateX() {
-        if (this.RootSecStruc != null) {
-            this.RootSecStruc.rotateX();
+        if (this.cartoon != null) {
+            this.cartoon.rotateX();
             this.CenterDiagram();
             this.repaint();
         }
     }
 
     public void RotateY() {
-        if (this.RootSecStruc != null) {
-            this.RootSecStruc.rotateY();
+        if (this.cartoon != null) {
+            this.cartoon.rotateY();
             this.CenterDiagram();
             this.repaint();
         }
     }
 
     public void RotateZ() {
-        if (this.RootSecStruc != null) {
-            this.RootSecStruc.rotateZ();
+        if (this.cartoon != null) {
+            this.cartoon.rotateZ();
             this.CenterDiagram();
             this.repaint();
         }
@@ -743,7 +737,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 if (this.SelectedSymbol != null) {
                     Point oldp = this.SelectedSymbol.getPosition();
                     Point newp = pos;
-                    RootSecStruc.translateFixed(newp.x - oldp.x, newp.y - oldp.y);
+                    cartoon.translateFixed(newp.x - oldp.x, newp.y - oldp.y);
                     this.repaint();
                 }
                 break;
@@ -772,7 +766,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public synchronized void selectBoxDoAction() {
         switch (this.EditMode) {
             case FLIP_MULTIPLE_MODE:
-                RootSecStruc.flipMultiple(this.selectBoxList);
+                cartoon.flipMultiple(this.selectBoxList);
                 break;
 
             case LINEAR_LAYOUT_MODE:
@@ -787,19 +781,19 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         // finished, so clean up
         this.selectBox = null;
         this.selectBoxList.clear();
-        this.SelectedSymbol = this.RootSecStruc.getRoot();
+        this.SelectedSymbol = null;
     }
 
     public void addSymbol(SSEType type, String direction, int x, int y) {
         System.out.println("adding symbol : " + type + ", " + direction
                 + " at (" + x + ", " + y + ")");
-        this.SelectedSymbol = RootSecStruc.addSymbol(type, direction, x, y, SelectedSymbol);
+        this.SelectedSymbol = cartoon.addSymbol(type, direction, x, y, SelectedSymbol);
         this.CenterDiagram();
         this.ScaleDiagram();
     }
 
     public synchronized void DeleteSelected() {
-        RootSecStruc.delete(SelectedSymbol);
+        cartoon.delete(SelectedSymbol);
     }
 
     public synchronized void UnSelect() {
@@ -810,11 +804,11 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public synchronized void selectContained(Rectangle r, List<SecStrucElement> list) {
         list.clear();
-        list.addAll(RootSecStruc.selectContained(r));
+        list.addAll(cartoon.selectContained(r));
     }
 
     public synchronized void SelectByPosition(Point p) {
-        SecStrucElement selected = RootSecStruc.selectByPosition(p);
+        SecStrucElement selected = cartoon.selectByPosition(p);
 
         if (selected != null) {
             System.out.println("selected : " + selected.toString());
@@ -834,7 +828,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         float scale = this.getScale();
         if (scale <= 0.0)
             scale = 1.0F;
-        RootSecStruc.applyScale(scale);
+        cartoon.applyScale(scale);
     }
 
 
@@ -861,7 +855,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * inversion of y direction is required because the canvas coordinate
          * system changes the handedness of the input diagram
          */
-        RootSecStruc.invertY();
+        cartoon.invertY();
 
         this.CenterDiagram();
     }
@@ -871,16 +865,16 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * writing the file
      */
     public void SetCCodeCoordinates() {
-        RootSecStruc.invertScale(getScale());
-        RootSecStruc.invertY();
+        cartoon.invertScale(getScale());
+        cartoon.invertY();
     }
 
     /**
      * a method to centre the diagram on the canvas
      */
     public void CenterDiagram() {
-        Point cent = this.RootSecStruc.topsCentroid();
-        RootSecStruc.translateDiagram(-cent.x + this.getSize().width / 2, -cent.y
+        Point cent = this.cartoon.topsCentroid();
+        cartoon.translateDiagram(-cent.x + this.getSize().width / 2, -cent.y
                 + this.getSize().height / 2);
         
     }
@@ -896,8 +890,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         float cheight = (cd.height - 2 * TopsDrawCanvas.BORDER);
         float cwidth = (cd.width - 2 * TopsDrawCanvas.BORDER);
 
-        if (this.RootSecStruc != null) {
-            bb = this.RootSecStruc.topsBoundingBox();
+        if (this.cartoon != null) {
+            bb = this.cartoon.topsBoundingBox();
 
             float s1 = cwidth / (bb.width);
             float s2 = cheight / (bb.height);
@@ -991,8 +985,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             this.DrawBorder(g);
         if (this.Label != null)
             this.DrawLabel(g);
-        if (this.RootSecStruc != null)
-            RootSecStruc.paint(g);
+        if (this.cartoon != null)
+            cartoon.paint(g);
         if (this.InfoString != null)
             this.DrawInfoString(g);
         if (this.selectBox != null)
@@ -1428,6 +1422,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     }
 
-    /* END private methods used by this class in painting/updating */
+    public Cartoon getCartoon() {
+        return cartoon;
+    }
 
 }

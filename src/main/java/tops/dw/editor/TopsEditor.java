@@ -16,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -290,8 +289,10 @@ public class TopsEditor implements ActionListener {
         this.proteins.addElement(p);
         this.topsDisplay.addDiagrams(p);
         this.domainInfo.addProtein(p);
-        this.colourChoice.addColourChangeListeners(
-        		(Vector<? extends PropertyChangeListener>)this.topsDisplay.GetDrawCanvases());
+        // TODO FIXME
+//        this.colourChoice.addColourChangeListeners(
+//        		(Vector<? extends PropertyChangeListener>)
+//        		this.topsDisplay.GetDrawCanvases());
 
         this.f.pack();
     }

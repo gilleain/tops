@@ -69,21 +69,21 @@ public class TopsFileWriter {
         ps.println("Colour " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 
         int n = -1;
-        if (s.getNext() != null) {
-            n = s.getNext().getSymbolNumber();
-        }
-        ps.println("Next " + n);
+//        if (s.getNext() != null) { // TODO
+//            n = s.getNext().getSymbolNumber();
+//        }
+//        ps.println("Next " + n);
 
         int f = -1;
 //        if (s.getFixed() != null)
 //            f = this.Fixed.SymbolNumber;
         ps.println("Fixed " + f);   // TODO
 
-        if (s.getFixedType() != null) {
-            ps.println("FixedType " + s.getFixedType());
-        } else {
-            ps.println("FixedType UNKNOWN");
-        }
+//        if (s.getFixedType() != null) { TODO
+//            ps.println("FixedType " + s.getFixedType());
+//        } else {
+//            ps.println("FixedType UNKNOWN");
+//        }
 
         ps.print("BridgePartner");
         for (Integer bridgePartner : s.getBridgePartner()) {

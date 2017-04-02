@@ -319,7 +319,7 @@ public class TopsDisplayPanel extends Panel {
         int i;
         for (i = 0; i < this.numberDrawCanvases(); i++) {
             TopsDrawCanvas tdc1 = this.getDrawCanvas(i);
-            if (s.getRoot() == tdc1.getRootSecStruc()) {
+            if (s == tdc1.getCartoon()) {
                 tdc = tdc1;
                 break;
             }
