@@ -1,5 +1,10 @@
 package tops.dw.protein;
 
+import static tops.port.model.SSEType.CTERMINUS;
+import static tops.port.model.SSEType.EXTENDED;
+import static tops.port.model.SSEType.HELIX;
+import static tops.port.model.SSEType.NTERMINUS;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.io.PrintWriter;
@@ -22,8 +27,6 @@ public class SecStrucElement {
     private int PDBStartResidue;
 
     private int PDBFinishResidue;
-
-    private String Chain;
 
     private String Label;
 
@@ -105,15 +108,15 @@ public class SecStrucElement {
         this.BridgePartnerType.addElement(type);
     }
 
-    public Vector<Integer> getBridgePartner() {
+    public List<Integer> getBridgePartner() {
         return this.BridgePartner;
     }
 
-    public Vector<String> getBridgePartnerSide() {
+    public List<String> getBridgePartnerSide() {
         return this.BridgePartnerSide;
     }
 
-    public Vector<String> getBridgePartnerType() {
+    public List<String> getBridgePartnerType() {
         return this.BridgePartnerType;
     }
 
@@ -123,7 +126,7 @@ public class SecStrucElement {
         this.Neighbour.addElement(new Integer(nb));
     }
 
-    public Vector<Integer> getNeighbour() {
+    public List<Integer> getNeighbour() {
         return this.Neighbour;
     }
 
@@ -166,11 +169,16 @@ public class SecStrucElement {
         this.AxesFinishPoint[1] = y;
         this.AxesFinishPoint[2] = z;
     }
+    
 
     public float[] getAxesFinishPoint() {
         return this.AxesFinishPoint;
     }
 
+    public float getAxisLength() {
+        return AxisLength;
+    }
+    
     public void setAxisLength(float len) {
         this.AxisLength = len;
     }
@@ -260,39 +268,33 @@ public class SecStrucElement {
         this.connectionTo = new Vector<Point>();
     }
 
-    public void SetFixedIndex(int i) {
+    public void setFixedIndex(int i) {
         this.FixedIndex = i;
     }
 
-    public int GetFixedIndex() {
+    public int getFixedIndex() {
         return this.FixedIndex;
     }
 
-    public void SetNextIndex(int i) {
+    public void setNextIndex(int i) {
         this.NextIndex = i;
     }
 
-    public int GetNextIndex() {
+    public int getNextIndex() {
         return this.NextIndex;
     }
 
-    public void SetNext(SecStrucElement s) {
+    public void setNext(SecStrucElement s) {
         this.Next = s;
     }
 
-    public SecStrucElement GetNext() {
+    public SecStrucElement getNext() {
         return this.Next;
     }
-    
-    private boolean isRoot; // TODO
+   
+    public boolean isTerminus() {
 
-    public boolean IsRoot() {
-        return isRoot;
-    }
-
-    public boolean IsTerminus() {
-
-        if (this.type.equals("N") || this.type.equals("C")) {
+        if (this.type == NTERMINUS || this.type == SSEType.CTERMINUS) {
             return true;
         } else {
             return false;
@@ -351,14 +353,6 @@ public class SecStrucElement {
 		PDBFinishResidue = pDBFinishResidue;
 	}
 
-	public String getChain() {
-		return Chain;
-	}
-
-	public void setChain(String chain) {
-		Chain = chain;
-	}
-
     public String getLabel() {
 		return Label;
 	}
@@ -371,24 +365,18 @@ public class SecStrucElement {
     public String toString() {
         StringBuffer sb = new StringBuffer();
 
-        if (this.type.equals("H"))
+        if (this.type == HELIX) {
             sb.append("Helix");
-        else if (this.type.equals("E"))
+        } else if (this.type == EXTENDED) {
             sb.append("Strand");
-        else if (this.type.equals("N"))
+        } else if (this.type == NTERMINUS) {
             sb.append("N terminus");
-        else if (this.type.equals("C"))
+        } else if (this.type == CTERMINUS){
             sb.append("C terminus");
+        }
 
-        String ch;
-        if ((this.Chain == null) || (this.Chain.equals("0")))
-            ch = " ";
-        else
-            ch = this.Chain;
-
-        if (this.type.equals("H") || this.type.equals("E")) {
-            sb.append(" " + ch + this.PDBStartResidue + " to " + ch
-                    + this.PDBFinishResidue);
+        if (this.type == HELIX || this.type == EXTENDED) {
+            sb.append(" " + PDBStartResidue + " to " + PDBFinishResidue);
         }
 
         return sb.toString();
@@ -405,111 +393,4 @@ public class SecStrucElement {
 
     /* START I/O methods */
 
-    public void PrintAsText(PrintWriter ps) {
-
-        ps.println("SecondaryStructureType " + this.type);
-        ps.println("Direction " + this.Direction);
-        if (this.Label != null)
-            ps.println("Label " + this.Label);
-        else
-            ps.println("Label");
-
-        Color c = this.getColour();
-        if (c == null)
-            c = Color.white;
-        ps.println("Colour " + c.getRed() + " " + c.getGreen() + " "
-                + c.getBlue());
-
-        int n = -1;
-        if (this.Next != null)
-            n = this.Next.SymbolNumber;
-        ps.println("Next " + n);
-
-        int f = -1;
-        if (this.Fixed != null)
-            f = this.Fixed.SymbolNumber;
-        ps.println("Fixed " + f);
-
-        if (this.FixedType != null)
-            ps.println("FixedType " + this.FixedType);
-        else
-            ps.println("FixedType UNKNOWN");
-
-        ps.print("BridgePartner");
-        if (this.BridgePartner != null) {
-            Enumeration<Integer> en = this.BridgePartner.elements();
-            while (en.hasMoreElements()) {
-                ps.print(" ");
-                ps.print(((Integer) en.nextElement()).intValue());
-            }
-        }
-        ps.print("\n");
-
-        ps.print("BridgePartnerSide");
-        if (this.BridgePartnerSide != null) {
-            Enumeration<String> en = this.BridgePartnerSide.elements();
-            while (en.hasMoreElements()) {
-                ps.print(" ");
-                ps.print((String) en.nextElement());
-            }
-        }
-        ps.print("\n");
-
-        ps.print("BridgePartnerType");
-        if (this.BridgePartnerType != null) {
-            Enumeration<String> en = this.BridgePartnerType.elements();
-            while (en.hasMoreElements()) {
-                ps.print(" ");
-                ps.print((String) en.nextElement());
-            }
-        }
-        ps.print("\n");
-
-        ps.print("Neighbour");
-        if (this.Neighbour != null) {
-            Enumeration<Integer> en = this.Neighbour.elements();
-            while (en.hasMoreElements()) {
-                ps.print(" ");
-                ps.print(((Integer) en.nextElement()).intValue());
-            }
-        }
-        ps.print("\n");
-
-        ps.println("SeqStartResidue " + this.SeqStartResidue);
-        ps.println("SeqFinishResidue " + this.SeqFinishResidue);
-
-        ps.println("PDBStartResidue " + this.PDBStartResidue);
-        ps.println("PDBFinishResidue " + this.PDBFinishResidue);
-
-        ps.println("SymbolNumber " + this.SymbolNumber);
-        ps.println("Chain " + this.Chain);
-
-        ps.println("Chirality " + this.Chirality);
-
-        Point p = this.position;
-        if (p == null)
-            p = new Point();
-        ps.println("CartoonX " + p.x);
-        ps.println("CartoonY " + p.y);
-
-        ps.println("AxesStartPoint " + this.AxesStartPoint[0] + " "
-                + this.AxesStartPoint[1] + " " + this.AxesStartPoint[2]);
-        ps.println("AxesFinishPoint " + this.AxesFinishPoint[0] + " "
-                + this.AxesFinishPoint[1] + " " + this.AxesFinishPoint[2]);
-
-        ps.println("SymbolRadius " + this.symbolRadius);
-
-        ps.println("AxisLength " + this.AxisLength);
-
-        List<Point> ct = this.getConnectionTo();
-        ps.println("NConnectionPoints " + ct.size());
-        ps.print("ConnectionTo");
-        for (Point cp : ct) {
-            ps.print(" " + cp.x + " " + cp.y);
-        }
-        ps.print("\n");
-
-        ps.println("Fill " + this.Fill);
-
-    }
 }

@@ -65,6 +65,7 @@ public class TopsFileReader {
              */
         }
         line = br.readLine();
+        Cartoon cartoon = null;
         while (line != null) {
 
             st = new StringTokenizer(line);
@@ -78,13 +79,15 @@ public class TopsFileReader {
 
                 if (firstToken.equals("DOMAIN_NUMBER")) {
                     ddef = handleDomainNumber(st, nTokens);
+                    cartoon = new Cartoon();
                     countss = 0;
                 } else if (firstToken.equals("SecondaryStructureType")) {
                     currentSS = handleSecStrucType(st, nTokens);
                     currentSS.setSymbolNumber(countss);
+                    cartoon.addSSE(currentSS);
                     countss++;
                     if (countss == 1) {
-                        protein.addTopsLinkedList(new Cartoon(currentSS), ddef);
+                        protein.addTopsLinkedList(cartoon, ddef);
                     }
                 } else if (firstToken.equals("Direction")) {
                     if (nTokens != 2)
@@ -127,7 +130,7 @@ public class TopsFileReader {
                     } else {
                         throw new TopsFileFormatException();
                     }
-                    currentSS.SetFixedIndex(fs);
+                    currentSS.setFixedIndex(fs);
                 } else if (firstToken.equals("Next")) {
                     int ns;
                     if (nTokens > 1) {
@@ -140,7 +143,7 @@ public class TopsFileReader {
                     } else {
                         throw new TopsFileFormatException();
                     }
-                    currentSS.SetNextIndex(ns);
+                    currentSS.setNextIndex(ns);
                 } else if (firstToken.equals("FixedType")) {
                     if (nTokens > 1) {
                         currentSS.setFixedType(st.nextToken());
@@ -299,11 +302,7 @@ public class TopsFileReader {
                             Integer.parseInt(st.nextToken()));
 
                 } else if (firstToken.equals("Chain")) {
-                    if (st.hasMoreTokens()) {
-                        currentSS.setChain(st.nextToken());
-                    } else {
-                        currentSS.setChain(" ");
-                    }
+                    // TODO - domains could have sses in different chains?
                 } else if (firstToken.equals("Fill")) {
 
                     int f = 0;

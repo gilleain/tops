@@ -74,7 +74,6 @@ public class TestTopsFileWriter {
                                 String label, int pdbStart, int pdbEnd, int symbolNumber,
                                 SSEType type) {
         SecStrucElement root = new SecStrucElement();
-        root.setChain(chain);
         root.setColour(color);
         root.setDirection(direction);
         root.setLabel(label);
