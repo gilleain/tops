@@ -40,7 +40,6 @@ import tops.dw.protein.Protein;
 import tops.dw.protein.ProteinChoice;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
-import tops.dw.protein.TopsLinkedListException;
 import tops.port.model.DomainDefinition;
 import tops.web.display.applet.TopsDrawCanvas;
 
@@ -768,8 +767,6 @@ public class TopsEditor implements ActionListener {
                 TopsDrawCanvas tdc = this.topsDisplay.GetDrawCanvas(root);
                 oi.orientConsensus(refdomroot, root, reference, oi.getMapping(i), tdc);
             }
-        } catch (TopsLinkedListException tle) {
-            System.out.println("Exception caught in orientCartoons");
         } finally {
             // do repaints
             this.topsDisplay.repaint();

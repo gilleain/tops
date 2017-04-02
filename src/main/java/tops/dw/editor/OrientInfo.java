@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
-import tops.dw.protein.TopsLinkedListException;
 import tops.web.display.applet.TopsDrawCanvas;
 
 public class OrientInfo {
@@ -71,10 +70,8 @@ public class OrientInfo {
 	 * @param equiv_ref
 	 * @param equiv
 	 * @param tdc
-	 * @throws TopsLinkedListException
 	 */
-	public void orientConsensus(Cartoon refroot, Cartoon root, int equiv_ref[], int equiv[], TopsDrawCanvas tdc)
-	        throws TopsLinkedListException {
+	public void orientConsensus(Cartoon refroot, Cartoon root, int equiv_ref[], int equiv[], TopsDrawCanvas tdc) {
 	
 	    SecStrucElement ref[] = new SecStrucElement[2];
 	    SecStrucElement orient[] = new SecStrucElement[2];
@@ -90,8 +87,8 @@ public class OrientInfo {
 	        orient[0] = root.getSSEByNumber(equiv[i]);
 	
 	        if (ref[0] == null || orient[0] == null) {
-	            System.out.println("SSE number out of range in equivalences file");
-	            throw new TopsLinkedListException();
+	            throw new IllegalArgumentException(
+	                    "SSE number out of range in equivalences file");
 	        }
 	
 	        for (j = i + 1; j < nequivs; j++) {
@@ -99,8 +96,8 @@ public class OrientInfo {
 	            orient[1] = root.getSSEByNumber(equiv[j]);
 	
 	            if (ref[1] == null || orient[1] == null) {
-	                System.out.println("SSE number out of range in equivalences file");
-	                throw new TopsLinkedListException();
+	                throw new IllegalArgumentException(
+	                        "SSE number out of range in equivalences file");
 	            }
 	
 	            // if relative directions are inconsistent then 
