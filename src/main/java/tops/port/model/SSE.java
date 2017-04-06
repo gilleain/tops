@@ -9,12 +9,12 @@ import javax.vecmath.Point2d;
 
 public class SSE {
     
+    private CartoonSymbol cartoonSymbol;
+    
     private char Direction;
     private SSEType type;                       // H, E, N, C, D 
     private List<BridgePartner> bridgePartners;    // Bridge partners
     
-    private int Merges = 0;                     // The number of merges made in creation 
-    private int[][] MergeRanges;            // The start and end of the Merged structures 
     public int DomainBreakNumber;             // Number identifying possible domain breaks (0 -> No break) 
     public DomainBreakType domainBreakType;                // Number identifying domain break type (Nterm, Cterm or both)
     
@@ -22,27 +22,18 @@ public class SSE {
     public Axis axis;
     private FixedType fixedType;
     
-    // XXX TODO these need to be split off somewhere!
-    private int NConnectionPoints;
-    
-    private CartoonSymbol cartoonSymbol;
     public SSEData sseData;
     
     // XXX TODO Gah, upwards pointers!
     
     private SSE fixed;
-    private boolean Fill;
     private List<Neighbour> neighbours;
-    private List<Point2d> ConnectionTo;
-    private Object AxisLength;
 
 
     public SSE(SSEType SSEType) {
         this.type = SSEType;                  
         this.bridgePartners = new ArrayList<BridgePartner>();   
         this.neighbours = new ArrayList<Neighbour>();                    
-        this.ConnectionTo = new ArrayList<Point2d>();
-        this.MergeRanges = new int[10][];   // XXX FIXME  
         this.axis = null;
         this.cartoonSymbol = new CartoonSymbol();
         this.sseData = new SSEData();
@@ -114,13 +105,8 @@ public class SSE {
         this.bridgePartners.add(bridgePartner);
     }
     
-    public void incrementMerges() {
-        this.Merges++;  // hmmm
-    }
-    
     public void addConnection(Point2d point) {
-        this.NConnectionPoints++;   // TODO convert to getConnections().size()?
-        this.ConnectionTo.add(point);
+        this.cartoonSymbol.addConnectionTo(point);
     }
     
     public void setSymbolNumber(int symbolNumber) {
@@ -448,7 +434,7 @@ public class SSE {
 
     public String Connections() {
         StringBuffer connections = new StringBuffer();
-        for (Point2d connection : this.ConnectionTo) {
+        for (Point2d connection : this.cartoonSymbol.getConnectionsTo()) {
             connections.append(String.format("%0.2f %0.2f ", connection.x, connection.y));
         }
         return connections.toString();
@@ -496,10 +482,10 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "CartoonY", this.getCartoonY()));
         stringRepr.append(this.AxisRepr());
         stringRepr.append(String.format("%s %s\n", "SymbolRadius", getRadius()));
-        stringRepr.append(String.format("%s %s\n", "AxisLength", (this.AxisLength == null? "1" : this.AxisLength)));
-        stringRepr.append(String.format("%s %s\n", "NConnectionPoints", this.NConnectionPoints));
+        stringRepr.append(String.format("%s %s\n", "AxisLength", this.axis.getLength()));
+        stringRepr.append(String.format("%s %s\n", "NConnectionPoints", this.getNConnectionPoints()));
         stringRepr.append(String.format("%s %s\n", "ConnectionTo", this.Connections()));
-        stringRepr.append(String.format("%s %s\n", "Fill", (this.Fill? "1" : "0")));
+        stringRepr.append(String.format("%s %s\n", "Fill", (this.cartoonSymbol.getFill()? "1" : "0")));
         return stringRepr.toString();
     }
     
@@ -589,7 +575,7 @@ public class SSE {
     }
 
     public boolean getFill() {
-        return Fill;
+        return cartoonSymbol.getFill();
     }
 
     public double getSymbolRadius() {
@@ -639,7 +625,7 @@ public class SSE {
     }
 
     public int getNConnectionPoints() {
-        return NConnectionPoints;
+        return cartoonSymbol.getConnectionsTo().size();
     }
 
     public char getChain() {
@@ -648,7 +634,7 @@ public class SSE {
     }
 
     public Point2d getConnectionTo(int i) {
-        return ConnectionTo.get(i);
+        return cartoonSymbol.getConnectionsTo().get(i);
     }
     
 }

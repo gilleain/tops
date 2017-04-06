@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.vecmath.Point2d;
+
 public class CartoonSymbol {
 
     private int symbolNumber;
@@ -15,7 +17,7 @@ public class CartoonSymbol {
     private int[] colour;
     private boolean fill;
     private String label;
-    private List<Integer> connections;
+    private List<Point2d> connections;
     private double SymbolRadius;
     private boolean symbolPlaced;
 
@@ -33,7 +35,24 @@ public class CartoonSymbol {
         this.colour = new int[] { Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue() };
         this.fill = false;
         this.label = " ";
-        this.connections = new ArrayList<Integer>();
+        this.connections = new ArrayList<Point2d>();
+    }
+    
+    public void addConnectionTo(Point2d p) {
+        this.connections.add(p);
+    }
+    
+    public List<Point2d> getConnectionsTo() {
+        return this.connections;
+    }
+    
+    
+    public boolean getFill() {
+        return this.fill;
+    }
+    
+    public void setFill(boolean fill) {
+        this.fill = fill;
     }
     
     public String getLabel() {

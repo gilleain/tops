@@ -140,11 +140,6 @@ public class CalculateMergedStrands implements Calculation {
         // Merge residues - don't include fixed 
         lastSSE.sseData.SeqFinishResidue = sse.sseData.SeqFinishResidue;
         lastSSE.sseData.PDBFinishResidue = sse.sseData.PDBFinishResidue;
-
-        lastSSE.incrementMerges();
-
-        // FIXME - merge ranges only seem to be needed for chiral
-        //        p.MergeRanges.append(new int[] {q.SeqStartResidue, q.SeqFinishResidue});
     }
     
     public void fixNeighbours(Chain chain) {
