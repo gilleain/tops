@@ -22,11 +22,6 @@ public class SSE {
     public Axis axis;
     private FixedType fixedType;
     
-    // XXX TODO don't like these linked-list pointers, but have them for now...
-    public SSE From;
-    public SSE To;
-    public SSE Next;        // difference from 'To'?
-    
     // XXX TODO these need to be split off somewhere!
     private int NConnectionPoints;
     
@@ -483,7 +478,7 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "Direction", this.Direction));
         stringRepr.append(String.format("%s %s\n", "Label", this.getLabel()));
         stringRepr.append(String.format("%s %s %s %s\n", "Colour", cartoonSymbol.getColor()[0], cartoonSymbol.getColor()[1], cartoonSymbol.getColor()[2]));
-        stringRepr.append(String.format("%s %s\n", "Next", this.getSymbolNumber(this.Next)));
+        stringRepr.append(String.format("%s %s\n", "Next", -1));    // blank next
         stringRepr.append(String.format("%s %s\n", "Fixed", this.getSymbolNumber(this.fixed)));
         stringRepr.append(String.format("%s %s\n", "FixedType", this.getFixedType()));
         stringRepr.append(String.format("%s %s\n", "BridgePartner", this.BridgePartnerNumbers()));

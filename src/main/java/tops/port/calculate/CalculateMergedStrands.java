@@ -34,27 +34,29 @@ public class CalculateMergedStrands implements Calculation {
         
         log.log(Level.INFO, "STEP: Searching for strand merges");
         List<SSE> sses = chain.getSSEs(); 
+        SSE prev = null;
         for (int index = 1; index < sses.size(); index++) {
             SSE p = sses.get(index);
-            int connectLoopLen = getLoopLength(p);
-            if (p.isStrand() && p.From != null && p.From.isStrand() && connectLoopLen < minMergeStrandSeparation) {
+            int connectLoopLen = getLoopLength(p, prev);
+            if (p.isStrand() && prev != null && prev.isStrand() && connectLoopLen < minMergeStrandSeparation) {
                 int shortLoop = 1;
-                int cbpd = this.connectBPDistance(p, p.From);
+                int cbpd = this.connectBPDistance(p, prev);
                 boolean sheetMerge = this.mergeBetweenSheets && connectLoopLen <= shortLoop;
-                if ((cbpd == 2 && p.sameBPSide(p.From)) || (cbpd > 5) ||sheetMerge ) {
-                    TorsionResult result = p.ClosestApproach(p.From);
+                if ((cbpd == 2 && p.sameBPSide(prev)) || (cbpd > 5) ||sheetMerge ) {
+                    TorsionResult result = p.ClosestApproach(prev);
                     if (Math.abs(result.torsion) < 90.0) { 
 //                        System.out.println(String.format("Merging Strands %d %d\n", p.From.getSymbolNumber(), p.getSymbolNumber()));
-                        this.joinToLast(p, chain);
+                        this.joinToLast(p, prev, chain);
                         p.sortBridgePartners(); // XXX not sure why we have to sort
                     }
                 }
             }
+            prev = p;
         }
     }
     
-    private int getLoopLength(SSE p) {
-        return p.sseData.SeqStartResidue - p.From.sseData.SeqFinishResidue - 1;
+    private int getLoopLength(SSE sse, SSE prev) {
+        return sse.sseData.SeqStartResidue - prev.sseData.SeqFinishResidue - 1;
     }
     
 
@@ -91,9 +93,8 @@ public class CalculateMergedStrands implements Calculation {
     secondary structures are different or the vectors are less than
     ninety degrees ie. antiparallel.
      */
-    public void joinToLast(SSE sse, Chain chain) {
+    public void joinToLast(SSE sse, SSE lastSSE, Chain chain) {
 
-        SSE lastSSE = sse.From;
         if (!lastSSE.isSameType(sse)) return;
 
         // Merge bridge partners 
@@ -139,11 +140,8 @@ public class CalculateMergedStrands implements Calculation {
         // Merge residues - don't include fixed 
         lastSSE.sseData.SeqFinishResidue = sse.sseData.SeqFinishResidue;
         lastSSE.sseData.PDBFinishResidue = sse.sseData.PDBFinishResidue;
-        lastSSE.To = sse.To;
-        if (lastSSE.To != null) lastSSE.To.From = lastSSE;
-        lastSSE.Next = sse.Next;
 
-        lastSSE.incrementMerges();;
+        lastSSE.incrementMerges();
 
         // FIXME - merge ranges only seem to be needed for chiral
         //        p.MergeRanges.append(new int[] {q.SeqStartResidue, q.SeqFinishResidue});

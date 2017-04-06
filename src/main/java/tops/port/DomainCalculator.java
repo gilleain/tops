@@ -1,5 +1,8 @@
 package tops.port;
 
+import static tops.port.model.DomainBreakType.C_DOM_BREAK;
+import static tops.port.model.DomainBreakType.NC_DOM_BREAK;
+import static tops.port.model.DomainBreakType.N_DOM_BREAK;
 import static tops.port.model.DomainDefinition.DomainType.CHAIN_SET;
 import static tops.port.model.DomainDefinition.DomainType.SEGMENT_SET;
 
@@ -141,28 +144,31 @@ public class DomainCalculator {
     /*
      * Function to set up DomainBreakNumbers in the master linked list
      */
-    public PlotFragInformation setDomBreaks(List<DomainDefinition> domains, Protein protein, SSE root) {
+    public PlotFragInformation setDomBreaks(List<DomainDefinition> domains, Protein protein, List<SSE> sses) {
         PlotFragInformation plotFragmentInformation = new PlotFragInformation();
         
         int count = 0;
         int nf = 0;
         int domain, lastDomain;
         int lastSegment;
-        SSE sse, lastCTerm;
+        SSE lastCTerm;
     
-        for (sse = root; sse != null; sse = sse.To)
+        for (SSE sse : sses) {
             sse.DomainBreakNumber = 0;
-        for (sse = root; sse != null; sse = sse.To)
             sse.domainBreakType = DomainBreakType.NOT_DOM_BREAK;
+        }
     
         /* advance to the first ss element in a real domain */
         int segment = -1;
-        for (sse = root.To; sse != null && segment < 0; sse = sse.To) {
+        SSE sse = null;
+        for (int index = 1; index < sses.size() && segment < 0; index++) {
+            sse = sses.get(index);
             segment = findDomain(domains, protein, sse).segment;
         }
     
-        if (sse == null)
+        if (sse == null) {
             return plotFragmentInformation;
+        }
     
         count++;
         sse.DomainBreakNumber = count;
@@ -186,14 +192,13 @@ public class DomainCalculator {
     
         lastCTerm = sse;
     
-        while (sse != null) {
-            sse = sse.To;
-            DomainId result2 = findDomain(domains, protein, sse);
+        for (SSE sseA : sses) {
+            DomainId result2 = findDomain(domains, protein, sseA);
             domain = result2.domain;
     
             if (domain != lastDomain || segment != lastSegment) {
     
-                DomainId did = ssIsInDomain(protein, sse, domains.get(lastDomain));
+                DomainId did = ssIsInDomain(protein, sseA, domains.get(lastDomain));
     
                 if (did.exclusionType == 0 || domain == lastDomain) {
     
@@ -211,7 +216,7 @@ public class DomainCalculator {
     
                     domain = -1;
                     while (sse != null && domain < 0) {
-                        sse = sse.To;
+//                        sse = sse.To; TODO
                         domain = findDomain(domains, protein, sse).domain;
                     }
                     if (sse != null) {
@@ -271,22 +276,18 @@ public class DomainCalculator {
      * Function to set up a new linked list corresponding to a given domain XXX
      * now returns the new root
      */
-    public Cartoon setDomain(SSE OriginalRoot, Protein protein, DomainDefinition domain) {
+    public Cartoon setDomain(List<SSE> OriginalRoot, Protein protein, DomainDefinition domain) {
 
         int numberStructures;
         int domBreakNum = 0;
 
         Map<SSE, SSE> copyTable = new HashMap<SSE, SSE>();
 
-        SSE lastNextListMem, newRoot, s;
-
         /* this loop decides which structures to copy and copies attributes */
         boolean FIRST = true;
-        lastNextListMem = null;
         numberStructures = -1;
-        newRoot = null;
-        SSE p = null;
-        for (SSE r = OriginalRoot.To; r != null; r = r.To) {
+        List<SSE> newRoot = new ArrayList<SSE>();
+        for (SSE r : OriginalRoot) {
 
             DomainId domainId = ssIsInDomain(protein, r, domain);
             if (domainId.segment != -1) {
@@ -295,8 +296,7 @@ public class DomainCalculator {
                  * add an N terminus if we're starting a new piece of continuous
                  * peptide chain
                  */
-                if ((r.domainBreakType == DomainBreakType.N_DOM_BREAK)
-                        || (r.domainBreakType == DomainBreakType.NC_DOM_BREAK)) {
+                if (r.domainBreakType == N_DOM_BREAK || r.domainBreakType == NC_DOM_BREAK) {
 
                     domBreakNum = r.DomainBreakNumber;
 
@@ -304,23 +304,12 @@ public class DomainCalculator {
                     SSE q = new SSE(SSEType.NTERMINUS);
 
                     if (FIRST) {
-                        newRoot = q;
+                        newRoot.add(q); // XXX TODO - shouldn't be conditional on FIRST?
                         FIRST = false;
                     }
                     q.setSymbolPlaced(true);
                     q.setSymbolNumber(numberStructures);
-
                     q.setLabel("N" + domBreakNum);
-
-                    if (lastNextListMem != null) {
-                        lastNextListMem.Next = q;
-                    }
-                    lastNextListMem = q;
-                    q.From = p;
-                    if (p != null) {
-                        p.To = q;
-                    }
-                    p = q;
                 }
 
                 /* add an ss element equivalent of r */
@@ -329,17 +318,6 @@ public class DomainCalculator {
                 q.setSymbolNumber(numberStructures);
                 copyTable.put(q, r);
 
-                /* special action for the Next pointer */
-                if (r.Next != null) {
-                    lastNextListMem.Next = q;
-                    lastNextListMem = q;
-                }
-
-                /* sort out from and to */
-                q.From = p;
-                p.To = q;
-                p = q;
-
                 /*
                  * cancel any chirality of an element separated from its chiral
                  * partner by a domain break
@@ -347,9 +325,9 @@ public class DomainCalculator {
                 for (Chain chain : protein.getChains()) {
                     SSE cp = ChiralityCalculator.topsChiralPartner(chain, r);
                     if ((r.Chirality != Hand.NONE) && (cp != null)) {
-                        for (s = r; s != cp; s = s.To) {
-                            if ((s.domainBreakType == DomainBreakType.C_DOM_BREAK)
-                                    || (s.domainBreakType == DomainBreakType.NC_DOM_BREAK)) {
+//                        for (s = r; s != cp; s = s.To) {
+                        for (SSE s : OriginalRoot) {    // TODO - incorrect: should be range(r, cp)?
+                            if (s.domainBreakType == C_DOM_BREAK || s.domainBreakType == NC_DOM_BREAK) {
                                 q.Chirality = Hand.NONE;
                                 break;
                             }
@@ -361,23 +339,13 @@ public class DomainCalculator {
                  * add a C terminus if we're ending a piece of continuous
                  * peptide chain
                  */
-                if ((r.domainBreakType == DomainBreakType.C_DOM_BREAK)
-                        || (r.domainBreakType == DomainBreakType.NC_DOM_BREAK)) {
+                if ((r.domainBreakType == C_DOM_BREAK) || (r.domainBreakType == NC_DOM_BREAK)) {
                     numberStructures++;
                     domBreakNum++;
                     q = new SSE(SSEType.CTERMINUS);
                     q.setSymbolPlaced(true);
                     q.setSymbolNumber(numberStructures);
                     q.setLabel("C" + domBreakNum);
-
-                    /* special action for Next pointer */
-                    lastNextListMem.Next = q;
-                    lastNextListMem = q;
-
-                    q.From = p;
-                    q.To = null;
-                    p.To = q;
-                    p = q;
                 }
             }
         }
@@ -387,17 +355,16 @@ public class DomainCalculator {
          * members in the new list refer the old list - use CopyTable to convert
          * to equivalent in new list
          */
-        if (newRoot != null) {
-            for (SSE q = newRoot; q != null; q = q.To) {
-                if (q.hasFixed())
-                    q.setFixed(copyTable.get(q.getFixed()));
-                //                for (BridgePartner bridgePartner : q.getBridgePartners()) {
-                //                    bridgePartner.partner = copyTable.get(bridgePartner.partner);
-                //                }
-                // for (SSE q.Neighbours)
-                // q.Neighbour[i] = GetFromCopyTab(q.Neighbour[i],CopyTable);
-                // }
-            }
+
+        for (SSE q : newRoot) {
+            if (q.hasFixed())
+                q.setFixed(copyTable.get(q.getFixed()));
+            //                for (BridgePartner bridgePartner : q.getBridgePartners()) {
+            //                    bridgePartner.partner = copyTable.get(bridgePartner.partner);
+            //                }
+            // for (SSE q.Neighbours)
+            // q.Neighbour[i] = GetFromCopyTab(q.Neighbour[i],CopyTable);
+            // }
         }
 
         /* Now re-set the root */

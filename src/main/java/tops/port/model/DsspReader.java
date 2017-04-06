@@ -185,10 +185,8 @@ public class DsspReader {
     						}
     						SSE cTerm = new SSE(CTERMINUS);
     
-    						q.To = q.Next = cTerm;
     						cTerm.setStartPoints(currentResidue, currentResidue);
     						cTerm.setFinishPoints(lastResidue + 1, lastResidue + 1);
-    						cTerm.From = q;
     						numberOfStructures += 1;
     						cTerm.setSymbolNumber(numberOfStructures);
     						chain.addSSE(cTerm);
@@ -252,8 +250,6 @@ public class DsspReader {
     						open = true;
     						p = new SSE(secondaryStructure);
     						chain.addSSE(p);
-    						q.To = q.Next = p;
-    						p.From = q;
     						numberOfStructures += 1;
     						p.setSymbolNumber(numberOfStructures);
     						p.setStartPoints(currentResidue, lastResidue);
@@ -271,10 +267,8 @@ public class DsspReader {
     		}
     		SSE cTerm = new SSE(CTERMINUS);
     
-    		q.To = q.Next = cTerm;
     		cTerm.setStartPoints(currentResidue, currentResidue);
     		cTerm.setFinishPoints(lastResidue + 1, lastResidue + 1);
-    		cTerm.From = q;
     		numberOfStructures += 1;
     		cTerm.setSymbolNumber(numberOfStructures);
     		chain.addSSE(cTerm);

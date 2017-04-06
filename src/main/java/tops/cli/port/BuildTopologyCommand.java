@@ -174,7 +174,7 @@ public class BuildTopologyCommand implements Command {
         if (options.isVerbose()) {
             System.out.println("Setting domain breaks and domains to plot\n");
         }
-        SSE root = null;
+        List<SSE> root = null;
         // TODO - Root will be null here!! XXX
         PlotFragInformation plotFragInf = domainCalculator.setDomBreaks(domains, protein, root);    
 

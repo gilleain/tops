@@ -1,5 +1,6 @@
 package tops.port.calculate;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,10 +22,13 @@ public class CalculateNeighbours implements Calculation {
      public void calculate(Chain chain) {
          log.log(Level.INFO, "STEP : Calculating secondary structure neighbour lists");
 
-         for (SSE p : chain.getSSEs()) {
-             if (!p.isStrand() && !p.isHelix()) continue;
-             for (SSE q : chain.rangeFrom(p.To)) {
-                 if (!q.isStrand() && !q.isHelix()) continue;
+         List<SSE> sses = chain.getSSEs();
+         for (int index = 0; index < sses.size() - 1; index++) {
+             SSE p = sses.get(index);
+             if (neitherStrandNorHelix(p)) continue;
+             for (int secondIndex = index + 1; secondIndex < sses.size(); secondIndex++) {
+                 SSE q = sses.get(secondIndex);
+                 if (neitherStrandNorHelix(q)) continue;
                  if (p.hasBridgePartner(q)) continue;
                  double shdis = simpleSSESeparation(p, q);
                  if (shdis > CutoffDistance) continue;
@@ -36,6 +40,10 @@ public class CalculateNeighbours implements Calculation {
                  q.addNeighbour(p, (int)shdis);
              }
          }
+     }
+     
+     private boolean neitherStrandNorHelix(SSE sse) {
+         return !sse.isStrand() && !sse.isHelix();
      }
      
      public double simpleSSESeparation(SSE p, SSE q) {

@@ -59,17 +59,20 @@ public class CalculateFixedHands implements Calculation {
         }
     }
     
-    private SSE find(Chain chain, SSE p) {
+    private SSE find(Chain chain, SSE sse) {
         // TODO : FIXME - see SetFixedHand!! XXX
-        for (SSE q : chain.getSSEs()) {
-            if (chain.findFixedStart(q) == p) {
+        List<SSE> sses = chain.getSSEs();
+        for (int index = 0; index < sses.size(); index++) {
+            SSE sseA = sses.get(index);
+            if (chain.findFixedStart(sseA) == sse) {
                 boolean found = false;
                 int n = 0;
-                for (SSE r : chain.rangeFrom(q.To)) {
-                    if (chain.findFixedStart(r) != p) break;
+                for (int secondIndex = index + 1; secondIndex < sses.size(); secondIndex++) {
+                    SSE sseB = sses.get(secondIndex);
+                    if (chain.findFixedStart(sseB) != sse) break;
                     n += 1;
-                    if (r.getDirection() == q.getDirection()) {
-                        Hand chir = chiral2d(chain, q, r);
+                    if (sseB.getDirection() == sseA.getDirection()) {
+                        Hand chir = chiral2d(chain, sseA, sseB);
 //                        System.out.println("chir " + chir);
                         if (n > 1 && chir != Hand.UNKNOWN) {
                             found = true;
@@ -78,7 +81,9 @@ public class CalculateFixedHands implements Calculation {
                         }
                         break;
                     }
-                    if (found) return q;
+                    if (found) {
+                        return sseA;
+                    }
                 }
             }   
         }
@@ -103,7 +108,7 @@ public class CalculateFixedHands implements Calculation {
         c = new Vector3d(q.getCartoonX(), q.getCartoonY(), 0.0);
 
         int i = 0;
-        for (SSE r : chain.range(p.To, q)) {
+        for (SSE r : chain.range(chain.getNext(p), q)) {
             d = new Vector3d(r.getCartoonX(), r.getCartoonY(), 0.0);
             lasthand = hand;
             double theta = this.AngleBetweenLines(b, c, d);

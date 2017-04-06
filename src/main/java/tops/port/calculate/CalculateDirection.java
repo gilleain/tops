@@ -16,10 +16,10 @@ public class CalculateDirection implements Calculation {
      **/
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Assigning directions to secondary structures");
-        SSE Root = chain.getSSEs().get(0);
-        SSE q = Root;
-        for (SSE p : chain.iterNext(Root)) {
-            if (p != Root) {
+        SSE root = chain.getSSEs().get(0);
+        SSE q = root;
+        for (SSE p : chain.iterNext(root)) {
+            if (p != root) {
                 if (q.isParallel(p)) {
                     if (p.getDirection() != q.getDirection()) chain.flipSymbols(p);
                 } else {
@@ -37,9 +37,11 @@ public class CalculateDirection implements Calculation {
           This does a better job for beta-alpha-beta units.
           DW 5/9/96
         */
-        for (SSE p : chain.iterNext(Root)) {
-            if (p != Root && p != Root.To && p.hasFixed()) {
-                q = p.From;
+        SSE prev = root;
+        SSE nextToRoot = chain.getNext(root);
+        for (SSE p : chain.iterNext(root)) {
+            if (p != root && p != nextToRoot && p.hasFixed()) {
+                q = prev;
                 if (q.isParallel(p)) {
                     if (q.getDirection() == 'U') {
                         p.setDirection('U');
@@ -54,6 +56,7 @@ public class CalculateDirection implements Calculation {
                     }
                 }
             }
+            prev = p;
         }
      }
 

@@ -67,11 +67,8 @@ public class TopsFileWriter {
                 sse.getCartoonSymbol().getColor()[1], 
                 sse.getCartoonSymbol().getColor()[2]);
 
-        if (sse.Next != null) {
-            print(out, "Next %d\n", sse.Next.getSymbolNumber());
-        } else {
-            print(out, "Next -1\n");
-        }
+        // no longer storing this information
+        print(out, "Next -1\n");
 
         if (sse.getFixed() != null) {
             print(out, "Fixed %d\n", sse.getFixed().getSymbolNumber());

@@ -172,16 +172,6 @@ public class Chain {
         return this.sses.size();
     }
 
-    public void resolveTo() {
-        int i = 0;
-        for (SSE sse : this.sses) {
-            if (i + 1 < this.sses.size()) {
-                sse.To = this.sses.get(i + 1);
-            }
-            i++;
-        }
-    }
-
     public int numberFixed() {
         SSE fixedStart = null;
         for (SSE sse : sses) {
@@ -217,33 +207,21 @@ public class Chain {
     
     
     /*
-    sure this is not right!
-    */
-    public  void linkOver(SSE p) {
-        for (SSE q : this.sses) {
-            if (q.Next == p) { 
-                q.Next = p.Next;
-            }
-        }
-        p.Next = null;
-    }
-
-    /*
     used in TopsOptimise for unknown purpose
     */
-    public int numberLink(SSE p) {
-        int Number = 0;
+    public int numberLink(SSE sse) {
+        int max = 0;
         int i = 0;
         for (SSE q : this.iterNext(this.sses.get(0))) {
-            if (q != p) {
+            if (q != sse) {
                 i += 1;
                 boolean test = false;
-                for (SSE r : this.iterFixed(p)) {
+                for (SSE r : this.iterFixed(sse)) {
                     if (test) break;
                     for (SSE s : this.iterFixed(q)) {
                         if (test) break;
-                        if (s.To == r) {
-                            if (i > Number) Number = i;
+                        if (getNext(s) == r) {
+                            if (i > max) max = i;
                             i = 0;
                             test = true;
                         }
@@ -251,7 +229,7 @@ public class Chain {
                 }
             }
         }
-        return Number;
+        return max;
     }
 
     /*
@@ -273,7 +251,6 @@ public class Chain {
                 }
 //                System.out.println("setting " + lastSSE + " fixed to " + q);
                 lastSSE.setFixed(q);
-                this.linkOver(q);
             }
         }
     }
@@ -429,13 +406,7 @@ public class Chain {
     }
 
     public List<SSE> iterNext(SSE sseStart) {
-        List<SSE> fixed = new ArrayList<SSE>();
-        SSE sse = sseStart;
-        while (sse != null) {
-            if (sse.Next != null) fixed.add(sse.Next);
-            sse = sse.Next;
-        }
-        return fixed;
+        return sses.subList(sses.indexOf(sseStart), sses.size());
     }
 
     public int sequenceLength() {
@@ -889,7 +860,7 @@ public class Chain {
         double[] Extensions = new double[] { 2.7, 7.7, 12.7, 17.7, 22.7 };
 
         for (SSE sse : this.sses) {
-            makeConnection(radius, sse, ExtensionIndex, Extensions);
+            makeConnection(radius, sse, getNext(sse), ExtensionIndex, Extensions);
         }
     }
 
@@ -900,24 +871,22 @@ public class Chain {
         return extension;
     }
 
-    public void makeConnection(double radius, SSE sse, int ExtensionIndex, double[] Extensions) {
+    public void makeConnection(double radius, SSE sse, SSE next, int ExtensionIndex, double[] Extensions) {
         double PSMALL = 0.001;
-        if (sse.To == null) return;
+        if (next == null) return;
 
         // these are the condition under which the code generates a bent connection,
         // rather than the usual straight line joining symbols 
-        if (this.findFixedStart(sse) != this.findFixedStart(sse.To)) return;
-        if (sse.hasFixedType(FixedType.SHEET) && !sse.To.hasFixedType(FixedType.SANDWICH)) return;
-        SSE q = sse.To;
-        if (q == null) return;
-        SSE r = LineHitSymbol(this, sse, q);
-        if (r != null && sse.getCartoonY() == sse.To.getCartoonY()) {
+        if (this.findFixedStart(sse) != this.findFixedStart(next)) return;
+        if (sse.hasFixedType(FixedType.SHEET) && !next.hasFixedType(FixedType.SANDWICH)) return;
+        SSE r = LineHitSymbol(this, sse, next);
+        if (r != null && sse.getCartoonY() == next.getCartoonY()) {
 
             // we are guaranteed horizontal lines 
             double px = sse.getCartoonX();
             double py = sse.getCartoonY();
-            double qx = sse.To.getCartoonX();
-            double qy = sse.To.getCartoonY();
+            double qx = next.getCartoonX();
+            double qy = next.getCartoonY();
 
             double d1 = (sse.getDirection() == 'U')? -1.0 : 1.0;
         
@@ -939,6 +908,16 @@ public class Chain {
             sse.addConnection(new Point2d(mx, my));
             sse.addConnection(new Point2d(nx, ny));
         }
+    }
+
+    public SSE getLast(SSE sse) {
+        int index = sses.indexOf(sse);
+        return (index == 0)? null : sses.get(index - 1);
+    }
+
+    public SSE getNext(SSE sse) {
+        int index = sses.indexOf(sse);
+        return (index == sses.size() - 1)? null : sses.get(index + 1);
     }
 }
 

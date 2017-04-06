@@ -37,7 +37,7 @@ public class ChiralityCalculator {
         c = new Vector3d(q.getCartoonX(), q.getCartoonY(), 0.0);
 
         int i = 0;
-        for (SSE r : chain.range(p.To, q)) {
+        for (SSE r : chain.range(chain.getNext(p), q)) {
             d = new Vector3d(r.getCartoonX(), r.getCartoonY(), 0.0);
             lasthand = hand;
             double theta = angleBetweenLines(b, c, d);

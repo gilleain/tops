@@ -90,8 +90,10 @@ public class Optimise {
             }
         }
         if (chainPenalty > 0) {
-            for (SSE sseA : chain.getSSEs()) {
-                SSE sseB = sseA.To;
+            List<SSE> sses = chain.getSSEs(); 
+            for (int index = 0; index < sses.size(); index++) {
+                SSE sseA = sses.get(index);
+                SSE sseB = sses.get(index + 1);
                 if (sseB == null || (sseA.isTerminus() && sseB.isTerminus())) continue;
                 double d = Chain.distance2D(sseA, sseB);
                 double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
@@ -125,15 +127,20 @@ public class Optimise {
         }
 
         if (crossPenalty > 0) {
-            for (SSE sseA : chain.getSSEs().subList(0, chain.numberOfSSEs() - 3)) {
-                if (sseA.To == null || (sseA.isTerminus() && sseA.To.isTerminus())) continue;
-                for (SSE sseB : chain.rangeFrom(sseA.To.To)) {
-                    if (sseB.To == null || (sseB.isTerminus() && sseB.To.isTerminus())) continue;
+            List<SSE> sses = chain.getSSEs();
+            for (int index = 0; index < sses.size() - 3; index++) {
+                SSE sseA = sses.get(index);
+                SSE nextA = sses.get(index + 1);
+                if (nextA == null || (sseA.isTerminus() && nextA.isTerminus())) continue;
+                for (int secondIndex = index + 2; index < sses.size(); secondIndex++) {
+                    SSE sseB = sses.get(secondIndex);
+                    SSE nextB = sses.get(secondIndex + 1);
+                    if (nextB == null || (sseB.isTerminus() && nextB.isTerminus())) continue;
                     System.out.print(sseA.getCartoonCenter() + " "
-                            + sseA.To.getCartoonCenter() + " "
-                            + sseB.getCartoonCenter() + " "
-                            + sseB.To.getCartoonCenter() + " ");
-                    Intersection intersection = lineCross(sseA, sseA.To, sseB, sseB.To);
+                                   + nextA.getCartoonCenter() + " "
+                                   + sseB.getCartoonCenter() + " "
+                                   + nextB.getCartoonCenter() + " ");
+                    Intersection intersection = lineCross(sseA, nextA, sseB, nextB);
                     System.out.println("Intersection " + intersection);
                     if (intersection == null) continue; // XXX FIXME
                     if (intersection.type == CROSSING) {
@@ -161,8 +168,11 @@ public class Optimise {
         }
 
         if (anglePenalty > 0) {
-            for (SSE sse : chain.getSSEs().subList(0, chain.numberOfSSEs() - 2)) {
-                double D = angle(sse, sse.To, sse.To.To);
+            for (int index = 1; index < chain.numberOfSSEs() - 1; index++) {
+                SSE prev = chain.getSSEs().get(index - 1);
+                SSE sse = chain.getSSEs().get(index);
+                SSE next = chain.getSSEs().get(index + 1);
+                double D = angle(prev, sse, next);
                 double Ce = anglePenalty * (1.0 - Math.abs(Math.cos(multiplicity * D)));
                 TotalEnergy += Ce;
                 EnergyComps[5] += Ce;
@@ -170,10 +180,10 @@ public class Optimise {
         }
 
         if (lineHitPenalty > 0) {
-            for (SSE sseA : chain.getSSEs()) {
-                SSE sseB = sseA.To;
-                if (sseB == null || (sseA.isTerminus() && sseB.isTerminus())) continue;
-                if (Chain.LineHitSymbol(chain, sseA, sseB) != null) {
+            SSE prev = null;
+            for (SSE sse : chain.getSSEs()) {
+                if (prev == null || (prev.isTerminus() && sse.isTerminus())) continue;
+                if (Chain.LineHitSymbol(chain, prev, sse) != null) {
                     // print "line hit symbol", sseA, sseB
                     TotalEnergy += lineHitPenalty;
                     EnergyComps[6] += lineHitPenalty;
@@ -304,15 +314,16 @@ public class Optimise {
 
                 SSE sse = root;
                 while (sse == centerFixed) {
-                    List<SSE> nextList = cartoon.iterNext(root);
-                    // print nextList
-                    sse = nextList.get(random.nextInt(nextList.size()));
+                    List<SSE> sses = cartoon.getSSEs();
+                    sse = sses.get(random.nextInt(sses.size()));
                 }
 
                 double rx = 0;
                 double ry = 0;
                 while (rx != 0 && ry != 0) {
-                    Point2d p = generateRandomXandY(sse);
+                    SSE last = cartoon.getLast(sse);
+                    SSE next = cartoon.getNext(sse);
+                    Point2d p = generateRandomXandY(last, sse, next);
                     rx = p.x;
                     ry = p.y;
                 }
@@ -432,26 +443,26 @@ public class Optimise {
     }
 
 
-    private Point2d generateRandomXandY(SSE sse) {
+    private Point2d generateRandomXandY(SSE prev, SSE sse, SSE next) {
         double rx = 0;
         double ry = 0;
 
         double randomNumber = random.nextDouble();
         if (randomNumber <= lineSample / 100.0 && sse.hasFixed()) {
-            if (sse.From != null) {
+            if (prev != null) {
                 randomNumber = random.nextDouble();
                 randomNumber *= randomNumber;
-                rx += randomNumber * (sse.From.getCartoonX() - sse.getCartoonX());
-                ry += randomNumber * (sse.From.getCartoonY() - sse.getCartoonY());
+                rx += randomNumber * (prev.getCartoonX() - sse.getCartoonX());
+                ry += randomNumber * (prev.getCartoonY() - sse.getCartoonY());
             }
-            if (sse.To != null) {
+            if (next != null) {
                 randomNumber = random.nextDouble();
                 randomNumber *= randomNumber;
-                rx += randomNumber * (sse.To.getCartoonX() - sse.getCartoonX());
-                ry += randomNumber * (sse.To.getCartoonY() - sse.getCartoonY());
+                rx += randomNumber * (next.getCartoonX() - sse.getCartoonX());
+                ry += randomNumber * (next.getCartoonY() - sse.getCartoonY());
             }
-            rx = gridFix(rx);
-            ry = gridFix(ry);
+            rx = rx == 0 ? 0 : gridFix(rx);
+            ry = ry == 0 ? 0 : gridFix(ry);
         }
 
         int direction;
@@ -467,12 +478,12 @@ public class Optimise {
             double rv = 0;
             if (random.nextDouble() <= arcsSample / 100.0) {
                 if (random.nextDouble() < 0.5) {
-                    lx = sse.To.getCartoonX() - sse.getCartoonY();
-                    ly = sse.To.getCartoonY() - sse.getCartoonY();
+                    lx = next.getCartoonX() - sse.getCartoonY();
+                    ly = next.getCartoonY() - sse.getCartoonY();
                     rv = Math.sqrt((lx * lx) + (ly * ly));
                 } else {
-                    lx = sse.From.getCartoonX() - sse.getCartoonY();
-                    ly = sse.From.getCartoonY() - sse.getCartoonY();
+                    lx = prev.getCartoonX() - sse.getCartoonY();
+                    ly = prev.getCartoonY() - sse.getCartoonY();
                     rv = Math.sqrt((lx * lx) + (ly * ly));
                 }
             }

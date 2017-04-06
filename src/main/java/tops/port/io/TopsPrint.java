@@ -291,60 +291,61 @@ public class TopsPrint {
         }
 
         // Lines
+        SSE prev = null;
         for (SSE p : cartoon.getSSEs()) {
             if (p.isSymbolPlaced()) {
 
                 ToSSType = p.getSSEType();
 
-                if (p.From != null) {
+                if (prev != null) {
 
-                    FromSSType = p.From.getSSEType();
+                    FromSSType = prev.getSSEType();
                     if (!(ToSSType == SSEType.CTERMINUS || ToSSType == SSEType.NTERMINUS)
                       && (FromSSType == SSEType.CTERMINUS) || (FromSSType == SSEType.NTERMINUS)) {
 
-                        if (p.From.getNConnectionPoints() > 0) {
-                            ncp = p.From.getNConnectionPoints();
+                        if (prev.getNConnectionPoints() > 0) {
+                            ncp = prev.getNConnectionPoints();
 
-                            JoinPoints(PSxy(p.From.getCartoonX()),
-                                    PSxy(p.From.getCartoonY()),
-                                    PSxy(p.From.getConnectionTo(0).x),
-                                    PSxy(p.From.getConnectionTo(0).y),
-                                    p.From.getDirection(), '*',
-                                    p.From.getSSEType(),
+                            JoinPoints(PSxy(prev.getCartoonX()),
+                                    PSxy(prev.getCartoonY()),
+                                    PSxy(prev.getConnectionTo(0).x),
+                                    PSxy(prev.getConnectionTo(0).y),
+                                    prev.getDirection(), '*',
+                                    prev.getSSEType(),
                                     p.getSSEType());
 
                             for (i = 0; i < (ncp - 1); i++) {
-                                JoinPoints(PSxy(p.From.getConnectionTo(i).x),
-                                        PSxy(p.From.getConnectionTo(i).y),
-                                        PSxy(p.From.getConnectionTo(i + 1).x),
-                                        PSxy(p.From.getConnectionTo(i + 1).y),
-                                        '*', '*', p.From.getSSEType(),
+                                JoinPoints(PSxy(prev.getConnectionTo(i).x),
+                                        PSxy(prev.getConnectionTo(i).y),
+                                        PSxy(prev.getConnectionTo(i + 1).x),
+                                        PSxy(prev.getConnectionTo(i + 1).y),
+                                        '*', '*', prev.getSSEType(),
                                         p.getSSEType());
                             }
 
-                            JoinPoints(PSxy(p.From.getConnectionTo(ncp - 1).x),
-                                    PSxy(p.From.getConnectionTo(ncp - 1).y),
+                            JoinPoints(PSxy(prev.getConnectionTo(ncp - 1).x),
+                                    PSxy(prev.getConnectionTo(ncp - 1).y),
                                     PSxy(p.getCartoonX()),
                                     PSxy(p.getCartoonY()), '*', p.getDirection(),
-                                    p.From.getSSEType(),
+                                    prev.getSSEType(),
                                     p.getSSEType());
 
                         } else {
-                            JoinPoints(PSxy(p.From.getCartoonX()),
-                                    PSxy(p.From.getCartoonY()),
+                            JoinPoints(PSxy(prev.getCartoonX()),
+                                    PSxy(prev.getCartoonY()),
                                     PSxy(p.getCartoonX()),
-                                    PSxy(p.getCartoonY()), p.From.getDirection(),
-                                    p.getDirection(), p.From.getSSEType(),
+                                    PSxy(p.getCartoonY()), prev.getDirection(),
+                                    p.getDirection(), prev.getSSEType(),
                                     p.getSSEType());
                         }
 
                     }
 
                     if (FromSSType == SSEType.NTERMINUS) {
-                        MakeObject("Square", 2, PSxy(p.From.getCartoonX()),
-                                PSxy(p.From.getCartoonY()));
-                        PrintText(p.From.getLabel(), PSxy(p.From.getCartoonX()),
-                                PSxy(p.From.getCartoonY()));
+                        MakeObject("Square", 2, PSxy(prev.getCartoonX()),
+                                PSxy(prev.getCartoonY()));
+                        PrintText(prev.getLabel(), PSxy(prev.getCartoonX()),
+                                PSxy(prev.getCartoonY()));
                     }
 
                 }
@@ -353,6 +354,8 @@ public class TopsPrint {
                     MakeObject("Square", 2, PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
                     PrintText(p.getLabel(), PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
                 }
+                
+                prev = p;
             }
         }
     }
