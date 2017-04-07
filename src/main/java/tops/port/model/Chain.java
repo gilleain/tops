@@ -112,16 +112,6 @@ public class Chain {
         return this.name;
     }
     
-    public final class Circle {
-        double centerX;
-        double centerY;
-        double radius;
-        public Circle(double centerX, double centerY, double radius) {
-            this.centerX = centerX;
-            this.centerY = centerY;
-            this.radius = radius;
-        }
-    }
     
     public int getPDBIndex(int residue) {
         return this.pdbIndices.get(residue);
@@ -659,41 +649,6 @@ public class Chain {
         return TopMost;
     }
     
-
-
-    /**
-    returns center and radius
-    **/
-    public Circle fixedBoundingCircle(SSE FixedStart) {
-
-        int n = 0;
-        double centerX = 0.0;
-        double centerY = 0.0;
-        for (SSE p : this.iterFixed(FixedStart)) {
-            centerX += p.getCartoonX();
-            centerY += p.getCartoonY();
-            n +=1;
-        }
-        if (n > 0) {
-            centerX /= (double) n;
-            centerY /= (double) n;
-        }
-
-        double rim = 0.0;
-        for (SSE p : this.iterFixed(FixedStart)) {
-            double x = p.getCartoonX();
-            double y = p.getCartoonY();
-
-            //FIXME : distance2D method needs a class home!
-            double separation = distance2D(x, y, centerX, centerY);
-            if (separation > rim) rim = separation;
-        }
-
-        double radius = rim - (0.5 * FixedStart.getSymbolRadius());
-        return new Circle(centerX, centerY, radius);
-    }
-
-
     public double scaleToFit(double canvasWidth, double canvasHeight, double symbolRadius) {
 
         Dimension size = this.calculateSize();
@@ -767,147 +722,6 @@ public class Chain {
     public Dimension calculateSize() {
         // TODO
         return null;
-    }
-
-    public static SSE LineHitSymbol(Chain chain, SSE p,SSE q) {
-        double TOL = 0.001;
-
-        double px = p.getCartoonX();
-        double py = p.getCartoonY();
-        double qx = q.getCartoonX();
-        double qy = q.getCartoonY();
-
-        for (SSE r : chain.getSSEs()) {
-            double rx = r.getCartoonX();
-            double ry = r.getCartoonY();
-
-            double dprx = Math.abs(px - rx);
-            double dpry = Math.abs(py - ry);
-            double dqrx = Math.abs(qx - rx);
-            double dqry = Math.abs(qy - ry);
-
-            if (!((dprx < TOL && dpry < TOL) || (dqrx < TOL && dpry < TOL))) {
-
-                double pr = (dprx * dprx) + (dpry * dpry);
-                double pq = Math.pow((px - qx), 2) + Math.pow((py - qy), 2);
-                double qr = (dqrx * dqrx) + (dqry * dqry);
-
-                if (Math.min(pr,qr) + pq > Math.max(pr,qr)) {
-                    double a  = (pr + pq - qr);
-                    pr = Math.sqrt(pr);
-                    pq = Math.sqrt(pq);
-
-                    
-                    a /= (2.0 * pr * pq);
-                    if (Math.abs(a) > 1.0) {
-                        if (a < 0) a = -1.0;
-                        else     a = 1.0;
-                    }
-                    a  = Math.acos(a);
-
-                    if (2 * pr * Math.tan(a) <= r.getSymbolRadius()) return r;
-                }
-            }
-        }
-        return null;
-    }
-
-
-    /*
-        function angle
-
-        Tom F. August 1992
-
-        Function to return the angle between two 2D vectors
-    */
-
-    public double angle(SSE p, SSE q, SSE r) {
-        int pX = p.getCartoonX();
-        int qX = q.getCartoonX();
-        int rX = q.getCartoonX();
-        double l1 = distance2D(pX, p.getCartoonY(), qX, q.getCartoonY());
-        double l2 = distance2D(rX, r.getCartoonY(), qX, q.getCartoonY());
-        if (l1 == 0.0 || l2 == 0.0) return 0.0;
-        double pqX = pX - qX;
-        double pqY = p.getCartoonY() - q.getCartoonY();
-        double rqX = rX - qX;
-        double rqY = r.getCartoonY() - q.getCartoonY();
-        double l = ((pqX * rqX) + (pqY * rqY)) / (l1 * l2);
-        if (l < -1.0) l = -1.0;
-        if (l > 1.0) l = 1.0 ;
-        return Math.acos(l);
-    }
-
-    //
-    //really an sse method
-    //
-    public static double distance2D(SSE a, SSE b) {
-        double x1 = a.getCartoonX();
-        double y1 = a.getCartoonY();
-        double x2 = b.getCartoonX();
-        double y2 = b.getCartoonY();
-        return distance2D(x1, y1, x2, y2);
-    }
-    
-    public static double distance2D(double x1, double y1, double x2, double y2) {
-        double dX = x1 - x2;
-        double dY = y1 - y2;
-        return Math.sqrt((dX * dX) + (dY * dY));
-    }
-
-    public void calculateConnections(double radius) {
-        int ExtensionIndex = 0;
-        double[] Extensions = new double[] { 2.7, 7.7, 12.7, 17.7, 22.7 };
-
-        for (SSE sse : this.sses) {
-            makeConnection(radius, sse, getNext(sse), ExtensionIndex, Extensions);
-        }
-    }
-
-    public double nextExtension(int ExtensionIndex, double[] Extensions) {
-        if (ExtensionIndex >= Extensions.length) ExtensionIndex = 0;
-        double extension = Extensions[ExtensionIndex];
-        ExtensionIndex += 1;    // XXX incrementing a scope-local variable FIXME 
-        return extension;
-    }
-
-    public void makeConnection(double radius, SSE sse, SSE next, int ExtensionIndex, double[] Extensions) {
-        double PSMALL = 0.001;
-        if (next == null) return;
-
-        // these are the condition under which the code generates a bent connection,
-        // rather than the usual straight line joining symbols 
-        if (this.findFixedStart(sse) != this.findFixedStart(next)) return;
-        if (sse.hasFixedType(FixedType.SHEET) && !next.hasFixedType(FixedType.SANDWICH)) return;
-        SSE r = LineHitSymbol(this, sse, next);
-        if (r != null && sse.getCartoonY() == next.getCartoonY()) {
-
-            // we are guaranteed horizontal lines 
-            double px = sse.getCartoonX();
-            double py = sse.getCartoonY();
-            double qx = next.getCartoonX();
-            double qy = next.getCartoonY();
-
-            double d1 = (sse.getDirection() == 'U')? -1.0 : 1.0;
-        
-            double my = r.getCartoonY() + ( d1 * ( PSMALL * Math.abs(px - qx) + radius + nextExtension(ExtensionIndex, Extensions) ));
-            double ny = my;
-            
-            double d2, d3;
-            if (px < qx) { 
-                d2 = 1.0;
-                d3 =-1.0;
-            } else{ 
-                d2 = -1.0;
-                d3 =  1.0;
-            }
-
-            double mx = px + (d2 * (PSMALL * Math.abs(px - qx) + radius));
-            double nx = qx + (d3 * (PSMALL * Math.abs(px - qx) + radius));
-
-            sse.addConnection(new Point2d(mx, my));
-            sse.addConnection(new Point2d(nx, ny));
-        }
     }
 
     public SSE getLast(SSE sse) {

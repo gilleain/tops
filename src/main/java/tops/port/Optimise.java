@@ -10,6 +10,7 @@ import javax.vecmath.Point2d;
 
 import tops.port.IntersectionCalculator.Intersection;
 import tops.port.calculate.chirality.ChiralityCalculator;
+import tops.port.model.Cartoon;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.Hand;
@@ -73,7 +74,7 @@ public class Optimise {
                     for (SSE sseC : chain.iterFixed(sseA)) {
                         for (SSE sseD : chain.iterFixed(sseB)) {
                             if (sseC == sseD) continue;
-                            double d = Chain.distance2D(sseC, sseD);
+                            double d = distance2D(sseC, sseD);
                             double D = sseC.getSymbolRadius() + sseD.getSymbolRadius();
                             if (d < D) {
                                 double DHard = 3 * D / 4;
@@ -95,7 +96,7 @@ public class Optimise {
                 SSE sseA = sses.get(index);
                 SSE sseB = sses.get(index + 1);
                 if (sseB == null || (sseA.isTerminus() && sseB.isTerminus())) continue;
-                double d = Chain.distance2D(sseA, sseB);
+                double d = distance2D(sseA, sseB);
                 double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
                 if (d > D) {
                     double penalty = (d - D) / gridUnitSize;
@@ -116,7 +117,7 @@ public class Optimise {
                 for (int i = 0; i < sseA.getNeighbours().size(); i++) {
                     Neighbour neighbour = sseA.getNeighbours().get(i); 
                     SSE sseB = neighbour.sse;
-                    double d = Chain.distance2D(sseA, sseB);
+                    double d = distance2D(sseA, sseB);
                     double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
                     double ratio = first.distance / neighbour.distance;
                     double Ce = Math.pow((d - D) / gridUnitSize, 2) * neighbourPenalty * Math.pow(ratio, 2);
@@ -183,7 +184,8 @@ public class Optimise {
             SSE prev = null;
             for (SSE sse : chain.getSSEs()) {
                 if (prev == null || (prev.isTerminus() && sse.isTerminus())) continue;
-                if (Chain.LineHitSymbol(chain, prev, sse) != null) {
+                // TODO : remove cast to Cartoon
+                if (ConnectionCalculator.LineHitSymbol((Cartoon) chain, prev, sse) != null) {
                     // print "line hit symbol", sseA, sseB
                     TotalEnergy += lineHitPenalty;
                     EnergyComps[6] += lineHitPenalty;
@@ -231,15 +233,89 @@ public class Optimise {
     private double SQR(double x) { return x * x; }
 
     private double insideBarrelEnergy(Chain chain, SSE FixedStart, double Penalty) {
-        Chain.Circle boundingCircle = chain.fixedBoundingCircle(FixedStart);
+        Circle boundingCircle = fixedBoundingCircle(chain, FixedStart);
         double energy = 0;
         for (SSE sse : chain.getSSEs()) {
             SSE foundFixedStart = chain.findFixedStart(sse);
-            if (foundFixedStart != FixedStart && sse.IsInCircle(boundingCircle)) {
+            if (foundFixedStart != FixedStart && isInCircle(sse, boundingCircle)) {
                 energy += Penalty;
             }
         }
         return energy;
+    }
+    
+
+    /**
+    returns center and radius
+    **/
+    public Circle fixedBoundingCircle(Chain chain, SSE FixedStart) {
+
+        int n = 0;
+        double centerX = 0.0;
+        double centerY = 0.0;
+        for (SSE p : chain.iterFixed(FixedStart)) {
+            centerX += p.getCartoonX();
+            centerY += p.getCartoonY();
+            n +=1;
+        }
+        if (n > 0) {
+            centerX /= (double) n;
+            centerY /= (double) n;
+        }
+
+        double rim = 0.0;
+        for (SSE p : chain.iterFixed(FixedStart)) {
+            double x = p.getCartoonX();
+            double y = p.getCartoonY();
+
+            //FIXME : distance2D method needs a class home!
+            double separation = distance2D(x, y, centerX, centerY);
+            if (separation > rim) rim = separation;
+        }
+
+        double radius = rim - (0.5 * FixedStart.getSymbolRadius());
+        return new Circle(centerX, centerY, radius);
+    }
+    
+    //
+    //really an sse method
+    //
+    public static double distance2D(SSE a, SSE b) {
+        double x1 = a.getCartoonX();
+        double y1 = a.getCartoonY();
+        double x2 = b.getCartoonX();
+        double y2 = b.getCartoonY();
+        return distance2D(x1, y1, x2, y2);
+    }
+
+    public static double distance2D(double x1, double y1, double x2, double y2) {
+        double dX = x1 - x2;
+        double dY = y1 - y2;
+        return Math.sqrt((dX * dX) + (dY * dY));
+    }
+    
+
+    public final class Circle {
+        double centerX;
+        double centerY;
+        double radius;
+        public Circle(double centerX, double centerY, double radius) {
+            this.centerX = centerX;
+            this.centerY = centerY;
+            this.radius = radius;
+        }
+    }
+    
+    public boolean isInCircle(SSE sse, Circle circle) {
+        return isInCircle(sse, circle.centerX, circle.centerY, circle.radius);
+    }
+
+    public boolean isInCircle(SSE sse, double centerX, double centerY, double radius) {
+        double x = (double) sse.getCartoonX();
+        double y = (double) sse.getCartoonY();
+
+        double sep = (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY);
+        return Math.sqrt(sep) <= radius;
     }
 
     public void optimise(Chain cartoon) {

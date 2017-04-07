@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.cli.ParseException;
 
 import tops.cli.Command;
+import tops.port.ConnectionCalculator;
 import tops.port.DomainBoundaryFileReader;
 import tops.port.DomainCalculator;
 import tops.port.Optimise;
@@ -201,7 +202,7 @@ public class BuildTopologyCommand implements Command {
             // TODO - factor this out
             new Optimise().optimise(cartoon);
             
-            cartoon.calculateConnections(options.getRadius());
+            new ConnectionCalculator().calculateConnections(cartoon, options.getRadius());
             cartoons.add(cartoon);
         }
 

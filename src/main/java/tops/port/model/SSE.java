@@ -156,22 +156,7 @@ public class SSE {
         Collections.sort(this.bridgePartners);
     }
     
-    public static SSE getCommonBP(SSE Start, List<SSE> CurrentList) {
-        for (int i = 0; i < Start.bridgePartners.size(); i++) {
-            BridgePartner commonBridgePartner = Start.bridgePartners.get(i);
-            boolean IsCommonBP = true;
-            for (int j = 1; j < CurrentList.size(); j++) {
-                if (!commonBridgePartner.partner.hasBridgePartner(CurrentList.get(j))) {
-                    IsCommonBP = false;
-                    break;
-                }
-            }
-            if (IsCommonBP) {
-                return commonBridgePartner.partner;
-            }
-        }
-        return null;
-    }
+   
     
     public List<SSE> getPartners() {
         List<SSE> sses = new ArrayList<SSE>();
@@ -180,7 +165,6 @@ public class SSE {
         }
         return sses;
     }
-    
    
 
     public SSEType getSSEType() {
@@ -516,16 +500,6 @@ public class SSE {
         
     }
     
-    public boolean IsInCircle(Chain.Circle circle) {
-        // TODO
-        return false;
-    }
-
-    public boolean IsInCircle(double centerX, double centerY, double radius) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
     public boolean hasBridgePartner(SSE p) {
         for (BridgePartner partner : this.bridgePartners) {
             if (partner.partner == p) {

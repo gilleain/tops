@@ -9,16 +9,15 @@ import javax.vecmath.Point2d;
 public class CartoonSymbol {
 
     private int symbolNumber;
+    private String sseType;
     private double cartoonX;
     private double cartoonY;
-    private String sseType;
     private char direction;
     private int radius;
     private int[] colour;
     private boolean fill;
     private String label;
     private List<Point2d> connections;
-    private double SymbolRadius;
     private boolean symbolPlaced;
 
     public CartoonSymbol() {
@@ -73,7 +72,7 @@ public class CartoonSymbol {
     
     
     public double getSymbolRadius() {
-        return SymbolRadius;
+        return radius;
     }
     
     public int[] getColor() {

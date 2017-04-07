@@ -267,7 +267,7 @@ public class LayoutSheet implements TSELayout {
             }
 
             // deal with cases where there are split strands
-            splitStrands(chain, p, maxListLen);
+            splitStrands(chain, p);
         }
     }
     
@@ -289,13 +289,13 @@ public class LayoutSheet implements TSELayout {
         this.splitSheet(chain, p, startUpperList, startLowerList, startXPos, -1);
     }
     
-    private void splitStrands(Chain chain, SSE p, int maxListLen) {
+    private void splitStrands(Chain chain, SSE p) {
         for (SSE r : chain.iterFixed(p)) {
             
             List<SSE> currentList = chain.getListAtPosition(p, r.getCartoonX(), r.getCartoonY());
 
             if (currentList.size() > 1) { 
-                SSE bp = getCommonBP(currentList, maxListLen);
+                SSE bp = getCommonBP(currentList);
                 if (bp != null) {
                     sortListByBridgeRange(bp, currentList);
                     this.spreadList(currentList, bp.getDirection());
@@ -304,10 +304,24 @@ public class LayoutSheet implements TSELayout {
         }
     }
     
-    private SSE getCommonBP(List<SSE> currentList, int MaxListLen) {
+    private SSE getCommonBP(List<SSE> currentList) {
         SSE start = currentList.get(0);
         if (start == null) return null;
-        return SSE.getCommonBP(start, currentList);
+      
+        for (int i = 0; i < start.getBridgePartners().size(); i++) {
+            BridgePartner commonBridgePartner = start.getBridgePartners().get(i);
+            boolean isCommonBP = true;
+            for (int j = 1; j < currentList.size(); j++) {
+                if (!commonBridgePartner.partner.hasBridgePartner(currentList.get(j))) {
+                    isCommonBP = false;
+                    break;
+                }
+            }
+            if (isCommonBP) {
+                return commonBridgePartner.partner;
+            }
+        }
+        return null;
     }
     
     
