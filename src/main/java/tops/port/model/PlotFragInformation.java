@@ -19,19 +19,19 @@ public class PlotFragInformation {
         }
     }
     
-    public char getFragmentChainLimit0(int index) {
+    public char getStartFragmentChainLimit(int index) {
         return fragmentChainLimits[index][0];
     }
     
-    public char getFragmentChainLimit1(int index) {
+    public char getEndFragmentChainLimit(int index) {
         return fragmentChainLimits[index][1];
     }
     
-    public int getFragmentResidueLimit0(int index) {
+    public int getStartFragmentResidueLimit(int index) {
         return fragmentResidueLimits[index][0];
     }
     
-    public int getFragmentResidueLimit1(int index) {
+    public int getEndFragmentResidueLimit(int index) {
         return fragmentResidueLimits[index][1];
     }
     
@@ -39,19 +39,19 @@ public class PlotFragInformation {
         this.fragmentDomains[index] = domain;
     }
     
-    public void setChainLim0(int index, char chain) {
+    public void setStartChainLim(int index, char chain) {
         this.fragmentChainLimits[index][0] = chain;
     }
     
-    public void setChainLim1(int index, char chain) {
+    public void setEndChainLim(int index, char chain) {
         this.fragmentChainLimits[index][1] = chain;
     }
     
-    public void setResLim0(int index, int residueNumber) {
+    public void setStartResLim(int index, int residueNumber) {
         this.fragmentResidueLimits[index][0] = residueNumber;
     }
     
-    public void setResLim1(int index, int residueNumber) {
+    public void setEndResLim(int index, int residueNumber) {
         this.fragmentResidueLimits[index][1] = residueNumber;
     }
     

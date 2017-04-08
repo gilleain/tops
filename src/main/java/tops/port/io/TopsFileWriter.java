@@ -12,6 +12,7 @@ import tops.port.model.DomainDefinition;
 import tops.port.model.Neighbour;
 import tops.port.model.Protein;
 import tops.port.model.SSE;
+import tops.port.model.Segment;
 
 public class TopsFileWriter {
     
@@ -26,19 +27,17 @@ public class TopsFileWriter {
     public void writeTOPSFile(String filename, List<Cartoon> cartoons,
              Protein protein, List<DomainDefinition> domains) throws FileNotFoundException {
 
-        int i, j;
         PrintStream out = new PrintStream(new FileOutputStream(filename));
         DomainDefinition dompt;
 
         writeTOPSHeader(out, protein.getProteinCode(), cartoons.size());
 
-        for (i = 0; i < cartoons.size(); i++) {
+        for (int i = 0; i < cartoons.size(); i++) {
             dompt = domains.get(i);
             out.print(String.format("DOMAIN_NUMBER %d %s", i, dompt.getCode()));
-            for (j = 0; j < dompt.getNumberOfSegments(); j++)
-                out.print(
-                  String.format(" %d %d", dompt.getStartSegmentIndex(j), dompt.getEndSegmentIndex(j))
-                );
+            for (Segment segment : dompt.getSegments()) {
+                out.print(String.format(" %d %d", segment.startIndex, segment.endIndex));
+            }
             out.println();
             appendLinkedList(out, cartoons.get(i));
             out.println();

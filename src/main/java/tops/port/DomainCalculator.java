@@ -185,8 +185,8 @@ public class DomainCalculator {
         nf = 1;
         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
             plotFragmentInformation.setNumberOfFragments(nf);
-            plotFragmentInformation.setChainLim0(nf - 1, sse.getChain());
-            plotFragmentInformation.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
+            plotFragmentInformation.setStartChainLim(nf - 1, sse.getChain());
+            plotFragmentInformation.setStartResLim(nf - 1, sse.sseData.PDBStartResidue);
             plotFragmentInformation.setFragDomain(nf - 1, lastDomain + 1);
         }
     
@@ -211,8 +211,8 @@ public class DomainCalculator {
                         lastCTerm.domainBreakType = DomainBreakType.NC_DOM_BREAK;
                     }
     
-                    plotFragmentInformation.setChainLim1(nf - 1, lastCTerm.getChain());
-                    plotFragmentInformation.setResLim1(nf - 1, lastCTerm.sseData.PDBFinishResidue);
+                    plotFragmentInformation.setEndChainLim(nf - 1, lastCTerm.getChain());
+                    plotFragmentInformation.setEndResLim(nf - 1, lastCTerm.sseData.PDBFinishResidue);
     
                     domain = -1;
                     while (sse != null && domain < 0) {
@@ -227,8 +227,8 @@ public class DomainCalculator {
                         nf++;
                         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
                             plotFragmentInformation.setNumberOfFragments(nf);
-                            plotFragmentInformation.setChainLim0(nf - 1, sse.getChain());
-                            plotFragmentInformation.setResLim0(nf - 1, sse.sseData.PDBStartResidue);
+                            plotFragmentInformation.setStartChainLim(nf - 1, sse.getChain());
+                            plotFragmentInformation.setStartResLim(nf - 1, sse.sseData.PDBStartResidue);
                             plotFragmentInformation.setFragDomain(nf - 1, domain + 1);
                         }
                     }
@@ -276,7 +276,7 @@ public class DomainCalculator {
      * Function to set up a new linked list corresponding to a given domain XXX
      * now returns the new root
      */
-    public Cartoon setDomain(List<SSE> OriginalRoot, Protein protein, DomainDefinition domain) {
+    public Cartoon setDomain(List<SSE> originalSSEList, Protein protein, DomainDefinition domain) {
 
         int numberStructures;
         int domBreakNum = 0;
@@ -284,10 +284,9 @@ public class DomainCalculator {
         Map<SSE, SSE> copyTable = new HashMap<SSE, SSE>();
 
         /* this loop decides which structures to copy and copies attributes */
-        boolean FIRST = true;
         numberStructures = -1;
-        List<SSE> newRoot = new ArrayList<SSE>();
-        for (SSE r : OriginalRoot) {
+        List<SSE> sses = new ArrayList<SSE>();
+        for (SSE r : originalSSEList) {
 
             DomainId domainId = ssIsInDomain(protein, r, domain);
             if (domainId.segment != -1) {
@@ -302,11 +301,7 @@ public class DomainCalculator {
 
                     numberStructures++;
                     SSE q = new SSE(SSEType.NTERMINUS);
-
-                    if (FIRST) {
-                        newRoot.add(q); // XXX TODO - shouldn't be conditional on FIRST?
-                        FIRST = false;
-                    }
+                    sses.add(q);
                     q.setSymbolPlaced(true);
                     q.setSymbolNumber(numberStructures);
                     q.setLabel("N" + domBreakNum);
@@ -326,7 +321,7 @@ public class DomainCalculator {
                     SSE cp = ChiralityCalculator.topsChiralPartner(chain, r);
                     if ((r.Chirality != Hand.NONE) && (cp != null)) {
 //                        for (s = r; s != cp; s = s.To) {
-                        for (SSE s : OriginalRoot) {    // TODO - incorrect: should be range(r, cp)?
+                        for (SSE s : originalSSEList) {    // TODO - incorrect: should be range(r, cp)?
                             if (s.domainBreakType == C_DOM_BREAK || s.domainBreakType == NC_DOM_BREAK) {
                                 q.Chirality = Hand.NONE;
                                 break;
@@ -356,7 +351,7 @@ public class DomainCalculator {
          * to equivalent in new list
          */
 
-        for (SSE q : newRoot) {
+        for (SSE q : sses) {
             if (q.hasFixed())
                 q.setFixed(copyTable.get(q.getFixed()));
             //                for (BridgePartner bridgePartner : q.getBridgePartners()) {
@@ -368,7 +363,7 @@ public class DomainCalculator {
         }
 
         /* Now re-set the root */
-        return new Cartoon(newRoot);
+        return new Cartoon(sses);
     }
     
     /*
@@ -499,7 +494,7 @@ public class DomainCalculator {
         int segment = -1;
 
         /* First check the element passed in */
-        segment = singleSSIsInDomain(p, domain);
+        segment = domain.getSegmentForSSE(chain, p);
         if (segment > 0) {
             exclusionType = 0;
             return new DomainId(segment, -1, exclusionType);
@@ -507,7 +502,7 @@ public class DomainCalculator {
 
         /* Now check the whole associated fixed list */
         for (p = chain.findFixedStart(p); p != null; p = p.getFixed()) {
-            segment = singleSSIsInDomain(p, domain);
+            segment = domain.getSegmentForSSE(chain, p);
             if (segment > 0) {
                 exclusionType = 1;
                 return new DomainId(segment, -1, exclusionType);
@@ -525,37 +520,5 @@ public class DomainCalculator {
         }
         return new DomainId(-1, -1, -1);
     }
-
-    private int singleSSIsInDomain(SSE p, DomainDefinition Domain) {
-
-        int i;
-        char chain = p.getChain();
-        int PDBStart = p.sseData.PDBStartResidue;
-        int PDBFinish = p.sseData.PDBFinishResidue;
-
-        for (i = 0; i < Domain.getNumberOfSegments(); i++) {
-
-            if (Domain.is(SEGMENT_SET)) {
-                if (chain == Domain.getStartSegmentChain(i) && chain == Domain.getEndSegmentChain(i)) {
-                    if (PDBStart >= Domain.getStartSegmentIndex(i) && PDBFinish <= Domain.getEndSegmentIndex(i)) {
-                        return i;
-                    }
-                } else if (chain == Domain.getStartSegmentChain(i)) {
-                    if (PDBStart >= Domain.getStartSegmentIndex(i)) {
-                        return i;
-                    }
-                } else if (chain == Domain.getEndSegmentChain(i)) {
-                    if (PDBFinish <= Domain.getEndSegmentIndex(i)) {
-                        return i;
-                    }
-                }
-            } else if (Domain.is(DomainDefinition.DomainType.CHAIN_SET)) {
-                if (chain == Domain.getStartSegmentChain(i) || chain == Domain.getEndSegmentChain(i)) {
-                    return i;
-                }
-            }
-
-        }
-        return -1;
-    }
+    
 }

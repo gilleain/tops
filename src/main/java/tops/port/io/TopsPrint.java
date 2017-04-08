@@ -250,12 +250,12 @@ public class TopsPrint {
         for (int i = 0; i < pfi.getNumberOfFragments(); i++) {
             buffer.append('N');
             buffer.append(i + 1);
-            buffer.append(pfi.getFragmentChainLimit0(i));
-            buffer.append(pfi.getFragmentResidueLimit0(i));
+            buffer.append(pfi.getStartFragmentChainLimit(i));
+            buffer.append(pfi.getStartFragmentResidueLimit(i));
             buffer.append('C');
             buffer.append(i + 2);
-            buffer.append(pfi.getFragmentChainLimit1(i));
-            buffer.append(pfi.getFragmentResidueLimit1(i));
+            buffer.append(pfi.getEndFragmentChainLimit(i));
+            buffer.append(pfi.getEndFragmentResidueLimit(i));
 
             PrintText(buffer.toString(), xpos, y);
             y = y - 0.5;

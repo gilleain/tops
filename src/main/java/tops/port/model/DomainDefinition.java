@@ -39,6 +39,36 @@ public class DomainDefinition {
         segments.add(new Segment(startChainId, startIndex, endChainId, endIndex));
     }
     
+    public int getSegmentForSSE(Chain chain, SSE sse) {
+        char chainName = chain.getName();
+        int PDBStart = sse.sseData.PDBStartResidue;
+        int PDBFinish = sse.sseData.PDBFinishResidue;
+        
+        int segmentIndex = 0;
+        for (Segment segment : segments) {
+            if (is(SEGMENT_SET)) {
+                if (chainName == segment.startChain && chainName == segment.endChain) {
+                    if (PDBStart >= segment.startIndex && PDBFinish <= segment.endIndex) {
+                        return segmentIndex;
+                    }
+                } else if (chainName == segment.startChain) {
+                    if (PDBStart >= segment.startIndex) {
+                        return segmentIndex;
+                    }
+                } else if (chainName == segment.endChain) {
+                    if (PDBFinish <= segment.endIndex) {
+                        return segmentIndex;
+                    }
+                }
+            } else if (is(CHAIN_SET)) {
+                if (chainName == segment.startChain || chainName == segment.endChain) {
+                    return segmentIndex;
+                }
+            }
+        }
+        return -1;
+    }
+    
     public boolean hasResidues(Protein protein, DomDefError ddep) {
         for (Segment segment : segments) {
             if (!check(protein, segment.startIndex, segment.startChain, ddep)) {
@@ -93,27 +123,9 @@ public class DomainDefinition {
         return this.domainType == type;
     }
     
-    public char getStartSegmentChain(int index) {
-        return segments.get(index).startChain;
-    }
-    
-    public char getEndSegmentChain(int index) {
-        return segments.get(index).endChain;
-    }
-    
-    public int getStartSegmentIndex(int index) {
-        return segments.get(index).startIndex;
-    }
-    
-    public int getEndSegmentIndex(int index) {
-        return segments.get(index).endIndex;
-    }
-    
-    
     public int getNumberOfSegments() {
         return segments.size(); 
     }
-    
 
     public boolean resIsInDomain(int pdbRes, char pdbChain) {
 
