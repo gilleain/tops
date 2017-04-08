@@ -14,6 +14,7 @@ import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
+import tops.port.model.Direction;
 import tops.port.model.DomainDefinition;
 import tops.port.model.DomainDefinition.DomainType;
 import tops.port.model.SSEType;
@@ -92,7 +93,7 @@ public class TopsFileReader {
                 } else if (firstToken.equals("Direction")) {
                     if (nTokens != 2)
                         throw new TopsFileFormatException();
-                    currentSS.setDirection(st.nextToken());
+                    currentSS.setDirection(Direction.fromString(st.nextToken()));
                 } else if (firstToken.equals("Label")) {
                     if (nTokens > 1) {
                         currentSS.setLabel(st.nextToken());

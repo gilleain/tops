@@ -1,5 +1,8 @@
 package tops.web.display.applet;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UNKNOWN;
+import static tops.port.model.Direction.UP;
 import static tops.port.model.SSEType.COIL;
 import static tops.port.model.SSEType.CTERMINUS;
 import static tops.port.model.SSEType.EXTENDED;
@@ -30,6 +33,7 @@ import tops.dw.editor.UserArrow;
 import tops.dw.editor.UserLabel;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.Direction;
 import tops.port.model.SSEType;
 
 /**
@@ -462,13 +466,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 break;
 
             case ADD_STRAND_MODE:
-                this.addSymbol(EXTENDED, "U", pos.x, pos.y);
+                this.addSymbol(EXTENDED, UP, pos.x, pos.y);
                 this.repaint();
                 this.setEditMode(TopsDrawCanvas.MOVE_STRAND_MODE);
                 break;
 
             case ADD_HELIX_MODE:
-                this.addSymbol(HELIX, "U", pos.x, pos.y);
+                this.addSymbol(HELIX, UP, pos.x, pos.y);
                 this.repaint();
                 this.setEditMode(TopsDrawCanvas.MOVE_HELIX_MODE);
                 break;
@@ -784,7 +788,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         this.SelectedSymbol = null;
     }
 
-    public void addSymbol(SSEType type, String direction, int x, int y) {
+    public void addSymbol(SSEType type, Direction direction, int x, int y) {
         System.out.println("adding symbol : " + type + ", " + direction
                 + " at (" + x + ", " + y + ")");
         this.SelectedSymbol = cartoon.addSymbol(type, direction, x, y, SelectedSymbol);
@@ -1095,7 +1099,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * private method to draw a strand symbol (triangle, pointing up or down
      * according to strand direction )
      */
-    private void DrawStrand(int x, int y, int r, String dir, Color c, Graphics g) {
+    private void DrawStrand(int x, int y, int r, Direction direction, Color c, Graphics g) {
 
         Polygon triangle = new Polygon();
 
@@ -1106,7 +1110,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         int rsinpi6 = (int) (r * sinpi6);
         int rcospi6 = (int) (r * cospi6);
 
-        if (dir.equals("D")) {
+        if (direction == DOWN) {
             triangle.addPoint(x, y + r);
             triangle.addPoint(x - rcospi6, y - rsinpi6);
             triangle.addPoint(x + rcospi6, y - rsinpi6);
@@ -1210,18 +1214,18 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             Point pointTo = connectionEnum.next();
 
             this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    pointTo, "*", COIL, 0, GraphicsOutput);
+                    pointTo, UNKNOWN, COIL, 0, GraphicsOutput);
 
             Point pointFrom;
             while (connectionEnum.hasNext()) {
                 pointFrom = pointTo;
                 pointTo = connectionEnum.next();
-                this.JoinPoints(pointFrom, "*", COIL, 0, pointTo, "*", COIL, 0,
+                this.JoinPoints(pointFrom, UNKNOWN, COIL, 0, pointTo, UNKNOWN, COIL, 0,
                         GraphicsOutput);
             }
 
             pointFrom = pointTo;
-            this.JoinPoints(pointFrom, "*", COIL, 0, To.getPosition(), To.getDirection(),
+            this.JoinPoints(pointFrom, UNKNOWN, COIL, 0, To.getPosition(), To.getDirection(),
                     To.getType(), ToScreenR, GraphicsOutput);
 
         }
@@ -1236,8 +1240,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * lines go from and the centre of the symbols except in certain cases when
      * they are drawn to/from the boundary
      */
-    private void JoinPoints(Point p1, String Dir1, SSEType sseType, int Radius1,
-            Point p2, String Dir2, SSEType sseType2, int Radius2,
+    private void JoinPoints(Point p1, Direction direction, SSEType sseType, int Radius1,
+            Point p2, Direction direction2, SSEType sseType2, int Radius2,
             Object GraphicsOutput) {
 
         Point To, From;
@@ -1246,7 +1250,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * draw from border rather than centre if direction is down (D) or if
          * Type is N or C
          */
-        if (Dir1.equals("D") || sseType == CTERMINUS || sseType == NTERMINUS) {
+        if (direction == DOWN || sseType == CTERMINUS || sseType == NTERMINUS) {
             if (sseType == SSEType.EXTENDED) {
                 From = this.DownTriangleBorder(p1, p2, Radius1);
             } else {
@@ -1260,7 +1264,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          * draw to border rather than centre if direction is up (U) or if Type
          * is N or C
          */
-        if (Dir2.equals("U") || sseType2.equals("C") || sseType2.equals("N")) {
+        if (direction == UP || sseType2 == CTERMINUS || sseType2 == NTERMINUS) {
             if (sseType2.equals("E")) {
                 To = this.UpTriangleBorder(p2, p1, Radius2);
             } else {

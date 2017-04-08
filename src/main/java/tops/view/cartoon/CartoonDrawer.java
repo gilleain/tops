@@ -1,5 +1,6 @@
 package tops.view.cartoon;
 
+import static tops.port.model.Direction.DOWN;
 import static tops.port.model.SSEType.CTERMINUS;
 import static tops.port.model.SSEType.EXTENDED;
 import static tops.port.model.SSEType.HELIX;
@@ -16,6 +17,7 @@ import java.util.Iterator;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
+import tops.port.model.Direction;
 import tops.view.cartoon.builder.IMGBuilder;
 import tops.view.cartoon.builder.PDFBuilder;
 import tops.view.cartoon.builder.PSBuilder;
@@ -230,7 +232,7 @@ public class CartoonDrawer {
         this.builder.drawHelix(x, y, r, c); // facade?
     }
 
-    private void drawStrand(int x, int y, int r, String dir, Color c) {
+    private void drawStrand(int x, int y, int r, Direction direction, Color c) {
 
         double pi6 = Math.PI / 6.0;
         double cospi6 = Math.cos(pi6);
@@ -243,7 +245,7 @@ public class CartoonDrawer {
         int leftX, leftY;
         int rightX, rightY;
 
-        if (dir.equals("D")) {
+        if (direction == DOWN) {
             pointX = x;
             pointY = y + r;
             leftX = x - rcospi6;

@@ -14,6 +14,7 @@ import java.util.Vector;
 import javax.vecmath.Vector3d;
 
 import tops.port.model.Axis;
+import tops.port.model.Direction;
 import tops.port.model.SSEData;
 import tops.port.model.SSEType;
 
@@ -24,7 +25,7 @@ public class SecStrucElement {
 
     private SSEType type;
 
-    private String direction;
+    private Direction direction;
     
     private SSEData sseData;
     
@@ -259,11 +260,11 @@ public class SecStrucElement {
 		this.type = type;
 	}
 
-	public String getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
 
-	public void setDirection(String direction) {
+	public void setDirection(Direction direction) {
 		this.direction = direction;
 	}
 

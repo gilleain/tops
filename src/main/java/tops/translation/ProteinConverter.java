@@ -1,5 +1,7 @@
 package tops.translation;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UP;
 import static tops.port.model.SSEType.EXTENDED;
 import static tops.port.model.SSEType.HELIX;
 
@@ -11,8 +13,8 @@ import tops.dw.protein.CATHcode;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
-import tops.port.model.SSEType;
 import tops.port.model.DomainDefinition.DomainType;
+import tops.port.model.SSEType;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
 import tops.translation.model.Helix;
@@ -61,9 +63,9 @@ public class ProteinConverter {
 				s.setType(SSEType.fromCode(String.valueOf(type)));
 			}
 			if (backboneSegment.getOrientation().equals("UP")) {
-				s.setDirection("UP");
+				s.setDirection(UP);
 			} else {
-				s.setDirection("DOWN");
+				s.setDirection(DOWN);
 			}
 			s.setPDBStartResidue(backboneSegment.firstPDB());
 			s.setPDBFinishResidue(backboneSegment.lastPDB());

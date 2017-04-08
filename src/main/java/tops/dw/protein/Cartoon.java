@@ -1,5 +1,8 @@
 package tops.dw.protein;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UNKNOWN;
+import static tops.port.model.Direction.UP;
 import static tops.port.model.SSEType.COIL;
 import static tops.port.model.SSEType.CTERMINUS;
 import static tops.port.model.SSEType.EXTENDED;
@@ -20,6 +23,7 @@ import java.util.Vector;
 
 import tops.dw.editor.Annotation;
 import tops.dw.editor.PostscriptFactory;
+import tops.port.model.Direction;
 import tops.port.model.SSEType;
 
 public class Cartoon {
@@ -76,7 +80,7 @@ public class Cartoon {
         return size;
     }
     
-    public SecStrucElement addSymbol(SSEType type, String direction, int x, int y, SecStrucElement selectedSymbol) {
+    public SecStrucElement addSymbol(SSEType type, Direction direction, int x, int y, SecStrucElement selectedSymbol) {
         int defaultSeparation = 30; // ARBITRARY!
         int defaultRadius = 10; // ARBITRARY!
         
@@ -90,14 +94,14 @@ public class Cartoon {
             // make N and C terminii
             SecStrucElement nTerminus = new SecStrucElement();
             nTerminus.setType(NTERMINUS);
-            nTerminus.setDirection("U");
+            nTerminus.setDirection(UP);
             nTerminus.setLabel("N");
             nTerminus.placeElement(x - defaultSeparation, y); // ARBITRARY!
             nTerminus.setSymbolRadius(defaultRadius);
 
             SecStrucElement cTerminus = new SecStrucElement();
             cTerminus.setType(CTERMINUS);
-            cTerminus.setDirection("U");
+            cTerminus.setDirection(UP);
             cTerminus.setLabel("C");
             cTerminus.placeElement(x + defaultSeparation, y); // ARBITRARY!
             cTerminus.setSymbolRadius(defaultRadius);
@@ -136,10 +140,10 @@ public class Cartoon {
     }
 
     public void flip(SecStrucElement s) {
-        if (s.getDirection().equals("U")) {
-            s.setDirection("D");
-        } else if (s.getDirection().equals("D")) {
-            s.setDirection("U");
+        if (s.getDirection() == UP) {
+            s.setDirection(DOWN);
+        } else if (s.getDirection() == DOWN) {
+            s.setDirection(UP);
         }
     }
     
@@ -467,18 +471,18 @@ public class Cartoon {
             Point pointTo = connections.next();
 
             this.joinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    pointTo, "*", COIL, 0, GraphicsOutput);
+                    pointTo, UNKNOWN, COIL, 0, GraphicsOutput);
 
             Point pointFrom;
             while (connections.hasNext()) {
                 pointFrom = pointTo;
                 pointTo = connections.next();
-                this.joinPoints(pointFrom, "*", COIL, 0, pointTo, "*", COIL, 0,
+                this.joinPoints(pointFrom, UNKNOWN, COIL, 0, pointTo, UNKNOWN, COIL, 0,
                         GraphicsOutput);
             }
 
             pointFrom = pointTo;
-            this.joinPoints(pointFrom, "*", COIL, 0, t.getPosition(), t.getDirection(),
+            this.joinPoints(pointFrom, UNKNOWN, COIL, 0, t.getPosition(), t.getDirection(),
                     t.getType(), ToScreenR, GraphicsOutput);
 
         }
@@ -491,8 +495,8 @@ public class Cartoon {
      * lines go from and the centre of the symbols except in certain cases when
      * they are drawn to/from the boundary
      */
-    private void joinPoints(Point p1, String Dir1, SSEType sseType, int Radius1,
-            Point p2, String Dir2, SSEType sseType2, int Radius2,
+    private void joinPoints(Point p1, Direction direction, SSEType sseType, int Radius1,
+            Point p2, Direction direction2, SSEType sseType2, int Radius2,
             Object GraphicsOutput) {
 
         Point To, From;
@@ -501,7 +505,7 @@ public class Cartoon {
          * draw from border rather than centre if direction is down (D) or if
          * Type is N or C
          */
-        if (Dir1.equals("D") || sseType.equals("C") || sseType.equals("N")) {
+        if (direction.equals("D") || sseType.equals("C") || sseType.equals("N")) {
             if (sseType.equals("E")) {
                 From = this.downTriangleBorder(p1, p2, Radius1);
             } else {
@@ -515,7 +519,7 @@ public class Cartoon {
          * draw to border rather than centre if direction is up (U) or if Type
          * is N or C
          */
-        if (Dir2.equals("U") || sseType2.equals("C") || sseType2.equals("N")) {
+        if (direction2.equals("U") || sseType2.equals("C") || sseType2.equals("N")) {
             if (sseType2.equals("E")) {
                 To = this.upTriangleBorder(p2, p1, Radius2);
             } else {
@@ -751,7 +755,7 @@ public class Cartoon {
      * private method to draw a strand symbol (triangle, pointing up or down
      * according to strand direction )
      */
-    private void drawStrand(int x, int y, int r, String dir, Color c, Graphics g) {
+    private void drawStrand(int x, int y, int r, Direction direction, Color c, Graphics g) {
 
         Polygon triangle = new Polygon();
 
@@ -762,7 +766,7 @@ public class Cartoon {
         int rsinpi6 = (int) (r * sinpi6);
         int rcospi6 = (int) (r * cospi6);
 
-        if (dir.equals("D")) {
+        if (direction == DOWN) {
             triangle.addPoint(x, y + r);
             triangle.addPoint(x - rcospi6, y - rsinpi6);
             triangle.addPoint(x + rcospi6, y - rsinpi6);
@@ -786,10 +790,10 @@ public class Cartoon {
 
     public void reflectXY() {
         for (SecStrucElement s : sses) {
-            if (s.getDirection().equals("D")) {
-                s.setDirection("U");
-            } else if (s.getDirection().equals("U")) {
-                s.setDirection("D");
+            if (s.getDirection() == DOWN) {
+                s.setDirection(UP);
+            } else if (s.getDirection().equals(UP)) {
+                s.setDirection(DOWN);
             }
         }
     }

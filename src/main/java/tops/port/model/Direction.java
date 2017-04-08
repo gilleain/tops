@@ -7,11 +7,20 @@ public enum Direction {
     
     private char c;
     
-    private Direction(char c) {
+    Direction(char c) {
         this.c = c;
     }
     
     public String toString() {
         return String.valueOf(c);
+    }
+    
+    public static Direction fromString(String d) {
+        for (Direction direction : Direction.values()) {
+            if (direction.c == d.charAt(0)) {
+                return direction;
+            }
+        }
+        return null;
     }
 }
