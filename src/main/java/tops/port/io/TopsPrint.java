@@ -1,5 +1,9 @@
 package tops.port.io;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UNKNOWN;
+import static tops.port.model.Direction.UP;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -12,6 +16,7 @@ import tops.port.IntersectionCalculator;
 import tops.port.IntersectionCalculator.Intersection;
 import tops.port.IntersectionCalculator.IntersectionType;
 import tops.port.model.Cartoon;
+import tops.port.model.Direction;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.SSE;
 import tops.port.model.SSEType;
@@ -276,7 +281,7 @@ public class TopsPrint {
                 switch (p.getSSEType()) {
                     case EXTENDED:
                         MakeObject(
-                                p.getDirection() == 'U' ? "UpTriangle" : "DownTriangle",
+                                p.getDirection() == UP ? "UpTriangle" : "DownTriangle",
                                 3, Verbatim(1.0 - (p.getFill()? 0 : 1)), /// XXX Fill?
                                 PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
                         break;
@@ -310,7 +315,7 @@ public class TopsPrint {
                                     PSxy(prev.getCartoonY()),
                                     PSxy(prev.getConnectionTo(0).x),
                                     PSxy(prev.getConnectionTo(0).y),
-                                    prev.getDirection(), '*',
+                                    prev.getDirection(), UNKNOWN,
                                     prev.getSSEType(),
                                     p.getSSEType());
 
@@ -319,14 +324,14 @@ public class TopsPrint {
                                         PSxy(prev.getConnectionTo(i).y),
                                         PSxy(prev.getConnectionTo(i + 1).x),
                                         PSxy(prev.getConnectionTo(i + 1).y),
-                                        '*', '*', prev.getSSEType(),
+                                        UNKNOWN, UNKNOWN, prev.getSSEType(),
                                         p.getSSEType());
                             }
 
                             JoinPoints(PSxy(prev.getConnectionTo(ncp - 1).x),
                                     PSxy(prev.getConnectionTo(ncp - 1).y),
                                     PSxy(p.getCartoonX()),
-                                    PSxy(p.getCartoonY()), '*', p.getDirection(),
+                                    PSxy(p.getCartoonY()), UNKNOWN, p.getDirection(),
                                     prev.getSSEType(),
                                     p.getSSEType());
 
@@ -509,15 +514,15 @@ public class TopsPrint {
      * 
      * Function to join two points
      */
-    private void JoinPoints(double px, double py, double qx, double qy, char pd,
-            char qd, SSEType pt, SSEType qt) {
-        if (pd != 'U' && pd != '*') {
+    private void JoinPoints(double px, double py, double qx, double qy, Direction direction,
+            Direction direction2, SSEType pt, SSEType qt) {
+        if (direction != UP && direction != UNKNOWN) {
             if (pt == SSEType.EXTENDED)
                 CrossDownTriangle(px, py, qx, qy);
             if (pt == SSEType.HELIX)
                 CrossCircle(px, py, qx, qy);
         }
-        if (qd != 'D' && qd != '*') {
+        if (direction2 != DOWN && direction2 != UNKNOWN) {
             if (pt == SSEType.EXTENDED)
                 CrossUpTriangle(qx, qy, px, py);
             if (pt == SSEType.HELIX)

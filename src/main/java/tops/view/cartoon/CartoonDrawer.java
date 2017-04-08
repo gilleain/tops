@@ -16,7 +16,6 @@ import java.util.Iterator;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
-import tops.port.model.SSEType;
 import tops.view.cartoon.builder.IMGBuilder;
 import tops.view.cartoon.builder.PDFBuilder;
 import tops.view.cartoon.builder.PSBuilder;

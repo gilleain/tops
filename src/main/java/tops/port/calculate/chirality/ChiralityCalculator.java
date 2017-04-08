@@ -1,5 +1,7 @@
 package tops.port.calculate.chirality;
 
+import static tops.port.model.Direction.UP;
+
 import javax.vecmath.Vector3d;
 
 import tops.port.model.Axis;
@@ -29,8 +31,11 @@ public class ChiralityCalculator {
         Hand lasthand = Hand.UNKNOWN;
 
         Vector3d a, b, c, d;
-        if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
-        else a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
+        if (p.getDirection() == UP) {
+            a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
+        } else {
+            a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
+        }
 
         b = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
 

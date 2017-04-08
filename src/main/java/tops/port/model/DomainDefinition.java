@@ -41,8 +41,8 @@ public class DomainDefinition {
     
     public int getSegmentForSSE(Chain chain, SSE sse) {
         char chainName = chain.getName();
-        int PDBStart = sse.sseData.PDBStartResidue;
-        int PDBFinish = sse.sseData.PDBFinishResidue;
+        int PDBStart = sse.sseData.pdbStartResidue;
+        int PDBFinish = sse.sseData.pdbFinishResidue;
         
         int segmentIndex = 0;
         for (Segment segment : segments) {

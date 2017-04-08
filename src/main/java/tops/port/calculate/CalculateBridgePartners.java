@@ -22,8 +22,8 @@ public class CalculateBridgePartners implements Calculation {
         log.log(Level.INFO, "STEP : Calculating bridge partners");
         for (SSE sse : chain.getSSEs()) {
             if (sse.getSSEType() == SSEType.EXTENDED) {
-                int start = sse.sseData.PDBStartResidue;
-                int end = sse.sseData.PDBFinishResidue;
+                int start = sse.sseData.pdbStartResidue;
+                int end = sse.sseData.pdbFinishResidue;
                 for (int index = start; index < end; index++) {
                     typeA(chain, sse, index);
                     typeB(chain, sse, index);

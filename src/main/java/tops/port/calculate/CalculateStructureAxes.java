@@ -24,7 +24,7 @@ public class CalculateStructureAxes implements Calculation {
     public void secondaryStructureAxis(Chain chain, SSE sse) {
         Axis axis = new Axis(
                 chain.secondaryStructureAxis(
-                        sse.sseData.SeqStartResidue, sse.sseData.SeqFinishResidue));
+                        sse.sseData.seqStartResidue, sse.sseData.seqFinishResidue));
         sse.setAxis(axis);
     }
 

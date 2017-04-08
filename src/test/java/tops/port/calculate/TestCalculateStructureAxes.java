@@ -34,8 +34,8 @@ public class TestCalculateStructureAxes {
         chain.addCACoord(new Point3d(8.2, 24.6, 13.1));
         chain.addCACoord(new Point3d(5.1, 25.8, 14.9));
         SSE sse = new SSE(SSEType.HELIX);
-        sse.sseData.SeqStartResidue = 1;
-        sse.sseData.SeqFinishResidue = 10;
+        sse.sseData.seqStartResidue = 1;
+        sse.sseData.seqFinishResidue = 10;
         chain.addSSE(sse);
         return chain;
     }
@@ -49,7 +49,7 @@ public class TestCalculateStructureAxes {
         calculate(chain);
         for (SSE sse : chain.getSSEs()) {
             System.out.println("[" + 
-                    sse.sseData.PDBStartResidue + "-" + sse.sseData.PDBFinishResidue
+                    sse.sseData.pdbStartResidue + "-" + sse.sseData.pdbFinishResidue
                     + " " + sse.axis);
         }
     }

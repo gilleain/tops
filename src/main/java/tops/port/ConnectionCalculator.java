@@ -3,6 +3,7 @@ package tops.port;
 import javax.vecmath.Point2d;
 
 import tops.port.model.Cartoon;
+import tops.port.model.Direction;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
 
@@ -35,7 +36,7 @@ public class ConnectionCalculator {
             double qx = next.getCartoonX();
             double qy = next.getCartoonY();
 
-            double d1 = (sse.getDirection() == 'U')? -1.0 : 1.0;
+            double d1 = (sse.getDirection() == Direction.UP)? -1.0 : 1.0;
         
             double my = r.getCartoonY() + ( d1 * ( PSMALL * Math.abs(px - qx) + radius + nextExtension(ExtensionIndex, Extensions) ));
             double ny = my;

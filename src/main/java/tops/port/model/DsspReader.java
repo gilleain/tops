@@ -179,8 +179,8 @@ public class DsspReader {
     					if (!firstChain) {
     						// finish off the list //
     						if (open) {
-    							p.sseData.SeqFinishResidue = currentResidue - 1;
-    							p.sseData.PDBFinishResidue = lastResidue;
+    							p.sseData.seqFinishResidue = currentResidue - 1;
+    							p.sseData.pdbFinishResidue = lastResidue;
     							q = p;
     						}
     						SSE cTerm = new SSE(CTERMINUS);

@@ -1,5 +1,7 @@
 package tops.port.calculate;
 
+import static tops.port.model.Direction.UP;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -100,8 +102,11 @@ public class CalculateFixedHands implements Calculation {
         Hand lasthand = Hand.UNKNOWN;
 
         Vector3d a, b, c, d;
-        if (p.getDirection() == 'U') a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
-        else a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
+        if (p.getDirection() == UP) {
+            a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
+        } else {
+            a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
+        }
 
         b = new Vector3d(p.getCartoonX(), p.getCartoonY(), 0.0);
 

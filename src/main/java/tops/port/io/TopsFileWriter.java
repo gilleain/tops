@@ -58,8 +58,8 @@ public class TopsFileWriter {
     
     
     private void writeSecStr(Chain chain, SSE sse, PrintStream out) {
-        print(out, "SecondaryStructureType %c\n", sse.getSSEType());
-        print(out, "Direction %c\n", sse.getDirection());
+        print(out, "SecondaryStructureType %s\n", sse.getSSEType());
+        print(out, "Direction %s\n", sse.getDirection());
         print(out, "Label %s\n", sse.getLabel());
         print(out, "Colour %d %d %d\n", 
                 sse.getCartoonSymbol().getColor()[0], 
@@ -137,11 +137,11 @@ public class TopsFileWriter {
         }
         print(out, "\n");
 
-        print(out, "SeqStartResidue %d\n", sse.getSseData().SeqStartResidue);
-        print(out, "SeqFinishResidue %d\n", sse.getSseData().SeqFinishResidue);
+        print(out, "SeqStartResidue %d\n", sse.getSseData().seqStartResidue);
+        print(out, "SeqFinishResidue %d\n", sse.getSseData().seqFinishResidue);
 
-        print(out, "PDBStartResidue %d\n", sse.getSseData().PDBStartResidue);
-        print(out, "PDBFinishResidue %d\n", sse.getSseData().PDBFinishResidue);
+        print(out, "PDBStartResidue %d\n", sse.getSseData().pdbStartResidue);
+        print(out, "PDBFinishResidue %d\n", sse.getSseData().pdbFinishResidue);
 
         print(out, "SymbolNumber %d\n", sse.getSymbolNumber());
 

@@ -14,6 +14,7 @@ import java.util.Vector;
 import javax.vecmath.Vector3d;
 
 import tops.port.model.Axis;
+import tops.port.model.SSEData;
 import tops.port.model.SSEType;
 
 
@@ -24,11 +25,9 @@ public class SecStrucElement {
     private SSEType type;
 
     private String direction;
-
-    private int pdbStartResidue;
-
-    private int pdbFinishResidue;
-
+    
+    private SSEData sseData;
+    
     private String label;
 
     private Color colour;
@@ -47,8 +46,6 @@ public class SecStrucElement {
 
     private List<Integer> neighbour;
 
-    private int seqStartResidue, seqFinishResidue;
-
     private int chirality;
     
     private Axis axis;
@@ -66,7 +63,7 @@ public class SecStrucElement {
     }
     
     public boolean containsResidue(int residueNumber) {
-    	return this.pdbStartResidue <= residueNumber && this.pdbFinishResidue >= residueNumber;
+    	return sseData.pdbStartResidue <= residueNumber && sseData.pdbFinishResidue >= residueNumber;
     }
 
     public void addBridgePartner(int bp) {
@@ -102,19 +99,19 @@ public class SecStrucElement {
     }
 
     public void setSeqStartResidue(int ssr) {
-        this.seqStartResidue = ssr;
+        sseData.seqStartResidue = ssr;
     }
 
     public int getSeqStartResidue() {
-        return this.seqStartResidue;
+        return sseData.seqStartResidue;
     }
 
     public void setSeqFinishResidue(int sfr) {
-        this.seqFinishResidue = sfr;
+        sseData.seqFinishResidue = sfr;
     }
 
     public int getSeqFinishResidue() {
-        return this.seqFinishResidue;
+        return sseData.seqFinishResidue;
     }
 
     public void setChirality(int c) {
@@ -236,7 +233,7 @@ public class SecStrucElement {
     }
 
     public int length() {
-        return this.pdbFinishResidue - this.pdbStartResidue + 1;
+        return sseData.pdbFinishResidue - sseData.pdbStartResidue + 1;
     }
   
     public String getRelDirection(SecStrucElement s) {
@@ -271,19 +268,19 @@ public class SecStrucElement {
 	}
 
 	public int getPDBStartResidue() {
-		return pdbStartResidue;
+		return sseData.pdbStartResidue;
 	}
 
 	public void setPDBStartResidue(int pDBStartResidue) {
-		pdbStartResidue = pDBStartResidue;
+	    sseData.pdbStartResidue = pDBStartResidue;
 	}
 
 	public int getPDBFinishResidue() {
-		return pdbFinishResidue;
+		return sseData.pdbFinishResidue;
 	}
 
 	public void setPDBFinishResidue(int pDBFinishResidue) {
-		pdbFinishResidue = pDBFinishResidue;
+	    sseData.pdbFinishResidue = pDBFinishResidue;
 	}
 
     public String getLabel() {
@@ -309,7 +306,7 @@ public class SecStrucElement {
         }
 
         if (this.type == HELIX || this.type == EXTENDED) {
-            sb.append(" " + pdbStartResidue + " to " + pdbFinishResidue);
+            sb.append(" " + sseData.pdbStartResidue + " to " + sseData.pdbFinishResidue);
         }
 
         return sb.toString();

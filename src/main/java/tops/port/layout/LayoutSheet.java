@@ -1,5 +1,9 @@
 package tops.port.layout;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UNKNOWN;
+import static tops.port.model.Direction.UP;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +13,7 @@ import tops.port.calculate.util.DistanceCalculator;
 import tops.port.model.Bridge;
 import tops.port.model.BridgePartner;
 import tops.port.model.Chain;
+import tops.port.model.Direction;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
 import tops.port.model.tse.BaseTSE;
@@ -18,11 +23,11 @@ public class LayoutSheet implements TSELayout {
     private double gridUnitSize;
 
     private class SeqDirResult {
-        public int SeqDir;
-        public char Dir;
-        public SeqDirResult(int SeqDir, char Dir) {
-            this.SeqDir = SeqDir;
-            this.Dir = Dir;
+        public int seqDir;
+        public Direction direction;
+        public SeqDirResult(int SeqDir, Direction Dir) {
+            this.seqDir = SeqDir;
+            this.direction = Dir;
         }
     }
     
@@ -73,11 +78,11 @@ public class LayoutSheet implements TSELayout {
             // this direction calculation is to ensure that sheets from AB barrels are plotted with the correct chirality """
             SeqDirResult result = this.findSheetSeqDir(chain, start);
             double addDir;
-            if (result.SeqDir == 1) {
-                if (result.Dir == 'D') addDir = 1.0;
+            if (result.seqDir == 1) {
+                if (result.direction == DOWN) addDir = 1.0;
                 else addDir = -1.0;
-            } else if (result.SeqDir == -1) {
-                if (result.Dir=='U') addDir = 1.0;
+            } else if (result.seqDir == -1) {
+                if (result.direction == UP) addDir = 1.0;
                 else addDir = -1.0;
             } else {
                 addDir = 1.0;
@@ -121,9 +126,9 @@ public class LayoutSheet implements TSELayout {
         List<SSE> sseList = chain.getListAtXPosition(Start, CurrXPos);
         if (sseList.size() == 1) prev = sseList.get(0);
 
-        char lastdir = 'X';
+        Direction lastdir = UNKNOWN;
         int lastsdir = 0;
-        char dir = 'X';
+        Direction dir = UNKNOWN;
         int sdir = 0;
         boolean done = false;
 
@@ -144,7 +149,7 @@ public class LayoutSheet implements TSELayout {
                     break;
                 }
             } else {
-                dir = 'X';
+                dir = UNKNOWN;
                 sdir = 0;
             }
 
@@ -157,7 +162,7 @@ public class LayoutSheet implements TSELayout {
             return new SeqDirResult(sdir, dir);
         } else {
 //            System.out.println("find seq dir not done!");
-            return new SeqDirResult(0, ' ');
+            return new SeqDirResult(0, UNKNOWN);
         }
     }
     
@@ -325,7 +330,7 @@ public class LayoutSheet implements TSELayout {
     }
     
     
-    public void spreadList(List<SSE> sseList, char direction) {
+    public void spreadList(List<SSE> sseList, Direction direction) {
         int n = sseList.size();
 
         int span = 0;
@@ -339,7 +344,7 @@ public class LayoutSheet implements TSELayout {
 
         span /= 2;
         int directionMultiplier = 1;
-        if (direction == 'U') {
+        if (direction == UP) {
             span = -1;
             directionMultiplier = -1;
         }

@@ -14,16 +14,16 @@ public class ProsecCalculator implements ChiralityInterface {
 //            a1s = this.MergeRanges[this.Merges - 1][0];
 //            a1f = this.MergeRanges[this.Merges - 1][1];
 //        } else {
-            a1s = sse.sseData.SeqStartResidue;
-            a1f = sse.sseData.SeqFinishResidue;
+            a1s = sse.sseData.seqStartResidue;
+            a1f = sse.sseData.seqFinishResidue;
 //        }
 //
 //        if (other.Merges > 0) {
 //            a2s = other.MergeRanges[0][0];
 //            a2f = other.MergeRanges[0][1];
 //        } else {
-            a2s = other.sseData.SeqStartResidue;
-            a2f = other.sseData.SeqFinishResidue;
+            a2s = other.sseData.seqStartResidue;
+            a2f = other.sseData.seqFinishResidue;
 //        }
 
         return motifChirality(a1s, a1f, a2s, a2f);

@@ -1,5 +1,8 @@
 package tops.port.model;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UP;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +14,7 @@ public class SSE {
     
     private CartoonSymbol cartoonSymbol;
     
-    private char Direction;
+    private Direction direction;
     private SSEType type;                       // H, E, N, C, D 
     private List<BridgePartner> bridgePartners;    // Bridge partners
     
@@ -51,22 +54,22 @@ public class SSE {
     
     public String getSummary() {
         return getSSEType().getOneLetterName() + getSymbolNumber() + " (" 
-                + sseData.PDBStartResidue + ", " + sseData.PDBFinishResidue + ")";  
+                + sseData.pdbStartResidue + ", " + sseData.pdbFinishResidue + ")";  
     }
     
     public boolean contains(int residue) {
-        return (residue >= sseData.PDBStartResidue 
-             && residue <= sseData.PDBFinishResidue);
+        return (residue >= sseData.pdbStartResidue 
+             && residue <= sseData.pdbFinishResidue);
     }
     
     public void setStartPoints(int seqStart, int pdbStart) {
-        sseData.SeqStartResidue = seqStart;
-        sseData.PDBStartResidue = pdbStart;
+        sseData.seqStartResidue = seqStart;
+        sseData.pdbStartResidue = pdbStart;
     }
     
     public void setFinishPoints(int seqEnd, int pdbEnd) {
-        sseData.SeqFinishResidue = seqEnd;
-        sseData.PDBFinishResidue = pdbEnd;
+        sseData.seqFinishResidue = seqEnd;
+        sseData.pdbFinishResidue = pdbEnd;
     }
     
     public List<Neighbour> getNeighbours() {
@@ -185,12 +188,12 @@ public class SSE {
         return this.type == other.type;
     }
     
-    public char getDirection() {
-        return this.Direction;
+    public Direction getDirection() {
+        return this.direction;
     }
     
-    public void setDirection(char direction) {
-        this.Direction = direction;
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 
     public boolean isTerminus() {
@@ -230,14 +233,14 @@ public class SSE {
         }
 
         if (ConnectType == BridgeType.PARALLEL_BRIDGE) {
-            this.Direction = (other.Direction == 'U') ? 'U' : 'D';
+            this.direction = (other.direction == UP) ? UP : DOWN;
         } else if (ConnectType == BridgeType.ANTI_PARALLEL_BRIDGE) {
-            this.Direction = (other.Direction == 'U') ? 'D' : 'U';
+            this.direction = (other.direction == UP) ? DOWN : UP;
         } else {
             if (Math.abs(this.axisTorsion(other)) > 90.0) {
-                this.Direction = (other.Direction == 'U') ? 'D' : 'U';
+                this.direction = (other.direction == UP) ? DOWN : UP;
             } else {
-                this.Direction = (other.Direction == 'U') ? 'U' : 'D';
+                this.direction = (other.direction == UP) ? UP : DOWN;
             }
         }
     }
@@ -298,7 +301,7 @@ public class SSE {
     }
 
     public int SecStrucLength() {
-        return this.sseData.PDBFinishResidue - this.sseData.PDBStartResidue + 1;
+        return this.sseData.pdbFinishResidue - this.sseData.pdbStartResidue + 1;
     }
 
     public SSE getFirstCommonBP(SSE other) {
@@ -445,7 +448,7 @@ public class SSE {
         //sys.stderr.write(this.dump())
         StringBuffer stringRepr = new StringBuffer();
         stringRepr.append(String.format("%s %s\n", "SecondaryStructureType", this.type));
-        stringRepr.append(String.format("%s %s\n", "Direction", this.Direction));
+        stringRepr.append(String.format("%s %s\n", "Direction", this.direction));
         stringRepr.append(String.format("%s %s\n", "Label", this.getLabel()));
         stringRepr.append(String.format("%s %s %s %s\n", "Colour", cartoonSymbol.getColor()[0], cartoonSymbol.getColor()[1], cartoonSymbol.getColor()[2]));
         stringRepr.append(String.format("%s %s\n", "Next", -1));    // blank next
@@ -455,10 +458,10 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "BridgePartnerSide", this.BridgePartnerSides()));
         stringRepr.append(String.format("%s %s\n", "BridgePartnerType", this.BridgePartnerTypes()));
         stringRepr.append(String.format("%s %s\n", "Neighbour", this.NeighbourNumbers()));
-        stringRepr.append(String.format("%s %s\n", "SeqStartResidue", this.sseData.SeqStartResidue));
-        stringRepr.append(String.format("%s %s\n", "SeqFinishResidue", this.sseData.SeqFinishResidue));
-        stringRepr.append(String.format("%s %s\n", "PDBStartResidue", this.sseData.PDBStartResidue));
-        stringRepr.append(String.format("%s %s\n", "PDBFinishResidue", this.sseData.PDBFinishResidue));
+        stringRepr.append(String.format("%s %s\n", "SeqStartResidue", this.sseData.seqStartResidue));
+        stringRepr.append(String.format("%s %s\n", "SeqFinishResidue", this.sseData.seqFinishResidue));
+        stringRepr.append(String.format("%s %s\n", "PDBStartResidue", this.sseData.pdbStartResidue));
+        stringRepr.append(String.format("%s %s\n", "PDBFinishResidue", this.sseData.pdbFinishResidue));
         stringRepr.append(String.format("%s %s\n", "SymbolNumber", this.getSymbolNumber()));
         stringRepr.append(String.format("%s %s\n", "Chain", chain.getName()));
         stringRepr.append(String.format("%s %s\n", "Chirality", chiralToString(this.Chirality)));
@@ -488,7 +491,7 @@ public class SSE {
     }
 
     public String toString() {
-        if (this.Direction == 'U' || (this.type == SSEType.NTERMINUS || this.type == SSEType.CTERMINUS)) {
+        if (this.direction == UP || (this.type == SSEType.NTERMINUS || this.type == SSEType.CTERMINUS)) {
             return String.valueOf(this.type.getOneLetterName());
         } else {   
             return String.valueOf(this.type.getOneLetterName()).toLowerCase();

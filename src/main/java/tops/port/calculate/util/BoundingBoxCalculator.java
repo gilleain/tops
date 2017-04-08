@@ -27,7 +27,7 @@ public class BoundingBoxCalculator {
         for (SSE sse : sheet.getElements()) {
             List<Point3d> sseCoords = 
                     chain.secondaryStructureAxis(
-                            sse.sseData.SeqStartResidue, sse.sseData.SeqFinishResidue);
+                            sse.sseData.seqStartResidue, sse.sseData.seqFinishResidue);
             points.addAll(sseCoords);
         }
         BoundingBox boundingBox = calculate(points);

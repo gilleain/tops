@@ -56,7 +56,7 @@ public class CalculateMergedStrands implements Calculation {
     }
     
     private int getLoopLength(SSE sse, SSE prev) {
-        return sse.sseData.SeqStartResidue - prev.sseData.SeqFinishResidue - 1;
+        return sse.sseData.seqStartResidue - prev.sseData.seqFinishResidue - 1;
     }
     
 
@@ -138,8 +138,8 @@ public class CalculateMergedStrands implements Calculation {
         lastSSE.axis.AxisFinishPoint = (Vector3d)sse.axis.AxisFinishPoint.clone();
 
         // Merge residues - don't include fixed 
-        lastSSE.sseData.SeqFinishResidue = sse.sseData.SeqFinishResidue;
-        lastSSE.sseData.PDBFinishResidue = sse.sseData.PDBFinishResidue;
+        lastSSE.sseData.seqFinishResidue = sse.sseData.seqFinishResidue;
+        lastSSE.sseData.pdbFinishResidue = sse.sseData.pdbFinishResidue;
     }
     
     public void fixNeighbours(Chain chain) {

@@ -1,5 +1,8 @@
 package tops.port.calculate;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UP;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,16 +46,16 @@ public class CalculateDirection implements Calculation {
             if (p != root && p != nextToRoot && p.hasFixed()) {
                 q = prev;
                 if (q.isParallel(p)) {
-                    if (q.getDirection() == 'U') {
-                        p.setDirection('U');
+                    if (q.getDirection() == UP) {
+                        p.setDirection(UP);
                     } else {
-                        p.setDirection('D');
+                        p.setDirection(DOWN);
                     }
                 } else {
-                    if (q.getDirection() == 'U') { 
-                        p.setDirection('D');
+                    if (q.getDirection() == UP) { 
+                        p.setDirection(DOWN);
                     } else { 
-                        p.setDirection('U');
+                        p.setDirection(UP);
                     }
                 }
             }

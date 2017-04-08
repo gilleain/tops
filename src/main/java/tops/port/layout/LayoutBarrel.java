@@ -2,6 +2,7 @@ package tops.port.layout;
 
 import tops.port.model.Bridge;
 import tops.port.model.Chain;
+import tops.port.model.Direction;
 import tops.port.model.FixedType;
 import tops.port.model.SSE;
 import tops.port.model.tse.BaseTSE;
@@ -38,7 +39,7 @@ public class LayoutBarrel implements TSELayout {
 
         SSE p = barrel.get(start);
         SSE lastInBarrel = p;
-        p.setDirection('D');
+        p.setDirection(Direction.DOWN);
         
 //        System.out.println(String.format("make barrel start, nstrands, increment= %s %s %s", start, numberOfStrands, increment));
         int i = start;

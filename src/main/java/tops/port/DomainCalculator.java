@@ -186,7 +186,7 @@ public class DomainCalculator {
         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
             plotFragmentInformation.setNumberOfFragments(nf);
             plotFragmentInformation.setStartChainLim(nf - 1, sse.getChain());
-            plotFragmentInformation.setStartResLim(nf - 1, sse.sseData.PDBStartResidue);
+            plotFragmentInformation.setStartResLim(nf - 1, sse.sseData.pdbStartResidue);
             plotFragmentInformation.setFragDomain(nf - 1, lastDomain + 1);
         }
     
@@ -212,7 +212,7 @@ public class DomainCalculator {
                     }
     
                     plotFragmentInformation.setEndChainLim(nf - 1, lastCTerm.getChain());
-                    plotFragmentInformation.setEndResLim(nf - 1, lastCTerm.sseData.PDBFinishResidue);
+                    plotFragmentInformation.setEndResLim(nf - 1, lastCTerm.sseData.pdbFinishResidue);
     
                     domain = -1;
                     while (sse != null && domain < 0) {
@@ -228,7 +228,7 @@ public class DomainCalculator {
                         if (nf <= PlotFragInformation.MAX_PLOT_FRAGS) {
                             plotFragmentInformation.setNumberOfFragments(nf);
                             plotFragmentInformation.setStartChainLim(nf - 1, sse.getChain());
-                            plotFragmentInformation.setStartResLim(nf - 1, sse.sseData.PDBStartResidue);
+                            plotFragmentInformation.setStartResLim(nf - 1, sse.sseData.pdbStartResidue);
                             plotFragmentInformation.setFragDomain(nf - 1, domain + 1);
                         }
                     }
