@@ -45,6 +45,9 @@ public class SecStrucElement {
     private Axis axis;
 
     public SecStrucElement() {
+        this.cartoonSymbol = new CartoonSymbol();
+        this.sseData = new SSEData();
+        this.axis = new Axis();
         this.connectionTo = new ArrayList<Point>();
         this.bridgePartner = new ArrayList<Integer>();
         this.bridgePartnerSide = new ArrayList<String>();

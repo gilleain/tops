@@ -24,6 +24,10 @@ public class Axis {
         }
     }
     
+    public Axis() {
+        // TODO Auto-generated constructor stub
+    }
+
     private double[][] toDoubleArr(List<Point3d> coords) {  // unpleasant, but still
         double[][] x = new double[coords.size()][3];
         for (int i = 0; i < coords.size(); i++) {

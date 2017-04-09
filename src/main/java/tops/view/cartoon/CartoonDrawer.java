@@ -26,7 +26,7 @@ import tops.view.cartoon.builder.SVGBuilder;
 //the 'director' class for CartoonBuilders
 //usage :
 //	c = new CartoonDrawer();
-//  c.draw("name", "PDF" | "IMG", root);
+//  c.draw("name", "PDF" | "IMG", cartoon);
 //  Obj o = c.getProduct();
 
 public class CartoonDrawer {
@@ -266,8 +266,9 @@ public class CartoonDrawer {
 
     private void drawConnection(SecStrucElement from, SecStrucElement to) {
 
-        if ((from == null))
+        if (from == null) {
             return;
+        }
 
         /* Don't connect from a C terminus or to an N terminus */
         if (from.getType() == CTERMINUS || from.getType() == NTERMINUS) {
@@ -284,7 +285,7 @@ public class CartoonDrawer {
          * draw from border rather than centre if direction is down (D) or if
          * Type is N or C
          */
-        if (from.getDirection().equals("D") || from.getType() == CTERMINUS || from.getType() == NTERMINUS) {
+        if (from.getDirection() == DOWN || from.getType() == CTERMINUS || from.getType() == NTERMINUS) {
             if (from.getType() == EXTENDED) {
                 pointFrom = this.downTriangleBorder(
                         from.getPosition(), to.getPosition(), radiusFrom);
