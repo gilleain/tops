@@ -62,9 +62,9 @@ public class TopsFileWriter {
         print(out, "Direction %s\n", sse.getDirection());
         print(out, "Label %s\n", sse.getLabel());
         print(out, "Colour %d %d %d\n", 
-                sse.getCartoonSymbol().getColor()[0], 
-                sse.getCartoonSymbol().getColor()[1], 
-                sse.getCartoonSymbol().getColor()[2]);
+                sse.getCartoonSymbol().getColor().getRed(), 
+                sse.getCartoonSymbol().getColor().getGreen(), 
+                sse.getCartoonSymbol().getColor().getBlue());
 
         // no longer storing this information
         print(out, "Next -1\n");
@@ -160,7 +160,7 @@ public class TopsFileWriter {
         print(out, " %s", sse.getAxis().AxisFinishPoint);
         print(out, "\n");
 
-        print(out, "SymbolRadius %d\n", sse.getCartoonSymbol().getSymbolRadius());
+        print(out, "SymbolRadius %d\n", sse.getCartoonSymbol().getRadius());
         print(out, "AxisLength %f\n", sse.getAxis().getLength());
         print(out, "NConnectionPoints %d\n", sse.getNConnectionPoints());
         print(out, "ConnectionTo %s\n", sse.Connections());

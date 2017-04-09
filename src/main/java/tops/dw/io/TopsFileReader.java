@@ -315,7 +315,7 @@ public class TopsFileReader {
                             throw new TopsFileFormatException();
                         }
                     }
-                    currentSS.setFill(f);
+                    currentSS.setFill(f == 1? true : false);
                 }
             }
 

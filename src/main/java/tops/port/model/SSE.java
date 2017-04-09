@@ -450,7 +450,10 @@ public class SSE {
         stringRepr.append(String.format("%s %s\n", "SecondaryStructureType", this.type));
         stringRepr.append(String.format("%s %s\n", "Direction", this.direction));
         stringRepr.append(String.format("%s %s\n", "Label", this.getLabel()));
-        stringRepr.append(String.format("%s %s %s %s\n", "Colour", cartoonSymbol.getColor()[0], cartoonSymbol.getColor()[1], cartoonSymbol.getColor()[2]));
+        stringRepr.append(String.format("%s %s %s %s\n", "Colour", 
+                cartoonSymbol.getColor().getRed(), 
+                cartoonSymbol.getColor().getGreen(), 
+                cartoonSymbol.getColor().getBlue()));
         stringRepr.append(String.format("%s %s\n", "Next", -1));    // blank next
         stringRepr.append(String.format("%s %s\n", "Fixed", this.getSymbolNumber(this.fixed)));
         stringRepr.append(String.format("%s %s\n", "FixedType", this.getFixedType()));
@@ -477,7 +480,7 @@ public class SSE {
     }
     
     public int getRadius() {
-        return cartoonSymbol.getSymbolRadius() > 1?  (int)cartoonSymbol.getSymbolRadius() : 10;
+        return cartoonSymbol.getRadius() > 1?  (int)cartoonSymbol.getRadius() : 10;
     }
     
     private String chiralToString(Hand chirality) {
@@ -556,7 +559,7 @@ public class SSE {
     }
 
     public double getSymbolRadius() {
-        return cartoonSymbol.getSymbolRadius();
+        return cartoonSymbol.getRadius();
     }
    
     

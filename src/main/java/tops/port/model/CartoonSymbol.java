@@ -1,5 +1,9 @@
 package tops.port.model;
 
+import static tops.port.model.Direction.DOWN;
+import static tops.port.model.Direction.UP;
+import static tops.port.model.SSEType.HELIX;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,29 +13,29 @@ import javax.vecmath.Point2d;
 public class CartoonSymbol {
 
     private int symbolNumber;
-    private String sseType;
+    private SSEType sseType;
     private double cartoonX;
     private double cartoonY;
-    private char direction;
+    private Direction direction;
     private int radius;
-    private int[] colour;
+    private Color colour;
     private boolean fill;
     private String label;
     private List<Point2d> connections;
     private boolean symbolPlaced;
 
     public CartoonSymbol() {
-        this(0, "H", 'U');
+        this(0, HELIX, UP);
     }
     
-    public CartoonSymbol(int symbolNumber, String sseType, char direction) {
+    public CartoonSymbol(int symbolNumber, SSEType sseType, Direction direction) {
         this.symbolNumber = symbolNumber;
         this.cartoonX = 0;
         this.cartoonY = 0;
         this.sseType = sseType;
         this.direction = direction;
         this.radius = 20;
-        this.colour = new int[] { Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue() };
+        this.colour = Color.BLACK;
         this.fill = false;
         this.label = " ";
         this.connections = new ArrayList<Point2d>();
@@ -71,11 +75,11 @@ public class CartoonSymbol {
     }
     
     
-    public double getSymbolRadius() {
+    public int getRadius() {
         return radius;
     }
     
-    public int[] getColor() {
+    public Color getColor() {
         return this.colour;
     }
     
@@ -96,8 +100,11 @@ public class CartoonSymbol {
     }
 
     public void flip() {
-        if (this.direction == 'U') this.direction = 'D';
-        else this.direction = 'U';
+        if (this.direction == UP) {
+            this.direction = DOWN;
+        } else {
+            this.direction = UP;
+        }
     }
 
     public boolean SamePosition(CartoonSymbol q) {
@@ -126,5 +133,13 @@ public class CartoonSymbol {
 
     public boolean isSymbolPlaced() {
         return this.symbolPlaced;
+    }
+
+    public void setColor(Color c) {
+        this.colour = c;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }

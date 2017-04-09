@@ -14,14 +14,15 @@ import java.util.Vector;
 import javax.vecmath.Vector3d;
 
 import tops.port.model.Axis;
+import tops.port.model.CartoonSymbol;
 import tops.port.model.Direction;
 import tops.port.model.SSEData;
 import tops.port.model.SSEType;
 
 
 public class SecStrucElement {
-
-    private int symbolNumber;
+    
+    private CartoonSymbol cartoonSymbol;
 
     private SSEType type;
 
@@ -29,14 +30,6 @@ public class SecStrucElement {
     
     private SSEData sseData;
     
-    private String label;
-
-    private Color colour;
-
-    private Point position;
-
-    private int symbolRadius;
-
     private List<Point> connectionTo;
 
     private List<Integer> bridgePartner;
@@ -51,16 +44,12 @@ public class SecStrucElement {
     
     private Axis axis;
 
-    private int fill;
-
     public SecStrucElement() {
-        this.position = new Point(0, 0);
         this.connectionTo = new ArrayList<Point>();
         this.bridgePartner = new ArrayList<Integer>();
         this.bridgePartnerSide = new ArrayList<String>();
         this.bridgePartnerType = new ArrayList<String>();
         this.neighbour = new ArrayList<Integer>();
-        this.colour = null;
     }
     
     public boolean containsResidue(int residueNumber) {
@@ -148,60 +137,50 @@ public class SecStrucElement {
         return axis.getLength();
     }
 
-    public void setFill(int f) {
-        this.fill = f;
+    public void setFill(boolean fill) {
+        this.cartoonSymbol.setFill(fill);
     }
 
-    public int getFill() {
-        return this.fill;
+    public boolean getFill() {
+        return this.cartoonSymbol.getFill();
     }
 
     public void placeElement(int x, int y) {
-        if (this.position == null)
-            this.position = new Point(0, 0);
-        this.position.setLocation(x, y);
+        cartoonSymbol.setCartoonX(x);
+        cartoonSymbol.setCartoonY(y);
     }
 
     public void placeElementX(int x) {
-        if (this.position == null)
-            this.position = new Point(0, 0);
-        this.position.x = x;
+        cartoonSymbol.setCartoonX(x);
     }
 
     public void placeElementY(int y) {
-        if (this.position == null)
-            this.position = new Point(0, 0);
-        this.position.y = y;
+        cartoonSymbol.setCartoonY(y);
     }
 
     public Point getPosition() {
-        return this.position;
+        return new Point(
+                (int)cartoonSymbol.getCartoonX(),   // XXX cast 
+                (int)cartoonSymbol.getCartoonY());  // XXX cast
     }
 
     public void setPosition(Point p) {
-        if (this.position == null) {
-            this.position = new Point(p.x, p.y);
-        } else {
-            this.position.x = p.x;
-            this.position.y = p.y;
-        }
+        cartoonSymbol.setCartoonX(p.x);
+        cartoonSymbol.setCartoonY(p.y);
     }
 
     public void translate(int tx, int ty) {
-        if (this.position == null) {
-            this.position = new Point();
-        }
-        this.position.x += tx;
-        this.position.y += ty;
+        cartoonSymbol.setCartoonX(cartoonSymbol.getCartoonX() + tx);
+        cartoonSymbol.setCartoonY(cartoonSymbol.getCartoonY() + ty);
     }
 
 
-    public void setSymbolRadius(int r) {
-        this.symbolRadius = r;
+    public void setSymbolRadius(int radius) {
+        this.cartoonSymbol.setRadius(radius);
     }
 
     public int getSymbolRadius() {
-        return this.symbolRadius;
+        return cartoonSymbol.getRadius();
     }
 
     public void addConnectionTo(int x, int y) {
@@ -245,11 +224,11 @@ public class SecStrucElement {
     }
 
     public int getSymbolNumber() {
-		return symbolNumber;
+		return cartoonSymbol.getSymbolNumber();
 	}
 
 	public void setSymbolNumber(int symbolNumber) {
-		this.symbolNumber = symbolNumber;
+		cartoonSymbol.setSymbolNumber(symbolNumber);
 	}
 
 	public SSEType getType() {
@@ -285,11 +264,11 @@ public class SecStrucElement {
 	}
 
     public String getLabel() {
-		return label;
+		return cartoonSymbol.getLabel();
 	}
 
 	public void setLabel(String label) {
-		this.label = label;
+		this.cartoonSymbol.setLabel(label);
 	}
 
 	@Override
@@ -315,13 +294,11 @@ public class SecStrucElement {
     }
 
     public void setColour(Color c) {
-        this.colour = c;
+        this.cartoonSymbol.setColor(c);
     }
 
     public Color getColour() {
-        return this.colour;
+        return this.cartoonSymbol.getColor();
     }
-
-    /* START I/O methods */
 
 }
