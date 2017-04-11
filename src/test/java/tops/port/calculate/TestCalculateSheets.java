@@ -98,17 +98,17 @@ public class TestCalculateSheets extends TestCalculateBridgePartners {
         assertEquals(4, barrel2.size());
     }
     
-    @Test
-    public void test1IFC() throws IOException {
-        DsspReader dsspReader = new DsspReader();
-        Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
-        Chain chain = protein.getChains().get(0);
-        calculate(chain);
-        for (SSE sse : chain.getSSEs()) {
-            System.out.println(sse.getSymbolNumber() + 
-                    String.format(" at (%s, %s)", sse.getCartoonX(), sse.getCartoonY()));
-        }
-    }
+//    @Test
+//    public void run1IFC() throws IOException {
+//        DsspReader dsspReader = new DsspReader();
+//        Protein protein = 
+//                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+//        Chain chain = protein.getChains().get(0);
+//        calculate(chain);
+//        for (SSE sse : chain.getSSEs()) {
+//            System.out.println(sse.getSymbolNumber() + 
+//                    String.format(" at (%s, %s)", sse.getCartoonX(), sse.getCartoonY()));
+//        }
+//    }
 
 }

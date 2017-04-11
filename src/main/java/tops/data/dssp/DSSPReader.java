@@ -224,7 +224,11 @@ public class DSSPReader {
         if (token.equals("!")) {
             return -99999;
         } else {
-            return Integer.parseInt(token);
+            try {
+                return Integer.parseInt(token);
+            } catch (NumberFormatException n) {
+                return -1;  // TODO
+            }
         }
     }
 }

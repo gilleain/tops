@@ -18,18 +18,18 @@ public class TestCalculateNeighbours extends TestCalculateMergedStrands {
         calculation.calculate(chain);
     }
     
-    @Test
-    public void test1IFC() throws IOException {
-        DsspReader dsspReader = new DsspReader();
-        Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
-        Chain chain = protein.getChains().get(0);
-        calculate(chain);
-        for (SSE sse : chain.getSSEs()) {
-            for (Neighbour neighbour : sse.getNeighbours()) {
-                System.out.println(sse.getSymbolNumber() + " -> " + neighbour);
-            }
-        }
-    }
+//    @Test
+//    public void run1IFC() throws IOException {
+//        DsspReader dsspReader = new DsspReader();
+//        Protein protein = 
+//                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+//        Chain chain = protein.getChains().get(0);
+//        calculate(chain);
+//        for (SSE sse : chain.getSSEs()) {
+//            for (Neighbour neighbour : sse.getNeighbours()) {
+//                System.out.println(sse.getSymbolNumber() + " -> " + neighbour);
+//            }
+//        }
+//    }
 
 }

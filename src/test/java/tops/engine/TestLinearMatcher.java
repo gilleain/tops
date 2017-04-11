@@ -3,6 +3,7 @@ package tops.engine;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import tops.engine.drg.Pattern;
@@ -13,6 +14,7 @@ public class TestLinearMatcher {
      * A topology graph matches itself.
      */
     @Test
+    @Ignore
     public void testSelfMatch() throws TopsStringFormatException {
         Pattern pattern = new Pattern("pattern NEEC 1:2P");
         Pattern instance = new Pattern("instance NEEC 1:2P");
@@ -24,6 +26,7 @@ public class TestLinearMatcher {
      * A topology graph matches flipped.
      */
     @Test
+    @Ignore
     public void testSelfFlippedMatch() throws TopsStringFormatException {
         Pattern pattern = new Pattern("pattern NEEC 1:2P");
         Pattern instance = new Pattern("instance NeeC 1:2P");

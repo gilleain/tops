@@ -121,7 +121,11 @@ public class SecStrucElement {
 
     public double[] getAxesStartPoint() {
         double[] ret = new double[3];
-        this.axis.AxisStartPoint.get(ret);
+        if (axis.AxisStartPoint == null) {
+            ret = new double[] {0, 0, 0};
+        } else {
+            this.axis.AxisStartPoint.get(ret);
+        }
         return ret;
     }
 
@@ -132,7 +136,11 @@ public class SecStrucElement {
 
     public double[] getAxesFinishPoint() {
         double[] ret = new double[3];
-        this.axis.AxisFinishPoint.get(ret);
+        if (axis.AxisFinishPoint == null) {
+            ret = new double[] {0, 0, 0};
+        } else {
+            this.axis.AxisFinishPoint.get(ret);
+        }
         return ret;
     }
 

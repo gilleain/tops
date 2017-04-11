@@ -28,13 +28,13 @@ public class TestCalculateSandwiches extends TestCalculateSheets {
         }
     }
     
-    @Test
-    public void test1DLF() throws IOException {
+//    @Test
+    public void run1DLF() throws IOException {
       test("1dlf");
     }
     
-    @Test
-    public void test1AAC() throws IOException {
+//    @Test
+    public void run1AAC() throws IOException {
       test("1aac");
     }
 

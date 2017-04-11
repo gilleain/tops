@@ -37,12 +37,12 @@ public class TestSimpleChirality {
         System.out.println(chain.toString());
     }
     
-    @Test
+//    @Test
     public void testChiral3d_1aba() throws IOException {
         testChiral("1aba", 1, 3);
     }
     
-    @Test
+//    @Test
     public void testChiral3d_2igd() throws IOException {
         testChiral("2igd", 2, 4);
     }

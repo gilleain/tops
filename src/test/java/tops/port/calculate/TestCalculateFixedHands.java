@@ -17,7 +17,7 @@ public class TestCalculateFixedHands extends TestCalculateSandwiches {
         calculation.calculate(chain);
     }
     
-    @Test
+//    @Test
     public void test1GSO() throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 
@@ -31,19 +31,19 @@ public class TestCalculateFixedHands extends TestCalculateSandwiches {
         }
     }
     
-    @Test
-    public void test1IFC() throws IOException {
-        DsspReader dsspReader = new DsspReader();
-        Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
-        Chain chain = protein.getChains().get(0);
-        calculate(chain);
-        for (SSE sse : chain.getSSEs()) {
-            System.out.println( 
-                    String.format("%s%s at (%s, %s) is %s", 
-                            sse.getSymbolNumber(), sse.getSSEType(), 
-                            sse.getCartoonX(), sse.getCartoonY(), sse.getFixedType()));
-        }
-    }
+//    @Test
+//    public void run1IFC() throws IOException {
+//        DsspReader dsspReader = new DsspReader();
+//        Protein protein = 
+//                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+//        Chain chain = protein.getChains().get(0);
+//        calculate(chain);
+//        for (SSE sse : chain.getSSEs()) {
+//            System.out.println( 
+//                    String.format("%s%s at (%s, %s) is %s", 
+//                            sse.getSymbolNumber(), sse.getSSEType(), 
+//                            sse.getCartoonX(), sse.getCartoonY(), sse.getFixedType()));
+//        }
+//    }
 
 }

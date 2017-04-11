@@ -50,11 +50,12 @@ public class TestHBondHelper {
         makeHelicalBonds(sseToHBondMap, helix, 11, 20);
         connectParallelStrands(sseToHBondMap, strand1, strand2, 1, 10, 21, 30);
         
-        List<HBondSet> hBondSets = HBondHelper.makeHBondSets(sseToHBondMap);
-        System.out.println("HBondSets : ");
-        for (HBondSet hBondSet : hBondSets) {
-            System.out.println(hBondSet);
-        }
+        //TODO
+//        List<HBondSet> hBondSets = HBondHelper.makeHBondSets(sseToHBondMap);
+//        System.out.println("HBondSets : ");
+//        for (HBondSet hBondSet : hBondSets) {
+//            System.out.println(hBondSet);
+//        }
     }
     
     @Test
@@ -64,11 +65,12 @@ public class TestHBondHelper {
         BackboneSegment strand2 = makeBackboneSegment(12, 22, SSEType.EXTENDED);
         connectAntiparallelStrands(sseToHBondMap, strand1, strand2, 0, 10, 12, 22);
         
-        List<HBondSet> hBondSets = HBondHelper.makeHBondSets(sseToHBondMap);
-        System.out.println("HBondSets : ");
-        for (HBondSet hBondSet : hBondSets) {
-            System.out.println(hBondSet);
-        }
+        // TODO
+//        List<HBondSet> hBondSets = HBondHelper.makeHBondSets(sseToHBondMap);
+//        System.out.println("HBondSets : ");
+//        for (HBondSet hBondSet : hBondSets) {
+//            System.out.println(hBondSet);
+//        }
     }
     
     private void connectAntiparallelStrands(Map<BackboneSegment, List<HBond>> sseToHBondMap, BackboneSegment strand1, BackboneSegment strand2, int startA, int endA, int startB, int endB) {

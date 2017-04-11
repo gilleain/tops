@@ -25,7 +25,7 @@ import tops.view.cartoon.CartoonDrawer;
 
 public class TestOptimise {
     
-    @Test
+//    @Test
     public void test1GSO() throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 

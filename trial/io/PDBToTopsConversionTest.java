@@ -1,4 +1,4 @@
-package tops.translation;
+package io;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,6 +8,9 @@ import java.net.URL;
 import org.junit.Test;
 
 import tops.dw.io.TopsFileWriter;
+import tops.translation.FoldAnalyser;
+import tops.translation.PDBReader;
+import tops.translation.ProteinConverter;
 import tops.translation.model.Protein;
 
 public class PDBToTopsConversionTest {

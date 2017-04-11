@@ -1,4 +1,4 @@
-package tops.translation;
+package io;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,6 +8,8 @@ import java.io.Writer;
 import java.net.URL;
 
 import org.junit.Test;
+
+import tops.translation.Tops2String;
 
 public class TopsToGraphConversionTest {
 	

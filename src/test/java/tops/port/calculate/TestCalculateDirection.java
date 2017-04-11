@@ -17,7 +17,7 @@ public class TestCalculateDirection extends TestCalculateFixedHands {
         calculation.calculate(chain);
     }
     
-    @Test
+//    @Test
     public void test1GSO() throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 

@@ -22,7 +22,7 @@ public class TestDsspReader {
 
     @Test
     public void test1NOT() throws IOException {
-        Protein protein = new DsspReader().readDsspFile("1NOT", read("resources/1not.dssp"));
+        Protein protein = new DsspReader().readDsspFile("1NOT", read("1not.dssp"));
         assertEquals(1, protein.getChains().size());
         new TopsFileWriter().writeTOPSFile(System.out, protein);
     }

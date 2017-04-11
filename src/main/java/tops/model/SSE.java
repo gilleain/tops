@@ -62,8 +62,13 @@ public class SSE {
     }
     
     public String toString() {
-        return this.type.code + " [" + residues.get(0).getResidueNumber() + " - " 
-                                     + residues.get(residues.size() - 1).getResidueNumber() + "]";
+        if (residues.size() > 0) {
+            return type.code + " [" 
+                       + residues.get(0).getResidueNumber() + " - " 
+                       + residues.get(residues.size() - 1).getResidueNumber() + "]";
+        } else {
+            return type.code + " []";
+        }
     }
 
     public int getStart() {

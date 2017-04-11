@@ -37,6 +37,7 @@ public class CalculateMergedStrands implements Calculation {
         SSE prev = null;
         for (int index = 1; index < sses.size(); index++) {
             SSE p = sses.get(index);
+            if (prev == null) prev = sses.get(0);
             int connectLoopLen = getLoopLength(p, prev);
             if (p.isStrand() && prev != null && prev.isStrand() && connectLoopLen < minMergeStrandSeparation) {
                 int shortLoop = 1;

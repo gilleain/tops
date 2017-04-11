@@ -16,13 +16,13 @@ public class TestCalculateMergedStrands extends TestCalculateRelativeSides {
         calculation.calculate(chain);
     }
     
-    @Test
-    public void test1IFC() throws IOException {
-        DsspReader dsspReader = new DsspReader();
-        Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
-        Chain chain = protein.getChains().get(0);
-        calculate(chain);
-    }
+//    @Test
+//    public void run1IFC() throws IOException {
+//        DsspReader dsspReader = new DsspReader();
+//        Protein protein = 
+//                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+//        Chain chain = protein.getChains().get(0);
+//        calculate(chain);
+//    }
 
 }
