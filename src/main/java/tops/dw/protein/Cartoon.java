@@ -593,10 +593,10 @@ public class Cartoon {
 
     }
     
-    public double separation(SecStrucElement sse, Point p) {
-        return separation(p, sse.getPosition());
-    }
-    
+//    public double separation(SecStrucElement sse, Point p) {
+//        return separation(p, sse.getPosition());
+//    }
+//    
     /* private method calculates the separation of two points */
     /* one day I'll put it in a more sensible place for re-use */
     /* ...and one day, it has! gmt 13/05/08 */

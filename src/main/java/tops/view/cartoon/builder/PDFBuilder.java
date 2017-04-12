@@ -4,6 +4,7 @@ package tops.view.cartoon.builder;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -26,13 +27,12 @@ public class PDFBuilder implements CartoonBuilder {
     
     private OutputStream output;
 
-    public PDFBuilder(Rectangle bb, OutputStream out) {
+    public PDFBuilder(Image image, Rectangle bb, OutputStream out) {
     	this.output = out;
     	try {
     		this.document = new PDDocument();
 
     		PDPage page = new PDPage();
-    		BufferedImage image = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_3BYTE_BGR);
 
     		this.g = (Graphics2D) image.getGraphics();
 
@@ -42,7 +42,7 @@ public class PDFBuilder implements CartoonBuilder {
     		this.g.drawRect(0, 0, bb.width - 2, bb.height - 2); // bounds
     		this.g.dispose();
 
-    		PDXObjectImage ximage = new PDJpeg(document, image);
+    		PDXObjectImage ximage = new PDJpeg(document, (BufferedImage) image);
     		PDPageContentStream content = new PDPageContentStream(document, page);
     		content.drawImage(ximage, 50, 400);
     		content.close();

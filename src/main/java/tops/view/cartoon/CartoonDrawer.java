@@ -7,8 +7,10 @@ import static tops.port.model.SSEType.HELIX;
 import static tops.port.model.SSEType.NTERMINUS;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -42,10 +44,11 @@ public class CartoonDrawer {
     // this method is for byte representations
     public void draw(String name, String type, int w, int h, Cartoon cartoon, OutputStream os) throws IOException {
         Rectangle bb = this.init(cartoon, w - (2 * CartoonDrawer.BORDER_WIDTH), w, h);
+        Image image = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_3BYTE_BGR);
         if (type.equals("IMG")) {
-            this.builder = new IMGBuilder(name, bb, os, w, h);
+            this.builder = new IMGBuilder(image, name, bb, os, w, h);
         } else if (type.equals("PDF")) {
-            this.builder = new PDFBuilder(bb, os);
+            this.builder = new PDFBuilder(image, bb, os);
         } else {
             throw new IOException("Unsupported output type : " + type);
         }

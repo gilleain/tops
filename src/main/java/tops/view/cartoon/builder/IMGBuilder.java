@@ -3,10 +3,9 @@ package tops.view.cartoon.builder;
 //Make Images
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Graphics; //scaling!
+import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,26 +29,23 @@ public class IMGBuilder implements CartoonBuilder {
     // to compensate for the bad centering of the bounding rectangle!
 //    private static final int BORDER = 10; 
 
-    private static final int NAME_X = 10;
+    public static final int NAME_X = 10;
 
-    private static final int NAME_Y = 20;
+    public static final int NAME_Y = 20;
 
-    public IMGBuilder(String name, Rectangle bb, OutputStream out, int width,
-            int height) {
+    public IMGBuilder(Image image, String name, Rectangle bb, OutputStream out, int width, int height) {
         this.out = out;
         this.w = width;
         this.h = height;
         //int currentWidth = bb.width;
         //int currentHeight = bb.height;
-        int type = BufferedImage.TYPE_INT_RGB;
-        this.image = new BufferedImage(this.w, this.h, type);
-        // BufferedImage image = new PJABufferedImage(w, h, type)
-        this.g = this.image.getGraphics();
+        this.image = image;
+        this.g = image.getGraphics();
 
-        this.g.setColor(Color.white);
+        this.g.setColor(Color.WHITE);
         this.g.fillRect(0, 0, this.w, this.h);
-        this.g.setColor(Color.black);
-        if ((this.w > 100) && (this.h > 100)) {
+        this.g.setColor(Color.BLACK);
+        if (w > 100 && h > 100) {
             // only draw the name if there is room!
             this.g.drawString(name, IMGBuilder.NAME_X, IMGBuilder.NAME_Y); 
         }
@@ -79,7 +75,7 @@ public class IMGBuilder implements CartoonBuilder {
         if (c != null) {
             this.g.setColor(c);
             this.g.fillOval(ex, ey, d, d);
-            this.g.setColor(Color.black);
+            this.g.setColor(Color.BLACK);
         }
 
         this.g.drawOval(ex, ey, d, d);
@@ -101,13 +97,13 @@ public class IMGBuilder implements CartoonBuilder {
         if (c != null) {
             this.g.setColor(c);
             this.g.fillPolygon(xPoints, yPoints, 3);
-            this.g.setColor(Color.black);
+            this.g.setColor(Color.BLACK);
         }
         this.g.drawPolygon(xPoints, yPoints, 3); // draw outline
     }
 
     public void drawTerminus(int x, int y, int r, String label) {
-        if ((this.w > 100) && (this.h > 100) && (label != null)) {
+        if (this.w > 100 && this.h > 100 && label != null) {
             this.g.drawString(label, x, y);
         } else {
             int d = 2 * r;
