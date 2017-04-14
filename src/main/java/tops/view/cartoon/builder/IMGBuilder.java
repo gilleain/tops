@@ -37,7 +37,7 @@ public class IMGBuilder implements CartoonBuilder {
         this.out = out;
         this.w = width;
         this.h = height;
-        //int currentWidth = bb.width;
+        //int currentWidth = bb.width;  // TODO - why pass in bb?
         //int currentHeight = bb.height;
         this.image = image;
         this.g = image.getGraphics();

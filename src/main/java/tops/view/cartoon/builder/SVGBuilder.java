@@ -51,6 +51,7 @@ public class SVGBuilder implements CartoonBuilder {
         if (this.document != null) {
             this.document.append("</g>\n</svg>\n");
             this.out.println(this.document.toString());
+            this.out.flush();
         }
     }
 

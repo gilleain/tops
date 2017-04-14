@@ -35,6 +35,7 @@ import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.Direction;
 import tops.port.model.SSEType;
+import tops.view.cartoon.CartoonDrawer;
 
 /**
  * This class is a java bean which displays and permits editing of a single Tops
@@ -984,6 +985,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     @Override
     public void paint(Graphics g) {
+        CartoonDrawer drawer = new CartoonDrawer();
         g.setColor(Color.black);
         if (this.UseBorder)
             this.DrawBorder(g);
