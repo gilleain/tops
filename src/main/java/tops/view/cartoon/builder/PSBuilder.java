@@ -7,28 +7,25 @@ import java.awt.Rectangle;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-import tops.view.cartoon.CartoonBuilder;
 import tops.view.cartoon.PostscriptFactory;
+import tops.view.cartoon.TextCartoonBuilder;
 
-public class PSBuilder implements CartoonBuilder {
+public class PSBuilder implements TextCartoonBuilder {
 
     private Vector<String> eps; // the product that this builder will return
 
 //    private Rectangle bBox; // the bounds of the cartoon
 
-    private PrintWriter out; // the stream to write to
-
     private int h; // convenience variable
 
-    public PSBuilder(Rectangle bBox, PrintWriter out) {
+    public PSBuilder(Rectangle bBox) {
         this.eps = new Vector<String>();
         this.eps = PostscriptFactory.makeEPSHeader(this.eps, 0, 0, bBox.width, bBox.height);
 //        this.bBox = bBox;
-        this.out = out;
         this.h = bBox.height;
     }
 
-    public void printProduct() {
+    public void printProduct(PrintWriter out) {
         if (this.eps != null) {
             // eps = PostscriptFactory.addBoundingBox( eps, bBox.x, bBox.y,
             // bBox.x + bBox.width, bBox.y + bBox.height );
@@ -38,7 +35,7 @@ public class PSBuilder implements CartoonBuilder {
             this.eps.addElement(PostscriptFactory.EOF());
             for (int idx = 0; idx < this.eps.size(); idx++) {
                 String s = (String) this.eps.get(idx);
-                this.out.println(s);
+                out.println(s);
                 //System.err.println(s);
             }
         }

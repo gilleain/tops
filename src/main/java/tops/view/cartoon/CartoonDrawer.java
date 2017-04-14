@@ -33,43 +33,39 @@ import tops.view.cartoon.builder.SVGBuilder;
 
 public class CartoonDrawer {
 
-    private CartoonBuilder builder;
-
     private static final int BORDER_WIDTH = 10;
-
-    public CartoonDrawer() {
-    	this.builder = null;
-    }
 
     // this method is for byte representations
     public void draw(String name, String type, int w, int h, Cartoon cartoon, OutputStream os) throws IOException {
+        ByteCartoonBuilder builder;
         Rectangle bb = this.init(cartoon, w - (2 * CartoonDrawer.BORDER_WIDTH), w, h);
         Image image = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_3BYTE_BGR);
         if (type.equals("IMG")) {
-            this.builder = new IMGBuilder(image, name, bb, os, w, h);
+            builder = new IMGBuilder(image, name, bb,  w, h);
         } else if (type.equals("PDF")) {
-            this.builder = new PDFBuilder(image, bb, os);
+            builder = new PDFBuilder(image, bb);
         } else {
             throw new IOException("Unsupported output type : " + type);
         }
-        this.draw(cartoon);
-        this.builder.printProduct();
+        this.draw(cartoon, builder);
+        builder.printProduct(os);
     }
 
     // this method is for text representations
     public void draw(String name, String type, Cartoon cartoon, PrintWriter pw) throws IOException {
+        TextCartoonBuilder builder;
         Rectangle bb = this.init(cartoon);
         if (type.equals("SVG")) {
-            this.builder = new SVGBuilder(bb, pw);
+            builder = new SVGBuilder(bb);
         } else if (type.equals("PS")) {
-            this.builder = new PSBuilder(bb, pw);
+            builder = new PSBuilder(bb);
         } else {
             throw new IOException("Unsupported output type : " + type);
         }
         //System.err.println("drawing");
-        this.draw(cartoon);
+        this.draw(cartoon, builder);
         //System.err.println("printing");
-        this.builder.printProduct();
+        builder.printProduct(pw);
     }
 
     private Rectangle init(Cartoon cartoon) {
@@ -113,12 +109,12 @@ public class CartoonDrawer {
         return bb;
     }
 
-    private void draw(Cartoon cartoon) {
+    private void draw(Cartoon cartoon, CartoonBuilder builder) {
         SecStrucElement last = null;
         for (SecStrucElement s : cartoon.getSSEs()) {
-            this.drawSecStruc(s);
+            this.drawSecStruc(s, builder);
             if (last != null) {
-                this.drawConnection(last, s);
+                this.drawConnection(builder, last, s);
             }
             last = s;
         }
@@ -211,31 +207,31 @@ public class CartoonDrawer {
         return new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin);
     }
 
-    private void drawSecStruc(SecStrucElement ss) {
+    private void drawSecStruc(SecStrucElement ss, CartoonBuilder builder) {
 
         int radius = ss.getSymbolRadius();
         Point pos = ss.getPosition();
         Color col = ss.getColour();
 
         if (ss.getType() == HELIX) {
-            this.drawHelix(pos.x, pos.y, radius, col);
+            this.drawHelix(builder, pos.x, pos.y, radius, col);
         } else if (ss.getType() == EXTENDED) {
-            this.drawStrand(pos.x, pos.y, radius, ss.getDirection(), col);
+            this.drawStrand(builder, pos.x, pos.y, radius, ss.getDirection(), col);
         } else if (ss.getType() == CTERMINUS || ss.getType() == NTERMINUS) {
-            this.drawTerminus(pos.x, pos.y, radius, ss.getLabel());
+            this.drawTerminus(builder, pos.x, pos.y, radius, ss.getLabel());
         }
 
     }
 
-    private void drawTerminus(int x, int y, int r, String label) {
-        this.builder.drawTerminus(x, y, r, label); // facade?
+    private void drawTerminus(CartoonBuilder builder, int x, int y, int r, String label) {
+        builder.drawTerminus(x, y, r, label); // facade?
     }
 
-    private void drawHelix(int x, int y, int r, Color c) {
-        this.builder.drawHelix(x, y, r, c); // facade?
+    private void drawHelix(CartoonBuilder builder, int x, int y, int r, Color c) {
+        builder.drawHelix(x, y, r, c); // facade?
     }
 
-    private void drawStrand(int x, int y, int r, Direction direction, Color c) {
+    private void drawStrand(CartoonBuilder builder, int x, int y, int r, Direction direction, Color c) {
 
         double pi6 = Math.PI / 6.0;
         double cospi6 = Math.cos(pi6);
@@ -264,10 +260,10 @@ public class CartoonDrawer {
             rightY = y + rsinpi6;
         }
 
-        this.builder.drawStrand(pointX, pointY, leftX, leftY, rightX, rightY, c);
+        builder.drawStrand(pointX, pointY, leftX, leftY, rightX, rightY, c);
     }
 
-    private void drawConnection(SecStrucElement from, SecStrucElement to) {
+    private void drawConnection(CartoonBuilder builder, SecStrucElement from, SecStrucElement to) {
 
         if (from == null) {
             return;
@@ -313,29 +309,29 @@ public class CartoonDrawer {
         }
 
         if (from.getConnectionTo().isEmpty()) {
-            this.joinPoints(pointTo, pointFrom);
+            this.joinPoints(builder, pointTo, pointFrom);
         } else {
 
             Iterator<Point> connectionEnum = from.getConnectionTo().iterator();
             Point connectionPointTo = connectionEnum.next();
 
-            this.joinPoints(pointFrom, connectionPointTo);
+            this.joinPoints(builder, pointFrom, connectionPointTo);
 
             Point connectionPointFrom;
             while (connectionEnum.hasNext()) {
                 connectionPointFrom = connectionPointTo; // join next to previous
                 connectionPointTo = connectionEnum.next(); // get next
-                this.joinPoints(connectionPointFrom, connectionPointTo); // join!
+                this.joinPoints(builder, connectionPointFrom, connectionPointTo); // join!
             }
-            connectionPointFrom = connectionPointTo; // get the last in the
-                                                        // chain
-            this.joinPoints(connectionPointFrom, pointTo); // finally, connect to
-                                                        // the next SSE
+            connectionPointFrom = connectionPointTo; // get the last in the chain
+            
+            // finally, connect to the next SSE
+            this.joinPoints(builder, connectionPointFrom, pointTo); 
         }
     }
 
-    private void joinPoints(Point from, Point to) {
-        this.builder.connect(from.x, from.y, to.x, to.y);
+    private void joinPoints(CartoonBuilder builder, Point from, Point to) {
+        builder.connect(from.x, from.y, to.x, to.y);
     }
 
     /*

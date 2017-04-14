@@ -17,18 +17,15 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
-import tops.view.cartoon.CartoonBuilder;
+import tops.view.cartoon.ByteCartoonBuilder;
 
-public class PDFBuilder implements CartoonBuilder {
+public class PDFBuilder implements ByteCartoonBuilder {
 
     private Graphics2D g; // for drawing
 
     private PDDocument document; // the product that this builder makes
     
-    private OutputStream output;
-
-    public PDFBuilder(Image image, Rectangle bb, OutputStream out) {
-    	this.output = out;
+    public PDFBuilder(Image image, Rectangle bb) {
     	try {
     		this.document = new PDDocument();
 
@@ -52,7 +49,7 @@ public class PDFBuilder implements CartoonBuilder {
 		}
     }
 
-    public void printProduct() {
+    public void printProduct(OutputStream output) {
         try {
         	this.document.save(output);
 			this.document.close();

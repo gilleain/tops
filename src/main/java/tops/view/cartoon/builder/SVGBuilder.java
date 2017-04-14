@@ -6,22 +6,19 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.io.PrintWriter;
 
-import tops.view.cartoon.CartoonBuilder;
+import tops.view.cartoon.TextCartoonBuilder;
 
-public class SVGBuilder implements CartoonBuilder {
+public class SVGBuilder implements TextCartoonBuilder {
 
     private StringBuffer document; // the product that this builder will return
 
     private static final String cssfile = "file:///Users/maclean/development/tops/style.css"; // path to the css file
 
-    private PrintWriter out; // the stream to print to
-
-    public SVGBuilder(Rectangle bb, PrintWriter out) {
+    public SVGBuilder(Rectangle bb) {
         int x = bb.x;
         int y = bb.y;
         int height = bb.height;
         int width = bb.width;
-        this.out = out;
 
         this.document = new StringBuffer();
         this.document.append("<?xml version=\"1.0\" standalone=\"no\"?>\n");
@@ -47,11 +44,11 @@ public class SVGBuilder implements CartoonBuilder {
         this.document.append("/>\n");
     }
 
-    public void printProduct() {
+    public void printProduct(PrintWriter out) {
         if (this.document != null) {
             this.document.append("</g>\n</svg>\n");
-            this.out.println(this.document.toString());
-            this.out.flush();
+            out.println(this.document.toString());
+            out.flush();
         }
     }
 

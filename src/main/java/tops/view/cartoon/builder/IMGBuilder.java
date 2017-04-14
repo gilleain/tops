@@ -12,16 +12,14 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import tops.view.cartoon.CartoonBuilder;
+import tops.view.cartoon.ByteCartoonBuilder;
 
-public class IMGBuilder implements CartoonBuilder {
+public class IMGBuilder implements ByteCartoonBuilder {
 
     private Graphics g; // for drawing
 
     // private Graphics2D g; //for drawing
     private Image image; // the product that this builder will return
-
-    private OutputStream out; // the stream to write to
 
     private int w, h;
 //    private int scalex, scaley;
@@ -33,8 +31,7 @@ public class IMGBuilder implements CartoonBuilder {
 
     public static final int NAME_Y = 20;
 
-    public IMGBuilder(Image image, String name, Rectangle bb, OutputStream out, int width, int height) {
-        this.out = out;
+    public IMGBuilder(Image image, String name, Rectangle bb, int width, int height) {
         this.w = width;
         this.h = height;
         //int currentWidth = bb.width;  // TODO - why pass in bb?
@@ -52,7 +49,7 @@ public class IMGBuilder implements CartoonBuilder {
         this.g.drawRect(0, 0, this.w - 2, this.h - 2); // bounds
     }
 
-    public void printProduct() {
+    public void printProduct(OutputStream out) {
         try {
             ImageIO.write((RenderedImage) image, "GIF", out);
         } catch (IOException ioe) {

@@ -6,8 +6,6 @@ import java.awt.Color;
 
 public interface CartoonBuilder {
 
-    public void printProduct();
-
     public void connect(int x1, int y1, int x2, int y2);
 
     public void drawHelix(int x, int y, int rad, Color c);

@@ -40,7 +40,7 @@ public class TestIMGBuilder {
         int width = 200;
         int height = 200;
         
-        new IMGBuilder(image, name, bb, out, width, height);
+        new IMGBuilder(image, name, bb, width, height);
 
         verify(graphics).setColor(Color.WHITE);
         verify(graphics).fillRect(0, 0, width, height);
@@ -51,7 +51,7 @@ public class TestIMGBuilder {
     }
     
     private IMGBuilder get() {
-        return new IMGBuilder(image, "name", new Rectangle(1, 1, 1, 1), out, 1, 1);
+        return new IMGBuilder(image, "name", new Rectangle(1, 1, 1, 1), 1, 1);
     }
     
     @Test
