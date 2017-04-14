@@ -849,7 +849,7 @@ public class Cartoon {
      * @param b the border
      */
     public void fitToRectangle(int x, int y, int w, int h, int b) {
-        Rectangle bb = this.topsBoundingBox();
+        Rectangle bb = this.boundingBox();
         float s1 = (float)(w - (2 * b)) / (float)(bb.width);
         float s2 = (float)(h - (2 * b)) / (float)(bb.height);
         float s = Math.min(s1, s2);
@@ -862,7 +862,7 @@ public class Cartoon {
         this.translateDiagram(dx, dy);
     }
     
-    public Rectangle topsBoundingBox() {
+    public Rectangle boundingBox() {
         int minx = 0;
         int maxx = 0;
         int miny = 0;

@@ -896,7 +896,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         float cwidth = (cd.width - 2 * TopsDrawCanvas.BORDER);
 
         if (this.cartoon != null) {
-            bb = this.cartoon.topsBoundingBox();
+            bb = this.cartoon.boundingBox();
 
             float s1 = cwidth / (bb.width);
             float s2 = cheight / (bb.height);

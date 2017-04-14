@@ -20,6 +20,7 @@ import java.util.Iterator;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.Direction;
+import tops.view.cartoon.builder.BuilderFactory;
 import tops.view.cartoon.builder.IMGBuilder;
 import tops.view.cartoon.builder.PDFBuilder;
 import tops.view.cartoon.builder.PSBuilder;
@@ -34,44 +35,31 @@ import tops.view.cartoon.builder.SVGBuilder;
 public class CartoonDrawer {
 
     private static final int BORDER_WIDTH = 10;
+    
+    private BuilderFactory factory;
 
     // this method is for byte representations
     public void draw(String name, String type, int w, int h, Cartoon cartoon, OutputStream os) throws IOException {
-        ByteCartoonBuilder builder;
         Rectangle bb = this.init(cartoon, w - (2 * CartoonDrawer.BORDER_WIDTH), w, h);
         Image image = new BufferedImage(bb.width, bb.height, BufferedImage.TYPE_3BYTE_BGR);
-        if (type.equals("IMG")) {
-            builder = new IMGBuilder(image, name, bb,  w, h);
-        } else if (type.equals("PDF")) {
-            builder = new PDFBuilder(image, bb);
-        } else {
-            throw new IOException("Unsupported output type : " + type);
-        }
+        
+        ByteCartoonBuilder builder = factory.makeForImage(type, image, bb);
         this.draw(cartoon, builder);
         builder.printProduct(os);
     }
 
     // this method is for text representations
     public void draw(String name, String type, Cartoon cartoon, PrintWriter pw) throws IOException {
-        TextCartoonBuilder builder;
         Rectangle bb = this.init(cartoon);
-        if (type.equals("SVG")) {
-            builder = new SVGBuilder(bb);
-        } else if (type.equals("PS")) {
-            builder = new PSBuilder(bb);
-        } else {
-            throw new IOException("Unsupported output type : " + type);
-        }
-        //System.err.println("drawing");
+        TextCartoonBuilder builder = factory.make(type, bb);
         this.draw(cartoon, builder);
-        //System.err.println("printing");
         builder.printProduct(pw);
     }
 
     private Rectangle init(Cartoon cartoon) {
         // neded to convert c tops coordinates to Java coordinates
         cartoon.invertY(); 
-        Rectangle bb = cartoon.topsBoundingBox();
+        Rectangle bb = cartoon.boundingBox();
         System.err.println("bb before = " + bb);
 
         this.centerDiagram(cartoon, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, bb.width, bb.height, bb);
@@ -81,7 +69,7 @@ public class CartoonDrawer {
     }
 
     private Rectangle init(Cartoon cartoon, int length, int w, int h) {
-        Rectangle bb = cartoon.topsBoundingBox();
+        Rectangle bb = cartoon.boundingBox();
         //System.err.println("bb before = " + bb);
 
         // get the largest dimension
@@ -95,7 +83,7 @@ public class CartoonDrawer {
         //System.err.println("scale = " + scale);
         cartoon.applyScale(scale);
         cartoon.invertY(); // needed to convert c tops coordinates to Java  coordinates
-        if (scale != 1.0) bb = cartoon.topsBoundingBox(); // get the new bounds
+        if (scale != 1.0) bb = cartoon.boundingBox(); // get the new bounds
 
         //System.err.println("bb after = " + bb);
         Point currentCorner = bb.getLocation();
