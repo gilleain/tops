@@ -2,36 +2,25 @@ package tops.view.cartoon.builder;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.io.OutputStream;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestIMGBuilder {
+public class TestGraphicsBuilder {
     
     @Mock
     private OutputStream out;
     
     @Mock
-    private Image image;
-    
-    @Mock
     private Graphics graphics;
-    
-    @Before
-    public void setup() {
-        when(image.getGraphics()).thenReturn(graphics);
-    }
     
     @Test
     public void testCreate() {
@@ -40,23 +29,23 @@ public class TestIMGBuilder {
         int width = 200;
         int height = 200;
         
-        new IMGBuilder(image, name, bb, width, height);
+        new GraphicsBuilder(graphics, name, bb, width, height);
 
         verify(graphics).setColor(Color.WHITE);
         verify(graphics).fillRect(0, 0, width, height);
         
         verify(graphics).setColor(Color.BLACK);
-        verify(graphics).drawString(name, IMGBuilder.NAME_X, IMGBuilder.NAME_Y);
+        verify(graphics).drawString(name, GraphicsBuilder.NAME_X, GraphicsBuilder.NAME_Y);
         verify(graphics).drawRect(0, 0, width - 2, height - 2);
     }
     
-    private IMGBuilder get() {
-        return new IMGBuilder(image, "name", new Rectangle(1, 1, 1, 1), 1, 1);
+    private GraphicsBuilder get() {
+        return new GraphicsBuilder(graphics, "name", new Rectangle(1, 1, 1, 1), 1, 1);
     }
     
     @Test
     public void testConnect() {
-        IMGBuilder builder = get();
+        GraphicsBuilder builder = get();
         int x1 = 10;
         int y1 = 20;
         int x2 = 30;
@@ -68,7 +57,7 @@ public class TestIMGBuilder {
     
     @Test
     public void testDrawHelix() {
-        IMGBuilder builder = get();
+        GraphicsBuilder builder = get();
         
         int x = 10;
         int y = 20;
@@ -85,7 +74,7 @@ public class TestIMGBuilder {
     }
     
     public void testDrawStrand() {
-        IMGBuilder builder = get();
+        GraphicsBuilder builder = get();
         int pointX = 10;
         int pointY = 20;
         int leftX  = 30;

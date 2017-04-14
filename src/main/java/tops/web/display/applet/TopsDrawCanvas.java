@@ -158,8 +158,11 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     private Vector<UserLabel> UserLabels = new Vector<UserLabel>();
 
     private Vector<UserArrow> UserArrows = new Vector<UserArrow>();
+    
+    private CartoonDrawer drawer; 
 
     public TopsDrawCanvas() {
+        drawer = new CartoonDrawer();
         this.setBackground(Color.white);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -985,7 +988,6 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     @Override
     public void paint(Graphics g) {
-        CartoonDrawer drawer = new CartoonDrawer();
         g.setColor(Color.black);
         if (this.UseBorder)
             this.DrawBorder(g);
@@ -993,6 +995,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             this.DrawLabel(g);
         if (this.cartoon != null)
             cartoon.paint(g);
+        
+        drawer.draw(g, getWidth(), getHeight(), cartoon);
+        
         if (this.InfoString != null)
             this.DrawInfoString(g);
         if (this.selectBox != null)

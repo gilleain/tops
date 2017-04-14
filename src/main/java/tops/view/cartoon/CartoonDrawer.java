@@ -7,6 +7,7 @@ import static tops.port.model.SSEType.HELIX;
 import static tops.port.model.SSEType.NTERMINUS;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -21,10 +22,7 @@ import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.Direction;
 import tops.view.cartoon.builder.BuilderFactory;
-import tops.view.cartoon.builder.IMGBuilder;
-import tops.view.cartoon.builder.PDFBuilder;
-import tops.view.cartoon.builder.PSBuilder;
-import tops.view.cartoon.builder.SVGBuilder;
+import tops.view.cartoon.builder.GraphicsBuilder;
 
 //the 'director' class for CartoonBuilders
 //usage :
@@ -37,6 +35,11 @@ public class CartoonDrawer {
     private static final int BORDER_WIDTH = 10;
     
     private BuilderFactory factory;
+    
+    public void draw(Graphics g, int w, int h, Cartoon cartoon) {
+        Rectangle bb = this.init(cartoon, w - (2 * CartoonDrawer.BORDER_WIDTH), w, h);
+        this.draw(cartoon, new GraphicsBuilder(g, "", bb, w, h));
+    }
 
     // this method is for byte representations
     public void draw(String name, String type, int w, int h, Cartoon cartoon, OutputStream os) throws IOException {
