@@ -101,6 +101,7 @@ public class CartoonDrawer {
     }
 
     private void draw(Cartoon cartoon, CartoonBuilder builder) {
+        builder.drawLabel(new Point(10, 10), cartoon.getName());
         SecStrucElement last = null;
         for (SecStrucElement s : cartoon.getSSEs()) {
             this.drawSecStruc(s, builder);
@@ -205,24 +206,24 @@ public class CartoonDrawer {
         Color col = ss.getColour();
 
         if (ss.getType() == HELIX) {
-            this.drawHelix(builder, pos.x, pos.y, radius, col);
+            this.drawHelix(builder, pos, radius, col);
         } else if (ss.getType() == EXTENDED) {
-            this.drawStrand(builder, pos.x, pos.y, radius, ss.getDirection(), col);
+            this.drawStrand(builder, pos, radius, ss.getDirection(), col);
         } else if (ss.getType() == CTERMINUS || ss.getType() == NTERMINUS) {
-            this.drawTerminus(builder, pos.x, pos.y, radius, ss.getLabel());
+            this.drawTerminus(builder, pos, radius, ss.getLabel());
         }
 
     }
 
-    private void drawTerminus(CartoonBuilder builder, int x, int y, int r, String label) {
-        builder.drawTerminus(x, y, r, label); // facade?
+    private void drawTerminus(CartoonBuilder builder, Point p, int r, String label) {
+        builder.drawTerminus(p, r, label); // facade?
     }
 
-    private void drawHelix(CartoonBuilder builder, int x, int y, int r, Color c) {
-        builder.drawHelix(x, y, r, c); // facade?
+    private void drawHelix(CartoonBuilder builder, Point p, int r, Color c) {
+        builder.drawHelix(p, r, c); // facade?
     }
 
-    private void drawStrand(CartoonBuilder builder, int x, int y, int r, Direction direction, Color c) {
+    private void drawStrand(CartoonBuilder builder, Point p, int r, Direction direction, Color c) {
 
         double pi6 = Math.PI / 6.0;
         double cospi6 = Math.cos(pi6);
@@ -231,27 +232,26 @@ public class CartoonDrawer {
         int rsinpi6 = (int) (r * sinpi6);
         int rcospi6 = (int) (r * cospi6);
 
-        int pointX, pointY;
-        int leftX, leftY;
-        int rightX, rightY;
-
+        Point top = new Point();
+        Point left = new Point();
+        Point right = new Point();
         if (direction == DOWN) {
-            pointX = x;
-            pointY = y + r;
-            leftX = x - rcospi6;
-            leftY = y - rsinpi6;
-            rightX = x + rcospi6;
-            rightY = y - rsinpi6;
+            top.x = p.x;
+            top.y = p.y + r;
+            left.x = p.x - rcospi6;
+            left.y = p.y - rsinpi6;
+            right.x = p.x + rcospi6;
+            right.y = p.y - rsinpi6;
         } else {
-            pointX = x;
-            pointY = y - r;
-            leftX = x - rcospi6;
-            leftY = y + rsinpi6;
-            rightX = x + rcospi6;
-            rightY = y + rsinpi6;
+            top.x = p.x;
+            top.y = p.y - r;
+            left.x = p.x - rcospi6;
+            left.y = p.y + rsinpi6;
+            right.x = p.x + rcospi6;
+            right.y = p.y + rsinpi6;
         }
 
-        builder.drawStrand(pointX, pointY, leftX, leftY, rightX, rightY, c);
+        builder.drawStrand(top, left, right, c);
     }
 
     private void drawConnection(CartoonBuilder builder, SecStrucElement from, SecStrucElement to) {
@@ -322,7 +322,7 @@ public class CartoonDrawer {
     }
 
     private void joinPoints(CartoonBuilder builder, Point from, Point to) {
-        builder.connect(from.x, from.y, to.x, to.y);
+        builder.connect(from, to);
     }
 
     /*

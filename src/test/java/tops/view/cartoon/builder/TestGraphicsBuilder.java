@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.OutputStream;
 
@@ -35,7 +36,6 @@ public class TestGraphicsBuilder {
         verify(graphics).fillRect(0, 0, width, height);
         
         verify(graphics).setColor(Color.BLACK);
-        verify(graphics).drawString(name, GraphicsBuilder.NAME_X, GraphicsBuilder.NAME_Y);
         verify(graphics).drawRect(0, 0, width - 2, height - 2);
     }
     
@@ -46,51 +46,54 @@ public class TestGraphicsBuilder {
     @Test
     public void testConnect() {
         GraphicsBuilder builder = get();
-        int x1 = 10;
-        int y1 = 20;
-        int x2 = 30;
-        int y2 = 40;
-        builder.connect(x1, y1, x2, y2);
+        Point p1 = new Point(10, 20);
+        Point p2 = new Point(30, 40);
+        builder.connect(p1, p2);
         
-        verify(graphics).drawLine(x1, y1, x2, y2);
+        verify(graphics).drawLine(p1.x, p1.y, p2.x, p2.y);
     }
     
     @Test
     public void testDrawHelix() {
         GraphicsBuilder builder = get();
         
-        int x = 10;
-        int y = 20;
+        Point center = new Point(10, 20);
         int r = 5;
         Color color = Color.RED;
-        builder.drawHelix(x, y, r, color);
+        builder.drawHelix(center, r, color);
         
         verify(graphics).setColor(color);
-        verify(graphics).fillOval(x - r, y - r, 2 * r, 2 * r);
-        // XXX - seems like a mockito bug here : why two times?
+        verify(graphics).fillOval(center.x - r, center.y - r, 2 * r, 2 * r);
         verify(graphics, times(2)).setColor(Color.BLACK);
         
-        verify(graphics).drawOval(x - r, y - r, 2 * r, 2 * r);
+        verify(graphics).drawOval(center.x - r, center.y - r, 2 * r, 2 * r);
     }
     
+    @Test
     public void testDrawStrand() {
         GraphicsBuilder builder = get();
-        int pointX = 10;
-        int pointY = 20;
-        int leftX  = 30;
-        int leftY  = 40;
-        int rightX  = 30;
-        int rightY  = 40;
+        Point center = new Point(10, 20);
+        Point left   = new Point(30, 40);
+        Point right  = new Point(40, 50);
         Color color = Color.BLUE;
         
-        builder.drawStrand(pointX, pointY, leftX, leftY, rightX, rightY, color);
+        builder.drawStrand(center, left, right, color);
         verify(graphics).setColor(color);
-        verify(graphics).fillPolygon(new int[] { pointX,  leftX,  rightX },
-                                     new int[] { pointY,  leftY,  rightY }, 3);
+        verify(graphics).fillPolygon(new int[] { center.x,  left.x,  right.x },
+                                     new int[] { center.y,  left.y,  right.y }, 3);
         
-        verify(graphics).setColor(Color.BLACK);
-        verify(graphics).drawPolygon(new int[] { pointX,  leftX,  rightX },
-                                     new int[] { pointY,  leftY,  rightY }, 3);
+        verify(graphics, times(2)).setColor(Color.BLACK);
+        verify(graphics).drawPolygon(new int[] { center.x,  left.x,  right.x },
+                                     new int[] { center.y,  left.y,  right.y }, 3);
+    }
+    
+    @Test
+    public void testDrawLabel() {
+        GraphicsBuilder builder = get();
+        Point center = new Point(10, 20);
+        String text = "hello";
+        builder.drawLabel(center, text);
+        verify(graphics).drawString(text, center.x, center.y);
     }
 
 }

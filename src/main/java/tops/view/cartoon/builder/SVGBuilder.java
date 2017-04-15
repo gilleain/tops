@@ -3,6 +3,7 @@ package tops.view.cartoon.builder;
 //Make SVG Documents
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.PrintWriter;
 
@@ -57,42 +58,49 @@ public class SVGBuilder implements TextCartoonBuilder {
         return "none";
     }
 
-    public void connect(int x1, int y1, int x2, int y2) {
+    public void connect(Point p1, Point p2) {
         this.document.append("<line ");
-        this.document.append("x1=\"").append(x1).append("\" ");// x1 coordinate
-        this.document.append("y1=\"").append(y1).append("\" ");// y1 coordinate
-        this.document.append("x2=\"").append(x2).append("\" ");// x2 coordinate
-        this.document.append("y2=\"").append(y2).append("\" ");// y2 coordinate
+        this.document.append("x1=\"").append(p1.x).append("\" ");// x1 coordinate
+        this.document.append("y1=\"").append(p1.y).append("\" ");// y1 coordinate
+        this.document.append("x2=\"").append(p2.x).append("\" ");// x2 coordinate
+        this.document.append("y2=\"").append(p2.y).append("\" ");// y2 coordinate
         this.document.append(" style=\"stroke:black; stroke-width:2;\"/>\n");
     }
 
-    public void drawHelix(int x, int y, int rad, Color c) {
+    public void drawHelix(Point center, int rad, Color c) {
         this.document.append("<circle ");
         this.document.append("r=\"").append(rad).append("\" ");// radius
-        this.document.append("cx=\"").append(x).append("\" ");// x coordinate
-        this.document.append("cy=\"").append(y).append("\" ");// y coordinate
+        this.document.append("cx=\"").append(center.x).append("\" ");// x coordinate
+        this.document.append("cy=\"").append(center.y).append("\" ");// y coordinate
         this.document.append("style=\"fill:" + this.makeColourString(c) + "; stroke:red; stroke-width:2\"");
         this.document.append(" />\n");
     }
 
-    public void drawStrand(int pointX, int pointY, int leftX, int leftY, int rightX, int rightY, Color c) {
+    public void drawStrand(Point center, Point left, Point right, Color c) {
         this.document.append("<polygon ");
         this.document.append("points=\"");
-        this.document.append(pointX).append(" ").append(pointY);                // X1, Y1
-        this.document.append(" ").append(leftX).append(" ").append(leftY);      // X2, Y2
-        this.document.append(" ").append(rightX).append(" ").append(rightY);    // X3, Y3
+        this.document.append(center.x).append(" ").append(center.y);            // X1, Y1
+        this.document.append(" ").append(left.x).append(" ").append(left.y);      // X2, Y2
+        this.document.append(" ").append(right.x).append(" ").append(right.y);    // X3, Y3
         this.document.append("\" style=\"fill:" + this.makeColourString(c) + "; stroke:yellow; stroke-width:2;");
         this.document.append(" \"/>\n");
     }
 
-    public void drawTerminus(int x, int y, int r, String label) {
+    public void drawTerminus(Point center, int r, String label) {
         int width = r;
         int height = r;
         this.document.append("<rect ");
-        this.document.append("x=\"").append(x).append("\" ");// X coordinate of starting vertex
-        this.document.append("y=\"").append(y).append("\" ");// Y coordinate of starting vertex
+        this.document.append("x=\"").append(center.x).append("\" ");// X coordinate of starting vertex
+        this.document.append("y=\"").append(center.y).append("\" ");// Y coordinate of starting vertex
         this.document.append("width=\"").append(width).append("\" ");// Rectangle width
         this.document.append("height=\"").append(height).append("\" ");// Rectangle height
         this.document.append(" style=\"fill:none; stroke:black; stroke-width:2;\"/>\n");
+    }
+
+    @Override
+    public void drawLabel(Point center, String text) {
+        this.document.append(String.format("<text x=\"%s\" y=\"%s\">", center.x, center.y));
+        this.document.append(text);
+        this.document.append("</text>");
     }
 }

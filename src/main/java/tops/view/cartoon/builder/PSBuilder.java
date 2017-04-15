@@ -3,6 +3,7 @@ package tops.view.cartoon.builder;
 //Make PS Documents
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.PrintWriter;
 import java.util.Vector;
@@ -11,6 +12,8 @@ import tops.view.cartoon.PostscriptFactory;
 import tops.view.cartoon.TextCartoonBuilder;
 
 public class PSBuilder implements TextCartoonBuilder {
+    
+    private String font = "Times-Roman";
 
     private Vector<String> eps; // the product that this builder will return
 
@@ -41,22 +44,22 @@ public class PSBuilder implements TextCartoonBuilder {
         }
     }
 
-    public void connect(int x1, int y1, int x2, int y2) {
-        this.eps.addElement(PostscriptFactory.makeMove(this.h - x1, y1));
-        this.eps.addElement(PostscriptFactory.makeLine(this.h - x2, y2));
+    public void connect(Point p1, Point p2) {
+        this.eps.addElement(PostscriptFactory.makeMove(this.h - p1.x, p1.y));
+        this.eps.addElement(PostscriptFactory.makeLine(this.h - p1.x, p1.y));
         this.eps.addElement(PostscriptFactory.stroke());
     }
 
-    public void drawHelix(int x, int y, int rad, Color c) {
-        this.eps = PostscriptFactory.makeCircle(this.h - x, y, rad, c, this.eps);
+    public void drawHelix(Point center, int rad, Color c) {
+        this.eps = PostscriptFactory.makeCircle(
+                this.h - center.x, center.y, rad, c, this.eps);
     }
 
-    public void drawStrand(int pointX, int pointY, int leftX, int leftY,
-            int rightX, int rightY, Color c) {
+    public void drawStrand(Point center, Point left, Point right, Color c) {
         this.eps.addElement(PostscriptFactory.newPath());
-        this.eps.addElement(PostscriptFactory.makeMove(this.h - pointX, pointY));
-        this.eps.addElement(PostscriptFactory.makeLine(this.h - leftX, leftY));
-        this.eps.addElement(PostscriptFactory.makeLine(this.h - rightX, rightY));
+        this.eps.addElement(PostscriptFactory.makeMove(this.h - center.x, center.x));
+        this.eps.addElement(PostscriptFactory.makeLine(this.h - left.x, left.y));
+        this.eps.addElement(PostscriptFactory.makeLine(this.h - right.x, right.y));
         this.eps.addElement(PostscriptFactory.closePath());
         // do colour stuff
         this.eps.addElement(PostscriptFactory.gsave());
@@ -66,11 +69,16 @@ public class PSBuilder implements TextCartoonBuilder {
         this.eps.addElement(PostscriptFactory.setColour(Color.black));
         // end colour stuff
         this.eps.addElement(PostscriptFactory.stroke());
-        this.eps.addElement(PostscriptFactory.makeMove(this.h - pointX, pointY));
+        this.eps.addElement(PostscriptFactory.makeMove(this.h - center.x, center.y));
     }
 
-    public void drawTerminus(int x, int y, int r, String label) {
-        this.eps = PostscriptFactory.makeText("Times-Roman", (3 * r) / 4, this.h - x, y,
-                label, this.eps);
+    public void drawTerminus(Point center, int r, String label) {
+        this.eps = PostscriptFactory.makeText(font, 
+                (3 * r) / 4, this.h - center.x, center.y, label, this.eps);
+    }
+
+    @Override
+    public void drawLabel(Point center, String text) {
+        this.eps = PostscriptFactory.makeText(font, 12, center.x, center.y, text, eps);
     }
 }

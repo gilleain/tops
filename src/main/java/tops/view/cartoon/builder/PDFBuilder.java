@@ -4,6 +4,7 @@ package tops.view.cartoon.builder;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -55,20 +56,24 @@ public class PDFBuilder implements ByteCartoonBuilder {
 		}
     }
 
-    public void connect(int x1, int y1, int x2, int y2) {
-        graphicsBuilder.connect(x1, y1, x2, y2);
+    public void connect(Point p1, Point p2) {
+        graphicsBuilder.connect(p1, p2);
     }
 
-    public void drawHelix(int x, int y, int r, Color c) {
-        graphicsBuilder.drawHelix(x, y, r, c);
+    public void drawHelix(Point center, int r, Color c) {
+        graphicsBuilder.drawHelix(center, r, c);
     }
 
-    public void drawStrand(int pointX, int pointY, int leftX, int leftY,
-            int rightX, int rightY, Color c) {
-        graphicsBuilder.drawStrand(pointX, pointY, leftX, leftY, rightX, rightY, c);
+    public void drawStrand(Point center, Point left, Point right, Color c) {
+        graphicsBuilder.drawStrand(center, left, right, c);
     }
 
-    public void drawTerminus(int x, int y, int r, String label) {
-        graphicsBuilder.drawTerminus(x, y, r, label);
+    public void drawTerminus(Point center, int r, String label) {
+        graphicsBuilder.drawTerminus(center, r, label);
+    }
+
+    @Override
+    public void drawLabel(Point center, String text) {
+        graphicsBuilder.drawLabel(center, text);
     }
 }

@@ -2,6 +2,7 @@ package tops.view.cartoon.builder;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import tops.view.cartoon.CartoonBuilder;
@@ -28,24 +29,20 @@ public class GraphicsBuilder implements CartoonBuilder {
         this.g.setColor(Color.WHITE);
         this.g.fillRect(0, 0, this.w, this.h);
         this.g.setColor(Color.BLACK);
-        if (w > 100 && h > 100) {
-            // only draw the name if there is room!
-            this.g.drawString(name, NAME_X, NAME_Y); 
-        }
         this.g.drawRect(0, 0, this.w - 2, this.h - 2); // bounds
     }
 
-    public void connect(int x1, int y1, int x2, int y2) {
-        this.g.drawLine(x1, y1, x2, y2);
+    public void connect(Point p1, Point p2) {
+        this.g.drawLine(p1.x, p1.y, p2.x, p2.y);
     }
 
-    public void drawHelix(int x, int y, int r, Color c) {
+    public void drawHelix(Point center, int r, Color c) {
         // x *= scalex;
         // y *= scaley;
 
         int d = 2 * r;
-        int ex = x - r;
-        int ey = y - r;
+        int ex = center.x - r;
+        int ey = center.y - r;
 
         if (c != null) {
             this.g.setColor(c);
@@ -56,18 +53,17 @@ public class GraphicsBuilder implements CartoonBuilder {
         this.g.drawOval(ex, ey, d, d);
     }
 
-    public void drawStrand(int pointX, int pointY, int leftX, int leftY,
-            int rightX, int rightY, Color c) {
+    public void drawStrand(Point top, Point left, Point right, Color c) {
         int[] xPoints = new int[3];
         int[] yPoints = new int[3];
 
-        xPoints[0] = pointX;
-        xPoints[1] = leftX;
-        xPoints[2] = rightX;
+        xPoints[0] = top.x;
+        xPoints[1] = left.x;
+        xPoints[2] = right.x;
 
-        yPoints[0] = pointY;
-        yPoints[1] = leftY;
-        yPoints[2] = rightY;
+        yPoints[0] = top.y;
+        yPoints[1] = left.y;
+        yPoints[2] = right.y;
 
         if (c != null) {
             this.g.setColor(c);
@@ -77,14 +73,19 @@ public class GraphicsBuilder implements CartoonBuilder {
         this.g.drawPolygon(xPoints, yPoints, 3); // draw outline
     }
 
-    public void drawTerminus(int x, int y, int r, String label) {
+    public void drawTerminus(Point center, int r, String label) {
         if (this.w > 100 && this.h > 100 && label != null) {
-            this.g.drawString(label, x, y);
+            this.g.drawString(label, center.x, center.y);
         } else {
             int d = 2 * r;
-            int cornerX = x - r;
-            int cornerY = y - r;
+            int cornerX = center.x - r;
+            int cornerY = center.y - r;
             this.g.drawRect(cornerX, cornerY, d, d);
         }
+    }
+
+    @Override
+    public void drawLabel(Point center, String text) {
+        this.g.drawString(text, center.x, center.y); 
     }
 }

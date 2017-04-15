@@ -936,4 +936,9 @@ public class Cartoon {
     public void addSSE(SecStrucElement s) {
         sses.add(s);
     }
+
+    public String getName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
