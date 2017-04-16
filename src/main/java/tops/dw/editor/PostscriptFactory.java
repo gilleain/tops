@@ -375,7 +375,7 @@ public final class PostscriptFactory {
     private static int border = 36;
 
     public static Vector<String> PSArrayA4(
-    		Vector<String> titles, Vector<Vector<String>> EPSfiles, int margin, float scle) throws PSException {
+    		Vector<String> titles, Vector<String> EPSfiles, int margin, float scle) throws PSException {
         if (EPSfiles == null || EPSfiles.isEmpty())
             throw new PSException("Nothing to draw!");
         if (scle <= 0.01f)
@@ -390,10 +390,9 @@ public final class PostscriptFactory {
         // determine largest X and Y sizes
         int xs, ys, maxx = 0, maxy = 0;
         int bb[];
-        Enumeration<Vector<String>> enf = EPSfiles.elements();
-        Vector<String> eps;
+        Enumeration<String> enf = EPSfiles.elements();
         while (enf.hasMoreElements()) {
-            eps = enf.nextElement();
+            String eps = enf.nextElement();
             bb = PostscriptFactory.getBoundingBox(eps);
             xs = bb[2] - bb[0];
             ys = bb[3] - bb[1];
@@ -445,7 +444,7 @@ public final class PostscriptFactory {
             PS.addElement(PostscriptFactory.translate(lowleft[0], lowleft[1]));
 
             // get bounding box
-            eps = enf.nextElement();
+            String eps = enf.nextElement();
             bb = PostscriptFactory.getBoundingBox(eps);
 
             // add title
@@ -468,7 +467,7 @@ public final class PostscriptFactory {
             // add the EPS file (may need a new path)
             PS.addElement(PostscriptFactory.newPath());
 
-            PostscriptFactory.appendEPS(PS, eps);
+            PS.addElement(eps);
 
             // reposition the origin at the lower left of the page
             PS.addElement(PostscriptFactory.translate(-xt, -yt));
@@ -506,8 +505,8 @@ public final class PostscriptFactory {
         return md;
     }
 
-    private static int[] getBoundingBox(Vector<String> eps) throws PSException {
-        String line, tok;
+    private static int[] getBoundingBox(String eps) throws PSException {
+        String tok;
         StringTokenizer st;
         int b, i;
         int bb[] = new int[4];
@@ -515,9 +514,8 @@ public final class PostscriptFactory {
             bb[i] = 0;
 
         if (eps != null) {
-            Enumeration<String> e = eps.elements();
-            while (e.hasMoreElements()) {
-                line = e.nextElement();
+            String[] e = eps.split("\n");    // TODO
+            for (String line : e) {
                 if (line.startsWith("%%BoundingBox:")) {
                     st = new StringTokenizer(line);
                     if (st.countTokens() == 5) {

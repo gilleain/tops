@@ -22,8 +22,10 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -149,9 +151,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     private Graphics OffGraphics = null;
 
-    private Font[] FontsArr = new Font[10];
+    private Font[] fontsArr = new Font[10];
+    
+    private Font currentFont;
 
-    private Font Font18, Font12;
+    private Font font18;
+    
+    private Font font12;
 
     private boolean UseBorder = true;
     
@@ -173,120 +179,23 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         this.setSize(ps.width, ps.height);
 
         int fs, i;
-        for (fs = 48, i = 0; (fs > 11) && i < this.FontsArr.length; fs -= 4, i++) {
-            this.FontsArr[i] = new Font("TimesRoman", Font.PLAIN, fs);
+        for (fs = 48, i = 0; (fs > 11) && i < this.fontsArr.length; fs -= 4, i++) {
+            this.fontsArr[i] = new Font("TimesRoman", Font.PLAIN, fs);
         }
-        this.Font18 = new Font("TimesRoman", Font.PLAIN, 18);
-        this.Font12 = new Font("TimesRoman", Font.PLAIN, 12);
+        this.font18 = new Font("TimesRoman", Font.PLAIN, 18);
+        this.font12 = new Font("TimesRoman", Font.PLAIN, 12);
 
 //        SizeDisplay = true;
 
         this.selectBoxList = new ArrayList<SecStrucElement>();
     }
     
-    public Vector<String> getEPS() {
-
-        if (this.cartoon == null)
-            return null;
-
-        int w = this.getSize().width;
-        int h = this.getSize().height;
-
-        Vector<String> EPS = new Vector<String>();
-
-        EPS = PostscriptFactory.makeEPSHeader(EPS, 0, 0, w, h);
-        this.cartoon.getEPS(w, h, EPS);
-        
-        // draw user labels
-        if (this.UserLabels != null) {
-            Enumeration<UserLabel> labs = this.UserLabels.elements();
-            while (labs.hasMoreElements()) {
-                UserLabel ul = labs.nextElement();
-                EPS = ul.Draw(EPS, h);
-            }
-        }
-
-        // draw user arrows
-        if (this.UserArrows != null) {
-            Enumeration<UserArrow> arrows = this.UserArrows.elements();
-            while (arrows.hasMoreElements()) {
-                UserArrow ua = arrows.nextElement();
-                EPS = ua.Draw(EPS, h);
-            }
-        }
-
-        // determine actual bounding box
-        Rectangle bbox = cartoon.epsBoundingBox(h);
-        bbox = this.expandEPSBoundingBox(bbox, h);
-        EPS = PostscriptFactory.addBoundingBox(EPS, bbox.x, bbox.y, bbox.x
-                + bbox.width, bbox.y + bbox.height);
-
-        EPS.addElement(PostscriptFactory.showpage());
-        EPS.addElement(PostscriptFactory.EndDocument());
-        EPS.addElement(PostscriptFactory.EOF());
-
-        return EPS;
-
+    public String getEPS() throws IOException {
+        StringWriter stringWriter = new StringWriter();
+        drawer.draw("", "PS", cartoon, new PrintWriter(stringWriter));
+        return stringWriter.toString();
     }
     
-
-    private Rectangle expandEPSBoundingBox(Rectangle r, int h) {
-
-        int xmin = r.x;
-        int xmax = r.x + r.width;
-        int ymin = r.y;
-        int ymax = r.y + r.height;
-       
-        int x, y;
-        int sw, sh;
-        if (this.UserLabels != null) {
-            Enumeration<UserLabel> labs = this.UserLabels.elements();
-            while (labs.hasMoreElements()) {
-                UserLabel ul = labs.nextElement();
-                x = ul.getPosition().x;
-                y = h - ul.getPosition().y;
-                sw = ul.getPSWidth();
-                sh = ul.getPSHeight();
-                if (x + sw > xmax)
-                    xmax = x + sw;
-                if (x < xmin)
-                    xmin = x;
-                if (y + sh > ymax)
-                    ymax = y + sh;
-                if (y - sh < ymin)
-                    ymin = y - sh;
-            }
-        }
-
-        if (this.UserArrows != null) {
-            Enumeration<UserArrow> arrows = this.UserArrows.elements();
-            while (arrows.hasMoreElements()) {
-                UserArrow ua = arrows.nextElement();
-                x = ua.getStart().x;
-                y = h - ua.getStart().y;
-                if (x > xmax)
-                    xmax = x;
-                if (y > ymax)
-                    ymax = y;
-                if (x < xmin)
-                    xmin = x;
-                if (y < ymin)
-                    ymin = y;
-                x = ua.getEnd().x;
-                y = h - ua.getEnd().y;
-                if (x > xmax)
-                    xmax = x;
-                if (y > ymax)
-                    ymax = y;
-                if (x < xmin)
-                    xmin = x;
-                if (y < ymin)
-                    ymin = y;
-            }
-        }
-
-        return new Rectangle(xmin, ymin, xmax - xmin, ymax - ymin);
-    }
 
     /**
      * @param sse
@@ -993,8 +902,6 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             this.DrawBorder(g);
         if (this.Label != null)
             this.DrawLabel(g);
-        if (this.cartoon != null)
-            cartoon.paint(g);
         
         drawer.draw(g, getWidth(), getHeight(), cartoon);
         
@@ -1019,7 +926,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     }
 
     private void DrawInfoString(Graphics g) {
-        g.setFont(this.Font12);
+        g.setFont(this.font12);
         g.setColor(Color.black);
         g.drawString(this.InfoString, this.InfoStringPos.x, this.InfoStringPos.y);
     }
@@ -1049,7 +956,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         if (this.Label != null) {
             x = this.getSize().width / 2;
             y = TopsDrawCanvas.BORDER / 2;
-            g.setFont(this.Font18);
+            g.setFont(this.font18);
             x -= (g.getFontMetrics().stringWidth(this.Label)) / 2;
             g.drawString(this.Label, x, y);
         }
@@ -1147,20 +1054,20 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
         /* catch covers the situation for Xterms where fonts might be missing */
         try {
-            g.setFont(this.FontsArr[0]);
+            g.setFont(this.fontsArr[0]);
             fm = g.getFontMetrics();
             FontHeight = fm.getHeight();
             StringWidth = fm.stringWidth(lab);
 
-            for (i = 1; (i < this.FontsArr.length) && (this.FontsArr[i] != null)
+            for (i = 1; (i < this.fontsArr.length) && (this.fontsArr[i] != null)
                     && (Math.max(StringWidth, FontHeight) > r); i++) {
-                g.setFont(this.FontsArr[i]);
+                g.setFont(this.fontsArr[i]);
                 fm = g.getFontMetrics();
                 FontHeight = fm.getHeight();
                 StringWidth = fm.stringWidth(lab);
             }
         } catch (Exception e) {
-            g.setFont(this.Font12);
+            g.setFont(this.font12);
             fm = g.getFontMetrics();
             FontHeight = fm.getHeight();
             StringWidth = fm.stringWidth(lab);
@@ -1180,12 +1087,42 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         g.drawRect(x - (boxSize / 2), y - (boxSize / 2), boxSize, boxSize);
 
     }
+    
+
+    private FontMetrics setFontSize(String lab, int r, Graphics g) {
+        try {
+            if (this.currentFont == null) {
+                g.setFont(this.fontsArr[0]);
+            } else {
+                g.setFont(this.currentFont);
+            }
+            FontMetrics fm = g.getFontMetrics();
+            int w = fm.stringWidth(lab);
+            int h = fm.getHeight();
+
+            int i = 1;
+            while (i < this.fontsArr.length && (Math.max(w, h) > r)) {
+                if (this.fontsArr[i] == null) {
+                    break;
+                }
+                this.currentFont = this.fontsArr[i];
+                g.setFont(this.fontsArr[i]);
+                fm = g.getFontMetrics();
+                w = fm.stringWidth(lab);
+                i++;
+            }
+        } catch (Exception e) {
+            System.err.println(e.toString());
+            g.setFont(this.font12);
+        }
+        return g.getFontMetrics();
+    }
 
     /*
      * private method to draw the connection between two secondary structure
      * elements
      */
-    private void DrawConnection(SecStrucElement s, SecStrucElement To, Object GraphicsOutput) {
+    private void DrawConnection(SecStrucElement s, SecStrucElement To, Object GraphicsOutput, boolean startNewConnection) {
 
         int FromScreenR, ToScreenR;
 
@@ -1212,7 +1149,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         if (s.getConnectionTo().isEmpty()) {
             this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR, To
                     .getPosition(), To.getDirection(), To.getType(), ToScreenR,
-                    GraphicsOutput);
+                    GraphicsOutput, startNewConnection);
         }
         /* the case where there are some intervening connection points */
         else {
@@ -1221,19 +1158,19 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             Point pointTo = connectionEnum.next();
 
             this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    pointTo, UNKNOWN, COIL, 0, GraphicsOutput);
+                    pointTo, UNKNOWN, COIL, 0, GraphicsOutput, startNewConnection);
 
             Point pointFrom;
             while (connectionEnum.hasNext()) {
                 pointFrom = pointTo;
                 pointTo = connectionEnum.next();
                 this.JoinPoints(pointFrom, UNKNOWN, COIL, 0, pointTo, UNKNOWN, COIL, 0,
-                        GraphicsOutput);
+                        GraphicsOutput, startNewConnection);
             }
 
             pointFrom = pointTo;
             this.JoinPoints(pointFrom, UNKNOWN, COIL, 0, To.getPosition(), To.getDirection(),
-                    To.getType(), ToScreenR, GraphicsOutput);
+                    To.getType(), ToScreenR, GraphicsOutput, startNewConnection);
 
         }
 
@@ -1249,7 +1186,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      */
     private void JoinPoints(Point p1, Direction direction, SSEType sseType, int Radius1,
             Point p2, Direction direction2, SSEType sseType2, int Radius2,
-            Object GraphicsOutput) {
+            Object GraphicsOutput, boolean startNewConnection) {
 
         Point To, From;
 
@@ -1286,14 +1223,14 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         if (GraphicsOutput instanceof Graphics) {
             Graphics gc = (Graphics) GraphicsOutput;
             gc.drawLine(From.x, From.y, To.x, To.y);
+        } else if (GraphicsOutput instanceof Vector) {
+            @SuppressWarnings("unchecked")
+            Vector<String> ps = (Vector<String>) GraphicsOutput;
+            if (startNewConnection) {
+                ps.addElement(PostscriptFactory.makeMove(From.x, 0 - From.y));  //FIXME
+            }
+            ps.addElement(PostscriptFactory.makeLine(To.x, 0 - To.y)); //FIXME
         }
-        /*
-         * else if ( GraphicsOutput instanceof Vector ) { Vector ps = (Vector)
-         * GraphicsOutput; if ( start_new_connection ) { ps.addElement(
-         * PostscriptFactory.makeMove(From.x, getSize().height-From.y) );
-         * start_new_connection = false; } ps.addElement(
-         * PostscriptFactory.makeLine(To.x, getSize().height - To.y) ); }
-         */
 
     }
 

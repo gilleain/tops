@@ -533,7 +533,12 @@ public class TopsEditor implements ActionListener {
 
             if (DrawCanvToPrint != null) {
 
-                Vector<String> eps = DrawCanvToPrint.getEPS();
+                String eps = null;
+                try {
+                    eps = DrawCanvToPrint.getEPS();
+                } catch (IOException ioe) {
+                    // TODO
+                }
 
                 if (!this.appletMode) {
                     FileDialog fd = new FileDialog(this.f, "Choose EPS filename",
@@ -556,10 +561,7 @@ public class TopsEditor implements ActionListener {
                         return;
                     }
 
-                    Enumeration<String> en = eps.elements();
-                    while (en.hasMoreElements()) {
-                        pw.println((String) en.nextElement());
-                    }
+                    pw.println(eps);
 
                     pw.close();
                 } else {
@@ -570,7 +572,7 @@ public class TopsEditor implements ActionListener {
                         pwf.setVisible(true);
                         pwf.toFront();
                         PostscriptPrinter psp = (PostscriptPrinter) this.controlApplet;
-                        psp.printPostscript(eps);
+//                        psp.printPostscript(eps); TODO
                         pwf.dispose();
                     }
 
@@ -584,14 +586,18 @@ public class TopsEditor implements ActionListener {
     public void writePSFile() {
 
         // form the postscript
-        Vector<tops.web.display.applet.TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
-        Vector<Vector<String>> EPSS = new Vector<Vector<String>>();
+        Vector<TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
+        Vector<String> EPSS = new Vector<String>();
         Vector<String> titles = new Vector<String>();
-        Enumeration<tops.web.display.applet.TopsDrawCanvas> endcs = dcs.elements();
-        tops.web.display.applet.TopsDrawCanvas tdc;
+        Enumeration<TopsDrawCanvas> endcs = dcs.elements();
+        TopsDrawCanvas tdc;
         while (endcs.hasMoreElements()) {
         	tdc = endcs.nextElement();
-        	EPSS.addElement(tdc.getEPS());
+        	try {
+        	    EPSS.addElement(tdc.getEPS());
+        	} catch (IOException ioe) {
+        	    // TODO
+        	}
         	titles.addElement(tdc.getLabel());
         }
 

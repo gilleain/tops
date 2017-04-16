@@ -39,7 +39,7 @@ public class BatchAnnotater {
 
 		        Graphics g = image.getGraphics();
 		        g.fillRect(0, 0, w, h);
-		        domain.paint(g);
+//		        domain.paint(g);    TODO
 	 
 		        File file = new File(outputDirectory, names.get(i).toString() + ".png");
 				ImageIO.write((RenderedImage) image, "PNG", file);
