@@ -1,23 +1,16 @@
 package tops.web.display.applet;
 
-import static tops.port.model.Direction.DOWN;
-import static tops.port.model.Direction.UNKNOWN;
 import static tops.port.model.Direction.UP;
-import static tops.port.model.SSEType.COIL;
-import static tops.port.model.SSEType.CTERMINUS;
 import static tops.port.model.SSEType.EXTENDED;
 import static tops.port.model.SSEType.HELIX;
-import static tops.port.model.SSEType.NTERMINUS;
 
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -28,11 +21,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
-import tops.dw.editor.PostscriptFactory;
-import tops.dw.editor.UserArrow;
-import tops.dw.editor.UserLabel;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.Direction;
@@ -117,9 +106,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     private Cartoon cartoon = null;
 
-    private String Label = "Tops diagram";
+    private String label = "Tops diagram";
 
-    private SecStrucElement SelectedSymbol;
+    private SecStrucElement selectedSymbol;
 
     private Rectangle selectBox;
 
@@ -127,13 +116,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     private int minimumSeparation = 10;;
 
-    private Float Scale = new Float(1.0);
+    private Float scale = new Float(1.0);
 
-    private String InfoString = null;
+    private String infoString = null;
 
-    private Point InfoStringPos = new Point();
+    private Point infoStringPos = new Point();
 
-    private int EditMode;
+    private int editMode;
 
 //    private Color CurrentColour = Color.white;
 
@@ -145,25 +134,19 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
 //    private boolean SizeDisplay = true;
 
-    private Dimension OffDimension = new Dimension();
+    private Dimension offDimension = new Dimension();
 
-    private Image OffScreenImage = null;
+    private Image offScreenImage = null;
 
-    private Graphics OffGraphics = null;
+    private Graphics offGraphics = null;
 
     private Font[] fontsArr = new Font[10];
     
-    private Font currentFont;
-
     private Font font18;
     
     private Font font12;
 
-    private boolean UseBorder = true;
-    
-    private Vector<UserLabel> UserLabels = new Vector<UserLabel>();
-
-    private Vector<UserArrow> UserArrows = new Vector<UserArrow>();
+    private boolean useBorder = true;
     
     private CartoonDrawer drawer; 
 
@@ -173,7 +156,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
 
-        this.EditMode = TopsDrawCanvas.ADD_STRAND_MODE;
+        this.editMode = TopsDrawCanvas.ADD_STRAND_MODE;
 
         Dimension ps = this.getPreferredSize();
         this.setSize(ps.width, ps.height);
@@ -217,7 +200,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      */
     public TopsDrawCanvas(Cartoon cartoon, String lab) {
         this(cartoon);
-        this.Label = lab;
+        this.label = lab;
     }
 
     /* END of Constructors */
@@ -244,7 +227,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * @return the Label for the diagram
      */
     public synchronized String getLabel() {
-        return this.Label;
+        return this.label;
     }
 
     /**
@@ -252,7 +235,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      *            the Label for the diagram
      */
     public synchronized void setLabel(String l) {
-        this.Label = l;
+        this.label = l;
         this.repaint();
     }
 
@@ -261,7 +244,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      *            sets whether a border should be drawn or not
      */
     public synchronized void setUseBorder(boolean use) {
-        this.UseBorder = use;
+        this.useBorder = use;
     }
 
     /* RootSecStruc - not bound property */
@@ -283,7 +266,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      */
     public synchronized void setScale(float scale) {
 //        Float oldf = Scale;
-        this.Scale = new Float(scale);
+        this.scale = new Float(scale);
         this.repaint();
     }
 
@@ -292,7 +275,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      *         screen coordinates
      */
     public synchronized float getScale() {
-        return this.Scale.floatValue();
+        return this.scale.floatValue();
     }
 
     /**
@@ -303,7 +286,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      */
     public synchronized void setEditMode(int em) {
         System.out.println("setting edit mode : " + em);
-        this.EditMode = em;
+        this.editMode = em;
         // UnSelect();
     }
 
@@ -311,7 +294,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * returns the current editor mode
      */
     public synchronized int getEditMode() {
-        return this.EditMode;
+        return this.editMode;
     }
 
     /**
@@ -321,29 +304,29 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      *            the new information string
      */
     public void setInfoString(String s) {
-        this.InfoString = s;
+        this.infoString = s;
     }
 
     /**
      * returns the current information string
      */
     public String getInfoString() {
-        return this.InfoString;
+        return this.infoString;
     }
 
     /**
      * sets the information string position
      */
     public void setInfoStringPos(Point p) {
-        this.InfoStringPos.x = p.x;
-        this.InfoStringPos.y = p.y;
+        this.infoStringPos.x = p.x;
+        this.infoStringPos.y = p.y;
     }
 
     /**
      * returns the information string position
      */
     public Point getInfoStringPos() {
-        return this.InfoStringPos;
+        return this.infoStringPos;
     }
 
     /**
@@ -364,17 +347,17 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public void mousePressed(MouseEvent e) {
         Point pos = e.getPoint();
-        System.out.println("currently selected symbol = " + this.SelectedSymbol);
+        System.out.println("currently selected symbol = " + this.selectedSymbol);
 
-        switch (this.EditMode) {
+        switch (this.editMode) {
 
             case SELECT_SYMBOL_MODE:
-                this.SelectByPosition(pos);
+                this.selectByPosition(pos);
                 this.repaint();
                 break;
 
             case FLIP_MODE: // woo-ha!
-                this.SelectByPosition(pos);
+                this.selectByPosition(pos);
                 this.repaint();
                 break;
 
@@ -394,23 +377,23 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             case LINEAR_LAYOUT_MODE:
             case CIRCULAR_LAYOUT_MODE:
             case FLIP_MULTIPLE_MODE:
-                this.UnSelect();
+                this.unSelect();
                 this.startNewSelectBox(pos);
                 this.repaint();
                 break;
 
             case MOVE_SYMBOLS_MODE:
-                this.SelectByPosition(pos);
+                this.selectByPosition(pos);
                 this.repaint();
                 break;
 
             case MOVE_FIXEDS_MODE:
-                this.SelectByPosition(pos);
+                this.selectByPosition(pos);
                 this.repaint();
                 break;
 
             case DELETE_SYMBOLS_MODE:
-                this.SelectByPosition(pos);
+                this.selectByPosition(pos);
                 this.repaint();
                 break;
         }
@@ -418,10 +401,10 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public void mouseReleased(MouseEvent e) {
 
-        switch (this.EditMode) {
+        switch (this.editMode) {
 
             case FLIP_MODE:
-                cartoon.flip(this.SelectedSymbol);
+                cartoon.flip(this.selectedSymbol);
                 this.repaint();
                 break;
 
@@ -453,9 +436,9 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 break;
 
             case DELETE_SYMBOLS_MODE:
-                this.DeleteSelected();
+                this.deleteSelected();
                 // UnSelect();
-                this.SelectedSymbol = null;
+                this.selectedSymbol = null;
                 this.repaint();
                 break;
         }
@@ -468,7 +451,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     }
 
     public void mouseClicked(MouseEvent e) {
-        switch (this.EditMode) {
+        switch (this.editMode) {
             /*
              * case DELETE_SYMBOLS_MODE: SelectByPosition( e.getPoint() );
              * DeleteSelected(); //UnSelect(); SelectedSymbol = RootSecStruc;
@@ -476,10 +459,10 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
              */
 
             case REDRAW_CONNECTIONS_MODE:
-                if (this.SelectedSymbol == null) {
-                    this.SelectByPosition(e.getPoint());
-                    if (this.SelectedSymbol != null) {
-                        this.SelectedSymbol.clearConnectionTo();
+                if (this.selectedSymbol == null) {
+                    this.selectByPosition(e.getPoint());
+                    if (this.selectedSymbol != null) {
+                        this.selectedSymbol.clearConnectionTo();
                     }
                 } else {
                     /*
@@ -487,10 +470,10 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                      * ClickCount = 1 the other with ClickCount = 2
                      */
                     if (e.getClickCount() == 1) {
-                        this.SelectedSymbol.addConnectionTo(e.getPoint());
+                        this.selectedSymbol.addConnectionTo(e.getPoint());
                         this.repaint();
                     } else {
-                        this.UnSelect();
+                        this.unSelect();
                     }
                 }
                 break;
@@ -631,13 +614,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public void mouseDragged(MouseEvent e) {
         Point pos = e.getPoint();
-        switch (this.EditMode) {
+        switch (this.editMode) {
 
             case MOVE_STRAND_MODE:
             case MOVE_HELIX_MODE:
             case MOVE_SYMBOLS_MODE:
-                if (this.SelectedSymbol != null) {
-                    this.SelectedSymbol.setPosition(pos);
+                if (this.selectedSymbol != null) {
+                    this.selectedSymbol.setPosition(pos);
                     this.repaint();
                 }
                 break;
@@ -651,8 +634,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 break;
 
             case MOVE_FIXEDS_MODE:
-                if (this.SelectedSymbol != null) {
-                    Point oldp = this.SelectedSymbol.getPosition();
+                if (this.selectedSymbol != null) {
+                    Point oldp = this.selectedSymbol.getPosition();
                     Point newp = pos;
                     cartoon.translateFixed(newp.x - oldp.x, newp.y - oldp.y);
                     this.repaint();
@@ -681,7 +664,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     }
 
     public synchronized void selectBoxDoAction() {
-        switch (this.EditMode) {
+        switch (this.editMode) {
             case FLIP_MULTIPLE_MODE:
                 cartoon.flipMultiple(this.selectBoxList);
                 break;
@@ -698,38 +681,38 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         // finished, so clean up
         this.selectBox = null;
         this.selectBoxList.clear();
-        this.SelectedSymbol = null;
+        this.selectedSymbol = null;
     }
 
     public void addSymbol(SSEType type, Direction direction, int x, int y) {
         System.out.println("adding symbol : " + type + ", " + direction
                 + " at (" + x + ", " + y + ")");
-        this.SelectedSymbol = cartoon.addSymbol(type, direction, x, y, SelectedSymbol);
+        this.selectedSymbol = cartoon.addSymbol(type, direction, x, y, selectedSymbol);
         this.CenterDiagram();
         this.ScaleDiagram();
     }
 
-    public synchronized void DeleteSelected() {
-        cartoon.delete(SelectedSymbol);
+    public void deleteSelected() {
+        cartoon.delete(selectedSymbol);
     }
 
-    public synchronized void UnSelect() {
-        System.out.println("selected symbol : " + this.SelectedSymbol
+    public void unSelect() {
+        System.out.println("selected symbol : " + this.selectedSymbol
                 + " unselected");
-        this.SelectedSymbol = null;
+        this.selectedSymbol = null;
     }
 
-    public synchronized void selectContained(Rectangle r, List<SecStrucElement> list) {
+    public void selectContained(Rectangle r, List<SecStrucElement> list) {
         list.clear();
         list.addAll(cartoon.selectContained(r));
     }
 
-    public synchronized void SelectByPosition(Point p) {
+    public void selectByPosition(Point p) {
         SecStrucElement selected = cartoon.selectByPosition(p);
 
         if (selected != null) {
             System.out.println("selected : " + selected.toString());
-            this.SelectedSymbol = selected;
+            this.selectedSymbol = selected;
         }
     }
 
@@ -878,34 +861,34 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         int w = this.getSize().width;
         int h = this.getSize().height;
 
-        if ((this.OffScreenImage == null) || (this.OffDimension.width != w)
-                || (this.OffDimension.height != h)) {
-            this.OffScreenImage = this.createImage(w, h);
-            this.OffDimension.width = w;
-            this.OffDimension.height = h;
-            this.OffGraphics = this.OffScreenImage.getGraphics();
+        if ((this.offScreenImage == null) || (this.offDimension.width != w)
+                || (this.offDimension.height != h)) {
+            this.offScreenImage = this.createImage(w, h);
+            this.offDimension.width = w;
+            this.offDimension.height = h;
+            this.offGraphics = this.offScreenImage.getGraphics();
         }
 
-        this.OffGraphics.setColor(this.getBackground());
-        this.OffGraphics.fillRect(0, 0, w, h);
+        this.offGraphics.setColor(this.getBackground());
+        this.offGraphics.fillRect(0, 0, w, h);
 
-        this.paint(this.OffGraphics);
+        this.paint(this.offGraphics);
 
-        g.drawImage(this.OffScreenImage, 0, 0, this);
+        g.drawImage(this.offScreenImage, 0, 0, this);
 
     }
 
     @Override
     public void paint(Graphics g) {
         g.setColor(Color.black);
-        if (this.UseBorder)
+        if (this.useBorder)
             this.DrawBorder(g);
-        if (this.Label != null)
+        if (this.label != null)
             this.DrawLabel(g);
         
         drawer.draw(g, getWidth(), getHeight(), cartoon);
         
-        if (this.InfoString != null)
+        if (this.infoString != null)
             this.DrawInfoString(g);
         if (this.selectBox != null)
             this.drawMultipleSelectBox(g);
@@ -928,7 +911,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     private void DrawInfoString(Graphics g) {
         g.setFont(this.font12);
         g.setColor(Color.black);
-        g.drawString(this.InfoString, this.InfoStringPos.x, this.InfoStringPos.y);
+        g.drawString(this.infoString, this.infoStringPos.x, this.infoStringPos.y);
     }
 
     private void DrawBorder(Graphics g) {
@@ -953,421 +936,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
         int x, y;
 
-        if (this.Label != null) {
+        if (this.label != null) {
             x = this.getSize().width / 2;
             y = TopsDrawCanvas.BORDER / 2;
             g.setFont(this.font18);
-            x -= (g.getFontMetrics().stringWidth(this.Label)) / 2;
-            g.drawString(this.Label, x, y);
+            x -= (g.getFontMetrics().stringWidth(this.label)) / 2;
+            g.drawString(this.label, x, y);
         }
-    }
-
-    /* private method to draw a secondary structure */
-    private void DrawSecStruc(SecStrucElement ss, Graphics gc) {
-
-        int ScreenR;
-        Point ScreenPos;
-        Color c = ss.getColour();
-
-        ScreenR = ss.getSymbolRadius();
-        ScreenPos = ss.getPosition();
-
-        if (ss.getType() == HELIX) {
-            if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
-                c = this.selectedHelixColor;
-            this.DrawHelix(ScreenPos.x, ScreenPos.y, ScreenR, c, gc);
-        }
-
-        if (ss.getType() == EXTENDED) {
-            if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
-                c = this.selectedStrandColor;
-            this.DrawStrand(ScreenPos.x, ScreenPos.y, ScreenR, ss.getDirection(), c, gc);
-        }
-
-        if (ss.getType() == CTERMINUS || ss.getType() == NTERMINUS) {
-            if ((ss == this.SelectedSymbol) || this.selectBoxList.contains(ss))
-                c = this.selectedTerminusColor;
-            this.DrawTerminus(ScreenPos.x, ScreenPos.y, ScreenR, ss.getLabel(), c, gc);
-        }
-
-    }
-
-    /* private method to draw a helix symbol (circle) */
-    private void DrawHelix(int x, int y, int r, Color c, Graphics g) {
-
-        int d = 2 * r;
-        int ex = x - r;
-        int ey = y - r;
-
-        if (c == null)
-            c = this.getBackground();
-
-        g.setColor(c);
-        g.fillOval(ex, ey, d, d);
-        g.setColor(Color.black);
-        g.drawOval(ex, ey, d, d);
-
-    }
-
-    /*
-     * private method to draw a strand symbol (triangle, pointing up or down
-     * according to strand direction )
-     */
-    private void DrawStrand(int x, int y, int r, Direction direction, Color c, Graphics g) {
-
-        Polygon triangle = new Polygon();
-
-        double pi6 = Math.PI / 6.0;
-        double cospi6 = Math.cos(pi6);
-        double sinpi6 = Math.sin(pi6);
-
-        int rsinpi6 = (int) (r * sinpi6);
-        int rcospi6 = (int) (r * cospi6);
-
-        if (direction == DOWN) {
-            triangle.addPoint(x, y + r);
-            triangle.addPoint(x - rcospi6, y - rsinpi6);
-            triangle.addPoint(x + rcospi6, y - rsinpi6);
-        } else {
-            triangle.addPoint(x, y - r);
-            triangle.addPoint(x - rcospi6, y + rsinpi6);
-            triangle.addPoint(x + rcospi6, y + rsinpi6);
-        }
-
-        if (c == null)
-            c = this.getBackground();
-
-        g.setColor(c);
-        g.fillPolygon(triangle);
-        g.setColor(Color.black);
-        g.drawPolygon(triangle);
-
-    }
-
-    /* private method to draw the symbol of an N or C terminus */
-    private void DrawTerminus(int x, int y, int r, String lab, Color c,
-            Graphics g) {
-
-        int i;
-        int FontHeight, StringWidth;
-        FontMetrics fm;
-
-        /* catch covers the situation for Xterms where fonts might be missing */
-        try {
-            g.setFont(this.fontsArr[0]);
-            fm = g.getFontMetrics();
-            FontHeight = fm.getHeight();
-            StringWidth = fm.stringWidth(lab);
-
-            for (i = 1; (i < this.fontsArr.length) && (this.fontsArr[i] != null)
-                    && (Math.max(StringWidth, FontHeight) > r); i++) {
-                g.setFont(this.fontsArr[i]);
-                fm = g.getFontMetrics();
-                FontHeight = fm.getHeight();
-                StringWidth = fm.stringWidth(lab);
-            }
-        } catch (Exception e) {
-            g.setFont(this.font12);
-            fm = g.getFontMetrics();
-            FontHeight = fm.getHeight();
-            StringWidth = fm.stringWidth(lab);
-        }
-
-        int cornerX = x - (StringWidth / 2);
-        int cornerY = y + (FontHeight / 2);
-        int boxSize = Math.max(StringWidth, FontHeight);
-
-        if (c == null)
-            c = this.getBackground();
-        g.setColor(c);
-        g.fillRect(x - (boxSize / 2), y - (boxSize / 2), boxSize, boxSize);
-
-        g.setColor(Color.black);
-        g.drawString(lab, cornerX, cornerY);
-        g.drawRect(x - (boxSize / 2), y - (boxSize / 2), boxSize, boxSize);
-
-    }
-    
-
-    private FontMetrics setFontSize(String lab, int r, Graphics g) {
-        try {
-            if (this.currentFont == null) {
-                g.setFont(this.fontsArr[0]);
-            } else {
-                g.setFont(this.currentFont);
-            }
-            FontMetrics fm = g.getFontMetrics();
-            int w = fm.stringWidth(lab);
-            int h = fm.getHeight();
-
-            int i = 1;
-            while (i < this.fontsArr.length && (Math.max(w, h) > r)) {
-                if (this.fontsArr[i] == null) {
-                    break;
-                }
-                this.currentFont = this.fontsArr[i];
-                g.setFont(this.fontsArr[i]);
-                fm = g.getFontMetrics();
-                w = fm.stringWidth(lab);
-                i++;
-            }
-        } catch (Exception e) {
-            System.err.println(e.toString());
-            g.setFont(this.font12);
-        }
-        return g.getFontMetrics();
-    }
-
-    /*
-     * private method to draw the connection between two secondary structure
-     * elements
-     */
-    private void DrawConnection(SecStrucElement s, SecStrucElement To, Object GraphicsOutput, boolean startNewConnection) {
-
-        int FromScreenR, ToScreenR;
-
-        if ((GraphicsOutput == null) || (s == null))
-            return;
-
-        if (To == null)
-            return;
-
-        /* Don't connect from a C terminus or to an N terminus */
-        if (s.getType() == CTERMINUS || To.getType() == NTERMINUS)
-            return;
-
-        FromScreenR = s.getSymbolRadius();
-//        size = s.GetFixNumRes();
-
-        ToScreenR = To.getSymbolRadius();
-//        size = To.GetFixNumRes();
-
-        /*
-         * in the case of no intervening connection points just join between the
-         * two symbols
-         */
-        if (s.getConnectionTo().isEmpty()) {
-            this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR, To
-                    .getPosition(), To.getDirection(), To.getType(), ToScreenR,
-                    GraphicsOutput, startNewConnection);
-        }
-        /* the case where there are some intervening connection points */
-        else {
-
-            Iterator<Point> connectionEnum = s.getConnectionTo().iterator();
-            Point pointTo = connectionEnum.next();
-
-            this.JoinPoints(s.getPosition(), s.getDirection(), s.getType(), FromScreenR,
-                    pointTo, UNKNOWN, COIL, 0, GraphicsOutput, startNewConnection);
-
-            Point pointFrom;
-            while (connectionEnum.hasNext()) {
-                pointFrom = pointTo;
-                pointTo = connectionEnum.next();
-                this.JoinPoints(pointFrom, UNKNOWN, COIL, 0, pointTo, UNKNOWN, COIL, 0,
-                        GraphicsOutput, startNewConnection);
-            }
-
-            pointFrom = pointTo;
-            this.JoinPoints(pointFrom, UNKNOWN, COIL, 0, To.getPosition(), To.getDirection(),
-                    To.getType(), ToScreenR, GraphicsOutput, startNewConnection);
-
-        }
-
-    }
-
-    /*
-     * private method to draw the line connecting two secondary structure
-     * symbols
-     */
-    /*
-     * lines go from and the centre of the symbols except in certain cases when
-     * they are drawn to/from the boundary
-     */
-    private void JoinPoints(Point p1, Direction direction, SSEType sseType, int Radius1,
-            Point p2, Direction direction2, SSEType sseType2, int Radius2,
-            Object GraphicsOutput, boolean startNewConnection) {
-
-        Point To, From;
-
-        /*
-         * draw from border rather than centre if direction is down (D) or if
-         * Type is N or C
-         */
-        if (direction == DOWN || sseType == CTERMINUS || sseType == NTERMINUS) {
-            if (sseType == SSEType.EXTENDED) {
-                From = this.DownTriangleBorder(p1, p2, Radius1);
-            } else {
-                From = this.CircleBorder(p1, p2, Radius1);
-            }
-        } else {
-            From = p1;
-        }
-
-        /*
-         * draw to border rather than centre if direction is up (U) or if Type
-         * is N or C
-         */
-        if (direction == UP || sseType2 == CTERMINUS || sseType2 == NTERMINUS) {
-            if (sseType2.equals("E")) {
-                To = this.UpTriangleBorder(p2, p1, Radius2);
-            } else {
-                To = this.CircleBorder(p2, p1, Radius2);
-            }
-        } else {
-            To = p2;
-        }
-
-        // at this point the GraphicsOutput is either a Graphics
-        // or a Vector to which postscript should be written
-        if (GraphicsOutput instanceof Graphics) {
-            Graphics gc = (Graphics) GraphicsOutput;
-            gc.drawLine(From.x, From.y, To.x, To.y);
-        } else if (GraphicsOutput instanceof Vector) {
-            @SuppressWarnings("unchecked")
-            Vector<String> ps = (Vector<String>) GraphicsOutput;
-            if (startNewConnection) {
-                ps.addElement(PostscriptFactory.makeMove(From.x, 0 - From.y));  //FIXME
-            }
-            ps.addElement(PostscriptFactory.makeLine(To.x, 0 - To.y)); //FIXME
-        }
-
-    }
-
-    /*
-     * private method calculates the point on a circle of centre p1 and radius r
-     * which lies on the line p1->p2
-     */
-    private Point CircleBorder(Point p1, Point p2, int r) {
-
-        double xb, yb;
-        double x1, y1, x2, y2;
-
-        x1 = p1.x;
-        y1 = p1.y;
-        x2 = p2.x;
-        y2 = p2.y;
-
-        double s = this.Separation(p1, p2);
-
-        if ((s < r) || (r <= 0.0))
-            return p1;
-
-        xb = x1 + (r / s) * (x2 - x1);
-        yb = y1 + (r / s) * (y2 - y1);
-
-        return new Point((int) xb, (int) yb);
-
-    }
-
-    /*
-     * private method calculates the point on the border of a down equilateral
-     * triangle centered at p1 and with radius (of the circumscribing circle) r,
-     * which lies on the line p1->p2
-     */
-    private Point DownTriangleBorder(Point p1, Point p2, int r) {
-
-        double xb, yb;
-        double x1, y1, x2, y2;
-
-        double theta = 0.0, gamma = 0.0;
-
-        double l;
-
-        double pi = Math.PI;
-        double pi2 = Math.PI / 2.0;
-        double pi6 = Math.PI / 6.0;
-
-        x1 = p1.x;
-        y1 = p1.y;
-        x2 = p2.x;
-        y2 = p2.y;
-
-        double s = this.Separation(p1, p2);
-
-        /* theta in range -PI < theta <= PI */
-        theta = Math.atan2(y2 - y1, x2 - x1);
-
-        if ((-pi6 < theta) && (theta <= pi2)) {
-            gamma = theta - pi6;
-        } else if ((pi2 < theta) && (theta <= pi)) {
-            gamma = theta - 5.0 * pi6;
-        } else if ((-pi < theta) && (theta <= -5.0 * pi6)) {
-            gamma = 7.0 * pi6 + theta;
-        } else if ((-5.0 * pi6 < theta) && (theta <= -pi6)) {
-            gamma = theta + pi2;
-        }
-
-        l = (r) / (2.0 * Math.cos(gamma));
-
-        xb = x1 + (x2 - x1) * l / s;
-        yb = y1 + (y2 - y1) * l / s;
-
-        return new Point((int) xb, (int) yb);
-
-    }
-
-    /*
-     * private method calculates the point on the border of an up equilateral
-     * triangle centered at p1 and with radius (of the circumscribing circle) r,
-     * which lies on the line p1->p2
-     */
-    private Point UpTriangleBorder(Point p1, Point p2, int r) {
-
-        double xb, yb;
-        double x1, y1, x2, y2;
-
-        double theta = 0.0, gamma = 0.0;
-
-        double l;
-
-        double pi = Math.PI;
-        double pi2 = Math.PI / 2.0;
-        double pi6 = Math.PI / 6.0;
-
-        x1 = p1.x;
-        y1 = p1.y;
-        x2 = p2.x;
-        y2 = p2.y;
-
-        double s = this.Separation(p1, p2);
-
-        /* theta in range -PI < theta <= PI */
-        theta = Math.atan2(y2 - y1, x2 - x1);
-
-        if ((-pi2 < theta) && (theta <= pi6)) {
-            gamma = theta + pi6;
-        } else if ((pi6 < theta) && (theta <= 5.0 * pi6)) {
-            gamma = theta - pi2;
-        } else if ((5.0 * pi6 < theta) && (theta <= pi)) {
-            gamma = 7.0 * pi6 - theta;
-        } else if ((-pi < theta) && (theta <= -pi2)) {
-            gamma = theta + 5.0 * pi6;
-        }
-
-        l = (r) / (2.0 * Math.cos(gamma));
-
-        xb = x1 + (x2 - x1) * l / s;
-        yb = y1 + (y2 - y1) * l / s;
-
-        return new Point((int) xb, (int) yb);
-
-    }
-
-    /* private method calculates the separation of two points */
-    /* one day I'll put it in a more sensible place for re-use */
-    private double Separation(Point p1, Point p2) {
-
-        int sep;
-        double fsep;
-
-        sep = (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y);
-        fsep = sep;
-
-        fsep = Math.sqrt(fsep);
-
-        return fsep;
-
     }
 
     public Cartoon getCartoon() {
