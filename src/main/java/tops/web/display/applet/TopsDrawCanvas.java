@@ -524,90 +524,6 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         }
     }
 
-
-    public void linearLayout(List<SecStrucElement> list, int minX, int maxX) {
-        int numberOfSymbols = list.size();
-        if (numberOfSymbols < 2)
-            return;
-        // first, sort the list by x-coordinate to ensure that we lay out in the
-        // same order we started
-        // SORT
-        // now, find the average X-coordinate of the list
-        int sumY = 0;
-        Iterator<SecStrucElement> itr = list.iterator();
-        SecStrucElement s;
-        while (itr.hasNext()) {
-            s = (SecStrucElement) itr.next();
-            sumY += s.getPosition().y;
-        }
-
-        int averageY = (sumY / numberOfSymbols);
-        int lineLength = maxX - minX;
-        int separation = lineLength / numberOfSymbols;
-
-        if (separation < this.minimumSeparation)
-            separation = this.minimumSeparation;
-
-        int xpos = minX;
-        itr = list.iterator();
-        while (itr.hasNext()) {
-            s = (SecStrucElement) itr.next();
-            s.placeElement(xpos, averageY);
-            xpos += separation;
-        }
-        this.CenterDiagram();
-    }
-
-    public void circularLayout(List<SecStrucElement> list, Rectangle bounds) {
-        int numberOfSymbols = list.size();
-        if (numberOfSymbols < 3)
-            return; // be ruth-less
-
-        // SORT?
-
-//        int sumX = 0;
-//        int sumY = 0;
-
-        SecStrucElement s;
-        Iterator<SecStrucElement> itr = list.iterator();
-        while (itr.hasNext()) {
-            s = (SecStrucElement) itr.next();
-//            Point pos = s.GetPosition();
-//            sumX += pos.x;
-//            sumY += pos.y;
-        }
-
-//        int averageX = (int) (sumX / numberOfSymbols);
-//        int averageY = (int) (sumY / numberOfSymbols);
-//        Point center = new Point(averageX, averageY);
-
-        int minimumPerimiter = this.minimumSeparation * numberOfSymbols;
-        int minimumRadius = (int) (minimumPerimiter / (2 * Math.PI));
-        int boundsRadius = (Math.min(bounds.width, bounds.height) / 2);
-        if (boundsRadius < minimumRadius)
-            boundsRadius = minimumRadius;
-
-        int startAngle = 0;
-        int finishAngle = startAngle + 360;
-        int angleIncrement = (360 / numberOfSymbols);
-
-        itr = list.iterator();
-        for (int angle = startAngle; angle < finishAngle; angle += angleIncrement) {
-            if (!itr.hasNext())
-                break;
-            s = (SecStrucElement) itr.next();
-            Point currentPoint = this.nextCirclePoint(boundsRadius, angle);
-            s.placeElement(currentPoint.x, currentPoint.y);
-        }
-        this.CenterDiagram();
-    }
-
-    public Point nextCirclePoint(int radius, int angle) {
-        int x = (int) (radius * Math.sin(angle));
-        int y = (int) (radius * Math.cos(angle));
-        return new Point(x, y);
-    }
-
     /* END the MouseListener interface */
 
     /* START the MouseMotionListener interface */
@@ -666,16 +582,17 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public synchronized void selectBoxDoAction() {
         switch (this.editMode) {
             case FLIP_MULTIPLE_MODE:
-                cartoon.flipMultiple(this.selectBoxList);
+                cartoon.flipMultiple(selectBoxList);
                 break;
 
             case LINEAR_LAYOUT_MODE:
-                this.linearLayout(this.selectBoxList, (int) this.selectBox.getMinX(),
-                        (int) this.selectBox.getMaxX());
+                new LinearLayout(minimumSeparation).layout(selectBoxList, selectBox);
+                this.CenterDiagram();
                 break;
 
             case CIRCULAR_LAYOUT_MODE:
-                this.circularLayout(this.selectBoxList, this.selectBox);
+                new CircularLayout(minimumSeparation).layout(selectBoxList, selectBox);
+                this.CenterDiagram();
                 break;
         }
         // finished, so clean up
