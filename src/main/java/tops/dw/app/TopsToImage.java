@@ -97,7 +97,7 @@ public class TopsToImage {
             outfile = filestem + n + ".png";
 
             TopsDrawCanvas tdc = (TopsDrawCanvas) canvs.nextElement();
-            tdc.SetCanvasCoordinates(MinScale);
+            tdc.setCanvasCoordinates(MinScale);
 
             Frame f = new Frame("Dummy frame");
             Panel pn = new Panel();

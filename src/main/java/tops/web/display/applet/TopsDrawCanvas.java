@@ -493,7 +493,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
             case REFLECT_XY_MODE:
                 if (this.cartoon != null) {
                     this.cartoon.reflectXY();
-                    this.CenterDiagram();
+                    this.centerDiagram();
                     this.repaint();
                 }
                 break;
@@ -503,7 +503,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public void RotateX() {
         if (this.cartoon != null) {
             this.cartoon.rotateX();
-            this.CenterDiagram();
+            this.centerDiagram();
             this.repaint();
         }
     }
@@ -511,7 +511,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public void RotateY() {
         if (this.cartoon != null) {
             this.cartoon.rotateY();
-            this.CenterDiagram();
+            this.centerDiagram();
             this.repaint();
         }
     }
@@ -519,7 +519,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public void RotateZ() {
         if (this.cartoon != null) {
             this.cartoon.rotateZ();
-            this.CenterDiagram();
+            this.centerDiagram();
             this.repaint();
         }
     }
@@ -587,12 +587,12 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
             case LINEAR_LAYOUT_MODE:
                 new LinearLayout(minimumSeparation).layout(selectBoxList, selectBox);
-                this.CenterDiagram();
+                this.centerDiagram();
                 break;
 
             case CIRCULAR_LAYOUT_MODE:
                 new CircularLayout(minimumSeparation).layout(selectBoxList, selectBox);
-                this.CenterDiagram();
+                this.centerDiagram();
                 break;
         }
         // finished, so clean up
@@ -605,8 +605,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         System.out.println("adding symbol : " + type + ", " + direction
                 + " at (" + x + ", " + y + ")");
         this.selectedSymbol = cartoon.addSymbol(type, direction, x, y, selectedSymbol);
-        this.CenterDiagram();
-        this.ScaleDiagram();
+        this.centerDiagram();
+        this.scaleDiagram();
     }
 
     public void deleteSelected() {
@@ -641,7 +641,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * this method applies the current scale value to the diagram, it does not
      * do a repaint
      */
-    public synchronized void ScaleDiagram() {
+    public synchronized void scaleDiagram() {
         float scale = this.getScale();
         if (scale <= 0.0)
             scale = 1.0F;
@@ -656,17 +656,17 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * @param scale -
      *            the scaling value to apply for size
      */
-    public synchronized void SetCanvasCoordinates(float scale) {
+    public synchronized void setCanvasCoordinates(float scale) {
         this.setScale(scale);
-        this.SetCanvasCoordinates();
+        this.setCanvasCoordinates();
     }
 
     /**
      * this method sets up screen coordinates from the input ones it uses the
      * current scale value
      */
-    public synchronized void SetCanvasCoordinates() {
-        this.ScaleDiagram();
+    public synchronized void setCanvasCoordinates() {
+        this.scaleDiagram();
 
         /*
          * inversion of y direction is required because the canvas coordinate
@@ -674,14 +674,14 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
          */
         cartoon.invertY();
 
-        this.CenterDiagram();
+        this.centerDiagram();
     }
 
     /**
      * this method re-sets the coordinates to those used by the C code prior to
      * writing the file
      */
-    public void SetCCodeCoordinates() {
+    public void setCCodeCoordinates() {
         cartoon.invertScale(getScale());
         cartoon.invertY();
     }
@@ -689,7 +689,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     /**
      * a method to centre the diagram on the canvas
      */
-    public void CenterDiagram() {
+    public void centerDiagram() {
         Point cent = this.cartoon.topsCentroid();
         cartoon.translateDiagram(-cent.x + this.getSize().width / 2, -cent.y
                 + this.getSize().height / 2);

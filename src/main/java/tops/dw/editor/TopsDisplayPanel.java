@@ -186,7 +186,7 @@ public class TopsDisplayPanel extends Panel {
          * it at some point
          */
         for (i = 0; i < this.numberDrawCanvases(); i++) {
-            this.getDrawCanvas(i).SetCCodeCoordinates();
+            this.getDrawCanvas(i).setCCodeCoordinates();
         }
 
         for (i = 0; i < Diagrams.size(); i++) {
@@ -203,7 +203,7 @@ public class TopsDisplayPanel extends Panel {
                 MinScale = scale;
         }
         for (i = 0; i < this.numberDrawCanvases(); i++) {
-            this.getDrawCanvas(i).SetCanvasCoordinates(MinScale);
+            this.getDrawCanvas(i).setCanvasCoordinates(MinScale);
         }
 
         Dimension d = this.getRequiredSize();

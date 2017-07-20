@@ -487,7 +487,7 @@ public class TopsEditor implements ActionListener {
                     tops.web.display.applet.TopsDrawCanvas dc;
                     while (dcenum.hasMoreElements()) {
                         dc =  dcenum.nextElement();
-                        dc.SetCCodeCoordinates();
+                        dc.setCCodeCoordinates();
                     }
                     if (wr_prot != null) {
                         TopsFileWriter topsFileWriter = new TopsFileWriter();
@@ -496,7 +496,7 @@ public class TopsEditor implements ActionListener {
                     dcenum = dcs.elements();
                     while (dcenum.hasMoreElements()) {
                         dc = dcenum.nextElement();
-                        dc.SetCanvasCoordinates();
+                        dc.setCanvasCoordinates();
                     }
 
                 }
