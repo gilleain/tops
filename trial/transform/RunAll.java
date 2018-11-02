@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import tops.port.calculate.Configure;
+import tops.port.calculate.DsspDirectory;
 import tops.port.model.Chain;
 import tops.port.model.DsspReader;
 import tops.port.model.Protein;
@@ -15,7 +16,7 @@ import tops.port.model.tse.Sandwich;
 
 public class RunAll {
     
-    private static final String DIR = "/Users/maclean/data/dssp/reps";
+    private static final String PATH = DsspDirectory.DIR;
     
     private interface Callback {
         public void handle(Protein protein, Chain chain);
@@ -62,7 +63,7 @@ public class RunAll {
     
     public void run(Callback callback) {
         Logger.getLogger("").setLevel(Level.OFF);
-        File dirFile = new File(DIR);
+        File dirFile = new File(PATH);
         DsspReader dsspReader = new DsspReader();
         Configure configure = new Configure();
         for (File file : dirFile.listFiles()) {

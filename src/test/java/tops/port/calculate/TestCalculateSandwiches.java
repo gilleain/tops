@@ -11,6 +11,8 @@ import tops.port.model.tse.BaseTSE;
 
 public class TestCalculateSandwiches extends TestCalculateSheets {
     
+    private static final String PATH = DsspDirectory.DIR;
+    
     public void calculate(Chain chain) {
         super.calculate(chain);
         CalculateSandwiches calculation = new CalculateSandwiches();
@@ -19,7 +21,7 @@ public class TestCalculateSandwiches extends TestCalculateSheets {
     
     private void test(String pdbCode) throws IOException {
         DsspReader dsspReader = new DsspReader();
-        String path = String.format("/Users/maclean/data/dssp/reps/%s.dssp", pdbCode);
+        String path = String.format(PATH + "/%s.dssp", pdbCode);
         Protein protein = dsspReader.readDsspFile(path);
         Chain chain = protein.getChains().get(0);
         calculate(chain);
@@ -30,12 +32,12 @@ public class TestCalculateSandwiches extends TestCalculateSheets {
     
 //    @Test
     public void run1DLF() throws IOException {
-      test("1dlf");
+      test("1dlfH");
     }
     
 //    @Test
     public void run1AAC() throws IOException {
-      test("1aac");
+      test("1aacH");
     }
 
 }

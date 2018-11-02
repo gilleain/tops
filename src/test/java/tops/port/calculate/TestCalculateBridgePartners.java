@@ -13,7 +13,7 @@ import tops.port.model.SSE;
 
 public class TestCalculateBridgePartners extends TestCalculateMergedStrands {
     
-    private static final String PATH = "/Users/maclean/data/dssp/reps/";
+    private static final String PATH = DsspDirectory.DIR;
     
     public void calculate(Chain chain) {
         super.calculate(chain);
@@ -23,32 +23,32 @@ public class TestCalculateBridgePartners extends TestCalculateMergedStrands {
     
     @Test
     public void test2IGD() throws IOException {
-        test("2igd");
+        test("2igdH");
     }
     
     @Test
     public void test2ENG() throws IOException {
-        test("2eng");
+        test("2engH");
     }
     
     @Test
     public void test1TGX() throws IOException {
-        test("1tgx");
+        test("1tgxAH");
     }
     
     @Test
     public void test1ABA() throws IOException {
-        test("1aba");
+        test("1abaH");
     }
     
     @Test
     public void test1AKR() throws IOException {
-        test("1akr");
+        test("1akrH");
     }
     
     @Test
     public void test1BFD() throws IOException {
-        test("1bfd");
+        test("1bfdH");
     }
       
     

@@ -12,6 +12,8 @@ import tops.port.model.SSE;
 
 public class TestCalculateRelativeSides extends TestCalculateStructureAxes {
     
+    private static final String PATH = DsspDirectory.DIR;
+    
     public void calculate(Chain chain) {
         super.calculate(chain);
         CalculateRelativeSides calculation = new CalculateRelativeSides();
@@ -22,7 +24,7 @@ public class TestCalculateRelativeSides extends TestCalculateStructureAxes {
 //    public void run1IFC() throws IOException {
 //        DsspReader dsspReader = new DsspReader();
 //        Protein protein = 
-//                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+//                dsspReader.readDsspFile(PATH + "/1ifcH.dssp");
 //        Chain chain = protein.getChains().get(0);
 //        
 //        for (SSE sse : chain.getSSEs()) {

@@ -14,6 +14,8 @@ import tops.port.model.SSEType;
 
 public class TestCalculateStructureAxes {
     
+    private static final String PATH = DsspDirectory.DIR;
+    
     public void calculate(Chain chain) {
         CalculateStructureAxes calculation = new CalculateStructureAxes();
         calculation.calculate(chain);
@@ -40,19 +42,19 @@ public class TestCalculateStructureAxes {
         return chain;
     }
     
-//    @Test
-//    public void run1IFC() throws IOException {
-//        DsspReader dsspReader = new DsspReader();
-//        Protein protein = 
-//                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
-//        Chain chain = protein.getChains().get(0);
-//        calculate(chain);
-//        for (SSE sse : chain.getSSEs()) {
-//            System.out.println("[" + 
-//                    sse.sseData.pdbStartResidue + "-" + sse.sseData.pdbFinishResidue
-//                    + " " + sse.axis);
-//        }
-//    }
+    @Test
+    public void run1IFC() throws IOException {
+        DsspReader dsspReader = new DsspReader();
+        Protein protein = 
+                dsspReader.readDsspFile(PATH + "/1ifcH.dssp");
+        Chain chain = protein.getChains().get(0);
+        calculate(chain);
+        for (SSE sse : chain.getSSEs()) {
+            System.out.println("[" + 
+                    sse.sseData.pdbStartResidue + "-" + sse.sseData.pdbFinishResidue
+                    + " " + sse.axis);
+        }
+    }
     
     @Test
     public void testSingleHelix() {

@@ -3,7 +3,9 @@ package io;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Comparator;
@@ -13,6 +15,7 @@ import org.junit.Test;
 
 import tops.data.dssp.DSSPReader;
 import tops.data.dssp.SSEType;
+import tops.port.calculate.DsspDirectory;
 import tops.translation.model.BackboneSegment;
 import tops.translation.model.Chain;
 import tops.translation.model.HBondSet;
@@ -22,11 +25,11 @@ import tops.translation.model.Strand;
 
 public class TestDsspReaderFromFile {
     
-    public static final String DATA_DIR = "data";
+    private static final String PATH = DsspDirectory.DIR;
     
     @Test
     public void test1NOT() throws FileNotFoundException, IOException {
-        Protein protein = new DSSPReader().read(stream("1not.dssp"));
+        Protein protein = new DSSPReader().read(stream("1notH.dssp"));
         assertNotNull(protein);
         System.out.println(protein.iterator().next());
     }
@@ -34,42 +37,42 @@ public class TestDsspReaderFromFile {
     @Test
     public void test1QRE() throws FileNotFoundException, IOException {
 //       test("1qre", SSEType.EXTENDED, -0.9);
-        test("1qre", SSEType.S_BEND, -0.9);
+        test("1qreH", SSEType.S_BEND, -0.9);
     }
     
     @Test
     public void test1TGX() throws FileNotFoundException, IOException {
-       test("1tgx", SSEType.EXTENDED, -0.1);
+       test("1tgxAH", SSEType.EXTENDED, -0.1);
     }
     
     @Test
     public void test1WAP() throws FileNotFoundException, IOException {
-        test("1wap", SSEType.EXTENDED, SSEType.EXTENDED, -0.9);
+        test("1wapBH", SSEType.EXTENDED, SSEType.EXTENDED, -0.9);
     }
     
     @Test
     public void test1SWU() throws FileNotFoundException, IOException {
-       test("1swu", SSEType.EXTENDED, -0.9);
+       test("1swuBH", SSEType.EXTENDED, -0.9);
     }
     
     @Test
     public void test1IFC() throws FileNotFoundException, IOException {
-       test("1ifc", null, -0.9);
+       test("1ifcH", null, -0.9);
     }
     
     @Test
     public void test1MOL() throws FileNotFoundException, IOException {
-       test("1mol", SSEType.EXTENDED, -0.9);
+       test("1molAH", SSEType.EXTENDED, -0.9);
     }
     
     @Test
     public void test1NAR() throws FileNotFoundException, IOException {
-       test("1nar", SSEType.EXTENDED, -0.9);
+       test("1narH", SSEType.EXTENDED, -0.9);
     }
     
     @Test
     public void test2BOP() throws FileNotFoundException, IOException {
-       test("2bop", null, -0.9);
+       test("2bopAH", null, -0.9);
     }
     
     private void test(String name) throws FileNotFoundException, IOException {
@@ -133,7 +136,12 @@ public class TestDsspReaderFromFile {
     }
     
     private Reader stream(String filename) throws FileNotFoundException {
-        return new InputStreamReader(getClass().getResourceAsStream(DATA_DIR + "/" + filename));
+        InputStream resource = getClass().getResourceAsStream(PATH + "/" + filename);
+        if (resource == null) {
+            return new FileReader(PATH + "/" + filename);
+        } else {
+            return new InputStreamReader(resource);
+        }
     }
     
     private Comparator<HBondSet> sort = new Comparator<HBondSet>() {

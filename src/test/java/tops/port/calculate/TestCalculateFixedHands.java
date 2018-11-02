@@ -11,6 +11,8 @@ import tops.port.model.SSE;
 
 public class TestCalculateFixedHands extends TestCalculateSandwiches {
     
+    private static final String PATH = DsspDirectory.DIR;
+    
     public void calculate(Chain chain) {
         super.calculate(chain);
         CalculateFixedHands calculation = new CalculateFixedHands();
@@ -21,7 +23,7 @@ public class TestCalculateFixedHands extends TestCalculateSandwiches {
     public void test1GSO() throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1gso.dssp");
+                dsspReader.readDsspFile(PATH + "/1gsoH.dssp");
         Chain chain = protein.getChains().get(0);
         calculate(chain);
         for (SSE sse : chain.getSSEs()) {

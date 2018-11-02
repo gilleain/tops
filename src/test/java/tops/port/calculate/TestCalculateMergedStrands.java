@@ -10,6 +10,8 @@ import tops.port.model.Protein;
 
 public class TestCalculateMergedStrands extends TestCalculateRelativeSides {
     
+    private static final String PATH = DsspDirectory.DIR;
+    
     public void calculate(Chain chain) {
         super.calculate(chain);
         CalculateMergedStrands calculation = new CalculateMergedStrands();
@@ -20,7 +22,7 @@ public class TestCalculateMergedStrands extends TestCalculateRelativeSides {
 //    public void run1IFC() throws IOException {
 //        DsspReader dsspReader = new DsspReader();
 //        Protein protein = 
-//                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+//                dsspReader.readDsspFile(PATH + "/1ifc.dssp");
 //        Chain chain = protein.getChains().get(0);
 //        calculate(chain);
 //    }
