@@ -10,3 +10,5 @@ designer.jar
 .settings
 src/main/webapp/scratch
 *.dssp
+sonar-project.properties
+.scannerwork/
