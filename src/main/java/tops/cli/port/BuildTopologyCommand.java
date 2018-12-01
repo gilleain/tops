@@ -160,9 +160,9 @@ public class BuildTopologyCommand implements Command {
         /* check domain definitions */
         DomainCalculator.DomDefError ddep  = domainCalculator.checkDomainDefs(domains, protein);
         if (ddep != null) {
-            if (ddep.ErrorType != null) {
-                log("Tops warning: problem with domain definitions type %d\n", ddep.ErrorType);
-                log("%s\n", ddep.ErrorString);
+            if (ddep.errorType != null) {
+                log("Tops warning: problem with domain definitions type %d\n", ddep.errorType);
+                log("%s\n", ddep.errorString);
             }
         }
         

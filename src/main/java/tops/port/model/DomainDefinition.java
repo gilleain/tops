@@ -84,8 +84,8 @@ public class DomainDefinition {
     
     private boolean check(Protein protein, int segmentIndex, char segmentChain, DomDefError ddep) {
         if (protein.getSequenceNumber(segmentIndex, segmentChain) < 0) {
-            ddep.ErrorType = ErrorType.DOMAIN_RESIDUE_ERROR;
-            ddep.ErrorString += 
+            ddep.errorType = ErrorType.DOMAIN_RESIDUE_ERROR;
+            ddep.errorString += 
                     String.format(
                             "Residue %c %d for domain definition not found in protein",
                             segmentIndex, segmentChain);

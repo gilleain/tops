@@ -20,8 +20,8 @@ public class TestIntersectionCalculator {
         Point2d s = new Point2d(10, 20);
         
         Intersection result = calc.lineCross(p, q, r, s);
-        assertEquals(IntersectionType.CROSSING, result.type);
-        assertEquals(new Point2d(15, 15), result.point);
+        assertEquals(IntersectionType.CROSSING, result.getType());
+        assertEquals(new Point2d(15, 15), result.getPoint());
     }
     
     @Test
@@ -33,7 +33,7 @@ public class TestIntersectionCalculator {
         Point2d s = new Point2d(10, 20);
         
         Intersection result = calc.lineCross(p, q, r, s);
-        assertEquals(IntersectionType.NOT_CROSSING, result.type);
+        assertEquals(IntersectionType.NOT_CROSSING, result.getType());
     }
 
 }

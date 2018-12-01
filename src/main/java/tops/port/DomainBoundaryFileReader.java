@@ -9,20 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import tops.dw.protein.CATHcode;
 import tops.port.model.DomainDefinition;
 import tops.port.model.Protein;
 
 public class DomainBoundaryFileReader {
+    
+    private Logger log = Logger.getLogger(DomainBoundaryFileReader.class.getName());
 
     public List<DomainDefinition> readDomBoundaryFile(String domBoundaryFile, Protein protein) throws IOException {
 
-        List<DomainDefinition> domains = new ArrayList<DomainDefinition>();
+        List<DomainDefinition> domains = new ArrayList<>();
         
-        int nsegs, res;
-        char codeChain, chain;
-
         BufferedReader bufferedReader = new BufferedReader(new FileReader(domBoundaryFile));
 
         int countDoms = 0;
@@ -40,14 +41,14 @@ public class DomainBoundaryFileReader {
                 String currentToken = tokenizer.nextToken();
 
                 if (currentToken.length() < 6) {
-                    System.err.print(String.format("Error: reading domain boundary file %s\n", domBoundaryFile));
+                    log.log(Level.FINE, String.format("Error: reading domain boundary file %s%n", domBoundaryFile));
                     bufferedReader.close();
                     return domains;
                 }
 
                 if (currentToken.substring(0, 4).equals(protein.getProteinCode())) {
 
-                    codeChain = currentToken.charAt(4);
+                    char codeChain = currentToken.charAt(4);
 
                     // read number of domains listed on line /
                     currentToken = tokenizer.nextToken();
@@ -63,26 +64,13 @@ public class DomainBoundaryFileReader {
                     String proteinCode = protein.getProteinCode();
                     for (int i = domsFrom; i < countDoms; i++) {
                         String code = String.format("%s%s%d", proteinCode, codeChain, (i - domsFrom + 1) % 10);
-                        DomainDefinition domain = new DomainDefinition(new CATHcode(code), SEGMENT_SET);
-
-                        currentToken = tokenizer.nextToken();
-                        nsegs = Integer.parseInt(currentToken);
-
-                        for (int j = 0; j < nsegs; j++) {
-                            char chain1 = tokenizer.nextToken().charAt(0);
-                            int res1 = Integer.parseInt(tokenizer.nextToken());
-                            char chain2 = tokenizer.nextToken().charAt(0);
-                            int res2 = Integer.parseInt(tokenizer.nextToken());
-                            
-                            domain.addSegment(chain1, res1, chain2, res2);
-                        }
-                        domains.add(domain);
+                        domains.add(parseDomainDefinition(code, tokenizer));
                     }
                 }
             } catch (NoSuchElementException nse) {
-                continue;
+                log.info(nse.getMessage());
             } catch (NumberFormatException nfe) {
-                System.err.print(String.format("Error: reading domain boundary file %s\n", domBoundaryFile));
+                log.info(String.format("Error: reading domain boundary file %s%n", domBoundaryFile));
                 bufferedReader.close();
                 return domains;
             }
@@ -90,6 +78,23 @@ public class DomainBoundaryFileReader {
         bufferedReader.close();
         
         return domains;
+    }
+    
+    private DomainDefinition parseDomainDefinition(String code, StringTokenizer tokenizer) {
+        DomainDefinition domain = new DomainDefinition(new CATHcode(code), SEGMENT_SET);
+
+        String currentToken = tokenizer.nextToken();
+        int nsegs = Integer.parseInt(currentToken);
+
+        for (int j = 0; j < nsegs; j++) {
+            char chain1 = tokenizer.nextToken().charAt(0);
+            int res1 = Integer.parseInt(tokenizer.nextToken());
+            char chain2 = tokenizer.nextToken().charAt(0);
+            int res2 = Integer.parseInt(tokenizer.nextToken());
+
+            domain.addSegment(chain1, res1, chain2, res2);
+        }
+        return domain;
     }
 
 }

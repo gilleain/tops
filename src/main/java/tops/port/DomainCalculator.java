@@ -50,13 +50,13 @@ public class DomainCalculator {
     }
     
     public class DomDefError {
-        public String ErrorString;
-        public ErrorType ErrorType;
+        public String errorString;
+        public ErrorType errorType;
     }
 
     public List<DomainDefinition> defaultDomains(Protein protein, char chainToPlot) {
         
-        List<DomainDefinition> domains = new ArrayList<DomainDefinition>();
+        List<DomainDefinition> domains = new ArrayList<>();
         /*
          * In the case of default domains being used we cannot tolerate separate
          * chains with the same chain identifier
@@ -89,15 +89,15 @@ public class DomainCalculator {
 
         DomDefError ddep = new DomDefError();
 
-        ddep.ErrorType = ErrorType.NO_DOMAIN_ERRORS;
+        ddep.errorType = ErrorType.NO_DOMAIN_ERRORS;
         
         int numberOfDomains = domains.size();
       
         /* check each domain in turn for chains not in protein */
         for (DomainDefinition dm : domains) {
             if (!dm.hasChain(protein.getChains())) {
-                ddep.ErrorType = ErrorType.DOMAIN_CHAIN_ERROR;
-                System.out.println(ddep.ErrorString + String.format(
+                ddep.errorType = ErrorType.DOMAIN_CHAIN_ERROR;
+                System.out.println(ddep.errorString + String.format(
                         "Chain not found for domain definition %s ", dm));
                 return ddep;
             }
@@ -109,10 +109,8 @@ public class DomainCalculator {
          */
         for (int i = 0; i < numberOfDomains; i++) {
             DomainDefinition dm = domains.get(i);
-            if (dm.is(SEGMENT_SET)) {
-                if (!dm.hasResidues(protein, ddep)) {
-                    return ddep;
-                }
+            if (dm.is(SEGMENT_SET) && !dm.hasResidues(protein, ddep)) {
+                return ddep;
             }
         }
 
@@ -126,8 +124,8 @@ public class DomainCalculator {
                         for (Segment segment1 : dm1.getSegments()) {
                             for (Segment segment2 : dm2.getSegments()) {
                                 if (segment1.overlaps(segment2)) {
-                                    ddep.ErrorType = ErrorType.DOMAIN_RANGE_OVERLAP_ERROR;
-                                    System.out.println(ddep.ErrorString
+                                    ddep.errorType = ErrorType.DOMAIN_RANGE_OVERLAP_ERROR;
+                                    System.out.println(ddep.errorString
                                             + " Overlaps were found in residue ranges specifying domains");
                                     return ddep;
                                 }
@@ -149,7 +147,8 @@ public class DomainCalculator {
         
         int count = 0;
         int nf = 0;
-        int domain, lastDomain;
+        int domain;
+        int lastDomain;
         int lastSegment;
         SSE lastCTerm;
     
@@ -250,7 +249,7 @@ public class DomainCalculator {
          * all domains set up by by ReadDomBoundaryFile or DefaultDomains should
          * be plotted
          */
-        List<DomainDefinition> domainsToPlot = new ArrayList<DomainDefinition>();
+        List<DomainDefinition> domainsToPlot = new ArrayList<>();
         if ((chainToPlot == 0 && domainToPlot == 0) || chainToPlot == '*') {
             domainsToPlot = domains;
         } else {
@@ -281,11 +280,11 @@ public class DomainCalculator {
         int numberStructures;
         int domBreakNum = 0;
 
-        Map<SSE, SSE> copyTable = new HashMap<SSE, SSE>();
+        Map<SSE, SSE> copyTable = new HashMap<>();
 
         /* this loop decides which structures to copy and copies attributes */
         numberStructures = -1;
-        List<SSE> sses = new ArrayList<SSE>();
+        List<SSE> sses = new ArrayList<>();
         for (SSE r : originalSSEList) {
 
             DomainId domainId = ssIsInDomain(protein, r, domain);
@@ -406,24 +405,24 @@ public class DomainCalculator {
             if (chain.isSSelement(i) ) {
                 int start = i;
                 SSEType thissstype = chain.getSSEType(i);
-                int Dom = residueDomain(chain, i, domains);
-                int DBreak = -1;
-                int LastDom = -1;
+                int dom = residueDomain(chain, i, domains);
+                int dBreak = -1;
+                int lastDom = -1;
                 while (chain.isSSelement(i) && chain.getSSEType(i) == thissstype ) {
                     i++;
-                    LastDom = Dom;
-                    Dom = residueDomain(chain, i, domains);
-                    if ( Dom != LastDom ) DBreak = i;
+                    lastDom = dom;
+                    dom = residueDomain(chain, i, domains);
+                    if ( dom != lastDom ) dBreak = i;
                 }
 
                 int finish = --i;
 
-                if ( DBreak > -1 ) {
+                if ( dBreak > -1 ) {
 
-                    if ( (DBreak-start) > (finish-DBreak) ) {
-                        for (int j=DBreak ; j<=finish ; j++) chain.setSSEType(i, SSEType.COIL);
+                    if ( (dBreak-start) > (finish-dBreak) ) {
+                        for (int j=dBreak ; j<=finish ; j++) chain.setSSEType(i, SSEType.COIL);
                     } else {
-                        for (int j=start ; j<DBreak ; j++) chain.setSSEType(j, SSEType.COIL);
+                        for (int j=start ; j<dBreak ; j++) chain.setSSEType(j, SSEType.COIL);
                     }
                 }
             }

@@ -426,7 +426,7 @@ public class TopsPrint {
      * Function to return crossing point at which a line from A, B crosses the
      * circle X and Y are replaced by the crossing point
      */
-    private Vector2d CrossCircle(double X, double Y, double A, double B) {
+    private Vector2d crossCircle(double X, double Y, double A, double B) {
         int i;
         double itv = 20.0; 
 
@@ -439,8 +439,8 @@ public class TopsPrint {
             if (i > 0) {
                 Intersection intersection = 
                         intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
-                if (intersection.type != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
-                    return intersection.point;
+                if (intersection.getType() != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
+                    return intersection.getPoint();
                 }
             }
             lp = new Point2d(rx, ry);
@@ -469,8 +469,8 @@ public class TopsPrint {
             double ry = Y + PSxy(Radius) * Math.cos((double) i * PI2 / itv);
             if (i > 0) {
                 Intersection intersection = intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
-                if (intersection.type != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
-                    return intersection.point;
+                if (intersection.getType() != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
+                    return intersection.getPoint();
                 }
             }
             lp = new Point2d(rx, ry);
@@ -498,8 +498,8 @@ public class TopsPrint {
             if (i > 0) {
                 Intersection intersection =
                         intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
-                if (intersection.type != IntersectionType.NOT_CROSSING) {
-                    return intersection.point;
+                if (intersection.getType() != IntersectionType.NOT_CROSSING) {
+                    return intersection.getPoint();
                 }
             }
             lp = new Point2d(rx, ry);
@@ -520,13 +520,13 @@ public class TopsPrint {
             if (pt == SSEType.EXTENDED)
                 CrossDownTriangle(px, py, qx, qy);
             if (pt == SSEType.HELIX)
-                CrossCircle(px, py, qx, qy);
+                crossCircle(px, py, qx, qy);
         }
         if (direction2 != DOWN && direction2 != UNKNOWN) {
             if (pt == SSEType.EXTENDED)
                 CrossUpTriangle(qx, qy, px, py);
             if (pt == SSEType.HELIX)
-                CrossCircle(qx, qy, px, py);
+                crossCircle(qx, qy, px, py);
         }
         MakeObject("Line", 4, px, py, qx, qy);
     }

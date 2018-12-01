@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import tops.dw.protein.Cartoon;
@@ -38,16 +37,6 @@ import tops.view.cartoon.CartoonDrawer;
 public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotionListener {
 
     /* START class variables */
-
-    public static int BORDER = 50;
-
-    public static int MIN_HEIGHT = 400;
-
-    public static int MIN_WIDTH = 500;
-
-    public static int PREF_HEIGHT = 400;
-
-    public static int PREF_WIDTH = 500;
 
     public static final int INFO_MODE = 0; //don't need
     public static final int COLOUR_SYMBOLS_MODE = 1; //don't need
@@ -99,6 +88,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public static final int CIRCULAR_LAYOUT_MODE = 26;
 
     public static final int FLIP_MULTIPLE_MODE = 27;
+    
+    private static final String DEFAULT_FONTNAME = "TimesRoman";
 
     /* END of class variables */
 
@@ -135,6 +126,16 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 //    private boolean SizeDisplay = true;
 
     private Dimension offDimension = new Dimension();
+    
+    private int border = 50;
+
+    private int minHeight = 400;
+
+    private int minWidth = 500;
+
+    private int prefHeight = 400;
+
+    private int prefWidth = 500;
 
     private Image offScreenImage = null;
 
@@ -163,14 +164,14 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
         int fs, i;
         for (fs = 48, i = 0; (fs > 11) && i < this.fontsArr.length; fs -= 4, i++) {
-            this.fontsArr[i] = new Font("TimesRoman", Font.PLAIN, fs);
+            this.fontsArr[i] = new Font(DEFAULT_FONTNAME, Font.PLAIN, fs);
         }
-        this.font18 = new Font("TimesRoman", Font.PLAIN, 18);
-        this.font12 = new Font("TimesRoman", Font.PLAIN, 12);
+        this.font18 = new Font(DEFAULT_FONTNAME, Font.PLAIN, 18);
+        this.font12 = new Font(DEFAULT_FONTNAME, Font.PLAIN, 12);
 
 //        SizeDisplay = true;
 
-        this.selectBoxList = new ArrayList<SecStrucElement>();
+        this.selectBoxList = new ArrayList<>();
     }
     
     public String getEPS() throws IOException {
@@ -209,12 +210,12 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(TopsDrawCanvas.MIN_WIDTH, TopsDrawCanvas.MIN_HEIGHT);
+        return new Dimension(minWidth, minHeight);
     }
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(TopsDrawCanvas.PREF_WIDTH, TopsDrawCanvas.PREF_HEIGHT);
+        return new Dimension(prefWidth, prefHeight);
     }
 
     /* END methods defining preferred and minimum sizes */
@@ -266,7 +267,7 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      */
     public synchronized void setScale(float scale) {
 //        Float oldf = Scale;
-        this.scale = new Float(scale);
+        this.scale = scale;
         this.repaint();
     }
 
@@ -352,11 +353,10 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         switch (this.editMode) {
 
             case SELECT_SYMBOL_MODE:
-                this.selectByPosition(pos);
-                this.repaint();
-                break;
-
             case FLIP_MODE: // woo-ha!
+            case MOVE_SYMBOLS_MODE:
+            case MOVE_FIXEDS_MODE:
+            case DELETE_SYMBOLS_MODE:
                 this.selectByPosition(pos);
                 this.repaint();
                 break;
@@ -381,21 +381,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 this.startNewSelectBox(pos);
                 this.repaint();
                 break;
-
-            case MOVE_SYMBOLS_MODE:
-                this.selectByPosition(pos);
-                this.repaint();
-                break;
-
-            case MOVE_FIXEDS_MODE:
-                this.selectByPosition(pos);
-                this.repaint();
-                break;
-
-            case DELETE_SYMBOLS_MODE:
-                this.selectByPosition(pos);
-                this.repaint();
-                break;
+                
+            default: break;
         }
     }
 
@@ -440,6 +427,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
                 // UnSelect();
                 this.selectedSymbol = null;
                 this.repaint();
+                break;
+            default: 
                 break;
         }
     }
@@ -704,8 +693,8 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         Rectangle bb;
         float s = 1.0F;
         Dimension cd = this.getSize();
-        float cheight = (cd.height - 2 * TopsDrawCanvas.BORDER);
-        float cwidth = (cd.width - 2 * TopsDrawCanvas.BORDER);
+        float cheight = (cd.height - 2 * border);
+        float cwidth = (cd.width - 2 * border);
 
         if (this.cartoon != null) {
             bb = this.cartoon.boundingBox();
@@ -799,14 +788,14 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
     public void paint(Graphics g) {
         g.setColor(Color.black);
         if (this.useBorder)
-            this.DrawBorder(g);
+            this.drawBorder(g);
         if (this.label != null)
-            this.DrawLabel(g);
+            this.drawLabel(g);
         
         drawer.draw(g, getWidth(), getHeight(), cartoon);
         
         if (this.infoString != null)
-            this.DrawInfoString(g);
+            this.drawInfoString(g);
         if (this.selectBox != null)
             this.drawMultipleSelectBox(g);
     }
@@ -825,13 +814,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
         g.drawRect(x, y, width, height);
     }
 
-    private void DrawInfoString(Graphics g) {
+    private void drawInfoString(Graphics g) {
         g.setFont(this.font12);
         g.setColor(Color.black);
         g.drawString(this.infoString, this.infoStringPos.x, this.infoStringPos.y);
     }
 
-    private void DrawBorder(Graphics g) {
+    private void drawBorder(Graphics g) {
 
         g.setColor(Color.lightGray);
 
@@ -849,13 +838,13 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
      * this private method draws the master label for the TOPS diagram as a
      * title
      */
-    private void DrawLabel(Graphics g) {
+    private void drawLabel(Graphics g) {
 
         int x, y;
 
         if (this.label != null) {
             x = this.getSize().width / 2;
-            y = TopsDrawCanvas.BORDER / 2;
+            y = border / 2;
             g.setFont(this.font18);
             x -= (g.getFontMetrics().stringWidth(this.label)) / 2;
             g.drawString(this.label, x, y);
@@ -864,6 +853,26 @@ public class TopsDrawCanvas extends Canvas implements MouseListener, MouseMotion
 
     public Cartoon getCartoon() {
         return cartoon;
+    }
+
+    public void setBorder(int border) {
+        this.border = border;
+    }
+
+    public void setMinHeight(int minHeight) {
+        this.minHeight = minHeight;
+    }
+
+    public void setMinWidth(int minWidth) {
+        this.minWidth = minWidth;
+    }
+
+    public void setPrefHeight(int prefHeight) {
+        this.prefHeight = prefHeight;
+    }
+
+    public void setPrefWidth(int prefWidth) {
+        this.prefWidth = prefWidth;
     }
 
 }

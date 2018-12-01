@@ -47,9 +47,9 @@ public class TopsDisplayPanel extends Panel {
         this.drawCanvases = new Vector<TopsDrawCanvas>();
         this.dcPanels = new Vector<Panel>();
 
-        this.canvasDimension = new Dimension(
-        		TopsDrawCanvas.PREF_WIDTH,
-                TopsDrawCanvas.PREF_HEIGHT);
+        this.canvasDimension = new Dimension(0, 0);
+//        		TopsDrawCanvas.PREF_WIDTH,  TODO
+//                TopsDrawCanvas.PREF_HEIGHT);
         this.nColumns = 1;
 
         this.setLayout(new GridLayout(0, this.nColumns));

@@ -63,22 +63,23 @@ public class TopsToImage {
             return 1;
         }
 
-        TopsDrawCanvas.BORDER = 42;
-        TopsDrawCanvas.MIN_HEIGHT = 280;
-        TopsDrawCanvas.MIN_WIDTH = 360;
-        TopsDrawCanvas.PREF_HEIGHT = 280;
-        TopsDrawCanvas.PREF_WIDTH = 360;
-
         List<Cartoon> diagrams = p.getLinkedLists();
         List<DomainDefinition> domains = p.getDomainDefs();
 
         int n = 0;
-        Vector<TopsDrawCanvas> draw_canvs = new Vector<TopsDrawCanvas>();
+        Vector<TopsDrawCanvas> draw_canvs = new Vector<>();
         float MinScale = 1.0F, scale;
         int index = 0;
         for (Cartoon rootSSE : diagrams) {
             DomainDefinition domDefinition = domains.get(index);
             TopsDrawCanvas tdc = new TopsDrawCanvas(rootSSE, domDefinition.toString());
+            
+            tdc.setBorder(42);
+            tdc.setMinHeight(280);
+            tdc.setMinWidth(360);
+            tdc.setPrefHeight(280);
+            tdc.setPrefWidth(360);
+            
             tdc.setUseBorder(false);
             tdc.setSize(tdc.getPreferredSize());
 

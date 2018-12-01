@@ -144,12 +144,12 @@ public class Optimise {
                     Intersection intersection = lineCross(sseA, nextA, sseB, nextB);
                     System.out.println("Intersection " + intersection);
                     if (intersection == null) continue; // XXX FIXME
-                    if (intersection.type == CROSSING) {
+                    if (intersection.getType() == CROSSING) {
                         //print "crossing between", sseA, "-", sseA.To, "&&", sseB, "-", sseB.To
                         TotalEnergy += crossPenalty;
                         EnergyComps[3] += crossPenalty;
                     }
-                    if (intersection.type == SUPERIMPOSING) {
+                    if (intersection.getType() == SUPERIMPOSING) {
                         //print "superimposition of lines", sseA, "-", sseA.To, "&&", sseB, "-", sseB.To
                         TotalEnergy += PARALLEL_SCALE * crossPenalty;
                         EnergyComps[3] += PARALLEL_SCALE * crossPenalty;
@@ -185,7 +185,7 @@ public class Optimise {
             for (SSE sse : chain.getSSEs()) {
                 if (prev == null || (prev.isTerminus() && sse.isTerminus())) continue;
                 // TODO : remove cast to Cartoon
-                if (ConnectionCalculator.LineHitSymbol((Cartoon) chain, prev, sse) != null) {
+                if (ConnectionCalculator.lineHitSymbol((Cartoon) chain, prev, sse) != null) {
                     // print "line hit symbol", sseA, sseB
                     TotalEnergy += lineHitPenalty;
                     EnergyComps[6] += lineHitPenalty;

@@ -89,14 +89,14 @@ public class Options {
         return verbose;
     }
 
-    public int readDefaults(BufferedReader Def) throws IOException {
+    public int readDefaults(BufferedReader def) throws IOException {
 
         String buffer;
-        String ErrStr = "";
+        String errStr = "";
 
-        int ErrorStatus = 0;
+        int errorStatus = 0;
 
-        while ((buffer = Def.readLine()) != null) {
+        while ((buffer = def.readLine()) != null) {
 
             /* skip comments and blank lines */
             if (buffer.charAt(0) == '#' || buffer.charAt(0) == '\n')
@@ -119,8 +119,8 @@ public class Options {
                     try {
                         mergeStrands = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
+                        errorStatus = 1;
+                        errStr = String.format(
                                 "ERROR: unable to read %s from defaults file",
                                 key);
                         break;
@@ -129,8 +129,8 @@ public class Options {
                     try {
                         cutoffDistance = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
+                        errorStatus = 1;
+                        errStr = String.format(
                                 "ERROR: unable to read %s from defaults file",
                                 key);
                         break;
@@ -161,8 +161,8 @@ public class Options {
                     try {
                         radius = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
+                        errorStatus = 1;
+                        errStr = String.format(
                                 "ERROR: unable to read %s from defaults file",
                                 key);
                         break;
@@ -183,38 +183,39 @@ public class Options {
                 } else if ("DSSPDirectory".equals(key)) {
                     dsspFilePath = value;
                 } else {
-                    ErrorStatus = 1;
-                    ErrStr = String.format(
+                    errorStatus = 1;
+                    errStr = String.format(
                             "ERROR: unrecognized key %s in tops.def", key);
                     break;
                 }
 
             } else {
-                ErrorStatus = 1;
-                ErrStr = String.format(
+                errorStatus = 1;
+                errStr = String.format(
                         "ERROR: format of defaults file: at line: %s", buffer);
                 break;
             }
 
         }
 
-        if (ErrorStatus > 0) {
-            System.out.println(String.format("%s\n", ErrStr));
+        if (errorStatus > 0) {
+            System.out.println(String.format("%s\n", errStr));
         }
 
-        return ErrorStatus;
+        return errorStatus;
     }
     
     
     
     public String parseArguments(String[] args) {
 
-        int i, Cmd;
+        int i;
+        int cmd;
         String pcode = null;
         char s;
-        String ErrStr = "";
+        String errStr = "";
 
-        int ErrorStatus = 0;
+        int errorStatus = 0;
 
         /* go through arguments one by one */
         for (i = 1; i < args.length; i++) {
@@ -228,36 +229,36 @@ public class Options {
                     pcode = c;
                     continue;
                 } else {
-                    ErrorStatus = 1;
-                    ErrStr = "ERROR: command line incorrect (too many switch free argments)";
+                    errorStatus = 1;
+                    errStr = "ERROR: command line incorrect (too many switch free argments)";
                     break;
                 }
             }
 
             /* now parse the options */
             if (c.length() != 2) {
-                ErrorStatus = 1;
+                errorStatus = 1;
                 log("ERROR: unrecognized switch %s", c);
                 return null;
             }
 
-            Cmd = args[i].charAt(0);
+            cmd = args[i].charAt(0);
 
-            switch (Cmd) {
+            switch (cmd) {
             
             case 'p':
                 if (++i < args.length) {
                     postscript = c;
                     if ((postscript.charAt(0) == '-')
                             || (postscript.charAt(0) == '+')) {
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: postscript file must not begin with + or - %s",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No postscript file after -p\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No postscript file after -p\n";
+                    errorStatus = 1;
                 }
                 break;
             case 'r':
@@ -266,14 +267,14 @@ public class Options {
                         radius = Integer.valueOf(c);
                     } catch (Exception e) {
 
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: unable to read Radius (int) after -r %s\n",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No radius after -r\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No radius after -r\n";
+                    errorStatus = 1;
                 }
                 break;
             case 't':
@@ -281,14 +282,14 @@ public class Options {
                     topsFilename = c;
                     if ((topsFilename.charAt(0) == '-')
                             || (topsFilename.charAt(0) == '+')) {
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: tops file must not begin with + or - %s",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No tops file after -t\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No tops file after -t\n";
+                    errorStatus = 1;
                 }
                 break;
             case 'v':
@@ -304,14 +305,14 @@ public class Options {
                     domBoundaryFile = c;
                     if ((domBoundaryFile.charAt(0) == '-')
                             || (domBoundaryFile.charAt(0) == '+')) {
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: domain boundary file must not begin with - or + %s",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No domain boundary file after -B\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No domain boundary file after -B\n";
+                    errorStatus = 1;
                 }
                 break;
             case 'C':
@@ -319,14 +320,14 @@ public class Options {
                     chainToPlot = c;
                     if ((chainToPlot.charAt(0) == '-')
                             || (chainToPlot.charAt(0) == '+')) {
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: chain to plot must not begin + or - %s",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No chain to plot after -C\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No chain to plot after -C\n";
+                    errorStatus = 1;
                 }
                 break;
             case 'D':
@@ -335,14 +336,14 @@ public class Options {
                         domainToPlot = Integer.valueOf(c);
                     } catch (Exception e) {
 
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: unable to read domain (int) after -D %s\n",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No domain to plot after -D\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No domain to plot after -D\n";
+                    errorStatus = 1;
                 }
                 break;
             case 'F':
@@ -350,14 +351,14 @@ public class Options {
                     fileType = c;
                     if ((fileType.charAt(0) == '-')
                             || (fileType.charAt(0) == '+')) {
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: file type must begin with a single alphanumeric %s",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No file type after -F\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No file type after -F\n";
+                    errorStatus = 1;
                 }
                 break;
             
@@ -367,14 +368,14 @@ public class Options {
                         mergeStrands = Integer.valueOf(c);
                     } catch (Exception e) {
 
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: unable to read MergeStrands (int) after -M %s\n",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No MergeStrands after -M\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No MergeStrands after -M\n";
+                    errorStatus = 1;
                 }
                 break;
             case 'P':
@@ -382,32 +383,32 @@ public class Options {
                     dsspFilePath = c;
                     if ((dsspFilePath.charAt(0) == '-')
                             || (dsspFilePath.charAt(0) == '+')) {
-                        ErrStr = String.format(
+                        errStr = String.format(
                                 "ERROR: DSSP file path must not begin with + or - %s",
                                 c);
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                 } else {
-                    ErrStr = "ERROR: No file path after -P\n";
-                    ErrorStatus = 1;
+                    errStr = "ERROR: No file path after -P\n";
+                    errorStatus = 1;
                 }
                 break;
             
            
             default:
-                ErrorStatus = 1;
-                ErrStr = String.format("ERROR: unrecognised switch %c%c", s,
-                        Cmd);
+                errorStatus = 1;
+                errStr = String.format("ERROR: unrecognised switch %c%c", s,
+                        cmd);
                 break;
             }
 
-            if (ErrorStatus > 0)
+            if (errorStatus > 0)
                 break;
 
         }
 
-        if (ErrorStatus > 0) {
-            log("%s\n", ErrStr);
+        if (errorStatus > 0) {
+            log("%s\n", errStr);
             pcode = null;
         }
 
@@ -441,9 +442,9 @@ public class Options {
     }
     
     public void printRunParams(PrintStream out) {
-
-        print(out, "===================================================\n");
-        print(out, "===================================================\n\n");
+        final String separator = "===================================================";
+        print(out, separator + "\n");
+        print(out, separator + "\n\n");
         print(out, "Parameters for this run:\n\n");
        
         print(out, "CutoffDistance %f\n", cutoffDistance);
@@ -487,8 +488,8 @@ public class Options {
         if (domainToPlot > 0)
             print(out, "DomainToPlot %d\n", domainToPlot);
 
-        print(out, "===================================================\n");
-        print(out, "===================================================\n");
+        print(out, separator + "\n");
+        print(out, separator + "\n");
     }
     
     private void print(PrintStream out, String s, Object... args) {

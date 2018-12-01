@@ -10,48 +10,47 @@ import tops.port.model.SSE;
 public class ConnectionCalculator {
     
     public void calculateConnections(Cartoon cartoon, double radius) {
-        int ExtensionIndex = 0;
-        double[] Extensions = new double[] { 2.7, 7.7, 12.7, 17.7, 22.7 };
+        int extensionIndex = 0;
+        double[] extensions = new double[] { 2.7, 7.7, 12.7, 17.7, 22.7 };
 
         for (SSE sse : cartoon.getSSEs()) {
-            makeConnection(cartoon, radius, sse, cartoon.getNext(sse), ExtensionIndex, Extensions);
+            makeConnection(cartoon, radius, sse, cartoon.getNext(sse), extensionIndex, extensions);
         }
     }
     
 
-    private void makeConnection(Cartoon cartoon, double radius, SSE sse, SSE next, int ExtensionIndex, double[] Extensions) {
-        double PSMALL = 0.001;
+    private void makeConnection(Cartoon cartoon, double radius, SSE sse, SSE next, int extensionIndex, double[] extensions) {
+        final double pSmall = 0.001;
         if (next == null) return;
 
         // these are the condition under which the code generates a bent connection,
         // rather than the usual straight line joining symbols 
         if (cartoon.findFixedStart(sse) != cartoon.findFixedStart(next)) return;
         if (sse.hasFixedType(FixedType.SHEET) && !next.hasFixedType(FixedType.SANDWICH)) return;
-        SSE r = LineHitSymbol(cartoon, sse, next);
+        SSE r = lineHitSymbol(cartoon, sse, next);
         if (r != null && sse.getCartoonY() == next.getCartoonY()) {
 
             // we are guaranteed horizontal lines 
             double px = sse.getCartoonX();
-            double py = sse.getCartoonY();
             double qx = next.getCartoonX();
-            double qy = next.getCartoonY();
 
             double d1 = (sse.getDirection() == Direction.UP)? -1.0 : 1.0;
         
-            double my = r.getCartoonY() + ( d1 * ( PSMALL * Math.abs(px - qx) + radius + nextExtension(ExtensionIndex, Extensions) ));
+            double my = r.getCartoonY() + ( d1 * ( pSmall * Math.abs(px - qx) + radius + nextExtension(extensionIndex, extensions) ));
             double ny = my;
             
-            double d2, d3;
+            double d2;
+            double d3;
             if (px < qx) { 
-                d2 = 1.0;
-                d3 =-1.0;
+                d2 =  1.0;
+                d3 = -1.0;
             } else{ 
                 d2 = -1.0;
                 d3 =  1.0;
             }
 
-            double mx = px + (d2 * (PSMALL * Math.abs(px - qx) + radius));
-            double nx = qx + (d3 * (PSMALL * Math.abs(px - qx) + radius));
+            double mx = px + (d2 * (pSmall * Math.abs(px - qx) + radius));
+            double nx = qx + (d3 * (pSmall * Math.abs(px - qx) + radius));
 
             sse.addConnection(new Point2d(mx, my));
             sse.addConnection(new Point2d(nx, ny));
@@ -59,8 +58,8 @@ public class ConnectionCalculator {
     }
     
 
-    public static SSE LineHitSymbol(Cartoon chain, SSE p,SSE q) {
-        double TOL = 0.001;
+    public static SSE lineHitSymbol(Cartoon chain, SSE p,SSE q) {
+        final double tolerance = 0.001;
 
         double px = p.getCartoonX();
         double py = p.getCartoonY();
@@ -76,7 +75,7 @@ public class ConnectionCalculator {
             double dqrx = Math.abs(qx - rx);
             double dqry = Math.abs(qy - ry);
 
-            if (!((dprx < TOL && dpry < TOL) || (dqrx < TOL && dpry < TOL))) {
+            if (!((dprx < tolerance && dpry < tolerance) || (dqrx < tolerance && dpry < tolerance))) {
 
                 double pr = (dprx * dprx) + (dpry * dpry);
                 double pq = Math.pow((px - qx), 2) + Math.pow((py - qy), 2);
@@ -103,10 +102,10 @@ public class ConnectionCalculator {
     }
     
 
-    private double nextExtension(int ExtensionIndex, double[] Extensions) {
-        if (ExtensionIndex >= Extensions.length) ExtensionIndex = 0;
-        double extension = Extensions[ExtensionIndex];
-        ExtensionIndex += 1;    // XXX incrementing a scope-local variable FIXME 
+    private double nextExtension(int extensionIndex, double[] extensions) {
+        if (extensionIndex >= extensions.length) extensionIndex = 0;
+        double extension = extensions[extensionIndex];
+        extensionIndex += 1;    // XXX incrementing a scope-local variable FIXME 
         return extension;
     }
 

@@ -33,16 +33,16 @@ public class OptimiseOptions {
     }
 
     public void parseArguments(String[] args) {
-        int ErrorStatus = 0;
-        String ErrStr = "";
+        int errorStatus = 0;
+        String errStr = "";
 
         for (int i = 1; i < args.length; i++) {
             String c = args[i];
             char s = (c.charAt(0) == '-' || c.charAt(0) == '+' ? c.charAt(0)
                     : '*');
-            char Cmd = c.charAt(0);
+            char cmd = c.charAt(0);
 
-            switch (Cmd) {
+            switch (cmd) {
                 case 'a':
                     if (++i < args.length) {
                         try {
@@ -50,11 +50,11 @@ public class OptimiseOptions {
                         } catch (Exception e) {
                             log("ERROR: unable to read angle penalty (int) after -a %s\n",
                                     args[i]);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
                         log("ERROR: No angle penalty after -a\n");
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                     break;
                 case 'b':
@@ -64,11 +64,11 @@ public class OptimiseOptions {
                         } catch (Exception e) {
                             log("ERROR: unable to read clash penalty (int) after -b %s\n",
                                     args[i]);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
                         log("ERROR: No clash penalty after -b\n");
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                     break;
                 case 'c':
@@ -78,11 +78,11 @@ public class OptimiseOptions {
                         } catch (Exception e) {
                             log("ERROR: unable to read chain penalty (int) after -c %s\n",
                                     args[i]);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
                         log("ERROR: No chain penalty after -c\n");
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                     break;
                 case 'h':
@@ -90,14 +90,14 @@ public class OptimiseOptions {
                         try {
                             handPenalty = Integer.valueOf(args[i]);
                         } catch (Exception e) {
-                            log(ErrStr,
+                            log(errStr,
                                     "ERROR: unable to read hand penalty (int) after -h %s\n",
                                     args[i]);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
                         log("ERROR: No hand penalty after -h\n");
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                     break;
                 case 'i':
@@ -107,11 +107,11 @@ public class OptimiseOptions {
                         } catch (Exception e) {
                             log("ERROR: unable to read inside barrel penalty (int) after -i %s\n",
                                     args[i]);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
                         log("ERROR: No inside barrel penalty after -h\n");
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                     break;
                 case 'm':
@@ -122,11 +122,11 @@ public class OptimiseOptions {
 
                             log("ERROR: unable to read Multiplicity (int) after -m %s\n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
                         log("ERROR: No multiplicity after -m\n");
-                        ErrorStatus = 1;
+                        errorStatus = 1;
                     }
                     break;
                 case 'n':
@@ -135,14 +135,14 @@ public class OptimiseOptions {
                             neighbourPenalty = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read NeighbourPenalty (int) after -n %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read NeighbourPenalty (int) after -n %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No NeighbourPenalty after -n\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No NeighbourPenalty after -n\n";
+                        errorStatus = 1;
                     }
                     break;
                 case 'x':
@@ -151,14 +151,14 @@ public class OptimiseOptions {
                             crossPenalty = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read CrossPenalty (int) after -x %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read CrossPenalty (int) after -x %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No CrossPenalty after -x\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No CrossPenalty after -x\n";
+                        errorStatus = 1;
                     }
                     break;
                 case 'G':
@@ -167,14 +167,14 @@ public class OptimiseOptions {
                             gridSize = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read grid size (int) after -G %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read grid size (int) after -G %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No grid size after -G\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No grid size after -G\n";
+                        errorStatus = 1;
                     }
                     break;
                 case 'N':
@@ -183,14 +183,14 @@ public class OptimiseOptions {
                             noConfigs = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read number of configs (int) after -N %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read number of configs (int) after -N %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No MergeStrands after -N\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No MergeStrands after -N\n";
+                        errorStatus = 1;
                     }
                     break;
                 case 'S':
@@ -199,14 +199,14 @@ public class OptimiseOptions {
                             randomSeed = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read random seed (int) after -S %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read random seed (int) after -S %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No random seed after -S\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No random seed after -S\n";
+                        errorStatus = 1;
                     }
                     break;
                 case 'T':
@@ -215,14 +215,14 @@ public class OptimiseOptions {
                             startTemperature = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read start temperature (int) after -T %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read start temperature (int) after -T %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No temperature after -T\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No temperature after -T\n";
+                        errorStatus = 1;
                     }
                     break;
                 case 'U':
@@ -231,14 +231,14 @@ public class OptimiseOptions {
                             finishTemperature = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read finish temperature (int) after -U %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read finish temperature (int) after -U %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No temperature after -U\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No temperature after -U\n";
+                        errorStatus = 1;
                     }
                     break;
                 case 'V':
@@ -247,26 +247,26 @@ public class OptimiseOptions {
                             decrement = Integer.valueOf(c);
                         } catch (Exception e) {
 
-                            ErrStr = String.format(
-                                    "ERROR: unable to read temperature decrement (int) after -V %s\n",
+                            errStr = String.format(
+                                    "ERROR: unable to read temperature decrement (int) after -V %s%n",
                                     c);
-                            ErrorStatus = 1;
+                            errorStatus = 1;
                         }
                     } else {
-                        ErrStr = "ERROR: No temperature decrement after -V\n";
-                        ErrorStatus = 1;
+                        errStr = "ERROR: No temperature decrement after -V%n";
+                        errorStatus = 1;
                     }
                     break;
                 default:
-                    ErrorStatus = 1;
-                    ErrStr = String.format("ERROR: unrecognised switch %c%c", s,
-                            Cmd);
+                    errorStatus = 1;
+                    errStr = String.format("ERROR: unrecognised switch %c%c", s,
+                            cmd);
                     break;
             }
         }
 
-        if (ErrorStatus > 0) {
-            log("%s\n", ErrStr);
+        if (errorStatus > 0) {
+            log("%s\n", errStr);
         }
     }
 
@@ -304,80 +304,81 @@ public class OptimiseOptions {
     /*
      * Function to check runtime options are reasonable
      */
-    public void checkOptions() throws Exception {
+    public void checkOptions() throws OptimiseOptionException {
         if (gridSize <= 0) {
-            throw new Exception("ERROR: GridSize negative or zero");
+            throw new OptimiseOptionException("ERROR: GridSize negative or zero");
         }
         if (clashPenalty < 0) {
-            throw new Exception("ERROR: ClashPenalty negative");
+            throw new OptimiseOptionException("ERROR: ClashPenalty negative");
         }
         if (anglePenalty < 0) {
-            throw new Exception("ERROR: AnglePenalty negative");
+            throw new OptimiseOptionException("ERROR: AnglePenalty negative");
         }
         if (anglePenalty != 0 && (multiplicity <= 0)) {
-            throw new Exception("ERROR: Multiplicity negative or zero");
+            throw new OptimiseOptionException("ERROR: Multiplicity negative or zero");
         }
         if (chainPenalty < 0) {
-            throw new Exception("ERROR: ChainPenalty negative");
+            throw new OptimiseOptionException("ERROR: ChainPenalty negative");
         }
         if (crossPenalty < 0) {
-            throw new Exception("ERROR: CrossPenalty negative");
+            throw new OptimiseOptionException("ERROR: CrossPenalty negative");
         }
         if (handPenalty < 0) {
-            throw new Exception("ERROR: HandPenalty negative");
+            throw new OptimiseOptionException("ERROR: HandPenalty negative");
         }
         if (neighbourPenalty < 0) {
-            throw new Exception("ERROR: NeighbourPenalty negative");
+            throw new OptimiseOptionException("ERROR: NeighbourPenalty negative");
         }
         if (insideBarrelPenalty < 0) {
-            throw new Exception("ERROR: InsideBarrelPenalty negative");
+            throw new OptimiseOptionException("ERROR: InsideBarrelPenalty negative");
         }
         if (noConfigs <= 0) {
-            throw new Exception("ERROR: NoConfigs negative or zero");
+            throw new OptimiseOptionException("ERROR: NoConfigs negative or zero");
         }
         if (randomSeed <= 0) {
-            throw new Exception("ERROR: RandomSeed negative or zero");
+            throw new OptimiseOptionException("ERROR: RandomSeed negative or zero");
         }
         if (finishTemperature < 0) {
-            throw new Exception("ERROR: FinishTemperature negative");
+            throw new OptimiseOptionException("ERROR: FinishTemperature negative");
         }
         if (startTemperature < 0) {
-            throw new Exception("ERROR: StartTemperature negative");
+            throw new OptimiseOptionException("ERROR: StartTemperature negative");
         }
         if ((startTemperature - finishTemperature) <= 0) {
-            throw new Exception(
+            throw new OptimiseOptionException(
                     "ERROR: FinishTemperature greater than or equal start temperature");
         }
         if ((decrement <= 0) || (decrement >= 100)) {
-            throw new Exception(
+            throw new OptimiseOptionException(
                     "ERROR: Temperature decrement must be between 1 and 99 percent");
         }
         if (stepSize <= 0) {
-            throw new Exception("ERROR: StepSize negative or zero");
+            throw new OptimiseOptionException("ERROR: StepSize negative or zero");
         }
         if ((lineSample < 0) || (lineSample >= 100)) {
-            throw new Exception(
+            throw new OptimiseOptionException(
                     "ERROR: LineSample must be between 0 and 99 percent");
         }
         if ((arcsSample < 0) || (arcsSample >= 100)) {
-            throw new Exception(
+            throw new OptimiseOptionException(
                     "ERROR: ArcSample must be between 0 and 99 percent");
         }
     }
 
-    public int readDefaults(BufferedReader Def) throws IOException {
+    public int readDefaults(BufferedReader def) throws IOException {
 
         String buffer;
-        String ErrStr = "";
+        String errStr = "";
 
-        int ErrorStatus = 0;
+        int errorStatus = 0;
 
-        while ((buffer = Def.readLine()) != null) {
+        while ((buffer = def.readLine()) != null) {
 
             /* skip comments and blank lines */
             if (buffer.charAt(0) == '#' || buffer.charAt(0) == '\n')
                 continue;
 
+            final String defaultsError = "ERROR: unable to read %s from defaults file";
             int indexOfSpace = buffer.indexOf(' ');
             if (indexOfSpace > 0) {
                 String key = buffer.substring(0, indexOfSpace);
@@ -388,60 +389,48 @@ public class OptimiseOptions {
                     try {
                         anglePenalty = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("Multiplicity".equals(key)) {
                     try {
                         multiplicity = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("ClashPenalty".equals(key)) {
                     try {
                         clashPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("ChainPenalty".equals(key)) {
                     try {
                         chainPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("Decrement".equals(key)) {
                     try {
                         decrement = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("GridSize".equals(key)) {
                     try {
                         gridSize = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError ,key);
                         break;
                     }
                 } else if ("LineSample".equals(key)) {
@@ -449,127 +438,103 @@ public class OptimiseOptions {
                         lineSample = Integer.parseInt(value);
                     } catch (Exception e) {
 
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("HandPenalty".equals(key)) {
                     try {
                         handPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("ArcSample".equals(key)) {
                     try {
                         arcsSample = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("StepSize".equals(key)) {
                     try {
                         stepSize = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("StartTemperature".equals(key)) {
                     try {
                         startTemperature = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("FinishTemperature".equals(key)) {
                     try {
                         finishTemperature = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("CrossPenalty".equals(key)) {
                     try {
                         crossPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("RandomSeed".equals(key)) {
                     try {
                         randomSeed = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("NoConfigs".equals(key)) {
                     try {
                         noConfigs = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("NeighbourPenalty".equals(key)) {
                     try {
                         neighbourPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else if ("InsideBarrelPenalty".equals(key)) {
                     try {
                         insideBarrelPenalty = Integer.parseInt(value);
                     } catch (Exception e) {
-                        ErrorStatus = 1;
-                        ErrStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errorStatus = 1;
+                        errStr = String.format(defaultsError, key);
                         break;
                     }
                 } else {
-                    ErrorStatus = 1;
-                    ErrStr = String.format(
-                            "ERROR: format of defaults file: at line: %s",
-                            buffer);
+                    errorStatus = 1;
+                    errStr = String.format(defaultsError, buffer);
                     break;
                 }
             }
         }
 
-        if (ErrorStatus > 0) {
-            System.out.println(String.format("%s\n", ErrStr));
+        if (errorStatus > 0) {
+            System.out.println(String.format("%s\n", errStr));
         }
 
-        return ErrorStatus;
+        return errorStatus;
     }
 
 }

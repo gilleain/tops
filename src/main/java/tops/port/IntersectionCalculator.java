@@ -9,12 +9,20 @@ import javax.vecmath.Vector2d;
 public class IntersectionCalculator {
     
     public class Intersection {
-        public Vector2d point;
-        public IntersectionType type;
+        private final Vector2d point;
+        private final IntersectionType type;
 
         public Intersection(Vector2d point, IntersectionType type) {
             this.point = point;
             this.type = type;
+        }
+        
+        public Vector2d getPoint() {
+            return this.point;
+        }
+        
+        public IntersectionType getType() {
+            return this.type;
         }
         
         public String toString() {
