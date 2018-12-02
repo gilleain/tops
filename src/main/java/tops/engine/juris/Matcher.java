@@ -42,7 +42,7 @@ class Matcher {
         for (int i = 0; i < this.diagrams.length; ++i) {
             if (this.pattern.preProcess(this.diagrams[i], noInserts)
                 && this.match(this.diagrams[i], noInserts)) {
-                    tmp.append(this.diagrams[i].head);
+                    tmp.append(this.diagrams[i].getHead());
                     tmp.append(this.pattern.getMatchString());
                     tmp.append(this.pattern.getInsertString(this.diagrams[i]));
                     results.add(tmp.toString());
@@ -51,7 +51,7 @@ class Matcher {
             // NOTE: Resetting now FLIPS too!
             if (this.pattern.preProcess(this.diagrams[i], noInserts)
                 && this.match(this.diagrams[i], noInserts)) {
-                    tmp.append(this.diagrams[i].head);
+                    tmp.append(this.diagrams[i].getHead());
                     tmp.append(this.pattern.getMatchString());
                     tmp.append(this.pattern.getInsertString(this.diagrams[i]));
                     results.add(tmp.toString());
@@ -138,8 +138,9 @@ class Matcher {
                 }
             }
             this.pattern.reset();
-            if (matchFound)
-                return this.pattern.head; // the name of the first pattern that matched
+            if (matchFound) {
+                return this.pattern.getHead(); // the name of the first pattern that matched
+            }
         }
         return "none"; // we can only reach this point by avoiding returning
                         // true, it must be false.
@@ -297,8 +298,8 @@ class Matcher {
 
             String doutCup = d.getVertexString(rhe + 1, 0, false);
             String doutCdn = d.getVertexString(rhe + 1, 0, true);
-            if (this.subSeqMatch(this.pattern.outsertC, doutCup)
-                    && this.subSeqMatch(this.pattern.outsertC, doutCdn)) {
+            if (this.subSeqMatch(this.pattern.getOutsertC(), doutCup)
+                    && this.subSeqMatch(this.pattern.getOutsertC(), doutCdn)) {
                 return false;
             } else {
                 return true;
