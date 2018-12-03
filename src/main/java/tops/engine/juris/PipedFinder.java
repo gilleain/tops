@@ -87,48 +87,48 @@ public class PipedFinder {
             this.maxpat = gr.toString();
         // first, do the edges
 
-        if (gr.canAddEdge(1, this.c.max_A_in)) {
-            if ((v = gr.getEdges(this.c.max_A_out, 'A')) != null) {
+        if (gr.canAddEdge(1, this.c.maxAIn)) {
+            if ((v = gr.getEdges(this.c.maxAOut, 'A')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'A'));
                 }
             }
         }
 
-        if (gr.canAddEdge(3, this.c.max_P_in)) {
-            if ((v = gr.getEdges(this.c.max_P_out, 'P')) != null) {
+        if (gr.canAddEdge(3, this.c.maxPIn)) {
+            if ((v = gr.getEdges(this.c.maxPOut, 'P')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'P'));
                 }
             }
         }
 
-        if (gr.canAddEdge(5, this.c.max_R_in)) {
-            if ((v = gr.getEdges(this.c.max_R_out, 'R')) != null) {
+        if (gr.canAddEdge(5, this.c.maxRIn)) {
+            if ((v = gr.getEdges(this.c.maxROut, 'R')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'R'));
                 }
             }
         }
 
-        if (gr.canAddEdge(7, this.c.max_L_in)) {
-            if ((v = gr.getEdges(this.c.max_L_out, 'L')) != null) {
+        if (gr.canAddEdge(7, this.c.maxLIn)) {
+            if ((v = gr.getEdges(this.c.maxLOut, 'L')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'L'));
                 }
             }
         }
 
-        if (gr.canAddEdge(9, this.c.max_Z_in)) {
-            if ((v = gr.getEdges(this.c.max_Z_out, 'Z')) != null) {
+        if (gr.canAddEdge(9, this.c.maxZIn)) {
+            if ((v = gr.getEdges(this.c.maxZOut, 'Z')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'Z'));
                 }
             }
         }
 
-        if (gr.canAddEdge(11, this.c.max_X_in)) {
-            if ((v = gr.getEdges(this.c.max_X_out, 'X')) != null) {
+        if (gr.canAddEdge(11, this.c.maxXIn)) {
+            if ((v = gr.getEdges(this.c.maxXOut, 'X')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'X'));
                 }
@@ -136,19 +136,19 @@ public class PipedFinder {
         }
 
         // Now, do the vertices
-        if (gr.num_E < this.c.max_E) {
+        if (gr.num_E < this.c.maxEUpper) {
             this.matchExtendRepeat(new Grower(gr.toString()).addUpStrand());
         }
 
-        if (gr.num_e < this.c.max_e) {
+        if (gr.num_e < this.c.maxELower) {
             this.matchExtendRepeat(new Grower(gr.toString()).addDownStrand());
         }
 
-        if (gr.num_H < this.c.max_H) {
+        if (gr.num_H < this.c.maxHUpper) {
             this.matchExtendRepeat(new Grower(gr.toString()).addUpHelix());
         }
 
-        if (gr.num_h < this.c.max_h) {
+        if (gr.num_h < this.c.maxHLower) {
             this.matchExtendRepeat(new Grower(gr.toString()).addDownHelix());
         }
 

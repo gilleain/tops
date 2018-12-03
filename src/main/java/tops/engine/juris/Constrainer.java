@@ -5,41 +5,42 @@ import java.util.Iterator;
 
 public class Constrainer {
 
-    private String[] vstrs, estrs;
+    private String[] vstrs; 
+    private String[] estrs;
 
     private int pop;
 
-    public int max_A_out;
+    public int maxAOut;
 
-    public int max_P_out;
+    public int maxPOut;
 
-    public int max_L_out;
+    public int maxLOut;
 
-    public int max_R_out;
+    public int maxROut;
 
-    public int max_Z_out;
+    public int maxZOut;
 
-    public int max_X_out;
+    public int maxXOut;
 
-    public int max_A_in;
+    public int maxAIn;
 
-    public int max_P_in;
+    public int maxPIn;
 
-    public int max_L_in;
+    public int maxLIn;
 
-    public int max_R_in;
+    public int maxRIn;
 
-    public int max_Z_in;
+    public int maxZIn;
 
-    public int max_X_in;
+    public int maxXIn;
 
-    public int max_e;
+    public int maxELower;
 
-    public int max_E;
+    public int maxEUpper;
 
-    public int max_h;
+    public int maxHLower;
 
-    public int max_H;
+    public int maxHUpper;
 
     public int max_vert;
 
@@ -76,27 +77,27 @@ public class Constrainer {
             tp.next();
         }
 
-        this.max_A_out = this.findMaxOutdex('A');
-        this.max_P_out = this.findMaxOutdex('P');
-        this.max_L_out = this.findMaxOutdex('L');
-        this.max_R_out = this.findMaxOutdex('R');
-        this.max_Z_out = this.findMaxOutdex('Z');
-        this.max_X_out = this.findMaxOutdex('X');
+        this.maxAOut = this.findMaxOutdex('A');
+        this.maxPOut = this.findMaxOutdex('P');
+        this.maxLOut = this.findMaxOutdex('L');
+        this.maxROut = this.findMaxOutdex('R');
+        this.maxZOut = this.findMaxOutdex('Z');
+        this.maxXOut = this.findMaxOutdex('X');
 
-        this.max_A_in = this.findMaxIndex('A');
-        this.max_P_in = this.findMaxIndex('P');
-        this.max_L_in = this.findMaxIndex('L');
-        this.max_R_in = this.findMaxIndex('R');
-        this.max_Z_in = this.findMaxIndex('Z');
-        this.max_X_in = this.findMaxIndex('X');
+        this.maxAIn = this.findMaxIndex('A');
+        this.maxPIn = this.findMaxIndex('P');
+        this.maxLIn = this.findMaxIndex('L');
+        this.maxRIn = this.findMaxIndex('R');
+        this.maxZIn = this.findMaxIndex('Z');
+        this.maxXIn = this.findMaxIndex('X');
 
-        this.max_e = this.findMin('e', this.vstrs);
-        this.max_E = this.findMin('E', this.vstrs);
-        this.max_h = this.findMin('h', this.vstrs);
-        this.max_H = this.findMin('H', this.vstrs);
+        this.maxELower = this.findMin('e', this.vstrs);
+        this.maxEUpper = this.findMin('E', this.vstrs);
+        this.maxHLower = this.findMin('h', this.vstrs);
+        this.maxHUpper = this.findMin('H', this.vstrs);
         
      // !!!if e = E and h = H, then it doesn't matter which we sum!
-        this.max_vert = this.max_e + this.max_H; 
+        this.max_vert = this.maxELower + this.maxHUpper; 
 
         this.max_A = this.findMin('A', this.estrs);
         this.max_P = this.findMin('P', this.estrs);
@@ -244,39 +245,39 @@ public class Constrainer {
     public String toString() {
         StringBuffer outstring = new StringBuffer("");
         outstring.append("max_e= ");
-        outstring.append(this.max_e);
+        outstring.append(this.maxELower);
         outstring.append("\nmax_E= ");
-        outstring.append(this.max_E);
+        outstring.append(this.maxEUpper);
         outstring.append("\nmax_h= ");
-        outstring.append(this.max_h);
+        outstring.append(this.maxHLower);
         outstring.append("\nmax_H= ");
-        outstring.append(this.max_H);
+        outstring.append(this.maxHUpper);
         outstring.append("\nmax_vert= ");
         outstring.append(this.max_vert);
         outstring.append("\nmax_A_out= ");
-        outstring.append(this.max_A_out);
+        outstring.append(this.maxAOut);
         outstring.append("\nmax_P_out= ");
-        outstring.append(this.max_P_out);
+        outstring.append(this.maxPOut);
         outstring.append("\nmax_L_out= ");
-        outstring.append(this.max_L_out);
+        outstring.append(this.maxLOut);
         outstring.append("\nmax_R_out= ");
-        outstring.append(this.max_R_out);
+        outstring.append(this.maxROut);
         outstring.append("\nmax_Z_out= ");
-        outstring.append(this.max_Z_out);
+        outstring.append(this.maxZOut);
         outstring.append("\nmax_X_out= ");
-        outstring.append(this.max_X_out);
+        outstring.append(this.maxXOut);
         outstring.append("\nmax_A_in= ");
-        outstring.append(this.max_A_in);
+        outstring.append(this.maxAIn);
         outstring.append("\nmax_P_in= ");
-        outstring.append(this.max_P_in);
+        outstring.append(this.maxPIn);
         outstring.append("\nmax_L_in= ");
-        outstring.append(this.max_L_in);
+        outstring.append(this.maxLIn);
         outstring.append("\nmax_R_in= ");
-        outstring.append(this.max_R_in);
+        outstring.append(this.maxRIn);
         outstring.append("\nmax_Z_in= ");
-        outstring.append(this.max_Z_in);
+        outstring.append(this.maxZIn);
         outstring.append("\nmax_X_in= ");
-        outstring.append(this.max_X_in);
+        outstring.append(this.maxXIn);
         outstring.append("\nmax_A= ");
         outstring.append(this.max_A);
         outstring.append("\nmax_P= ");

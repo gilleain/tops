@@ -17,8 +17,8 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.List;
 import java.util.Stack;
 
 import javax.swing.JComponent;
@@ -62,7 +62,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     public static final int FLIP_Y           = 20;
     
     // various constants
-    private static double SCALE_FACTOR = 0.1;
+    private static final double SCALE_FACTOR = 0.1;
     
     private SSESymbol currentlyDraggedSymbol = null;
     private int state;
@@ -84,7 +84,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
 
         this.cartoon = new Cartoon();
         
-        undoStack = new Stack<UndoEvent>();
+        undoStack = new Stack<>();
         dragging = false;
 
         this.addMouseListener(this);
@@ -119,14 +119,14 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
 
     public void performHorizontalAlignment(Point p) {
         this.saveState();
-        ArrayList<SSESymbol> selected = cartoon.getSelectedSSESymbols();
+        List<SSESymbol> selected = cartoon.getSelectedSSESymbols();
 
         for (int i = 0; i < selected.size(); i++) {
-            SSESymbol curFig = (SSESymbol) selected.get(i);
+            SSESymbol curFig = selected.get(i);
             if (i == 0) {
                 curFig.setPosition(p.x, p.y);
             } else {
-                SSESymbol prevFig = (SSESymbol) selected.get(i - 1);
+                SSESymbol prevFig = selected.get(i - 1);
                 Point c = prevFig.getCenter();
 
                 int length = 60;
@@ -140,16 +140,16 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     public void performVerticalAlignment(Point p) {
         this.saveState();
         // want the 'N' to start from where p is.
-        ArrayList<SSESymbol> selected = this.cartoon.getSelectedSSESymbols();
+        List<SSESymbol> selected = this.cartoon.getSelectedSSESymbols();
 
         for (int i = 0; i < selected.size(); i++) {
-            SSESymbol curFig = (SSESymbol) selected.get(i);
+            SSESymbol curFig = selected.get(i);
             if (i == 0)
                 curFig.setPosition(p.x, p.y);
             else    // the figure is the same as the previous with the x co-ord increased
             {
                 //get the previous figs co-ords
-                SSESymbol prevFig = (SSESymbol)selected.get(i - 1);
+                SSESymbol prevFig = selected.get(i - 1);
                 Point c = prevFig.getCenter();
                 int length = 60;
                 curFig.setPosition(c.x, c.y + length);
@@ -257,12 +257,12 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
         } else {
             scale_factor -= SCALE_FACTOR;
 
-            Dimension cur_dim = this.getPreferredSize();
+            Dimension currentDimension = this.getPreferredSize();
             // determine the new size of
-            int new_width = (int)(cur_dim.width / (1.0 + SCALE_FACTOR));
-            int new_height = (int)(cur_dim.height / (1.0 + SCALE_FACTOR));
+            int newWidth = (int)(currentDimension.width / (1.0 + SCALE_FACTOR));
+            int newHeight = (int)(currentDimension.height / (1.0 + SCALE_FACTOR));
 
-            this.setPreferredSize(new Dimension(new_width, new_height));
+            this.setPreferredSize(new Dimension(newWidth, newHeight));
             
         }
         refreshCanvas();
@@ -270,19 +270,19 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
 
     public void zoomToPrintSize() {
         scale_factor = 0.7;
-        Dimension cur_dim = this.getPreferredSize();
+        Dimension currentDimension = this.getPreferredSize();
         // determine the new size of
-        int new_width = (int)(cur_dim.width * scale_factor);
-        int new_height = (int)(cur_dim.height * scale_factor);
+        int newWidth = (int)(currentDimension.width * scale_factor);
+        int newHeight = (int)(currentDimension.height * scale_factor);
 
-        this.setPreferredSize(new Dimension(new_width, new_height));
+        this.setPreferredSize(new Dimension(newWidth, newHeight));
     }
 
 
     public void fitToScreen() {
 
-        Dimension inital_dim = this.initialCanvasSize;
-        this.setPreferredSize(inital_dim);
+        Dimension initialDimension = this.initialCanvasSize;
+        this.setPreferredSize(initialDimension);
         refreshCanvas();
 
         if (cartoon.numberOfSSESymbols() > 0)
@@ -295,28 +295,15 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
             scale_factor += SCALE_FACTOR;
 
             //Dimension cur_dim = this.parentPanel.canvas_container.getPreferredSize();
-            Dimension cur_dim = this.getPreferredSize();
+            Dimension currentDimension = this.getPreferredSize();
 
 
             // increase the width of the canvas
-            Dimension new_dim = new Dimension(
-                                    cur_dim.width + (int)(cur_dim.width * SCALE_FACTOR),
-                                    cur_dim.height + (int)(cur_dim.height * SCALE_FACTOR));
+            Dimension newDimension = new Dimension(
+                                    currentDimension.width + (int)(currentDimension.width * SCALE_FACTOR),
+                                    currentDimension.height + (int)(currentDimension.height * SCALE_FACTOR));
 
-            this.setPreferredSize(new_dim);
-
-            //int fig_length = cartoon.numberOfSSESymbols();
-            
-            /*wtf was this MEANT to be doing?? Idiot!
-            
-            ArrayList figs = cartoon.getSSESymbols();
-            if (fig_length > 0) {
-                SSESymbol fig = (SSESymbol)(figs.get(fig_length - 1));
-                figs.remove(fig);
-                figs.add(fig_length - 1, fig);
-            }
-            */
-
+            this.setPreferredSize(newDimension);
             refreshCanvas();
         } else {
             System.err.println("Cannot Zoom in any further!");
@@ -334,26 +321,20 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     }
     
     // XXX : moved from Validator
-    public static int yes_no_dialog(String text, String heading) {
-
-        int n =
-            JOptionPane.showConfirmDialog(
+    public static int yesNoDialog(String text, String heading) {
+        return JOptionPane.showConfirmDialog(
                 null,
                 text,
                 heading,
                 JOptionPane.YES_NO_OPTION);
-        return n;
     }
     
-    public static int generic_dialog(String text, String heading, int dialog_type) {
-
-        int n =
-            JOptionPane.showConfirmDialog(
+    public static int genericDialog(String text, String heading, int dialog_type) {
+        return JOptionPane.showConfirmDialog(
                 null,
                 text,
                 heading,
                 dialog_type);
-        return n;
     }
 
     public void setDefaultCursor() {
@@ -372,38 +353,10 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     }
     
     public void resizeCanvas() {
-        // I don't know what all this crap does
-        /*
-        Dimension cartoonSize = this.cartoon.getSize();
-        Dimension initialCanvasDim = this.getPreferredSize();
-
-        int new_x, new_y;
-
-        // new x value
-        if (cartoonSize.width > initialCanvasDim.getWidth())
-            new_x = cartoonSize.width;
-        else
-            new_x = (int) initialCanvasDim.getWidth();
-
-        // new y value
-        if (cartoonSize.height > initialCanvasDim.getHeight())
-            new_y = cartoonSize.height;
-        else
-            new_y = (int)initialCanvasDim.getHeight();
-
-        // resize the canvas accordingly
-        this.setPreferredSize(new Dimension(new_x + 100, new_y + 130));
-
-        // XXX wtf
-        this.zoomIn();
-        this.zoomOut();
-
-        this.repaint();
-        this.parentPanel.repaint();
-        */
-
+       
     }
 
+    @Override
     public void paint( Graphics g ) {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -416,7 +369,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     }
 
     public void revert() throws EmptyStackException {
-        UndoEvent undo = (UndoEvent) this.undoStack.pop();
+        UndoEvent undo = this.undoStack.pop();
         this.cartoon = undo.getCartoon();
         System.out.println("reverting to " + this.cartoon);
         this.cartoon.deselectAllSSESymbols();
@@ -468,22 +421,22 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     public void createSymbol(Point p, int currentState) {
         this.saveState();
         
-        int symbol_int = cartoon.numberOfSSESymbols() + 1;
+        int symbolInt = cartoon.numberOfSSESymbols() + 1;
         int w = this.getWidth();
         int h = this.getHeight();
         int d = Math.max(w, h);
         switch (currentState) {
             case STRAND_UP:
-                this.cartoon.createUpStrand(symbol_int, p.x, p.y, d);
+                this.cartoon.createUpStrand(symbolInt, p.x, p.y, d);
                 break;
             case STRAND_DOWN:
-                this.cartoon.createDownStrand(symbol_int, p.x, p.y, d);
+                this.cartoon.createDownStrand(symbolInt, p.x, p.y, d);
                 break;
             case HELIX_UP:
-                this.cartoon.createUpHelix(symbol_int, p.x, p.y, d);
+                this.cartoon.createUpHelix(symbolInt, p.x, p.y, d);
                 break;
             case HELIX_DOWN:
-                this.cartoon.createDownHelix(symbol_int, p.x, p.y, d);
+                this.cartoon.createDownHelix(symbolInt, p.x, p.y, d);
                 break;
             default:
                 break;
@@ -620,20 +573,20 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
     // for when you are moving the selected shape around the screen
     public void mouseDragged(MouseEvent e) {
         if (dragging) {
-            Point new_point = e.getPoint();
+            Point newPoint = e.getPoint();
 
             if (this.currentlyDraggedSymbol != null) {
 
                 // work out how much we should move the others by
-                Point orig_point = this.currentlyDraggedSymbol.getCenter();
+                Point origPoint = this.currentlyDraggedSymbol.getCenter();
 
                 // work out the  x and y differences
-                int x_diff = new_point.x - orig_point.x;
-                int y_diff = new_point.y - orig_point.y;
+                int xDiff = newPoint.x - origPoint.x;
+                int yDiff = newPoint.y - origPoint.y;
                 
                 //System.out.println("Moving by " + x_diff + " " + y_diff);
 
-                cartoon.moveSelectedSSESymbols(x_diff, y_diff);
+                cartoon.moveSelectedSSESymbols(xDiff, yDiff);
 
                 repaint();
                 parentPanel.setAsUnSaved();

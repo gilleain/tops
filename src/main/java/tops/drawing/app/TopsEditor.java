@@ -101,6 +101,7 @@ public class TopsEditor extends JApplet {
         currentDir = null;
     }
     
+    @Override
     public void init() {
         this.setSize(500, 500);
     }

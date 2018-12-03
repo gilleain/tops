@@ -34,24 +34,23 @@ public class Cartoon implements Cloneable {
     private List<Bond> aBonds;
     private List<Bond> pBonds;
     
-    private CartoonConnector selected_connector;
+    private CartoonConnector selectedConnector;
     
-    private int MAX_SSE_SIZE;
-    private int CURRENT_SSE_SIZE;
+    private static final int MAX_SSE_SIZE = 20;
+    private int currentSSESize;
 
     public Cartoon() {
-        this.MAX_SSE_SIZE = 20;
-        this.CURRENT_SSE_SIZE = this.MAX_SSE_SIZE;
+        this.currentSSESize = Cartoon.MAX_SSE_SIZE;
         
-        this.sseSymbols = new ArrayList<SSESymbol>();
-        this.connections = new ArrayList<CartoonConnector>();
-        this.rArcs = new ArrayList<Bond>();
-        this.lArcs = new ArrayList<Bond>();
-        this.aBonds = new ArrayList<Bond>();
-        this.pBonds = new ArrayList<Bond>();
+        this.sseSymbols = new ArrayList<>();
+        this.connections = new ArrayList<>();
+        this.rArcs = new ArrayList<>();
+        this.lArcs = new ArrayList<>();
+        this.aBonds = new ArrayList<>();
+        this.pBonds = new ArrayList<>();
         
         this.createTermini();
-        this.selected_connector = null;
+        this.selectedConnector = null;
         
     }
     
@@ -60,7 +59,7 @@ public class Cartoon implements Cloneable {
      * @return the size of the sses in this cartoon
      */
     public int getSSESize(int dimension) {
-        int calculatedSize = (int) dimension / (this.sseSymbols.size() + 1);
+        int calculatedSize = dimension / (this.sseSymbols.size() + 1);
         if (calculatedSize > this.MAX_SSE_SIZE) {
             return this.MAX_SSE_SIZE;
         }
@@ -71,12 +70,12 @@ public class Cartoon implements Cloneable {
         try {
             Cartoon c = (Cartoon) super.clone();
             
-            c.sseSymbols = new ArrayList<SSESymbol>();
+            c.sseSymbols = new ArrayList<>();
             for (int i = 0; i < this.sseSymbols.size(); i++) {
                 c.sseSymbols.add((SSESymbol)(this.sseSymbols.get(i)).clone());
             }
             
-            c.connections = new ArrayList<CartoonConnector>();
+            c.connections = new ArrayList<>();
             for (int i = 0; i < this.connections.size(); i++) {
                 CartoonConnector connector = this.connections.get(i);
                 CartoonConnector shallowClone = (CartoonConnector) connector.clone(); 
@@ -89,7 +88,7 @@ public class Cartoon implements Cloneable {
             c.aBonds = this.cloneBonds(c, this.aBonds);
             c.pBonds = this.cloneBonds(c, this.pBonds);
             
-            c.selected_connector = null;
+            c.selectedConnector = null;
             
             return c;
         } catch (CloneNotSupportedException e) {
@@ -98,7 +97,7 @@ public class Cartoon implements Cloneable {
     }
     
     private ArrayList<Bond> cloneBonds(Cartoon clone, List<Bond> bonds) {
-        ArrayList<Bond> bondClones = new ArrayList<Bond>();
+        ArrayList<Bond> bondClones = new ArrayList<>();
         for (int i = 0; i < bonds.size(); i++) {
             Bond bond = bonds.get(i);
             Bond shallowClone = (Bond) bond.clone();
@@ -156,8 +155,8 @@ public class Cartoon implements Cloneable {
 
         // figures
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol cur_fig = this.sseSymbols.get(i);
-            pw.write(cur_fig.toString());
+            SSESymbol currentFigure = this.sseSymbols.get(i);
+            pw.write(currentFigure.toString());
             pw.println();
         }
         
@@ -194,28 +193,28 @@ public class Cartoon implements Cloneable {
     
     public Dimension getSize() {
         
-        int largest_x = 0;
-        int largest_y = 0;
+        int largestX = 0;
+        int largestY = 0;
 
         for (int i = 0; i < sseSymbols.size(); i++) {
-            SSESymbol cur_fig = sseSymbols.get(i);
-            Rectangle fig_rect = cur_fig.getShape().getBounds();
+            SSESymbol currentFigure = sseSymbols.get(i);
+            Rectangle figureRectangle = currentFigure.getShape().getBounds();
 
             if (i == 0) {
                 // the largest_x and y become the first entry
-                largest_x = fig_rect.x;
-                largest_y = fig_rect.y;
+                largestX = figureRectangle.x;
+                largestY = figureRectangle.y;
             } else {
-                if (fig_rect.x > largest_x) {
-                    largest_x = fig_rect.x;
+                if (figureRectangle.x > largestX) {
+                    largestX = figureRectangle.x;
                 }
 
-                if (fig_rect.y > largest_y) {
-                    largest_y = fig_rect.y;
+                if (figureRectangle.y > largestY) {
+                    largestY = figureRectangle.y;
                 }
             }
         } 
-        return new Dimension(largest_x, largest_y);
+        return new Dimension(largestX, largestY);
     }
     
     public Point getCenterPoint() {
@@ -262,15 +261,15 @@ public class Cartoon implements Cloneable {
     }
     
     public boolean hasSelectedConnector() {
-        return this.selected_connector != null;
+        return this.selectedConnector != null;
     }
     
     public CartoonConnector getSelectedConnector() {
-        return this.selected_connector;
+        return this.selectedConnector;
     }
     
     public void setSelectedConnector(CartoonConnector connection) {
-        this.selected_connector = connection;
+        this.selectedConnector = connection;
     }
     
     public void removeSSESymbol(int symbolNumber) {
@@ -291,24 +290,24 @@ public class Cartoon implements Cloneable {
         int size = this.numberOfConnectors();
         int loop = 0;
 
-        boolean in_coming_only = symbolNumber == n;
-        boolean out_going_only = symbolNumber == 1;
+        boolean incomingOnly = symbolNumber == n;
+        boolean outgoingOnly = symbolNumber == 1;
 
         while (loop < size) {
             CartoonConnector bond = this.getCartoonConnector(loop);
-            int source_num = bond.getStartSSESymbol().getSymbolNumber();
-            int dest_num = bond.getEndSSESymbol().getSymbolNumber();
+            int sourceNumber = bond.getStartSSESymbol().getSymbolNumber();
+            int destNumber = bond.getEndSSESymbol().getSymbolNumber();
 
-            if (in_coming_only) {
-                if (dest_num == symbolNumber)
+            if (incomingOnly) {
+                if (destNumber == symbolNumber)
                     this.removeCartoonConnector(bond);
                 break;
-            } else if (out_going_only) {
-                if (source_num == symbolNumber)
+            } else if (outgoingOnly) {
+                if (sourceNumber == symbolNumber)
                     this.removeCartoonConnector(bond);
                 break;
             } else {
-                if (source_num == symbolNumber || dest_num == symbolNumber) {
+                if (sourceNumber == symbolNumber || destNumber == symbolNumber) {
 
                     this.removeCartoonConnector(bond);
                     size = size - 1;
@@ -329,7 +328,7 @@ public class Cartoon implements Cloneable {
     
     // make the N/C termini for an empty Cartoon
     public void createTermini() {
-        int terminusSize = this.MAX_SSE_SIZE / 2;
+        int terminusSize = Cartoon.MAX_SSE_SIZE / 2;
         Box nTerminus = new Box(1, 250, 250, terminusSize, "N");
         Box cTerminus = new Box(3, 350, 250, terminusSize, "C"); 
 
@@ -392,7 +391,7 @@ public class Cartoon implements Cloneable {
     }
     
     public void addSSESymbol(SSESymbol sseSymbol) {
-        if (this.selected_connector != null) {
+        if (this.selectedConnector != null) {
             this.addSSESymbolAtSelectedConnector(sseSymbol);
         } else {
             this.addSSESymbolBeforeCTerminus(sseSymbol);
@@ -403,8 +402,8 @@ public class Cartoon implements Cloneable {
      * Use the selected connector to add sseSymbol between the endpoints. 
      */
     public void addSSESymbolAtSelectedConnector(SSESymbol sseSymbol) {
-        SSESymbol start = this.selected_connector.getStartSSESymbol();
-        SSESymbol end =  this.selected_connector.getEndSSESymbol();
+        SSESymbol start = this.selectedConnector.getStartSSESymbol();
+        SSESymbol end =  this.selectedConnector.getEndSSESymbol();
         this.insertSymbol(start, end, sseSymbol);
     }
     
@@ -475,10 +474,10 @@ public class Cartoon implements Cloneable {
 
     public SSESymbol selectSSESymbol(Point p) {
         for (int i = 0; i < this.sseSymbols.size(); i++) {
-            SSESymbol cur_fig = this.sseSymbols.get(i);
-            if (cur_fig.containsPoint(p.x, p.y)) {
-                cur_fig.setSelectionState(true);
-                return cur_fig;
+            SSESymbol currentFigure = this.sseSymbols.get(i);
+            if (currentFigure.containsPoint(p.x, p.y)) {
+                currentFigure.setSelectionState(true);
+                return currentFigure;
             }
         }
         return null;
@@ -549,8 +548,8 @@ public class Cartoon implements Cloneable {
         return null;
     }
     
-    public ArrayList<SSESymbol> getSelectedSSESymbols() {
-        ArrayList<SSESymbol> selected = new ArrayList<SSESymbol>();
+    public List<SSESymbol> getSelectedSSESymbols() {
+        ArrayList<SSESymbol> selected = new ArrayList<>();
         for (int i = 0; i < this.sseSymbols.size(); i++) {
             SSESymbol currentSymbol = this.sseSymbols.get(i);
             if (currentSymbol.isSelected()) {
@@ -598,8 +597,8 @@ public class Cartoon implements Cloneable {
     // returns true if the first sseSymbol is a strand (gmt:?)
     public boolean connectionStartsOnTop() {
         if (this.numberOfSSESymbols() > 0) {
-            SSESymbol first_fig = this.getSSESymbol(0);
-            return first_fig instanceof EquilateralTriangle;
+            SSESymbol firstFigure = this.getSSESymbol(0);
+            return firstFigure instanceof EquilateralTriangle;
         } else
             return false;
     }
@@ -637,17 +636,17 @@ public class Cartoon implements Cloneable {
 
             SSESymbol currentSSESymbol = this.sseSymbols.get(i);
 
-            int point_y = p.y;
-            int y_dif;
+            int pointY = p.y;
+            int yDiff;
 
             Point currentPoint = currentSSESymbol.getCenter();
 
             if (currentPoint.y > p.y) {
-                y_dif = currentPoint.y - point_y;
-                currentSSESymbol.move(0, -y_dif);
+                yDiff = currentPoint.y - pointY;
+                currentSSESymbol.move(0, -yDiff);
             } else {
-                y_dif = point_y - currentPoint.y;
-                currentSSESymbol.move(0, y_dif);
+                yDiff = pointY - currentPoint.y;
+                currentSSESymbol.move(0, yDiff);
             }
         }
         this.relayout();
@@ -657,17 +656,17 @@ public class Cartoon implements Cloneable {
         for (int i = 0; i < this.numberOfSSESymbols(); i++) {
 
             SSESymbol currentSSESymbol = this.sseSymbols.get(i);
-            int point_x = p.x;
-            int x_dif;
+            int pointX = p.x;
+            int xDif;
 
             Point currentPoint = currentSSESymbol.getCenter();
 
             if (currentPoint.y > p.y) {
-                x_dif = currentPoint.y - point_x;
-                currentSSESymbol.move(-x_dif, 0);
+                xDif = currentPoint.y - pointX;
+                currentSSESymbol.move(-xDif, 0);
             } else {
-                x_dif = point_x - currentPoint.y;
-                currentSSESymbol.move(x_dif, 0);
+                xDif = pointX - currentPoint.y;
+                currentSSESymbol.move(xDif, 0);
             }
         }
         this.relayout();
@@ -743,8 +742,8 @@ public class Cartoon implements Cloneable {
     }
     
     public void checkSize(int sseSize) {
-        if (sseSize != this.CURRENT_SSE_SIZE) {
-            this.CURRENT_SSE_SIZE = sseSize;
+        if (sseSize != this.currentSSESize) {
+            this.currentSSESize = sseSize;
             this.resizeSymbols();
         }
     }
@@ -809,10 +808,10 @@ public class Cartoon implements Cloneable {
         
         while (itr.hasNext()) {
             ConnectionSymbol bond = itr.next();
-            int source_num = bond.getStartSSESymbol().getSymbolNumber();
-            int dest_num = bond.getEndSSESymbol().getSymbolNumber();
+            int sourceNumber = bond.getStartSSESymbol().getSymbolNumber();
+            int destNumber = bond.getEndSSESymbol().getSymbolNumber();
 
-            if (source_num == symbolNumber || dest_num == symbolNumber) {
+            if (sourceNumber == symbolNumber || destNumber == symbolNumber) {
                 itr.remove();
                 return;
             }
@@ -869,14 +868,14 @@ public class Cartoon implements Cloneable {
                     // get the connection
 
 
-                    CartoonConnector cur_con = connections.get(j);
+                    CartoonConnector currentConnection = connections.get(j);
 
-                    int con_source = cur_con.getStartSSESymbol().getSymbolNumber();
-                    int con_dest = cur_con.getEndSSESymbol().getSymbolNumber();
+                    int connectionSource = currentConnection.getStartSSESymbol().getSymbolNumber();
+                    int connectionDest = currentConnection.getEndSSESymbol().getSymbolNumber();
 
 
-                    if ( (con_source == i && con_dest == i + 1 ) ||
-                            (con_source == i + 1 && con_dest == i) ) {
+                    if ( (connectionSource == i && connectionDest == i + 1 ) ||
+                            (connectionSource == i + 1 && connectionDest == i) ) {
                         // we add the description of the connection to the
                         // vertex string
                         
@@ -896,8 +895,8 @@ public class Cartoon implements Cloneable {
                             insertedVertexSt += "[" + range_info + "]";
                         }
                     }
-                } // for
-            } //  if
+                }
+            }
 
             if (fig instanceof EquilateralTriangle && !fig.isDown()) {
                 vertexSt += "E";
@@ -924,87 +923,87 @@ public class Cartoon implements Cloneable {
     }
 
     public String getEdgeString() {
-        String edgeVertex = "";
+        StringBuilder edgeVertex = new StringBuilder();
         validateHBonds();
 
         for (int i = 0; i < sseSymbols.size(); i++) {
-            edgeVertex += getBondInfo(i + 1, rArcs, "R");
-            edgeVertex += getBondInfo(i + 1, lArcs, "L");
-            edgeVertex += getBondInfo(i + 1, aBonds, "A");
-            edgeVertex += getBondInfo(i + 1, pBonds, "P");
+            edgeVertex.append(getBondInfo(i + 1, rArcs, "R"));
+            edgeVertex.append(getBondInfo(i + 1, lArcs, "L"));
+            edgeVertex.append(getBondInfo(i + 1, aBonds, "A"));
+            edgeVertex.append(getBondInfo(i + 1, pBonds, "P"));
         }
-        return edgeVertex;
+        return edgeVertex.toString();
     }
 
     public void validateHBonds() {
         // loop through the aBonds and pBonds looking for bonds that
         // should be switched
 
-        ArrayList<Bond> temp_bonds = new ArrayList<Bond>();
-        temp_bonds.clear();
+        ArrayList<Bond> tempBonds = new ArrayList<>();
+        tempBonds.clear();
 
         for (int i = 0; i < pBonds.size(); i++) {
             // look for bonds in aBonds that should be in pBonds
-            Bond cur_bond = pBonds.get(i);
+            Bond currentBond = pBonds.get(i);
 
-            SSESymbol source = cur_bond.getStartSSESymbol();
-            SSESymbol dest = cur_bond.getEndSSESymbol();
+            SSESymbol source = currentBond.getStartSSESymbol();
+            SSESymbol dest = currentBond.getEndSSESymbol();
 
             // now look for A bonds
             if ((source instanceof EquilateralTriangle && source.isDown()) 
                     || (source instanceof EquilateralTriangle && dest instanceof EquilateralTriangle)) {
                 // remove this bond from a_Bonds, it belongs in P bonds
                 // strore them into temp bonds temporarily.
-                temp_bonds.add(cur_bond);
+                tempBonds.add(currentBond);
             }
         }
-        pBonds.removeAll(temp_bonds);
-        aBonds.addAll(temp_bonds);
+        pBonds.removeAll(tempBonds);
+        aBonds.addAll(tempBonds);
 
-        temp_bonds.clear();
+        tempBonds.clear();
         for (int i = 0; i < aBonds.size(); i++) {
             // look for bonds in aBonds that should be in pBonds
-            Bond cur_bond = aBonds.get(i);
+            Bond currentBond = aBonds.get(i);
 
-            SSESymbol source = cur_bond.getStartSSESymbol();
-            SSESymbol dest = cur_bond.getEndSSESymbol();
+            SSESymbol source = currentBond.getStartSSESymbol();
+            SSESymbol dest = currentBond.getEndSSESymbol();
 
-            String source_class = source.getClass().toString();
-            String dest_class = dest.getClass().toString();
+            String sourceClass = source.getClass().toString();
+            String destClass = dest.getClass().toString();
 
             // now look for P bonds
-            if (source_class.equals(dest_class) ) {
+            if (sourceClass.equals(destClass) ) {
                 // remove this bond from a_Bonds, it belongs in P bonds
                 // strore them into temp bonds temporarily.
-                temp_bonds.add(cur_bond);
+                tempBonds.add(currentBond);
             }
         }
-        aBonds.removeAll(temp_bonds);
-        pBonds.addAll(temp_bonds);
+        aBonds.removeAll(tempBonds);
+        pBonds.addAll(tempBonds);
 
     }
 
     // returns the R_Arc from that is created between a symbol and another symbol
     // if one of those symbols is sseSymbols<symbolNum>
     public String getBondInfo(int symbolNum, List<Bond> ar, String sse_rep) {
-        String bond_string = "";
+        StringBuilder bondString = new StringBuilder();
         for (int j = 0; j < ar.size(); j++) {
             Bond bond = ar.get(j);
 
             // the source number for this arc
-            int source_num = bond.getStartSSESymbol().getSymbolNumber() - 1;
-            int dest_num = bond.getEndSSESymbol().getSymbolNumber() - 1;
+            int sourceNum = bond.getStartSSESymbol().getSymbolNumber() - 1;
+            int destNum = bond.getEndSSESymbol().getSymbolNumber() - 1;
 
-            if (source_num == symbolNum) {
-                boolean souceLessThanDest = source_num < dest_num;
-                if (souceLessThanDest == true)
-                    bond_string += source_num + ":" + dest_num + sse_rep + " ";
-
-                if (souceLessThanDest == false)
-                    bond_string += dest_num + ":" + source_num + sse_rep + " ";
+            if (sourceNum == symbolNum) {
+                boolean souceLessThanDest = sourceNum < destNum;
+                if (souceLessThanDest) {
+                    bondString.append(sourceNum + ":" + destNum + sse_rep + " ");
+                } else {
+                    bondString.append(destNum + ":" + sourceNum + sse_rep + " ");
+                }
             }
         }
-        return bond_string;
+        return bondString.toString();
     }
 
     
@@ -1025,10 +1024,7 @@ public class Cartoon implements Cloneable {
             return false;
         }
 
-        if ((bondBetween(source, dest, this.aBonds)) || (bondBetween(source, dest, this.pBonds))) {
-            return false;
-        }
-        return true;
+        return !bondBetween(source, dest, this.aBonds) && !bondBetween(source, dest, this.pBonds);
     }
 
     public boolean shouldCreateParallelBond(SSESymbol source, SSESymbol dest) {
@@ -1036,7 +1032,7 @@ public class Cartoon implements Cloneable {
     }
 
     public boolean shouldCreateAntiParallelBond(SSESymbol source, SSESymbol dest) {
-        return (!source.isDown() && dest.isDown()) || (!source.isDown() && dest.isDown());
+        return (!source.isDown() && dest.isDown()) || (source.isDown() && !dest.isDown());
     }
 
     public boolean canCreateRArc(SSESymbol source, SSESymbol dest) {

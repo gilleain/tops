@@ -8,8 +8,8 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import tops.drawing.Diagram;
@@ -35,21 +35,21 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
 //    private Rectangle2D selectionBox; TODO
 
     private Point lastClickedPoint = null;
-    private boolean highlight_flag = false;     // purely an optimization device : see moveHighlight
+    private boolean highlightFlag = false;     // purely an optimization device : see moveHighlight
     
     //state constants
     private int state;
-    private final static int INITIAL_STATE       = 0;
-    private final static int SELECTING           = 1;
-    private final static int ADDING_UP_STRAND    = 2;
-    private final static int ADDING_DOWN_STRAND  = 3;
-    private final static int ADDING_UP_HELIX     = 4;
-    private final static int ADDING_DOWN_HELIX   = 5;
-    private final static int MAKING_HBOND        = 6;
-    private final static int MAKING_LEFT_CHIRAL  = 7;
-    private final static int MAKING_RIGHT_CHIRAL = 8;
-    private final static int DELETING = 9;
-    private final static int FLIPPING = 10;
+    private static final int INITIAL_STATE       = 0;
+    private static final int SELECTING           = 1;
+    private static final int ADDING_UP_STRAND    = 2;
+    private static final int ADDING_DOWN_STRAND  = 3;
+    private static final int ADDING_UP_HELIX     = 4;
+    private static final int ADDING_DOWN_HELIX   = 5;
+    private static final int MAKING_HBOND        = 6;
+    private static final int MAKING_LEFT_CHIRAL  = 7;
+    private static final int MAKING_RIGHT_CHIRAL = 8;
+    private static final int DELETING = 9;
+    private static final int FLIPPING = 10;
     
     public DiagramEditorCanvas(int width, int height, DiagramEditorToolbar undoToolbar) {
         //set up standard canvas type options
@@ -57,8 +57,8 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
         this.setSize(width, height);
         
         //set up the undo/redo stacks
-        this.undoStack = new Stack<Action>();
-        this.redoStack = new Stack<Action>();
+        this.undoStack = new Stack<>();
+        this.redoStack = new Stack<>();
         
         //initialise a blank diagram
         this.diagram = new Diagram();
@@ -182,14 +182,14 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
         }
         
         if (selected != null) {             // we have mouse-overed a symbol..
-            if (!this.highlight_flag) {     // ... and no symbol is highlighted
+            if (!this.highlightFlag) {     // ... and no symbol is highlighted
                 this.repaint();
-                this.highlight_flag = true;
+                this.highlightFlag = true;
             }
         } else {                            // no symbol is under the cursor...
-            if (this.highlight_flag) {      // ... but we need to switch off highlights
+            if (this.highlightFlag) {      // ... but we need to switch off highlights
                 this.repaint();
-                this.highlight_flag = false;
+                this.highlightFlag = false;
             }
         }
     }
@@ -201,13 +201,13 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
      * @param y the click y.
      */
     private void bondingSelect(int x, int y) {
-        ArrayList<SSESymbol> selectedSymbols = this.diagram.getSelectedSymbols();
+        List<SSESymbol> selectedSymbols = this.diagram.getSelectedSymbols();
         SSESymbol selected = this.diagram.selectSymbolAt(x, y);
-        if (selectedSymbols.size() != 0 && selected != null) {
+        if (selectedSymbols.isEmpty() && selected != null) {
             if (selectedSymbols.size() > 1) {
                 // this shouldn't happen - it means three symbols selected!
             } else {
-                SSESymbol previous = (SSESymbol) selectedSymbols.get(0);
+                SSESymbol previous = selectedSymbols.get(0);
                 
                 // check that previous is before selected - otherwise swap!
                 if (previous.getSymbolNumber() > selected.getSymbolNumber()) {
@@ -260,7 +260,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
 
     private void delete(int x, int y) {
         SSESymbol selected = this.diagram.selectSymbolAt(x, y);
-        ArrayList<SSESymbol> selectedSymbols = new ArrayList<SSESymbol>();
+        ArrayList<SSESymbol> selectedSymbols = new ArrayList<>();
         selectedSymbols.add(selected);
         this.doAction(new DeleteSymbols(selectedSymbols, this.diagram));
     }
@@ -268,7 +268,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
     private void flip(int x, int y) {
         SSESymbol selected = this.diagram.selectSymbolAt(x, y);
         if (selected != null ) {
-            ArrayList<Integer> selectedSymbols = new ArrayList<Integer>();
+            ArrayList<Integer> selectedSymbols = new ArrayList<>();
             selectedSymbols.add(selected.getSymbolNumber());
             this.doAction(new FlipSymbols(selectedSymbols, this.diagram));
             this.diagram.unselectAll();
@@ -394,7 +394,5 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
     public void deleteDiagram() {
         this.doAction(new DeleteDiagram(this.diagram, this));
     }
-    
-    /* ACTIONS */
 
 }

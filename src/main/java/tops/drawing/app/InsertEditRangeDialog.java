@@ -168,14 +168,14 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
             // check to see what they have chosen to do.
             if (infinite_cb.isSelected()) {
                 message = "Enter an infinite range onto the selected connection?";
-                int i = TopsCanvas.yes_no_dialog(message, "Range Insertion");
+                int i = TopsCanvas.yesNoDialog(message, "Range Insertion");
                 if (i == JOptionPane.YES_OPTION) {
 //                  connection.setLabel("*");     //TODO
                     setVisible(false);
                 }
             } else if (zero_range.isSelected()) {
                 message = "Enter a zero range onto the selected connection?";
-                int i = TopsCanvas.yes_no_dialog(message, "Range Insertion");
+                int i = TopsCanvas.yesNoDialog(message, "Range Insertion");
                 if (i == JOptionPane.YES_OPTION) {
 //                  connection.setLabel("0");     //TODO
                     setVisible(false);
@@ -211,7 +211,7 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
                 if (inValid)
                     System.err.println(message);
                 else {
-                    int i = TopsCanvas.yes_no_dialog("Are you sure you wish to insert this range", "Range Confirmation");
+                    int i = TopsCanvas.yesNoDialog("Are you sure you wish to insert this range", "Range Confirmation");
 
                     if (i == JOptionPane.YES_OPTION) {
 //                      connection.setLabel(from_int + ":" + to_int); //TODO
@@ -225,7 +225,7 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
             controller.setAsUnSaved();
             controller.repaint();
         } else if (ae.getSource() == cancel) {
-            int i = TopsCanvas.yes_no_dialog("Enter the specified range onto the selected connection?", "Range Insertion");
+            int i = TopsCanvas.yesNoDialog("Enter the specified range onto the selected connection?", "Range Insertion");
 
             if (i == JOptionPane.YES_OPTION)
                 setVisible(false);

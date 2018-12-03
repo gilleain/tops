@@ -53,12 +53,12 @@ public class EditingToolbar extends JPanel implements ActionListener {
     private TopsEditor parentPanel;
     private JToggleButton[] buttons;
     
-    private int num_of_buttons = 21;
+    private int numOfButtons = 21;
 
     private JPanel activityPanel;
-    private JPanel symbols_panel;
-    private JPanel arcs_bonds_panel;
-    private JPanel flip_panel;
+    private JPanel symbolsPanel;
+    private JPanel arcsBondsPanel;
+    private JPanel flipPanel;
     
     private static int MENU_BUTTON_PANEL_HEIGHT = 25;
 
@@ -72,7 +72,7 @@ public class EditingToolbar extends JPanel implements ActionListener {
         Dimension buttonSize = new Dimension(MENU_BUTTON_PANEL_HEIGHT, MENU_BUTTON_PANEL_HEIGHT);
         
         ButtonGroup buttonGroup = new ButtonGroup();
-        buttons = new JToggleButton[num_of_buttons];
+        buttons = new JToggleButton[numOfButtons];
         
         for (int i = 0; i < buttons.length; i++) {
             Image mainImage = MediaCenter.getImage(MediaCenter.buttonImageNames[i]);
@@ -98,9 +98,9 @@ public class EditingToolbar extends JPanel implements ActionListener {
         }
         
         activityPanel = new JPanel();
-        symbols_panel = new JPanel();
-        arcs_bonds_panel = new JPanel();
-        flip_panel = new JPanel();
+        symbolsPanel = new JPanel();
+        arcsBondsPanel = new JPanel();
+        flipPanel = new JPanel();
         
         activityPanel.add(buttons[SELECT]);
         activityPanel.add(buttons[UNDO]);
@@ -114,34 +114,34 @@ public class EditingToolbar extends JPanel implements ActionListener {
                 BorderFactory.createEtchedBorder(), "Actions"));
         this.add(activityPanel);
         
-        symbols_panel.add(buttons[STRAND_UP]);
-        symbols_panel.add(buttons[STRAND_DOWN]);
-        symbols_panel.add(buttons[HELIX_UP]);
-        symbols_panel.add(buttons[HELIX_DOWN]);
-        symbols_panel.add(buttons[TEMPLATE]);
+        symbolsPanel.add(buttons[STRAND_UP]);
+        symbolsPanel.add(buttons[STRAND_DOWN]);
+        symbolsPanel.add(buttons[HELIX_UP]);
+        symbolsPanel.add(buttons[HELIX_DOWN]);
+        symbolsPanel.add(buttons[TEMPLATE]);
         
-        symbols_panel.setBorder(BorderFactory.createTitledBorder(
+        symbolsPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(), "SSEs"));
-        this.add(symbols_panel);
+        this.add(symbolsPanel);
         
-        arcs_bonds_panel.add(buttons[H_BOND]);
-        arcs_bonds_panel.add(buttons[RIGHT_ARC]);
-        arcs_bonds_panel.add(buttons[LEFT_ARC]);
-        arcs_bonds_panel.add(buttons[RANGE]);
+        arcsBondsPanel.add(buttons[H_BOND]);
+        arcsBondsPanel.add(buttons[RIGHT_ARC]);
+        arcsBondsPanel.add(buttons[LEFT_ARC]);
+        arcsBondsPanel.add(buttons[RANGE]);
         
-        arcs_bonds_panel.setBorder(BorderFactory.createTitledBorder(
+        arcsBondsPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(), "Arcs & Bond"));
-        this.add(arcs_bonds_panel);
+        this.add(arcsBondsPanel);
         
-        flip_panel.add(buttons[FLIP]);
-        flip_panel.add(buttons[FLIP_X]);
-        flip_panel.add(buttons[FLIP_Y]);
-        flip_panel.add(buttons[HORIZONTAL_ALIGN]);
-        flip_panel.add(buttons[VERTICAL_ALIGN]);
+        flipPanel.add(buttons[FLIP]);
+        flipPanel.add(buttons[FLIP_X]);
+        flipPanel.add(buttons[FLIP_Y]);
+        flipPanel.add(buttons[HORIZONTAL_ALIGN]);
+        flipPanel.add(buttons[VERTICAL_ALIGN]);
         
-        flip_panel.setBorder(BorderFactory.createTitledBorder(
+        flipPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(), "Alignment"));
-        this.add(flip_panel);
+        this.add(flipPanel);
         
         buttons[SELECT].setToolTipText("Default (F1)");
         buttons[STRAND_UP].setToolTipText("Insert Up Strand (F2)");
