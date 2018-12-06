@@ -45,9 +45,6 @@ public class SubmissionDialog extends JDialog implements ActionListener {
     private JButton submit;
     private JButton cancel;
 
-    private boolean finished = false;
-    private boolean hasSubmitted = false;
-
     /** Creates a new instance of SubmissionDialog */
     public SubmissionDialog(TopsEditor parentPanel)  {
         this.parentPanel = parentPanel;
@@ -174,20 +171,19 @@ public class SubmissionDialog extends JDialog implements ActionListener {
     public String getURL() {
         // get the sse_string info
         String stringInfo = parentPanel.getTopsString();
-        String vertices = "";
-        String edges = "";
+        StringBuilder vertices = new StringBuilder();
+        StringBuilder edges = new StringBuilder();
         StringTokenizer st = new StringTokenizer(stringInfo, " ");
         int i = 0;
         while (st.hasMoreTokens()) {
             if (i == 0)
-                vertices += st.nextToken();
+                vertices.append(st.nextToken());
             else
-                edges += st.nextToken();
+                edges.append(st.nextToken());
             i++;
         }
-        String[] sub_Data = getSubmissionData();
-        String url = ServletConnection.makeURL(vertices, edges, sub_Data);
-        return url;
+        String[] subData = getSubmissionData();
+        return ServletConnection.makeURL(vertices.toString(), edges.toString(), subData);
     }
 
 }
