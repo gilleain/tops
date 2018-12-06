@@ -22,7 +22,7 @@ public class DomainDefinition {
     private List<Segment> segments;
     
     public DomainDefinition(CATHcode code, DomainType domainType) {
-        this.segments = new ArrayList<Segment>();
+        this.segments = new ArrayList<>();
         this.domainCATHCode = code;
         this.domainType = domainType;
     }
@@ -41,29 +41,23 @@ public class DomainDefinition {
     
     public int getSegmentForSSE(Chain chain, SSE sse) {
         char chainName = chain.getName();
-        int PDBStart = sse.sseData.pdbStartResidue;
-        int PDBFinish = sse.sseData.pdbFinishResidue;
+        int pdbStart = sse.sseData.pdbStartResidue;
+        int pdbFinish = sse.sseData.pdbFinishResidue;
         
         int segmentIndex = 0;
         for (Segment segment : segments) {
             if (is(SEGMENT_SET)) {
-                if (chainName == segment.startChain && chainName == segment.endChain) {
-                    if (PDBStart >= segment.startIndex && PDBFinish <= segment.endIndex) {
+                if (chainName == segment.getStartChain() && chainName == segment.getEndChain()) {
+                    if (pdbStart >= segment.getStartIndex() && pdbFinish <= segment.getEndIndex()) {
                         return segmentIndex;
                     }
-                } else if (chainName == segment.startChain) {
-                    if (PDBStart >= segment.startIndex) {
-                        return segmentIndex;
-                    }
-                } else if (chainName == segment.endChain) {
-                    if (PDBFinish <= segment.endIndex) {
-                        return segmentIndex;
-                    }
-                }
-            } else if (is(CHAIN_SET)) {
-                if (chainName == segment.startChain || chainName == segment.endChain) {
+                } else if (chainName == segment.getStartChain() && pdbStart >= segment.getStartIndex()) {
+                    return segmentIndex;
+                } else if (chainName == segment.getEndChain() && pdbFinish <= segment.getEndIndex()) {
                     return segmentIndex;
                 }
+            } else if (is(CHAIN_SET) && (chainName == segment.getStartChain() || chainName == segment.getEndChain())) {
+                return segmentIndex;
             }
         }
         return -1;
@@ -71,11 +65,11 @@ public class DomainDefinition {
     
     public boolean hasResidues(Protein protein, DomDefError ddep) {
         for (Segment segment : segments) {
-            if (!check(protein, segment.startIndex, segment.startChain, ddep)) {
+            if (!check(protein, segment.getStartIndex(), segment.getStartChain(), ddep)) {
                 return false;
             }
             
-            if (!check(protein, segment.endIndex, segment.endChain, ddep)) {
+            if (!check(protein, segment.getEndIndex(), segment.getEndChain(), ddep)) {
                 return false;
             }
         }
@@ -96,10 +90,10 @@ public class DomainDefinition {
     
     public boolean hasChain(List<Chain> chains) {
         for (Segment segment : segments) {
-            if (hasChain(segment.startChain, chains)) {
+            if (hasChain(segment.getStartChain(), chains)) {
                 return true;
             } 
-            if (hasChain(segment.endChain, chains)) {
+            if (hasChain(segment.getEndChain(), chains)) {
                 return true;
             }
         }
@@ -132,22 +126,19 @@ public class DomainDefinition {
         for (Segment segment : segments) {
 
             if (is(SEGMENT_SET)) {
-                if (pdbChain == segment.startChain && pdbChain == segment.endChain) {
-                    if (pdbRes >= segment.startIndex && pdbRes <= segment.endIndex) {
+                if (pdbChain == segment.getStartChain() && pdbChain == segment.getEndChain()) {
+                    if (pdbRes >= segment.getStartIndex() && pdbRes <= segment.getEndIndex()) {
                         return true;
                     }
-                } else if (pdbChain == segment.startChain) {
-                    if (pdbRes >= segment.startIndex) {
+                } else if (pdbChain == segment.getStartChain()) {
+                    if (pdbRes >= segment.getStartIndex()) {
                         return true;
                     }
-                } else if (pdbChain == segment.endChain) {
-                    if (pdbRes <= segment.endIndex) {
-                        return true;
-                    }
-                }
-            } else if (is(CHAIN_SET)) {
-                if (pdbChain == segment.startChain || pdbChain == segment.endChain)
+                } else if (pdbChain == segment.getEndChain() && pdbRes <= segment.getEndIndex()) {
                     return true;
+                }
+            } else if (is(CHAIN_SET) && (pdbChain == segment.getStartChain() || pdbChain == segment.getEndChain())) {
+                return true;
             }
         }
         return false;

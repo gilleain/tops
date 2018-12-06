@@ -153,7 +153,7 @@ public class DomainCalculator {
         SSE lastCTerm;
     
         for (SSE sse : sses) {
-            sse.DomainBreakNumber = 0;
+            sse.domainBreakNumber = 0;
             sse.domainBreakType = DomainBreakType.NOT_DOM_BREAK;
         }
     
@@ -170,7 +170,7 @@ public class DomainCalculator {
         }
     
         count++;
-        sse.DomainBreakNumber = count;
+        sse.domainBreakNumber = count;
         sse.domainBreakType = DomainBreakType.N_DOM_BREAK;
     
         DomainId result = findDomain(domains, protein, sse);
@@ -203,8 +203,8 @@ public class DomainCalculator {
     
                     count++;
     
-                    if (lastCTerm.DomainBreakNumber == 0) {
-                        lastCTerm.DomainBreakNumber = count;
+                    if (lastCTerm.domainBreakNumber == 0) {
+                        lastCTerm.domainBreakNumber = count;
                         lastCTerm.domainBreakType = DomainBreakType.C_DOM_BREAK;
                     } else {
                         lastCTerm.domainBreakType = DomainBreakType.NC_DOM_BREAK;
@@ -219,7 +219,7 @@ public class DomainCalculator {
                         domain = findDomain(domains, protein, sse).domain;
                     }
                     if (sse != null) {
-                        sse.DomainBreakNumber = count;
+                        sse.domainBreakNumber = count;
                         sse.domainBreakType = DomainBreakType.N_DOM_BREAK;
                         lastCTerm = sse;
     
@@ -296,7 +296,7 @@ public class DomainCalculator {
                  */
                 if (r.domainBreakType == N_DOM_BREAK || r.domainBreakType == NC_DOM_BREAK) {
 
-                    domBreakNum = r.DomainBreakNumber;
+                    domBreakNum = r.domainBreakNumber;
 
                     numberStructures++;
                     SSE q = new SSE(SSEType.NTERMINUS);
@@ -318,11 +318,11 @@ public class DomainCalculator {
                  */
                 for (Chain chain : protein.getChains()) {
                     SSE cp = ChiralityCalculator.topsChiralPartner(chain, r);
-                    if ((r.Chirality != Hand.NONE) && (cp != null)) {
+                    if ((r.chirality != Hand.NONE) && (cp != null)) {
 //                        for (s = r; s != cp; s = s.To) {
                         for (SSE s : originalSSEList) {    // TODO - incorrect: should be range(r, cp)?
                             if (s.domainBreakType == C_DOM_BREAK || s.domainBreakType == NC_DOM_BREAK) {
-                                q.Chirality = Hand.NONE;
+                                q.chirality = Hand.NONE;
                                 break;
                             }
                         }

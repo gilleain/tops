@@ -15,7 +15,7 @@ public class ChiralityCalculator {
      * Calculates chiralities for 2D TOPS cartoon
      */
     public static Hand hand2D(Chain chain, SSE p) {
-        if (p.Chirality != Hand.NONE) {
+        if (p.chirality != Hand.NONE) {
             SSE q = topsChiralPartner(chain, p);
             if (q != null) return chiral2d(chain, p, q);
         }
@@ -123,14 +123,14 @@ public class ChiralityCalculator {
                     else return null;
                 }
             }
-        } else if ((p.isHelix()) && (p.SecStrucLength() > 12)) {
+        } else if ((p.isHelix()) && (p.secStrucLength() > 12)) {
             int endIndex = startIndex + 2;
             for (int i = startIndex; i < endIndex; i++) {
                 SSE q;
                 if (i >= chain.getSSEs().size()) return null;
                 else q = chain.getSSEs().get(i);
                 if (!q.isHelix()) return null;
-                if ((q.getDirection() == p.getDirection()) && (q.SecStrucLength() > 12)) return q;
+                if ((q.getDirection() == p.getDirection()) && (q.secStrucLength() > 12)) return q;
             }
         }
         return null; // none found

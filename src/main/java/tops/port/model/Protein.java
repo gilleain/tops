@@ -10,7 +10,7 @@ public class Protein {
     
     public Protein(String proteinCode) {
         this.proteinCode = proteinCode;
-        this.chains = new ArrayList<Chain>();
+        this.chains = new ArrayList<>();
     }
     
     public void setCode(String name) {
@@ -30,7 +30,7 @@ public class Protein {
     }
         
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("\n");
         for (Chain chain : this.chains) {
             sb.append(this.proteinCode + chain.toString());

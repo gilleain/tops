@@ -36,7 +36,7 @@ public class TopsFileWriter {
                 pw.print("DOMAIN_NUMBER " + i + " " + dd.getCATHcode());
                 for (Segment segment : dd.getSegments()) {
                     // XXX currently printing a 0 fragment index
-                    pw.print(" " + 0 + " " + segment.startIndex + " " + segment.endIndex);
+                    pw.print(" " + 0 + " " + segment.getStartIndex() + " " + segment.getEndIndex());
                 }
                 pw.print("\n\n");
 

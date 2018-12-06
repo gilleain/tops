@@ -160,8 +160,8 @@ public class Optimise {
 
         if (handPenalty > 0 && chain.numberOfSSEs() > 4) {
             for (SSE sse : chain.getSSEs()) {
-                if (sse.Chirality != Hand.NONE && 
-                        ChiralityCalculator.hand2D(chain, sse) != sse.Chirality) {
+                if (sse.chirality != Hand.NONE && 
+                        ChiralityCalculator.hand2D(chain, sse) != sse.chirality) {
                     TotalEnergy += handPenalty;
                     EnergyComps[4] += handPenalty;
                 }

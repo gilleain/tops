@@ -36,7 +36,7 @@ public class TopsFileWriter {
             dompt = domains.get(i);
             out.print(String.format("DOMAIN_NUMBER %d %s", i, dompt.getCode()));
             for (Segment segment : dompt.getSegments()) {
-                out.print(String.format(" %d %d", segment.startIndex, segment.endIndex));
+                out.print(String.format(" %d %d", segment.getStartIndex(), segment.getEndIndex()));
             }
             out.println();
             appendLinkedList(out, cartoons.get(i));
@@ -163,7 +163,7 @@ public class TopsFileWriter {
         print(out, "SymbolRadius %d\n", sse.getCartoonSymbol().getRadius());
         print(out, "AxisLength %f\n", sse.getAxis().getLength());
         print(out, "NConnectionPoints %d\n", sse.getNConnectionPoints());
-        print(out, "ConnectionTo %s\n", sse.Connections());
+        print(out, "ConnectionTo %s\n", sse.connections());
         print(out, "Fill %d\n", sse.getFill());
         return;
     }

@@ -18,10 +18,10 @@ public class SSE {
     private SSEType type;                       // H, E, N, C, D 
     private List<BridgePartner> bridgePartners;    // Bridge partners
     
-    public int DomainBreakNumber;             // Number identifying possible domain breaks (0 -> No break) 
+    public int domainBreakNumber;             // Number identifying possible domain breaks (0 -> No break) 
     public DomainBreakType domainBreakType;                // Number identifying domain break type (Nterm, Cterm or both)
     
-    public Hand Chirality;                      // Local structure hand 
+    public Hand chirality;                      // Local structure hand 
     public Axis axis;
     private FixedType fixedType;
     
@@ -33,10 +33,10 @@ public class SSE {
     private List<Neighbour> neighbours;
 
 
-    public SSE(SSEType SSEType) {
-        this.type = SSEType;                  
-        this.bridgePartners = new ArrayList<BridgePartner>();   
-        this.neighbours = new ArrayList<Neighbour>();                    
+    public SSE(SSEType type) {
+        this.type = type;                  
+        this.bridgePartners = new ArrayList<>();   
+        this.neighbours = new ArrayList<>();                    
         this.axis = null;
         this.cartoonSymbol = new CartoonSymbol();
         this.sseData = new SSEData();
@@ -48,7 +48,7 @@ public class SSE {
     public SSE(SSE other) {
         this.type = other.type;
         // TODO...
-        this.bridgePartners = new ArrayList<BridgePartner>();
+        this.bridgePartners = new ArrayList<>();
         this.cartoonSymbol = other.cartoonSymbol;
     }
     
@@ -96,8 +96,8 @@ public class SSE {
      * @return true if the SSE has any of these types
      */
     public boolean hasFixedType(FixedType... types) {
-        for (FixedType type : types) {
-            if (fixedType == type) {
+        for (FixedType otherFixedType : types) {
+            if (this.fixedType == otherFixedType) {
                 return true;
             }
         }
@@ -162,7 +162,7 @@ public class SSE {
    
     
     public List<SSE> getPartners() {
-        List<SSE> sses = new ArrayList<SSE>();
+        List<SSE> sses = new ArrayList<>();
         for (BridgePartner bp : bridgePartners) {
             sses.add(bp.partner);
         }
@@ -204,37 +204,37 @@ public class SSE {
         if (this.axis == null || other.axis == null) {
             return false;   // XXX this probably should not be necessary?
         } else {
-            return Math.abs(ClosestApproach(other).torsion) > 90;
+            return Math.abs(closestApproach(other).torsion) > 90;
         }
     }
 
-    public TorsionResult ClosestApproach(SSE other) {
+    public TorsionResult closestApproach(SSE other) {
         return this.axis.ClosestApproach(other.axis);
     }
 
     public double axisTorsion(SSE other) {
-        TorsionResult values = this.ClosestApproach(other);
+        TorsionResult values = this.closestApproach(other);
         return values.torsion;
     }
 
     /*
     assigns a direction to this depending on other
     */
-    public void AssignRelDirection(SSE other) {
+    public void assignRelativeDirection(SSE other) {
 
-        BridgeType ConnectType = BridgeType.UNK_BRIDGE_TYPE;
+        BridgeType connectionType = BridgeType.UNK_BRIDGE_TYPE;
 
         // is this a bridge partner of other with a defined connection type
         for (BridgePartner partner : other.bridgePartners) {   // TODO XXX
             if (partner.partner == this) {
-                ConnectType = partner.bridgeType;
+                connectionType = partner.bridgeType;
                 break;
             }
         }
 
-        if (ConnectType == BridgeType.PARALLEL_BRIDGE) {
+        if (connectionType == BridgeType.PARALLEL_BRIDGE) {
             this.direction = (other.direction == UP) ? UP : DOWN;
-        } else if (ConnectType == BridgeType.ANTI_PARALLEL_BRIDGE) {
+        } else if (connectionType == BridgeType.ANTI_PARALLEL_BRIDGE) {
             this.direction = (other.direction == UP) ? DOWN : UP;
         } else {
             if (Math.abs(this.axisTorsion(other)) > 90.0) {
@@ -246,7 +246,7 @@ public class SSE {
     }
 
     // XXX TODO FIXME - this only works for non-forked sheets!!
-    public SSE NextStrand(SSE other) {
+    public SSE nextStrand(SSE other) {
         System.out.println("next strand of " + this + " and " + other);
         if (this.bridgePartners.get(1).partner == other) {
             return this.bridgePartners.get(0).partner;
@@ -288,7 +288,7 @@ public class SSE {
 //        this.NeighbourDistance[j] = -1.0;
 //    }
 
-    public void RemoveBP(BridgePartner bp) {
+    public void removeBP(BridgePartner bp) {
         this.bridgePartners.remove(bp);
     }
 
@@ -300,7 +300,7 @@ public class SSE {
         return null;
     }
 
-    public int SecStrucLength() {
+    public int secStrucLength() {
         return this.sseData.pdbFinishResidue - this.sseData.pdbStartResidue + 1;
     }
 
@@ -329,7 +329,7 @@ public class SSE {
         return "";
     }
 
-    public int NumberPartners() {
+    public int numberPartners() {
         return this.bridgePartners.size();
     }
 
@@ -371,8 +371,8 @@ public class SSE {
         this.fixedType = FixedType.valueOf(fixedTypeName);
     }
 
-    public String BridgePartnerNumbers() {
-        StringBuffer numbers = new StringBuffer();
+    public String bridgePartnerNumbers() {
+        StringBuilder numbers = new StringBuilder();
         for (BridgePartner partner : this.bridgePartners) {
             if (partner == null) break;
             numbers.append(String.valueOf(partner.partner.getSymbolNumber())).append(" ");
@@ -384,8 +384,8 @@ public class SSE {
         this.neighbours.add(new Neighbour(sse, distance));
     }
 
-    public String NeighbourNumbers() {
-        StringBuffer numbers = new StringBuffer();
+    public String neighbourNumbers() {
+        StringBuilder numbers = new StringBuilder();
         for (Neighbour neighbour : this.neighbours) {
             if (neighbour == null) break;
             numbers.append(neighbour.sse.getSymbolNumber());
@@ -394,8 +394,8 @@ public class SSE {
         return numbers.toString();
     }
 
-    public String BridgePartnerSides() {
-        StringBuffer sides  = new StringBuffer();
+    public String bridgePartnerSides() {
+        StringBuilder sides  = new StringBuilder();
         for (BridgePartner partner : this.bridgePartners) {
             if (partner.side == BridgePartner.Side.UNKNOWN) break;
             sides.append(partner.side.toString().charAt(0));    // XXX ugh!
@@ -404,8 +404,8 @@ public class SSE {
         return sides.toString();
     }
 
-    public String BridgePartnerTypes() {
-        StringBuffer types = new StringBuffer();
+    public String bridgePartnerTypes() {
+        StringBuilder types = new StringBuilder();
         for (BridgePartner partner : this.bridgePartners ) {
             if (partner.bridgeType == BridgeType.UNK_BRIDGE_TYPE) {
                 break;
@@ -419,8 +419,8 @@ public class SSE {
         return types.toString();
     }
 
-    public String Connections() {
-        StringBuffer connections = new StringBuffer();
+    public String connections() {
+        StringBuilder connections = new StringBuilder();
         for (Point2d connection : this.cartoonSymbol.getConnectionsTo()) {
             connections.append(String.format("%0.2f %0.2f ", connection.x, connection.y));
         }
@@ -446,36 +446,36 @@ public class SSE {
 
     public String toTopsFile(Chain chain) {
         //sys.stderr.write(this.dump())
-        StringBuffer stringRepr = new StringBuffer();
-        stringRepr.append(String.format("%s %s\n", "SecondaryStructureType", this.type));
-        stringRepr.append(String.format("%s %s\n", "Direction", this.direction));
-        stringRepr.append(String.format("%s %s\n", "Label", this.getLabel()));
-        stringRepr.append(String.format("%s %s %s %s\n", "Colour", 
+        StringBuilder stringRepr = new StringBuilder();
+        stringRepr.append(String.format("%s %s%n", "SecondaryStructureType", this.type));
+        stringRepr.append(String.format("%s %s%n", "Direction", this.direction));
+        stringRepr.append(String.format("%s %s%n", "Label", this.getLabel()));
+        stringRepr.append(String.format("%s %s %s %s%n", "Colour", 
                 cartoonSymbol.getColor().getRed(), 
                 cartoonSymbol.getColor().getGreen(), 
                 cartoonSymbol.getColor().getBlue()));
-        stringRepr.append(String.format("%s %s\n", "Next", -1));    // blank next
-        stringRepr.append(String.format("%s %s\n", "Fixed", this.getSymbolNumber(this.fixed)));
-        stringRepr.append(String.format("%s %s\n", "FixedType", this.getFixedType()));
-        stringRepr.append(String.format("%s %s\n", "BridgePartner", this.BridgePartnerNumbers()));
-        stringRepr.append(String.format("%s %s\n", "BridgePartnerSide", this.BridgePartnerSides()));
-        stringRepr.append(String.format("%s %s\n", "BridgePartnerType", this.BridgePartnerTypes()));
-        stringRepr.append(String.format("%s %s\n", "Neighbour", this.NeighbourNumbers()));
-        stringRepr.append(String.format("%s %s\n", "SeqStartResidue", this.sseData.seqStartResidue));
-        stringRepr.append(String.format("%s %s\n", "SeqFinishResidue", this.sseData.seqFinishResidue));
-        stringRepr.append(String.format("%s %s\n", "PDBStartResidue", this.sseData.pdbStartResidue));
-        stringRepr.append(String.format("%s %s\n", "PDBFinishResidue", this.sseData.pdbFinishResidue));
-        stringRepr.append(String.format("%s %s\n", "SymbolNumber", this.getSymbolNumber()));
-        stringRepr.append(String.format("%s %s\n", "Chain", chain.getName()));
-        stringRepr.append(String.format("%s %s\n", "Chirality", chiralToString(this.Chirality)));
-        stringRepr.append(String.format("%s %s\n", "CartoonX", this.getCartoonX()));
-        stringRepr.append(String.format("%s %s\n", "CartoonY", this.getCartoonY()));
-        stringRepr.append(this.AxisRepr());
-        stringRepr.append(String.format("%s %s\n", "SymbolRadius", getRadius()));
-        stringRepr.append(String.format("%s %s\n", "AxisLength", this.axis.getLength()));
-        stringRepr.append(String.format("%s %s\n", "NConnectionPoints", this.getNConnectionPoints()));
-        stringRepr.append(String.format("%s %s\n", "ConnectionTo", this.Connections()));
-        stringRepr.append(String.format("%s %s\n", "Fill", (this.cartoonSymbol.getFill()? "1" : "0")));
+        stringRepr.append(String.format("%s %s%n", "Next", -1));    // blank next
+        stringRepr.append(String.format("%s %s%n", "Fixed", this.getSymbolNumber(this.fixed)));
+        stringRepr.append(String.format("%s %s%n", "FixedType", this.getFixedType()));
+        stringRepr.append(String.format("%s %s%n", "BridgePartner", this.bridgePartnerNumbers()));
+        stringRepr.append(String.format("%s %s%n", "BridgePartnerSide", this.bridgePartnerSides()));
+        stringRepr.append(String.format("%s %s%n", "BridgePartnerType", this.bridgePartnerTypes()));
+        stringRepr.append(String.format("%s %s%n", "Neighbour", this.neighbourNumbers()));
+        stringRepr.append(String.format("%s %s%n", "SeqStartResidue", this.sseData.seqStartResidue));
+        stringRepr.append(String.format("%s %s%n", "SeqFinishResidue", this.sseData.seqFinishResidue));
+        stringRepr.append(String.format("%s %s%n", "PDBStartResidue", this.sseData.pdbStartResidue));
+        stringRepr.append(String.format("%s %s%n", "PDBFinishResidue", this.sseData.pdbFinishResidue));
+        stringRepr.append(String.format("%s %s%n", "SymbolNumber", this.getSymbolNumber()));
+        stringRepr.append(String.format("%s %s%n", "Chain", chain.getName()));
+        stringRepr.append(String.format("%s %s%n", "Chirality", chiralToString(this.chirality)));
+        stringRepr.append(String.format("%s %s%n", "CartoonX", this.getCartoonX()));
+        stringRepr.append(String.format("%s %s%n", "CartoonY", this.getCartoonY()));
+        stringRepr.append(this.axisRepr());
+        stringRepr.append(String.format("%s %s%n", "SymbolRadius", getRadius()));
+        stringRepr.append(String.format("%s %s%n", "AxisLength", this.axis.getLength()));
+        stringRepr.append(String.format("%s %s%n", "NConnectionPoints", this.getNConnectionPoints()));
+        stringRepr.append(String.format("%s %s%n", "ConnectionTo", this.connections()));
+        stringRepr.append(String.format("%s %s%n", "Fill", (this.cartoonSymbol.getFill()? "1" : "0")));
         return stringRepr.toString();
     }
     
@@ -488,9 +488,9 @@ public class SSE {
             (chirality == Hand.LEFT? "1" : "-1");
     }
 
-    private String AxisRepr() { // XXX see toTopsFile() above
-        return String.format("AxesStartPoint %s %s %s\n", 0.0, 0.0, 0.0) + 
-                String.format("AxesFinishPoint %s %s %s\n", 0.0, 0.0, 0.0);
+    private String axisRepr() { // XXX see toTopsFile() above
+        return String.format("AxesStartPoint %s %s %s%n", 0.0, 0.0, 0.0) + 
+                String.format("AxesFinishPoint %s %s %s%n", 0.0, 0.0, 0.0);
     }
 
     public String toString() {
@@ -593,7 +593,7 @@ public class SSE {
     }
 
     public Hand getChirality() {
-        return Chirality;
+        return chirality;
     }
 
     public Axis getAxis() {

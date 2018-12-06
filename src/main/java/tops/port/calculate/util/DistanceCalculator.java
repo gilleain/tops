@@ -9,7 +9,7 @@ public class DistanceCalculator {
     
     public static double secStrucSeparation(SSE p, SSE q) {
 //        pk, pj, sk, sj, torsion
-        TorsionResult result = p.ClosestApproach(q);
+        TorsionResult result = p.closestApproach(q);
         double sk = result.sk;
         double sj = result.sj;
         double torsion = result.torsion;

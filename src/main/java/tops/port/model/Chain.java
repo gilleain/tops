@@ -462,7 +462,7 @@ public class Chain {
 
         int maxlen = 0;
         for (SSE p : this.iterFixed(FixedStart)) {
-            int len = p.SecStrucLength();
+            int len = p.secStrucLength();
             if (len > maxlen) {
                 maxlen = len;
                 longest = p;
@@ -488,7 +488,7 @@ public class Chain {
     */
     public boolean parallel(SSE p, SSE q) {
 //        pk, pj, sk, sj, torsion = p.ClosestApproach(q);
-        TorsionResult values = p.ClosestApproach(q);
+        TorsionResult values = p.closestApproach(q);
         return Math.abs(values.torsion) < 90.0;
     }
 

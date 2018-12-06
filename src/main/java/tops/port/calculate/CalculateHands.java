@@ -14,7 +14,7 @@ public class CalculateHands implements Calculation {
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Calculating chiralities");
         for (SSE p : chain.getSSEs()) {
-            p.Chirality = ChiralityCalculator.hand3D(chain, p);
+            p.chirality = ChiralityCalculator.hand3D(chain, p);
         }
     }
     

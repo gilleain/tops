@@ -44,7 +44,7 @@ public class CalculateMergedStrands implements Calculation {
                 int cbpd = this.connectBPDistance(p, prev);
                 boolean sheetMerge = this.mergeBetweenSheets && connectLoopLen <= shortLoop;
                 if ((cbpd == 2 && p.sameBPSide(prev)) || (cbpd > 5) ||sheetMerge ) {
-                    TorsionResult result = p.ClosestApproach(prev);
+                    TorsionResult result = p.closestApproach(prev);
                     if (Math.abs(result.torsion) < 90.0) { 
 //                        System.out.println(String.format("Merging Strands %d %d\n", p.From.getSymbolNumber(), p.getSymbolNumber()));
                         this.joinToLast(p, prev, chain);

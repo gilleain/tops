@@ -210,7 +210,7 @@ public class LayoutSheet implements TSELayout {
 
                 // Add this to the fixed list
                 chain.moveFixed(q, p);
-                p.AssignRelDirection(q);
+                p.assignRelativeDirection(q);
             }
         }
         

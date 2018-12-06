@@ -52,7 +52,7 @@ public class LayoutBarrel implements TSELayout {
 
             if (count != 0) {
 //                chain.moveFixed(p, q);    // TODO : remove?
-                q.AssignRelDirection(lastInBarrel);
+                q.assignRelativeDirection(lastInBarrel);
             }
             lastInBarrel = q;
             q.setCartoonX((int) ((Y * Math.sin(X) - 0.5) * gridUnitSize));
@@ -66,7 +66,7 @@ public class LayoutBarrel implements TSELayout {
                 SSE r = bridge.getOther(q);
                 if (!barrel.contains(r)) {
                     r.setFixedType(FixedType.BARREL);
-                    r.AssignRelDirection(q);
+                    r.assignRelativeDirection(q);
                     r.setCartoonX((int) ((Y1 * Math.sin(X) - 0.5) * gridUnitSize));
                     r.setCartoonY((int) ((Y1 * Math.cos(X) - Z) * gridUnitSize));
                     r.setSymbolPlaced(true);

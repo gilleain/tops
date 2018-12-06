@@ -72,24 +72,24 @@ public class DsspReader {
     			Record record = new Record();
     
     			// residue name //
-    			record.ResidueNames = bits.get("residue_type");
+    			record.residueNames = bits.get("residue_type");
     
     			// PDB number - only for records which are not chain terminators //
-    			if (!record.ResidueNames.equals("!") ) record.PDBIndices = Integer.parseInt(bits.get("pdb_number"));
-    			else record.PDBIndices = -99999;
+    			if (!record.residueNames.equals("!") ) record.pdbIndices = Integer.parseInt(bits.get("pdb_number"));
+    			else record.pdbIndices = -99999;
     
     			// Secondary structure //
-    			record.SecStructure = bits.get("sse_type");
+    			record.secStructure = bits.get("sse_type");
     
     			// chain id //
-    			record.ChainId = bits.get("chain_name");
+    			record.chainId = bits.get("chain_name");
     
     			// bridge partners - again not ness separated by white space so use tempbuff //
     			String bridgePartString = bits.get("bridge_partners");
     			String[] bps = bridgePartString.split("\\s+");    // TODO 
 //    			System.out.println(bridgePartString + Arrays.toString(bps));
-    			record.LeftBridgePartner = parseResidueNumber(bps[0]);
-    			record.RightBridgePartner = parseResidueNumber(bps[1]);
+    			record.leftBridgePartner = parseResidueNumber(bps[0]);
+    			record.rightBridgePartner = parseResidueNumber(bps[1]);
     
     			// Hydrogen bonds (just skip read errors as some dssp files have **** in place of integer here) //
     			// d1, d1e, a1, a1e, d2, d2e, a2, a2e
@@ -106,17 +106,17 @@ public class DsspReader {
     			    start += 11;
     			}
     
-    			record.DonatedHBond1 = Integer.parseInt(matches.get(0));
-    			record.DonatedHBondEn1 = Float.parseFloat(matches.get(1));
+    			record.donatedHBond1 = Integer.parseInt(matches.get(0));
+    			record.donatedHBondEn1 = Float.parseFloat(matches.get(1));
     
-    			record.AcceptedHBond1 = Integer.parseInt(matches.get(2));
-    			record.AcceptedHBondEn1 = Float.parseFloat(matches.get(3));
+    			record.acceptedHBond1 = Integer.parseInt(matches.get(2));
+    			record.acceptedHBondEn1 = Float.parseFloat(matches.get(3));
     
-    			record.DonatedHBond2 = Integer.parseInt(matches.get(4));
-    			record.DonatedHBondEn2 = Float.parseFloat(matches.get(5));
+    			record.donatedHBond2 = Integer.parseInt(matches.get(4));
+    			record.donatedHBondEn2 = Float.parseFloat(matches.get(5));
     
-    			record.AcceptedHBond2 = Integer.parseInt(matches.get(6));
-    			record.AcceptedHBondEn2 = Float.parseFloat(matches.get(7));
+    			record.acceptedHBond2 = Integer.parseInt(matches.get(6));
+    			record.acceptedHBondEn2 = Float.parseFloat(matches.get(7));
     			
 //    			System.out.print(String.format("%s %2.2f %s %2.2f %s %2.2f %s %2.2f",
 //    			        record.DonatedHBond1, record.DonatedHBondEn1,
@@ -144,15 +144,15 @@ public class DsspReader {
     		for (int j = 0; j < nDsspRes && j < records.size(); j++) {
     		    Record record = records.get(j);
     		    Map<Integer, Integer> mappings;
-    		    String chainName = record.ChainId;
-    			if (record.ResidueNames.equals("!") || !indexMapping.containsKey(chainName)){
+    		    String chainName = record.chainId;
+    			if (record.residueNames.equals("!") || !indexMapping.containsKey(chainName)){
     			    mappings = new HashMap<Integer, Integer>();
     			    indexMapping.put(chainName, mappings);
     			} else {
     			    mappings = indexMapping.get(chainName);
 //    				indexMapping[j] = j - 1 - chainCount;
     			}
-    			mappings.put(j + 1, record.PDBIndices);
+    			mappings.put(j + 1, record.pdbIndices);
     		}
     		
     		Protein protein = new Protein(pdbid);
@@ -170,8 +170,8 @@ public class DsspReader {
     		SSEType secondaryStructure = SSEType.COIL;
     		for (int index = 0; index < nDsspRes; index++) {
     		    Record r = records.get(index);
-    			if (r.ResidueNames.equals("!") && index < nDsspRes 
-    			        && records.get(index + 1).PDBIndices < records.get(index - 1).PDBIndices) {
+    			if (r.residueNames.equals("!") && index < nDsspRes 
+    			        && records.get(index + 1).pdbIndices < records.get(index - 1).pdbIndices) {
     				newChain = true;
     				currentResidue = 0;
     			} else {
@@ -192,7 +192,7 @@ public class DsspReader {
     						chain.addSSE(cTerm);
     					}
     
-    					chain = new Chain(r.ChainId.charAt(0));
+    					chain = new Chain(r.chainId.charAt(0));
     					
     					SSE nTerminus = new SSE(NTERMINUS);
     					numberOfStructures = 0;
@@ -208,11 +208,11 @@ public class DsspReader {
     					firstChain = false;
     				}
     
-    				chain.addSequence(r.ResidueNames);
-    				chain.addPDBIndex(r.PDBIndices);
-    				chain.addSecondaryStructure(this.getDsspSSCode(r.SecStructure));
+    				chain.addSequence(r.residueNames);
+    				chain.addPDBIndex(r.pdbIndices);
+    				chain.addSecondaryStructure(this.getDsspSSCode(r.secStructure));
     				
-    				Map<Integer, Integer> mappings = indexMapping.get(r.ChainId);
+    				Map<Integer, Integer> mappings = indexMapping.get(r.chainId);
 //    				if (r.LeftBridgePartner > 0) {
 //    				    int mappedIndex = mappings.get(r.LeftBridgePartner); 
 //    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
@@ -222,16 +222,16 @@ public class DsspReader {
 //    				    chain.addLeftBridgePartner(r.PDBIndices, new BridgePartner(null, mappedIndex, BridgeType.UNK_BRIDGE_TYPE, Side.UNKNOWN));
 //    				}
     
-    				this.doDonatedHBond(chain, index, r.DonatedHBond1, r.DonatedHBondEn1, nDsspRes, mappings);
-    				this.doAcceptedHBond(chain, index, r.AcceptedHBond1, r.AcceptedHBondEn1, nDsspRes, mappings);
-    				this.doDonatedHBond(chain, index, r.DonatedHBond2, r.DonatedHBondEn2, nDsspRes, mappings);
-    				this.doAcceptedHBond(chain, index, r.AcceptedHBond2, r.AcceptedHBondEn2, nDsspRes, mappings);
+    				this.doDonatedHBond(chain, index, r.donatedHBond1, r.donatedHBondEn1, nDsspRes, mappings);
+    				this.doAcceptedHBond(chain, index, r.acceptedHBond1, r.acceptedHBondEn1, nDsspRes, mappings);
+    				this.doDonatedHBond(chain, index, r.donatedHBond2, r.donatedHBondEn2, nDsspRes, mappings);
+    				this.doAcceptedHBond(chain, index, r.acceptedHBond2, r.acceptedHBondEn2, nDsspRes, mappings);
     
     				chain.addCACoord(new Point3d(r.x, r.y, r.z));
     
     				// Get chain id and pdb index //
     				char chainID = chain.getName();
-    				lastResidue = r.PDBIndices;
+    				lastResidue = r.pdbIndices;
     			
     				// Eradicate structures that are not needed and limit type ie. H, E, C //
     				SSEType PreviousStructure = secondaryStructure;
@@ -300,7 +300,7 @@ public class DsspReader {
 
 	private Map<String, String> parseLine(String line) {
 	    
-		Map<String, String> bits = new HashMap<String, String>();
+		Map<String, String> bits = new HashMap<>();
 		try {
 			bits.put("dssp_number",line.substring(0, 5).trim());
 			bits.put("pdb_number",line.substring(5, 10).trim());
@@ -326,20 +326,20 @@ public class DsspReader {
 	}
 	
 	private class Record {
-        String ResidueNames;
-        int PDBIndices;
-        String SecStructure;
-        String ChainId;
-        int LeftBridgePartner;
-        int RightBridgePartner;
-        int DonatedHBond1;
-        int AcceptedHBond1;
-        int DonatedHBond2;
-        int AcceptedHBond2;
-        double DonatedHBondEn1;
-        double AcceptedHBondEn1;
-        double DonatedHBondEn2;
-        double AcceptedHBondEn2;
+        String residueNames;
+        int pdbIndices;
+        String secStructure;
+        String chainId;
+        int leftBridgePartner;
+        int rightBridgePartner;
+        int donatedHBond1;
+        int acceptedHBond1;
+        int donatedHBond2;
+        int acceptedHBond2;
+        double donatedHBondEn1;
+        double acceptedHBondEn1;
+        double donatedHBondEn2;
+        double acceptedHBondEn2;
         double x;
         double y;
         double z;

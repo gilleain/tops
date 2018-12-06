@@ -59,7 +59,7 @@ public class LayoutSandwich implements TSELayout {
         // this is done geometrically using the longest strand in each sheet """
         SSE longestStrandInShortSheet = chain.longestInFixed(rSheetStart);
         SSE longestStrandInLongSheet = chain.longestInFixed(sSheetStart);
-        TorsionResult torsionResult = longestStrandInLongSheet.ClosestApproach(longestStrandInShortSheet);
+        TorsionResult torsionResult = longestStrandInLongSheet.closestApproach(longestStrandInShortSheet);
         if (Math.abs(torsionResult.torsion) > 90.0) {
             if (longestStrandInShortSheet.getDirection() == longestStrandInLongSheet.getDirection()) {
                 for (SSE sse : chain.iterFixed(shortSheetStart)) {
