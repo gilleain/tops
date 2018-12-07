@@ -15,11 +15,10 @@ import java.util.regex.Pattern;
 
 public class Tops2String {
 
-    private Matcher domain_num = (Pattern
-//            .compile("DOMAIN_NUMBER\\s\\S+\\s(\\w+)\\s.*")).matcher("");
+    private Matcher domainNum = (Pattern
               .compile("DOMAIN_NUMBER\\s\\d+\\s(\\w+).*")).matcher("");
 
-    private Matcher sse_type = (Pattern.compile("SecondaryStructureType\\s(.)")).matcher("");
+    private Matcher sseType = (Pattern.compile("SecondaryStructureType\\s(.)")).matcher("");
 
     private Matcher directions = (Pattern.compile("Direction\\s(.+)")).matcher("");
 
@@ -43,17 +42,17 @@ public class Tops2String {
     	this.topsDirectory = topsDirectory;
     }
 
-    public String[] convert(String tops_file_name, String replacement_pdbid, String classificationScheme) throws IOException {
+    public String[] convert(String topsFileName, String replacementPdbId, String classificationScheme) throws IOException {
         BufferedReader bufferedReader = 
-            new BufferedReader(new FileReader(new File(this.topsDirectory, tops_file_name)));
-        String line = new String();
-        Map<String, Map<String, Map<Integer, String>>> domains = new HashMap<String, Map<String, Map<Integer, String>>>();
-        String current_domain = new String();
-        int current_pos = 0;
+            new BufferedReader(new FileReader(new File(this.topsDirectory, topsFileName)));
+        String line = "";
+        Map<String, Map<String, Map<Integer, String>>> domains = new HashMap<>();
+        String currentDomain = "";
+        int currentPos = 0;
 
         while ((line = bufferedReader.readLine()) != null) {
-            this.domain_num.reset(line);
-            this.sse_type.reset(line);
+            this.domainNum.reset(line);
+            this.sseType.reset(line);
             this.directions.reset(line);
             this.bridgeparts.reset(line);
             this.bridgetypes.reset(line);
@@ -61,71 +60,69 @@ public class Tops2String {
             this.chirals.reset(line);
             this.fill.reset(line);
 
-            if (this.domain_num.matches()) {
-                current_domain = this.domain_num.group(1);
-                current_pos = 0;
+            if (this.domainNum.matches()) {
+                currentDomain = this.domainNum.group(1);
+                currentPos = 0;
             }
-            if (this.sse_type.matches()) {
-                this.storeData(domains, current_domain, current_pos,
-                        "SSE_TYPE", this.sse_type.group(1));
+            if (this.sseType.matches()) {
+                this.storeData(domains, currentDomain, currentPos,
+                        "SSE_TYPE", this.sseType.group(1));
             }
             if (this.directions.matches()) {
-                this.storeData(domains, current_domain, current_pos,
+                this.storeData(domains, currentDomain, currentPos,
                         "DIRECTIONS", this.directions.group(1));
             }
             if (this.bridgeparts.matches()) {
-                this.storeData(domains, current_domain, current_pos,
+                this.storeData(domains, currentDomain, currentPos,
                         "BRIDGEPARTS", this.bridgeparts.group(1));
             }
             if (this.bridgetypes.matches()) {
-                this.storeData(domains, current_domain, current_pos,
+                this.storeData(domains, currentDomain, currentPos,
                         "BRIDGETYPES", this.bridgetypes.group(1));
             }
             if (this.symbolnums.matches()) {
-                this.storeData(domains, current_domain, current_pos,
+                this.storeData(domains, currentDomain, currentPos,
                         "SYMBOLNUMS", this.symbolnums.group(1));
             }
             if (this.chirals.matches()) {
-                this.storeData(domains, current_domain, current_pos, "CHIRALS",
+                this.storeData(domains, currentDomain, currentPos, "CHIRALS",
                         this.chirals.group(1));
             }
             if (this.fill.matches()) {
-                current_pos++;
+                currentPos++;
             }
         }
         bufferedReader.close();
 
-        return this.getData(domains, replacement_pdbid, classificationScheme);
+        return this.getData(domains, replacementPdbId, classificationScheme);
     }
 
-    private String[] getData(Map<String, Map<String, Map<Integer, String>>> domains, String replacement_pdbid, String scheme) {
+    private String[] getData(Map<String, Map<String, Map<Integer, String>>> domains, String replacementPdbId, String scheme) {
         // now, go through the map, getting the data
         Set<String> keys = domains.keySet();
-        String[] domain_strings = new String[keys.size()];
+        String[] domainStrings = new String[keys.size()];
         Iterator<String> itr = keys.iterator();
 
         // for stepping through the domain_strings array
         int k = 0;
 
         while (itr.hasNext()) {
-            String domain_id = (String) itr.next();
-//            System.err.println("domain id " + domain_id);
+            String domainId = itr.next();
 
             // replace the pdbid with another name if requested
             String name = "";
 
-            if (!replacement_pdbid.equals("")) {
-                System.err.println(domain_id);
-                name = replacement_pdbid + "_" + domain_id.substring(4, 6);
+            if (!replacementPdbId.equals("")) {
+                name = replacementPdbId + "_" + domainId.substring(4, 6);
             } else {
 
                 // depending on the classificationScheme string, choose the name
                 if (scheme.equals("CATH")) {
                     // actually, the default is cath
-                    name = domain_id;
+                    name = domainId;
                 } else if (scheme.equals("SCOP")) {
-                    char chain = domain_id.charAt(4);
-                    char domID = domain_id.charAt(5);
+                    char chain = domainId.charAt(4);
+                    char domID = domainId.charAt(5);
 
                     /**
                      * BEHOLD AND TREMBLE, MORTAL! For this is the terrible
@@ -139,11 +136,11 @@ public class Tops2String {
                      * (oh..okay, it's because 1n7d has 9 other domains. never
                      * mind)
                      */
-                    char scopChain = (Character.isDigit(chain)) ? 
-                            ((chain == '0') ? '_' : chain) : Character.toLowerCase(chain);
-                    char scopDomID = (Character.isDigit(domID)) ? 
-                            ((domID == '0') ? '_' : domID) : Character.toLowerCase(domID);
-                    name = "d" + domain_id.substring(0, 4) + scopChain + scopDomID;
+                    char chainChar = (chain == '0') ? '_' : chain;
+                    char domainChar = (domID == '0') ? '_' : domID;
+                    char scopChain = (Character.isDigit(chain)) ? chainChar : Character.toLowerCase(chain);
+                    char scopDomID = (Character.isDigit(domID)) ? domainChar : Character.toLowerCase(domID);
+                    name = "d" + domainId.substring(0, 4) + scopChain + scopDomID;
                 } else {
                     System.err.println("Unknown scheme " + scheme
                             + " not 'CATH' or 'SCOP'");
@@ -151,94 +148,86 @@ public class Tops2String {
             }
 
             // convert the data
-            Map<String, Map<Integer, String>> domain_map = domains.get(domain_id);
+            Map<String, Map<Integer, String>> domainMap = domains.get(domainId);
 
-            StringBuffer topsString = new StringBuffer();
-            Map<Integer, Map<Integer, String>> bonds = new HashMap<Integer, Map<Integer, String>>();
+            StringBuilder topsString = new StringBuilder();
+            Map<Integer, Map<Integer, String>> bonds = new HashMap<>();
             boolean lookingForChiralPartner = false;
-            String last_chiral_flag = new String();
-            char last_symbol = 'N';
-            Integer lastVertex = new Integer(0);
+            String lastChiralFlag = "";
+            char lastSymbol = 'N';
+            Integer lastVertex = 0;
 
-            Map<Integer, String> sse_type_map = domain_map.get("SSE_TYPE");
-            // System.err.println(sse_type_map);
-            Map<Integer, String> directions_map = domain_map.get("DIRECTIONS");
-            // System.err.println(directions_map);
-            Map<Integer, String> bridge_parts_map = domain_map.get("BRIDGEPARTS");
-            // System.err.println(bridge_parts_map);
-            Map<Integer, String> bridge_types_map = domain_map.get("BRIDGETYPES");
-            // System.err.println(bridge_types_map);
-//            HashMap symbolnums_map = (HashMap) domain_map.get("SYMBOLNUMS");
-            // System.err.println(symbolnums_map);
-            Map<Integer, String> chirals_map = domain_map.get("CHIRALS");
-            // System.err.println(chirals_map);
+            Map<Integer, String> sseTypeMap = domainMap.get("SSE_TYPE");
+            Map<Integer, String> directionsMap = domainMap.get("DIRECTIONS");
+            Map<Integer, String> bridgePartMap = domainMap.get("BRIDGEPARTS");
+            Map<Integer, String> bridgeTypesMap = domainMap.get("BRIDGETYPES");
+            Map<Integer, String> chiralsMap = domainMap.get("CHIRALS");
 
             topsString.append(name).append(' ');
 
-            for (int i = 0; i < sse_type_map.keySet().size(); i++) {
-                Integer currentVertex = new Integer(i);
-                String type = (String) sse_type_map.get(currentVertex);
-                String dir = (String) directions_map.get(currentVertex);
-                char type_as_char = type.charAt(0);
-                char symbol = (dir.equals("D")) ? Character.toLowerCase(type_as_char) : type_as_char;
+            for (int i = 0; i < sseTypeMap.keySet().size(); i++) {
+                Integer currentVertex = i;
+                String type = sseTypeMap.get(currentVertex);
+                String dir = directionsMap.get(currentVertex);
+                char typeAsChar = type.charAt(0);
+                char symbol = (dir.equals("D")) ? Character.toLowerCase(typeAsChar) : typeAsChar;
                 topsString.append(symbol);
 
-                HashMap<Integer, String> partner_type = (HashMap<Integer, String>) bonds.get(currentVertex);
-                if (partner_type == null)
-                    partner_type = new HashMap<Integer, String>();
+                Map<Integer, String> partnerType = bonds.get(currentVertex);
+                if (partnerType == null)
+                    partnerType = new HashMap<>();
 
-                if (bridge_parts_map != null) {
-                    String bridge_parts_string = (String) bridge_parts_map.get(currentVertex);
-                    String bridge_types_string = (String) bridge_types_map.get(currentVertex);
+                if (bridgePartMap != null) {
+                    String bridgePartsString = bridgePartMap.get(currentVertex);
+                    String bridgeTypesString = bridgeTypesMap.get(currentVertex);
 
                     // do hbond partners
-                    if (bridge_parts_string != null) {
-                        StringTokenizer partsTokenizer = new StringTokenizer(bridge_parts_string);
-                        StringTokenizer typesTokenizer = new StringTokenizer(bridge_types_string);
+                    if (bridgePartsString != null) {
+                        StringTokenizer partsTokenizer = new StringTokenizer(bridgePartsString);
+                        StringTokenizer typesTokenizer = new StringTokenizer(bridgeTypesString);
 
                         while ((partsTokenizer.hasMoreTokens())
                                 && (typesTokenizer.hasMoreTokens())) {
                             Integer partner = new Integer(partsTokenizer.nextToken());
-                            String edge_type = typesTokenizer.nextToken();
-                            partner_type.put(partner, edge_type);
+                            partnerType.put(partner, typesTokenizer.nextToken());
                         }
-                        bonds.put(currentVertex, partner_type);
+                        bonds.put(currentVertex, partnerType);
                     }
                 }
 
                 // do chirals
-                String chiral_flag = (String) chirals_map.get(currentVertex);
+                String chiralFlag = chiralsMap.get(currentVertex);
 
-                if ((lookingForChiralPartner) && (last_symbol == symbol)) {
-                    String chiral_type = (last_chiral_flag.equals("-1")) ? "L" : "R";
-                    HashMap<Integer, String> partners = (HashMap<Integer, String>) bonds.get(lastVertex);
+                if ((lookingForChiralPartner) && (lastSymbol == symbol)) {
+                    String chiralType = (lastChiralFlag.equals("-1")) ? "L" : "R";
+                    Map<Integer, String> partners = bonds.get(lastVertex);
                     if (partners == null)
-                        partners = new HashMap<Integer, String>();
+                        partners = new HashMap<>();
                     
                     //if it has an edge, it must be 'P'
                     if (partners.containsKey(currentVertex)) { 
-                        String hbond = (String) partners.get(currentVertex);
+                        String hbond = partners.get(currentVertex);
                         if (hbond.equals("A")) {
                             System.err.println("problem : trying to add chiral to antiparallel edge!");
                         }
-                        if (chiral_type.equals("L")) {
-                            chiral_type = "X";
+                        if (chiralType.equals("L")) {
+                            chiralType = "X";
                         }
-                        if (chiral_type.equals("R")) {
-                            chiral_type = "Z";
+                        if (chiralType.equals("R")) {
+                            chiralType = "Z";
                         }
                     }
-                    partners.put(currentVertex, chiral_type);
+                    partners.put(currentVertex, chiralType);
                     bonds.put(lastVertex, partners);
                     lookingForChiralPartner = false;
                 }
 
                 // if we see a chiral flag, store the details of the vertex, and
                 // start the search
-                if (!chiral_flag.equals("0")) {
+                if (!chiralFlag.equals("0")) {
                     lastVertex = currentVertex;
-                    last_chiral_flag = chiral_flag;
-                    last_symbol = symbol;
+                    lastChiralFlag = chiralFlag;
+                    lastSymbol = symbol;
                     lookingForChiralPartner = true;
                 }
             }
@@ -246,47 +235,45 @@ public class Tops2String {
 
             // now, turn the bond map-map into an edge string
 
-            // System.err.println(bonds);
-            TreeSet<Integer> leftHandEnds = new TreeSet<Integer>(bonds.keySet());
+            TreeSet<Integer> leftHandEnds = new TreeSet<>(bonds.keySet());
             Iterator<Integer> lefts = leftHandEnds.iterator();
             while (lefts.hasNext()) {
-                Integer leftHandEnd = (Integer) lefts.next();
+                Integer leftHandEnd = lefts.next();
                 Map<Integer, String> otherEnds = bonds.get(leftHandEnd);
 
-                TreeSet<Integer> rightHandEnds = new TreeSet<Integer>(otherEnds.keySet());
+                TreeSet<Integer> rightHandEnds = new TreeSet<>(otherEnds.keySet());
                 for (Integer rightHandEnd : rightHandEnds) {
                     // only accept edges i:j where i < j
                     if (leftHandEnd.compareTo(rightHandEnd) < 0) { 
-                        String e_type = (String) otherEnds.get(rightHandEnd);
+                        String eType = otherEnds.get(rightHandEnd);
                         topsString.append(leftHandEnd);
                         topsString.append(':');
-                        topsString.append(rightHandEnd).append(e_type);
+                        topsString.append(rightHandEnd).append(eType);
                     }
                 }
             }
 
-            domain_strings[k++] = topsString.toString();
+            domainStrings[k++] = topsString.toString();
         }
-        return domain_strings;
+        return domainStrings;
     }
 
     public void storeData(Map<String, Map<String, Map<Integer, String>>> map, String domain, int pos, String key, String value) {
         // first, get the values map for a particular domain (create if !exists)
         Map<String, Map<Integer, String>> domainMap = map.get(domain);
         if (domainMap == null) {
-            domainMap = new HashMap<String, Map<Integer, String>>();
+            domainMap = new HashMap<>();
             map.put(domain, domainMap);
         }
 
         // now get the map of values for the key we want
-        HashMap<Integer, String> subMap = (HashMap<Integer, String>) domainMap.get(key);
+        Map<Integer, String> subMap = domainMap.get(key);
         if (subMap == null) {
-            subMap = new HashMap<Integer, String>();
+            subMap = new HashMap<>();
             domainMap.put(key, subMap);
         }
 
         // finally, put value into the map
-        Integer position = new Integer(pos);
-        subMap.put(position, value);
+        subMap.put(pos, value);
     }
 }
