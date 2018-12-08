@@ -22,7 +22,7 @@ public class Chain {
     private List<Integer> pdbIndices;
     private List<SSEType> secondaryStruc;
     private Map<Integer, List<BridgePartner>> bridgePartners;
-    private List<Point3d> CACoords;
+    private List<Point3d> caCoords;
     private List<Bridge> bridges;
     
     private Map<Integer, List<HBond>> donatorHBonds;
@@ -38,22 +38,22 @@ public class Chain {
 
     public Chain(char nameChar) {
         this.name = assignChain(nameChar);
-        this.sses = new ArrayList<SSE>();
-        this.tses = new ArrayList<BaseTSE>();
-        this.sequence = new ArrayList<String>();
-        this.pdbIndices = new ArrayList<Integer>();
-        this.secondaryStruc = new ArrayList<SSEType>();
-        this.bridgePartners = new HashMap<Integer, List<BridgePartner>>();
-        this.bridges = new ArrayList<Bridge>();
-        this.CACoords = new ArrayList<Point3d>();
+        this.sses = new ArrayList<>();
+        this.tses = new ArrayList<>();
+        this.sequence = new ArrayList<>();
+        this.pdbIndices = new ArrayList<>();
+        this.secondaryStruc = new ArrayList<>();
+        this.bridgePartners = new HashMap<>();
+        this.bridges = new ArrayList<>();
+        this.caCoords = new ArrayList<>();
         
-        this.acceptorHBonds = new HashMap<Integer, List<HBond>>();
-        this.donatorHBonds = new HashMap<Integer, List<HBond>>();
+        this.acceptorHBonds = new HashMap<>();
+        this.donatorHBonds = new HashMap<>();
     }
     
 
     public List<Bridge> getBridges(SSE current) {
-        List<Bridge> selected = new ArrayList<Bridge>();
+        List<Bridge> selected = new ArrayList<>();
         for (Bridge bridge : bridges) {
             if (bridge.contains(current)) {
                 selected.add(bridge);
@@ -97,13 +97,13 @@ public class Chain {
     }
 
     public void addCACoord(Point3d point) {
-        this.CACoords.add(point);
+        this.caCoords.add(point);
     }
     
     public List<Point3d> secondaryStructureAxis(int seqStartResidue, int seqFinishResidue) {
-        List<Point3d> coords = new ArrayList<Point3d>();
+        List<Point3d> coords = new ArrayList<>();
         for (int index = seqStartResidue - 1; index < seqFinishResidue; index++) {
-            coords.add(CACoords.get(index));
+            coords.add(caCoords.get(index));
         }
         return coords;
     }
@@ -123,7 +123,7 @@ public class Chain {
     
     public List<BridgePartner> getBridgePartner(int index) {
         return this.bridgePartners.containsKey(index)?
-            this.bridgePartners.get(index) : new ArrayList<BridgePartner>();
+            this.bridgePartners.get(index) : new ArrayList<>();
     }
     
     public void addBridgePartner(int index, BridgePartner bridgePartner) {
@@ -132,7 +132,7 @@ public class Chain {
         if (bridgePartners.containsKey(index)) {
             list = bridgePartners.get(index);
         } else {
-            list = new ArrayList<BridgePartner>();
+            list = new ArrayList<>();
             bridgePartners.put(index, list);
         }
         list.add(bridgePartner);
@@ -250,13 +250,13 @@ public class Chain {
     // returns an error (0) if a cycle is found
     //
     public boolean checkFixedList(SSE p) {
-        int CheckLen = 0;
+        int checkLen = 0;
         for (SSE q : this.iterFixed(p)) {
-            CheckLen += 1;
+            checkLen += 1;
             int i = 0;
             for (SSE r : this.iterFixed(p)) {
 //                System.out.println(String.format("checking fixed list %s %s %s", i, r, CheckLen));
-                if (i > CheckLen) break;
+                if (i > checkLen) break;
                 if (r == q) {
 //                    System.out.println("cycle found! " +  r + "=" + q);
                     return false;
@@ -327,7 +327,7 @@ public class Chain {
         if (donatorHBonds.containsKey(index)) {
             return donatorHBonds.get(index); 
         } else {
-            return new ArrayList<HBond>();
+            return new ArrayList<>();
         }
     }
     
@@ -335,7 +335,7 @@ public class Chain {
         if (acceptorHBonds.containsKey(index)) {
             return acceptorHBonds.get(index);
         } else {
-            return new ArrayList<HBond>();
+            return new ArrayList<>();
         }
     }
     
@@ -344,7 +344,7 @@ public class Chain {
         if (donatorHBonds.containsKey(fromResidue)) {
             hbonds = donatorHBonds.get(fromResidue);
         } else {
-            hbonds = new ArrayList<HBond>();
+            hbonds = new ArrayList<>();
             donatorHBonds.put(fromResidue, hbonds);
         }
         hbonds.add(new HBond(fromResidue, toResidue, energy));
@@ -355,7 +355,7 @@ public class Chain {
         if (acceptorHBonds.containsKey(toResidue)) {
             hbonds = acceptorHBonds.get(toResidue);
         } else {
-            hbonds = new ArrayList<HBond>();
+            hbonds = new ArrayList<>();
             acceptorHBonds.put(toResidue, hbonds);
         }
         hbonds.add(new HBond(fromResidue, toResidue, energy));
@@ -380,7 +380,7 @@ public class Chain {
     }
     
     public List<SSE> iterFixed(SSE sseStart) {
-        List<SSE> fixed = new ArrayList<SSE>();
+        List<SSE> fixed = new ArrayList<>();
         SSE sse = sseStart;
         while (sse != null) {
             if (sse.hasFixed()) fixed.add(sse.getFixed());
@@ -390,7 +390,7 @@ public class Chain {
     }
     
     public List<SSE> iterFixedInclusive(SSE sseStart) {
-        List<SSE> fixed = new ArrayList<SSE>();
+        List<SSE> fixed = new ArrayList<>();
         // XXX TODO!
         return fixed;
     }
@@ -428,7 +428,7 @@ public class Chain {
 
 
     public List<SSE> listBPGroup(SSE p, List<SSE> sseList) {
-        List<SSE> groupList = new ArrayList<SSE>();
+        List<SSE> groupList = new ArrayList<>();
         groupList.add(p);
         for (SSE q : sseList){
             if (p.getFirstCommonBP(q) != null) {
@@ -443,11 +443,11 @@ public class Chain {
     // alternatively, an sse method 'separation(this, other)'
     // where you would call:
     //
-    public SSE closestInFixed(SSE FixedStart, SSE p) {
+    public SSE closestInFixed(SSE fixedStart, SSE p) {
         SSE closest = null;
 
         double minsep = Double.MIN_VALUE;
-        for (SSE q : this.iterFixed(FixedStart)) {
+        for (SSE q : this.iterFixed(fixedStart)) {
             double sep = DistanceCalculator.secStrucSeparation(p, q);
             if (sep < minsep) {
                 minsep = sep;
@@ -457,11 +457,11 @@ public class Chain {
         return closest;
     }
 
-    public SSE longestInFixed(SSE FixedStart) {
+    public SSE longestInFixed(SSE fixedStart) {
         SSE longest = null;
 
         int maxlen = 0;
-        for (SSE p : this.iterFixed(FixedStart)) {
+        for (SSE p : this.iterFixed(fixedStart)) {
             int len = p.secStrucLength();
             if (len > maxlen) {
                 maxlen = len;
@@ -489,11 +489,11 @@ public class Chain {
     public boolean parallel(SSE p, SSE q) {
 //        pk, pj, sk, sj, torsion = p.ClosestApproach(q);
         TorsionResult values = p.closestApproach(q);
-        return Math.abs(values.torsion) < 90.0;
+        return Math.abs(values.getTorsion()) < 90.0;
     }
 
     public String getEdgeString() {
-        StringBuffer edges = new StringBuffer();
+        StringBuilder edges = new StringBuilder();
         for (Bridge bridge : bridges) {
             edges.append(toString(bridge));
         }
@@ -507,7 +507,7 @@ public class Chain {
     }
 
     public String toString() {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         for (SSE sse : this.sses) {
             str.append(sse.toString());
         }
@@ -518,7 +518,7 @@ public class Chain {
      * Following methods moved from Cartoon...
      */
 
-    public double fixedSpan(SSE p, double GridUnitSize) {
+    public double fixedSpan(SSE p, double gridUnitSize) {
         double minx = 0;
         double maxx = 0;
         SSE q = this.findFixedStart(p);
@@ -534,10 +534,10 @@ public class Chain {
         }
 
         double span;
-        if (GridUnitSize <= 0) {
+        if (gridUnitSize <= 0) {
             span = (maxx - minx) / 1;
         } else {
-            span = (maxx - minx) / GridUnitSize;
+            span = (maxx - minx) / gridUnitSize;
         }
         span += 1;
         return span;
@@ -591,20 +591,19 @@ public class Chain {
     }
 
     public double leftMostPos(SSE p) {
-        double LeftMost = p.getCartoonX();
+        double leftMost = p.getCartoonX();
         for (SSE q : this.iterFixed(p)) {
-            if (q.getCartoonX() < LeftMost) LeftMost = q.getCartoonX();
+            if (q.getCartoonX() < leftMost) leftMost = q.getCartoonX();
         }
-        return LeftMost;
+        return leftMost;
     }
 
     public SSE leftMost(SSE p) {
-        double LeftMost = p.getCartoonX();
+        double leftMost = p.getCartoonX();
         SSE leftMostSymbol = p;
         for (SSE q : this.iterFixed(p)) {
-            if (q.getCartoonX() < LeftMost) {
-                LeftMost = p.getCartoonX();
-                q = p;
+            if (q.getCartoonX() < leftMost) {
+                leftMost = p.getCartoonX();
                 leftMostSymbol = q;
             }
         }
@@ -612,41 +611,46 @@ public class Chain {
     }
     
     public double rightMostPos(SSE p) {
-        double RightMost = p.getCartoonX();
+        double rightMost = p.getCartoonX();
         for (SSE q : this.iterFixed(p)) {
-            if (q.getCartoonX() > RightMost) RightMost = q.getCartoonX();
+            if (q.getCartoonX() > rightMost) {
+                rightMost = q.getCartoonX();
+            }
         }
-        return RightMost;
+        return rightMost;
     }
    
 
     public SSE rightMost(SSE p) {
-        double RightMost = p.getCartoonX();
-        SSE r = p;
+        double rightMost = p.getCartoonX();
+        SSE rightMostSymbol = p;
         for (SSE q : this.iterFixed(p)) {
-            if (p.getCartoonX() < RightMost) {
-                RightMost = p.getCartoonX();
-                q = p;
+            if (p.getCartoonX() < rightMost) {
+                rightMost = p.getCartoonX();
+                rightMostSymbol = q;
             }
-            r = q;
         }
-        return r;
+        return rightMostSymbol;
     }
 
     public double lowestPos(SSE p) {
-        double BottomMost = p.getCartoonY();
+        double bottomMost = p.getCartoonY();
         for (SSE q : this.iterFixed(p)) {
-            if (q.getCartoonY() < BottomMost) BottomMost = q.getCartoonX();
+            if (q.getCartoonY() < bottomMost) {
+                bottomMost = q.getCartoonX();
+            }
         }
-        return BottomMost;
+        return bottomMost;
     }
 
     public double highestPos(SSE p) {
-        double TopMost = p.getCartoonY();
+        double topMost = p.getCartoonY();
         for (SSE q : this.iterFixed(p)) {
-            if (q.getCartoonY() > TopMost) TopMost = q.getCartoonX();
+            if (q.getCartoonY() > topMost) {
+                topMost = q.getCartoonX();
+            }
         }
-        return TopMost;
+        return topMost;
     }
     
     public double scaleToFit(double canvasWidth, double canvasHeight, double symbolRadius) {

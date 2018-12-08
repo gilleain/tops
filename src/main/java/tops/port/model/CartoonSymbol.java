@@ -38,7 +38,7 @@ public class CartoonSymbol {
         this.colour = Color.BLACK;
         this.fill = false;
         this.label = " ";
-        this.connections = new ArrayList<Point2d>();
+        this.connections = new ArrayList<>();
     }
     
     public void addConnectionTo(Point2d p) {
@@ -107,14 +107,13 @@ public class CartoonSymbol {
         }
     }
 
-    public boolean SamePosition(CartoonSymbol q) {
+    public boolean samePosition(CartoonSymbol q) {
         return (this.cartoonX == q.cartoonX) && (this.cartoonY == q.cartoonY);
     }
 
-    public boolean IsInCircle(double centerX, double centerY, double radius) {
+    public boolean isInCircle(double centerX, double centerY, double radius) {
         double separation = distance2D(cartoonX, cartoonY, centerX, centerY);
-        if (separation <= radius) return true;
-        else return false;
+        return separation <= radius;
     }
     
     public double distance2D(CartoonSymbol other) {

@@ -383,11 +383,11 @@ public class DomainCalculator {
                     BridgePartner bpl = chain.getBridgePartner(i).get(0);
                     BridgePartner bpr = chain.getBridgePartner(i).get(1);
 
-                    if ( residueDomain(chain, bpl.partnerResidue, domains) != Dom || Dom<0  ) {
+                    if ( residueDomain(chain, bpl.getPartnerResidue(), domains) != Dom || Dom<0  ) {
 //                        chain.removeLeftBridge(i);
                     }
 
-                    if ( residueDomain(chain, bpr.partnerResidue, domains) != Dom||Dom<0 ) {
+                    if ( residueDomain(chain, bpr.getPartnerResidue(), domains) != Dom||Dom<0 ) {
 //                        chain.removeRightBridge(i);
                     }
                 }

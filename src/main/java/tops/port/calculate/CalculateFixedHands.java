@@ -120,7 +120,7 @@ public class CalculateFixedHands implements Calculation {
             if (theta < 0.5 || theta > 179.5) {
                 hand = Hand.UNKNOWN;
             } else {
-                double torsion = Axis.Torsion(a, b, c, d);
+                double torsion = Axis.torsion(a, b, c, d);
                 if (torsion < 0.0) {
                     hand = Hand.LEFT;
                 } else {

@@ -104,17 +104,17 @@ public class TopsFileWriter {
 
         print(out, "BridgePartner");
         for (BridgePartner BridgePartner : sse.getBridgePartners())
-            print(out, " %d", BridgePartner.partner.getSymbolNumber());
+            print(out, " %d", BridgePartner.getPartner().getSymbolNumber());
         print(out, "\n");
 
         print(out, "BridgePartnerSide");
         for (BridgePartner BridgePartner : sse.getBridgePartners())
-            print(out, " %c", BridgePartner.side);
+            print(out, " %c", BridgePartner.getSide());
         print(out, "\n");
 
         print(out, "BridgePartnerType");
         for (BridgePartner BridgePartner : sse.getBridgePartners()) {
-            switch (BridgePartner.bridgeType) {
+            switch (BridgePartner.getBridgeType()) {
             case ANTI_PARALLEL_BRIDGE:
                 print(out, " %c", 'A');
                 break;
@@ -133,7 +133,7 @@ public class TopsFileWriter {
 
         print(out, "Neighbour");
         for (Neighbour neighbour : sse.getNeighbours()) {
-            print(out, " %d", neighbour.sse.getSymbolNumber());
+            print(out, " %d", neighbour.getSse().getSymbolNumber());
         }
         print(out, "\n");
 
@@ -153,11 +153,11 @@ public class TopsFileWriter {
         print(out, "CartoonY %d\n", sse.getCartoonY());
 
         print(out, "AxesStartPoint");
-        print(out, " %s", sse.getAxis().AxisStartPoint);
+        print(out, " %s", sse.getAxis().getAxisStartPoint());
         print(out, "\n");
 
         print(out, "AxesFinishPoint");
-        print(out, " %s", sse.getAxis().AxisFinishPoint);
+        print(out, " %s", sse.getAxis().getAxisFinishPoint());
         print(out, "\n");
 
         print(out, "SymbolRadius %d\n", sse.getCartoonSymbol().getRadius());
@@ -165,7 +165,6 @@ public class TopsFileWriter {
         print(out, "NConnectionPoints %d\n", sse.getNConnectionPoints());
         print(out, "ConnectionTo %s\n", sse.connections());
         print(out, "Fill %d\n", sse.getFill());
-        return;
     }
     
    

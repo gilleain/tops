@@ -60,7 +60,7 @@ public class LayoutSandwich implements TSELayout {
         SSE longestStrandInShortSheet = chain.longestInFixed(rSheetStart);
         SSE longestStrandInLongSheet = chain.longestInFixed(sSheetStart);
         TorsionResult torsionResult = longestStrandInLongSheet.closestApproach(longestStrandInShortSheet);
-        if (Math.abs(torsionResult.torsion) > 90.0) {
+        if (Math.abs(torsionResult.getTorsion()) > 90.0) {
             if (longestStrandInShortSheet.getDirection() == longestStrandInLongSheet.getDirection()) {
                 for (SSE sse : chain.iterFixed(shortSheetStart)) {
                     sse.flip();

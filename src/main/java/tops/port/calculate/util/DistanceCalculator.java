@@ -10,20 +10,20 @@ public class DistanceCalculator {
     public static double secStrucSeparation(SSE p, SSE q) {
 //        pk, pj, sk, sj, torsion
         TorsionResult result = p.closestApproach(q);
-        double sk = result.sk;
-        double sj = result.sj;
-        double torsion = result.torsion;
+        double sk = result.getSk();
+        double sj = result.getSj();
+        double torsion = result.getTorsion();
 
         //check error
         if (torsion < -990.0 ) return 0.0;
 
         Vector3d pk = null;
-        if (sk < 0.0) pk = p.axis.AxisStartPoint;
-        else if (sk > 1.0) pk = p.axis.AxisFinishPoint;
+        if (sk < 0.0) pk = p.axis.getAxisStartPoint();
+        else if (sk > 1.0) pk = p.axis.getAxisFinishPoint();
 
         Vector3d pj = null;
-        if (sj < 0.0) pj = q.axis.AxisStartPoint;
-        else if (sj > 1.0) pj = q.axis.AxisFinishPoint;
+        if (sj < 0.0) pj = q.axis.getAxisStartPoint();
+        else if (sj > 1.0) pj = q.axis.getAxisFinishPoint();
 
         return distance3D(pk, pj);
     }

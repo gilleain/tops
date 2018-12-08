@@ -193,7 +193,7 @@ public class LayoutSheet implements TSELayout {
                 if (r != null) {
                     BridgePartner qPartner = q.findBridgePartner(p);
 
-                    if (qPartner.side == q.getBridgePartner(rindex).side) {
+                    if (qPartner.getSide() == q.getBridgePartner(rindex).getSide()) {
                         incr = (r.getCartoonX() < q.getCartoonX())? -gridUnitSize : +gridUnitSize; 
                     } else {
                         incr = (r.getCartoonX() < q.getCartoonX())? +gridUnitSize : -gridUnitSize;
@@ -217,8 +217,8 @@ public class LayoutSheet implements TSELayout {
 
         // For all bridge partners except q repeat
         for (BridgePartner bridgePartner : p.getBridgePartners()) {
-            if (bridgePartner.partner != q) { 
-                this.makeSheet(chain, bridgePartner.partner, p, gridUnitSize);
+            if (bridgePartner.getPartner() != q) { 
+                this.makeSheet(chain, bridgePartner.getPartner(), p, gridUnitSize);
             }
         }
 
@@ -317,13 +317,13 @@ public class LayoutSheet implements TSELayout {
             BridgePartner commonBridgePartner = start.getBridgePartners().get(i);
             boolean isCommonBP = true;
             for (int j = 1; j < currentList.size(); j++) {
-                if (!commonBridgePartner.partner.hasBridgePartner(currentList.get(j))) {
+                if (!commonBridgePartner.getPartner().hasBridgePartner(currentList.get(j))) {
                     isCommonBP = false;
                     break;
                 }
             }
             if (isCommonBP) {
-                return commonBridgePartner.partner;
+                return commonBridgePartner.getPartner();
             }
         }
         return null;
@@ -441,7 +441,7 @@ public class LayoutSheet implements TSELayout {
             public int compare(SSE o1, SSE o2) {
                 BridgePartner bp1 = bp.findBridgePartner(o1);
                 BridgePartner bp2 = bp.findBridgePartner(o2);
-                return bp2.rangeMin - bp1.rangeMin;
+                return bp2.getRangeMin() - bp1.getRangeMin();
             }
             
         };

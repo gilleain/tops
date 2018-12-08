@@ -40,12 +40,9 @@ public class Segment {
                     if (other.endIndex >= this.startIndex && other.endIndex <= this.endIndex)
                         return true;
                 } else {
-                    if (other.startChain == this.startChain) {
-                        if (other.startIndex <= this.endIndex)
-                            return true;
-                    } else if (other.endChain == this.startChain) {
-                        if (other.endIndex >= this.startIndex)
-                            return true;
+                    if ((other.startChain == this.startChain && other.startIndex <= this.endIndex)
+                    ||  (other.endChain == this.startChain && other.endIndex >= this.startIndex)) {
+                        return true;
                     }
                 }
             }

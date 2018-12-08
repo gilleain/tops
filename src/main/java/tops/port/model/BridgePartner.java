@@ -4,21 +4,21 @@ public class BridgePartner implements Comparable<BridgePartner> {
     
     public enum Side { LEFT, RIGHT, UNKNOWN }
     
-    public SSE partner;
+    private SSE partner;
     
-    public int partnerResidue;
+    private int partnerResidue;
     
-    public Side side;
+    private Side side;
     
-    public BridgeType bridgeType;
+    private BridgeType bridgeType;
     
-    public int rangeMin;
+    private int rangeMin;
     
-    public int rangeMax;
+    private int rangeMax;
     
-    public int NumberBridgePartners;
+    private int numberBridgePartners;
     
-    public double energy;
+    private double energy;
     
     public BridgePartner() {
         // TODO
@@ -34,37 +34,101 @@ public class BridgePartner implements Comparable<BridgePartner> {
         this.rangeMax = rangeMax;
         this.bridgeType = bridgeType;
         this.side = (side == null)? Side.UNKNOWN : side;
-        this.NumberBridgePartners = 1;
+        this.numberBridgePartners = 1;
     }
     
+    public SSE getPartner() {
+        return partner;
+    }
+
+    public void setPartner(SSE partner) {
+        this.partner = partner;
+    }
+
+    public int getPartnerResidue() {
+        return partnerResidue;
+    }
+
+    public void setPartnerResidue(int partnerResidue) {
+        this.partnerResidue = partnerResidue;
+    }
+
+    public Side getSide() {
+        return side;
+    }
+
+    public void setSide(Side side) {
+        this.side = side;
+    }
+
+    public BridgeType getBridgeType() {
+        return bridgeType;
+    }
+
+    public void setBridgeType(BridgeType bridgeType) {
+        this.bridgeType = bridgeType;
+    }
+
     public boolean isLeft() {
-        return this.side == Side.LEFT;
+        return this.getSide() == Side.LEFT;
     }
     
     public void setUnknown() {
-        this.side = Side.UNKNOWN;
+        this.setSide(Side.UNKNOWN);
     }
     
     public void setLeft() {
-        this.side = Side.LEFT;
+        this.setSide(Side.LEFT);
     }
     
     public void setRight() {
-        this.side = Side.RIGHT;
+        this.setSide(Side.RIGHT);
     }
     
     public boolean isUnknownSide() {
-        return this.side == Side.UNKNOWN;
+        return this.getSide() == Side.UNKNOWN;
     }
     
     public int getBridgeLength() {
         return Math.abs(rangeMax - rangeMin);
     }
+
+    public int getRangeMin() {
+        return rangeMin;
+    }
+
+    public void setRangeMin(int rangeMin) {
+        this.rangeMin = rangeMin;
+    }
+
+    public int getRangeMax() {
+        return rangeMax;
+    }
+
+    public void setRangeMax(int rangeMax) {
+        this.rangeMax = rangeMax;
+    }
+
+    public int getNumberBridgePartners() {
+        return numberBridgePartners;
+    }
+
+    public void setNumberBridgePartners(int numberBridgePartners) {
+        this.numberBridgePartners = numberBridgePartners;
+    }
+
+    public double getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(double energy) {
+        this.energy = energy;
+    }
     
     public void update(int residueNumber) {
         if (residueNumber < rangeMin) rangeMin = residueNumber;
         if (residueNumber > rangeMax) rangeMax = residueNumber;
-        NumberBridgePartners++;
+        numberBridgePartners++;
     }
     
     public boolean equals(Object other) {
@@ -78,12 +142,11 @@ public class BridgePartner implements Comparable<BridgePartner> {
     }
 
     public int compareTo(BridgePartner other) {
-      return new Integer(this.NumberBridgePartners).compareTo(
-                        new Integer(other.NumberBridgePartners));
+      return Integer.compare(this.numberBridgePartners, other.numberBridgePartners);
     }
     
     public int hashCode() {
-        return partnerResidue;
+        return getPartnerResidue();
     }
     
     public String toString() {
@@ -91,4 +154,5 @@ public class BridgePartner implements Comparable<BridgePartner> {
                 partner == null? "{}" : partner.getSymbolNumber(),
                 side, bridgeType, rangeMin, rangeMax);
     }
+
 }

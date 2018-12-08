@@ -61,14 +61,13 @@ public class DsspReader {
     		    System.err.println("OLD FORMAT!\n");      // TODO : throw exception?
     		}
     
-    		List<Record> records = new ArrayList<Record>();
+    		List<Record> records = new ArrayList<>();
     
     		Pattern hbond_pattern = Pattern.compile("(-?\\d+|-?\\d+\\.\\d+)(?:\\s+|,\\s?|$)");
     
-//    		int index = 0;
     		for (String line : lines.subList(startOfResidueData, lines.size())) {
     			Map<String, String> bits = this.parseLine(line);
-    			if (bits.values().size() == 0) continue;
+    			if (bits.values().isEmpty()) continue;
     			Record record = new Record();
     
     			// residue name //
@@ -87,14 +86,12 @@ public class DsspReader {
     			// bridge partners - again not ness separated by white space so use tempbuff //
     			String bridgePartString = bits.get("bridge_partners");
     			String[] bps = bridgePartString.split("\\s+");    // TODO 
-//    			System.out.println(bridgePartString + Arrays.toString(bps));
     			record.leftBridgePartner = parseResidueNumber(bps[0]);
     			record.rightBridgePartner = parseResidueNumber(bps[1]);
     
     			// Hydrogen bonds (just skip read errors as some dssp files have **** in place of integer here) //
     			// d1, d1e, a1, a1e, d2, d2e, a2, a2e
-    			List<String> matches = new ArrayList<String>();
-//    			System.out.print("Matches for " + record.PDBIndices + " ");
+    			List<String> matches = new ArrayList<>();
     			int start = 0;
     			String hbondString = bits.get("hbonds");
     			for (int p = 0; p < 4; p++) {
@@ -140,13 +137,13 @@ public class DsspReader {
     		int nres = nDsspRes - nChains + 1;
     
 //    		int[] indexMapping = new int[nDsspRes];
-    		Map<String, Map<Integer, Integer>> indexMapping = new HashMap<String, Map<Integer, Integer>>();
+    		Map<String, Map<Integer, Integer>> indexMapping = new HashMap<>();
     		for (int j = 0; j < nDsspRes && j < records.size(); j++) {
     		    Record record = records.get(j);
     		    Map<Integer, Integer> mappings;
     		    String chainName = record.chainId;
     			if (record.residueNames.equals("!") || !indexMapping.containsKey(chainName)){
-    			    mappings = new HashMap<Integer, Integer>();
+    			    mappings = new HashMap<>();
     			    indexMapping.put(chainName, mappings);
     			} else {
     			    mappings = indexMapping.get(chainName);
@@ -234,11 +231,11 @@ public class DsspReader {
     				lastResidue = r.pdbIndices;
     			
     				// Eradicate structures that are not needed and limit type ie. H, E, C //
-    				SSEType PreviousStructure = secondaryStructure;
+    				SSEType previousStructure = secondaryStructure;
     				secondaryStructure = chain.getSSEType(currentResidue);
     				
     				// Now form the appropriate structures //
-    				if (secondaryStructure != PreviousStructure) {
+    				if (secondaryStructure != previousStructure) {
     					if (open) {
     						// End Structure //
     						open = false;

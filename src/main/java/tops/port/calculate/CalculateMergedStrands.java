@@ -45,7 +45,7 @@ public class CalculateMergedStrands implements Calculation {
                 boolean sheetMerge = this.mergeBetweenSheets && connectLoopLen <= shortLoop;
                 if ((cbpd == 2 && p.sameBPSide(prev)) || (cbpd > 5) ||sheetMerge ) {
                     TorsionResult result = p.closestApproach(prev);
-                    if (Math.abs(result.torsion) < 90.0) { 
+                    if (Math.abs(result.getTorsion()) < 90.0) { 
 //                        System.out.println(String.format("Merging Strands %d %d\n", p.From.getSymbolNumber(), p.getSymbolNumber()));
                         this.joinToLast(p, prev, chain);
                         p.sortBridgePartners(); // XXX not sure why we have to sort
@@ -100,11 +100,11 @@ public class CalculateMergedStrands implements Calculation {
 
         // Merge bridge partners 
         for (BridgePartner bridgePartner : sse.getBridgePartners()) {
-            SSE toJoinPartner = bridgePartner.partner;
+            SSE toJoinPartner = bridgePartner.getPartner();
             BridgePartner common = null;
             for (BridgePartner other : toJoinPartner.getBridgePartners()) {
                 // Does the bridge partner already have a bond to lastSSE */
-                if (other.partner == lastSSE) {
+                if (other.getPartner() == lastSSE) {
                     common = other;
                     break;
                 }
@@ -113,11 +113,11 @@ public class CalculateMergedStrands implements Calculation {
             // If Bridge partner doesn't already exist create it */
             if (common == null) {
                 for (BridgePartner bp : toJoinPartner.getBridgePartners()) {
-                    if (bp.partner == sse) {
-                        bp.partner = lastSSE;
-                        BridgeType type = bridgePartner.bridgeType;
+                    if (bp.getPartner() == sse) {
+                        bp.setPartner(lastSSE);
+                        BridgeType type = bridgePartner.getBridgeType();
                         lastSSE.addBridgePartner(new BridgePartner(
-                                toJoinPartner, bridgePartner.rangeMin, bridgePartner.rangeMax, type, null));
+                                toJoinPartner, bridgePartner.getRangeMin(), bridgePartner.getRangeMax(), type, null));
                         break;
                     }
                 }
@@ -125,10 +125,10 @@ public class CalculateMergedStrands implements Calculation {
 
                 // Coalesce common bridge partner 
                 for (BridgePartner lastBridgePartner : lastSSE.getBridgePartners()) {
-                    if (lastBridgePartner.partner == toJoinPartner) {
-                        lastBridgePartner.NumberBridgePartners += bridgePartner.NumberBridgePartners;
-                        common.NumberBridgePartners = lastBridgePartner.NumberBridgePartners;
-                        lastBridgePartner.rangeMax = bridgePartner.rangeMax;
+                    if (lastBridgePartner.getPartner() == toJoinPartner) {
+                        lastBridgePartner.setNumberBridgePartners(lastBridgePartner.getNumberBridgePartners() + bridgePartner.getNumberBridgePartners());
+                        common.setNumberBridgePartners(lastBridgePartner.getNumberBridgePartners());
+                        lastBridgePartner.setRangeMax(bridgePartner.getRangeMax());
                         toJoinPartner.removeBridgePartner(sse);
                     }
                 }
@@ -136,7 +136,7 @@ public class CalculateMergedStrands implements Calculation {
         }
 
         // Switch ends 
-        lastSSE.axis.AxisFinishPoint = (Vector3d)sse.axis.AxisFinishPoint.clone();
+        lastSSE.axis.setAxisFinishPoint((Vector3d)sse.axis.getAxisFinishPoint().clone());
 
         // Merge residues - don't include fixed 
         lastSSE.sseData.seqFinishResidue = sse.sseData.seqFinishResidue;

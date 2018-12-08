@@ -11,6 +11,7 @@ public enum Direction {
         this.c = c;
     }
     
+    @Override
     public String toString() {
         return String.valueOf(c);
     }

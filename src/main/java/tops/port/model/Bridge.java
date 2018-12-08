@@ -2,6 +2,7 @@ package tops.port.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class Bridge {
     
@@ -12,7 +13,7 @@ public class Bridge {
     private SSE sseEnd;
     
     public Bridge() {
-        types = new HashMap<HBond, BridgeType>();
+        types = new HashMap<>();
     }
     
     public SSE getSseStart() {
@@ -40,9 +41,9 @@ public class Bridge {
     }
     
     public String getHBondsAsString() {
-        StringBuffer sb = new StringBuffer();
-        for (HBond hBond : types.keySet()) {
-            sb.append(hBond).append(" : ").append(types.get(hBond)).append("\n");
+        StringBuilder sb = new StringBuilder();
+        for (Entry<HBond, BridgeType> hBondType : types.entrySet()) {
+            sb.append(hBondType.getKey()).append(" : ").append(hBondType.getValue()).append("\n");
         }
         return sb.toString();
     }
@@ -54,9 +55,12 @@ public class Bridge {
     public String getType() {
         // XXX TODO
         HBond first = types.keySet().iterator().next();
-        BridgeType bridgeType = types.get(first); 
-        return bridgeType == BridgeType.ANTI_PARALLEL_BRIDGE? "A":
-                bridgeType == BridgeType.PARALLEL_BRIDGE? "P": "U";
+        BridgeType bridgeType = types.get(first);
+        if (bridgeType == BridgeType.ANTI_PARALLEL_BRIDGE) {
+            return "A";
+        } else {
+            return bridgeType == BridgeType.PARALLEL_BRIDGE? "P": "U";
+        }
     }
 
     public boolean contains(SSE current) {

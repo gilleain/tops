@@ -47,8 +47,8 @@ public class CalculateNeighbours implements Calculation {
      }
      
      public double simpleSSESeparation(SSE p, SSE q) {
-         Vector3d pk = plus(p.axis.AxisStartPoint, p.axis.AxisFinishPoint);
-         Vector3d pj = plus(q.axis.AxisStartPoint, q.axis.AxisFinishPoint);
+         Vector3d pk = plus(p.axis.getAxisStartPoint(), p.axis.getAxisFinishPoint());
+         Vector3d pj = plus(q.axis.getAxisStartPoint(), q.axis.getAxisFinishPoint());
          pk.scale(1/2.0);
          pj.scale(1/2.0);
          return DistanceCalculator.distance3D(pk, pj);

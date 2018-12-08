@@ -83,10 +83,10 @@ public class CalculateRelativeSides implements Calculation {
     ie. are the same residues hydrogen bonding to q and r?
      */
     public boolean bridgeOverlap(BridgePartner bpQ, BridgePartner bpR) {
-        int a = bpQ.rangeMin;
-        int b = bpQ.rangeMax;
-        int x = bpR.rangeMin;
-        int y = bpR.rangeMax;
+        int a = bpQ.getRangeMin();
+        int b = bpQ.getRangeMax();
+        int x = bpR.getRangeMin();
+        int y = bpR.getRangeMax();
 
         // Not a---b x---y or x---y a---b //
         return !(b < x || y < a);  
@@ -97,18 +97,18 @@ public class CalculateRelativeSides implements Calculation {
      * opposite side of strand q as strand bpR
      */
     public boolean geometricSameSide(SSE q, BridgePartner bpR, BridgePartner bpP) {
-        SSE r = bpR.partner;
-        SSE p = bpP.partner;
+        SSE r = bpR.getPartner();
+        SSE p = bpP.getPartner();
         
         Vector3d v1 = q.axis.getVector();
         Point3d midr = r.axis.getCentroid();
         Point3d midp = p.axis.getCentroid();
 
         Vector3d v2 = new Vector3d(midr);
-        v2.sub(q.axis.AxisStartPoint);
+        v2.sub(q.axis.getAxisStartPoint());
 
         Vector3d v3 = new Vector3d(midp);
-        v3.sub(q.axis.AxisStartPoint);
+        v3.sub(q.axis.getAxisStartPoint());
 
         double normal2 = cross(v2, v1).length();
         double normal1 = cross(v1, v3).length();

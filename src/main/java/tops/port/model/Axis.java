@@ -7,17 +7,17 @@ import javax.vecmath.Vector3d;
 
 public class Axis {
     
-    private char SSEType;
+    private char sseType;
     private double length;
-    public Vector3d AxisStartPoint;
-    public Vector3d AxisFinishPoint;
+    private Vector3d axisStartPoint;
+    private Vector3d axisFinishPoint;
 
     public Axis(List<Point3d> coords) { 
         int n = coords.size();
-        boolean isE = (this.SSEType == 'E');    /// XXX TODO
+        boolean isE = (this.sseType == 'E');    /// XXX TODO
         if ((n < 3 && isE) || (n < 5 && !isE)) {
-            this.AxisStartPoint = new Vector3d(coords.get(0));
-            this.AxisFinishPoint = new Vector3d(coords.get(n - 1));
+            this.axisStartPoint = new Vector3d(coords.get(0));
+            this.axisFinishPoint = new Vector3d(coords.get(n - 1));
             this.length = 0.0;
         } else {
             this.length = calculate(toDoubleArr(coords), isE, n);
@@ -26,6 +26,19 @@ public class Axis {
     
     public Axis() {
         // TODO Auto-generated constructor stub
+    }
+    
+
+    public char getSseType() {
+        return sseType;
+    }
+
+    public Vector3d getAxisStartPoint() {
+        return axisStartPoint;
+    }
+
+    public Vector3d getAxisFinishPoint() {
+        return axisFinishPoint;
     }
 
     private double[][] toDoubleArr(List<Point3d> coords) {  // unpleasant, but still
@@ -116,8 +129,8 @@ public class Axis {
                 fn[i] = c[i] + se * ap[i];
         }
         
-        AxisStartPoint = new Vector3d(st[0], st[1], st[2]);
-        AxisFinishPoint = new Vector3d(fn[0], fn[1], fn[2]);
+        axisStartPoint = new Vector3d(st[0], st[1], st[2]);
+        axisFinishPoint = new Vector3d(fn[0], fn[1], fn[2]);
 
         /* return length of axis */
         return Math.sqrt(SQR(st[0]-fn[0])+SQR(st[1]-fn[1])+SQR(st[2]-fn[2]));
@@ -281,15 +294,15 @@ public class Axis {
     
     public Vector3d getVector() {
         // return vector(end - start)
-        Vector3d v = new Vector3d(AxisFinishPoint);
-        v.sub(AxisStartPoint);
+        Vector3d v = new Vector3d(axisFinishPoint);
+        v.sub(axisStartPoint);
         return v;
     }
     
     public Point3d getCentroid() {  // XXX is 'centroid' the right word?
         // return sum(start, end) / 2
-        Point3d p = new Point3d(AxisStartPoint);
-        p.add(AxisFinishPoint);
+        Point3d p = new Point3d(axisStartPoint);
+        p.add(axisFinishPoint);
         p.scale(0.5);
         return p;
     }
@@ -336,11 +349,11 @@ public class Axis {
         float   *sk, *sj    Scaling values - assigns where pc are
     Returns -999.9 on failure else returns torsion angle
     */
-    public TorsionResult ClosestApproach(Axis other) {
-        Vector3d bj = this.AxisStartPoint;// XXX which way round?
-        Vector3d ek = this.AxisFinishPoint;// XXX which way round?
-        Vector3d bk = other.AxisStartPoint;// XXX which way round?
-        Vector3d ej = other.AxisFinishPoint;  // XXX which way round?
+    public TorsionResult closestApproach(Axis other) {
+        Vector3d bj = this.axisStartPoint;// XXX which way round?
+        Vector3d ek = this.axisFinishPoint;// XXX which way round?
+        Vector3d bk = other.axisStartPoint;// XXX which way round?
+        Vector3d ej = other.axisFinishPoint;  // XXX which way round?
         if (bj == null || bk == null || ej == null || ek == null) return new TorsionResult();
 
         // Calculate constants
@@ -371,11 +384,11 @@ public class Axis {
             ejbj = diff(plus(pcj, bj), ej);
             
             // Return the torsion angle and other values
-            return new TorsionResult( pck, pcj, sk, sj, this.Torsion(ekbk, pck, pcj, ejbj));
+            return new TorsionResult( pck, pcj, sk, sj, Axis.torsion(ekbk, pck, pcj, ejbj));
         }
     }
 
-    public static double Torsion(Vector3d a, Vector3d b, Vector3d c, Vector3d d) {
+    public static double torsion(Vector3d a, Vector3d b, Vector3d c, Vector3d d) {
         double conv = 0.01745329;
 
         // Calculate vectors and lengths a-b, b-c, c-d 
@@ -432,12 +445,20 @@ public class Axis {
      }
 
     public String toString() {
-        if (this.AxisStartPoint == null) {
+        if (this.axisStartPoint == null) {
             return "[AxisStartPoint, AxisEndPoint]";
         } else {
-            String s = String.format("%s %2.2f %2.2f %2.2f", "AxisStartPoint", this.AxisStartPoint.x, this.AxisStartPoint.y, this.AxisStartPoint.z);
-            String e = String.format("%s %2.2f %2.2f %2.2f", "AxisFinishPoint", this.AxisFinishPoint.x, this.AxisFinishPoint.y, this.AxisFinishPoint.z);
+            String s = String.format("%s %2.2f %2.2f %2.2f", "AxisStartPoint", this.axisStartPoint.x, this.axisStartPoint.y, this.axisStartPoint.z);
+            String e = String.format("%s %2.2f %2.2f %2.2f", "AxisFinishPoint", this.axisFinishPoint.x, this.axisFinishPoint.y, this.axisFinishPoint.z);
             return String.format("[%s, %s]", s, e);
         }
+    }
+
+    public void setAxisFinishPoint(Vector3d axisFinishPoint) {
+        this.axisFinishPoint = axisFinishPoint;
+    }
+
+    public void setAxisStartPoint(Vector3d axisStartPoint) {
+        this.axisStartPoint = axisStartPoint;
     }
 }

@@ -113,13 +113,13 @@ public class Optimise {
                 if (sseA.getNeighbours().size() == 0) continue;
                 Neighbour first = sseA.getNeighbours().get(0);   // assumes sorted...
                 //NOTE: tops files do not contain neighbour distances!
-                if (first.distance == -1) break;	
+                if (first.getDistance() == -1) break;	
                 for (int i = 0; i < sseA.getNeighbours().size(); i++) {
                     Neighbour neighbour = sseA.getNeighbours().get(i); 
-                    SSE sseB = neighbour.sse;
+                    SSE sseB = neighbour.getSse();
                     double d = distance2D(sseA, sseB);
                     double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
-                    double ratio = first.distance / neighbour.distance;
+                    double ratio = first.getDistance() / neighbour.getDistance();
                     double Ce = Math.pow((d - D) / gridUnitSize, 2) * neighbourPenalty * Math.pow(ratio, 2);
                     TotalEnergy += Ce;
                     EnergyComps[2] += Ce;

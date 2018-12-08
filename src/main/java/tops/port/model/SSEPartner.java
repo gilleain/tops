@@ -41,8 +41,8 @@ class SSEPartner {
         public Residue(int residueNumber, int residueType) {
             this.residueNumber = residueNumber;
             this.residueType = residueType;
-            this.atoms = new HashMap<String, Atom>();
-            this.hbonds = new ArrayList<HBond>();
+            this.atoms = new HashMap<>();
+            this.hbonds = new ArrayList<>();
         }
         
         public void addAtom(Atom atom) {
@@ -75,10 +75,10 @@ class SSEPartner {
     
     private List<ResiduePair> residuePairs;
     
-    public BridgeType bridgeType;
+    private BridgeType bridgeType;
 
     public SSEPartner() {
-        this.residuePairs = new ArrayList<ResiduePair>();
+        this.residuePairs = new ArrayList<>();
     }
     
     public boolean contains(SSE sse) {
@@ -92,5 +92,13 @@ class SSEPartner {
 
     public int numberBonds() {
         return this.residuePairs.size();
+    }
+
+    public BridgeType getBridgeType() {
+        return bridgeType;
+    }
+
+    public void setBridgeType(BridgeType bridgeType) {
+        this.bridgeType = bridgeType;
     }
 }

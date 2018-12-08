@@ -48,11 +48,11 @@ public class SecStrucElement {
         this.cartoonSymbol = new CartoonSymbol();
         this.sseData = new SSEData();
         this.axis = new Axis();
-        this.connectionTo = new ArrayList<Point>();
-        this.bridgePartner = new ArrayList<Integer>();
-        this.bridgePartnerSide = new ArrayList<String>();
-        this.bridgePartnerType = new ArrayList<String>();
-        this.neighbour = new ArrayList<Integer>();
+        this.connectionTo = new ArrayList<>();
+        this.bridgePartner = new ArrayList<>();
+        this.bridgePartnerSide = new ArrayList<>();
+        this.bridgePartnerType = new ArrayList<>();
+        this.neighbour = new ArrayList<>();
     }
     
     public boolean containsResidue(int residueNumber) {
@@ -116,30 +116,30 @@ public class SecStrucElement {
     }
 
     public void setAxesStartPoint(double x, double y, double z) {
-        axis.AxisStartPoint = new Vector3d(x, y, z);
+        axis.setAxisStartPoint(new Vector3d(x, y, z));
     }
 
     public double[] getAxesStartPoint() {
         double[] ret = new double[3];
-        if (axis.AxisStartPoint == null) {
+        if (axis.getAxisStartPoint() == null) {
             ret = new double[] {0, 0, 0};
         } else {
-            this.axis.AxisStartPoint.get(ret);
+            this.axis.getAxisStartPoint().get(ret);
         }
         return ret;
     }
 
     public void setAxesFinishPoint(double x, double y, double z) {
-        axis.AxisFinishPoint = new Vector3d(x, y, z);
+        axis.setAxisFinishPoint(new Vector3d(x, y, z));
     }
     
 
     public double[] getAxesFinishPoint() {
         double[] ret = new double[3];
-        if (axis.AxisFinishPoint == null) {
+        if (axis.getAxisFinishPoint() == null) {
             ret = new double[] {0, 0, 0};
         } else {
-            this.axis.AxisFinishPoint.get(ret);
+            this.axis.getAxisFinishPoint().get(ret);
         }
         return ret;
     }
@@ -196,7 +196,7 @@ public class SecStrucElement {
 
     public void addConnectionTo(int x, int y) {
         if (this.connectionTo == null)
-            this.connectionTo = new Vector<Point>();
+            this.connectionTo = new Vector<>();
 
         this.connectionTo.add(new Point(x, y));
     }
@@ -204,19 +204,19 @@ public class SecStrucElement {
     public void addConnectionTo(Point p) {
         if (p != null) {
             if (this.connectionTo == null)
-                this.connectionTo = new Vector<Point>();
+                this.connectionTo = new Vector<>();
             this.connectionTo.add(p);
         }
     }
 
     public List<Point> getConnectionTo() {
         if (this.connectionTo == null)
-            this.connectionTo = new ArrayList<Point>();
+            this.connectionTo = new ArrayList<>();
         return this.connectionTo;
     }
 
     public void clearConnectionTo() {
-        this.connectionTo = new Vector<Point>();
+        this.connectionTo = new Vector<>();
     }
    
     public boolean isTerminus() {
@@ -284,7 +284,7 @@ public class SecStrucElement {
 
 	@Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (this.type == HELIX) {
             sb.append("Helix");

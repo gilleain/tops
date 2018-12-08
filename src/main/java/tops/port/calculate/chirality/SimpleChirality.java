@@ -12,9 +12,9 @@ public class SimpleChirality implements ChiralityInterface {
     @Override
     public Hand chiral3d(Chain chain, SSE p, SSE q) {
         // make a plane from the four points : start/end of p and q
-        Point3d pointA = new Point3d(p.axis.AxisStartPoint);
-        Point3d pointB = new Point3d(p.axis.AxisFinishPoint);
-        Point3d pointC = new Point3d(q.axis.AxisStartPoint);
+        Point3d pointA = new Point3d(p.axis.getAxisStartPoint());
+        Point3d pointB = new Point3d(p.axis.getAxisFinishPoint());
+        Point3d pointC = new Point3d(q.axis.getAxisStartPoint());
                 
         // get the point to test
         Point3d pointD = getTestPoint(chain, p, q);
