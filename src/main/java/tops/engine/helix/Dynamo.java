@@ -1,8 +1,12 @@
 package tops.engine.helix;
 
-public class Dynamo {
+import java.util.logging.Logger;
 
-    public String bestguess;
+public class Dynamo {
+    
+    private Logger log = Logger.getLogger(Dynamo.class.getName());
+
+    private String bestguess;
 
     private String[] results;
 
@@ -10,26 +14,24 @@ public class Dynamo {
     }
 
     public Dynamo(String[] stringlist) {
-        String v, w;
+        String v;
+        String w;
         this.results = new String[stringlist.length];
         v = this.strip(stringlist[1]);
 
         // first, get the bestguess by doing pairwise comparison
         for (int k = 0; k < stringlist.length; ++k) {
             w = this.strip(stringlist[k]);
-            v = this.getLCS(this.LCS(v, w), v, v.length(), w.length());
+            v = this.getLCS(this.lcs(v, w), v, v.length(), w.length());
             v = this.compress(v);
-            System.out.println("compressed v = " + v);
         }
 
-        this.bestguess = v;
+        this.setBestguess(v);
 
         // now, using the bestguess, get the matchpositions.
         for (int l = 0; l < stringlist.length; ++l) {
             w = this.strip(stringlist[l]);
-            this.results[l] = this.getLCS(this.LCS(w, v), w, w.length(), v.length());
-            System.out.println("For graph : " + stringlist[l] + " LCS = ["
-                    + this.results[l] + "]");
+            this.results[l] = this.getLCS(this.lcs(w, v), w, w.length(), v.length());
         }
 
     }
@@ -46,55 +48,35 @@ public class Dynamo {
             }
         }
         if (firstNonNull == -1)
-            return null;
+            return new String[] {};
         String tmp;
         int l;
-        for (int i = 0; i < inserts[firstNonNull].length; i++) { // they
-                                                                    // should
-                                                                    // all be
-                                                                    // the same
-                                                                    // length!
-            result[i] = inserts[firstNonNull][i]; // fill with the first in
-                                                    // matrix
-            for (int j = 1; j < inserts.length; j++) { // for each array in the
-                                                        // matrix
+        // they should all be the same length!
+        for (int i = 0; i < inserts[firstNonNull].length; i++) { 
+            result[i] = inserts[firstNonNull][i]; // fill with the first in matrix
+            for (int j = 1; j < inserts.length; j++) { // for each array in the matrix
                 l = result[i].length();
-                // System.out.println("insert : " + i + "," + j);
-                if (inserts[j] != null) {
-                    if (inserts[j][i] != null) {
-                        tmp = inserts[j][i]; // the current position in the
-                                                // current row
-                        // System.out.println("i, j = " + i +"," + j + " insert
-                        // : " + tmp + " result(i) : " + result[i] + " l = " +
-                        // l);
-                        try {
-                            result[i] = this.getLCS(this.LCS(result[i], tmp), result[i],
-                                    l, tmp.length());
-                        } catch (ArrayIndexOutOfBoundsException aioobe) {
-                            System.out.println(aioobe);
-                        }
+                if (inserts[j] != null && inserts[j][i] != null) {
+                    tmp = inserts[j][i]; // the current position in the current row
+                    try {
+                        result[i] = this.getLCS(this.lcs(result[i], tmp), result[i],
+                                l, tmp.length());
+                    } catch (ArrayIndexOutOfBoundsException aioobe) {
+                        log.warning(aioobe.toString());
                     }
                 }
             }
-            // System.out.println("result(i) :" + result[i]);
         }
         return result;
     }
 
     String ask() {
-        return this.bestguess + " ";
+        return this.getBestguess() + " ";
     }
 
     boolean canAddStrand(char tp, int current) {
-        if ((current + 1) < this.bestguess.length()) {
-            // System.out.println("Bestguess = " + bestguess + " current = " +
-            // current);
-            if (this.bestguess.charAt(current + 1) == tp)
-                return true;
-            else
-                return false;
-        }
-        return false;
+        return (current + 1 < this.getBestguess().length() 
+              && this.getBestguess().charAt(current + 1) == tp);
     }
 
     String[] getResults() {
@@ -104,30 +86,29 @@ public class Dynamo {
     // assume that it has head, body, tail. Also, that there are no " " double
     // spaces.
     String strip(String graph) {
-        if (graph.indexOf(" ") == -1)
+        if (graph.indexOf(' ') == -1)
             return graph;
         else
-            return graph.substring(graph.indexOf(" ") + 1, graph
-                    .lastIndexOf(" "));
+            return graph.substring(graph.indexOf(' ') + 1, graph.lastIndexOf(' '));
     }
 
-    String compress(String LCS) {
-        StringBuffer comp = new StringBuffer();
-        for (int i = 0; i < LCS.length(); ++i) {
-            if ((LCS.charAt(i) != '-') && (LCS.charAt(i) != '|'))
-                comp.append(LCS.charAt(i));
+    String compress(String lcs) {
+        StringBuilder comp = new StringBuilder();
+        for (int i = 0; i < lcs.length(); ++i) {
+            if ((lcs.charAt(i) != '-') && (lcs.charAt(i) != '|'))
+                comp.append(lcs.charAt(i));
         }
         return comp.toString();
     }
 
-    int[] convert(String LCS) {
-        int[] result = new int[LCS.length()];
+    int[] convert(String lcs) {
+        int[] result = new int[lcs.length()];
         int j = 0;
-        for (int i = 1; i < LCS.length() - 1; ++i) {
-            if (LCS.charAt(i) != '-')
+        for (int i = 1; i < lcs.length() - 1; ++i) {
+            if (lcs.charAt(i) != '-')
                 result[j++] = i;
         }
-        if (j < LCS.length() - 2) {
+        if (j < lcs.length() - 2) {
             int[] trim = new int[j];
             System.arraycopy(result, 0, trim, 0, j);
             return trim;
@@ -144,9 +125,9 @@ public class Dynamo {
         return result;
     }
 
-    int[][] LCS(String V, String W) {
-        int n = V.length() + 1; // "l + 1" because of the terminal 0's
-        int m = W.length() + 1;
+    int[][] lcs(String vStr, String wStr) {
+        int n = vStr.length() + 1; // "l + 1" because of the terminal 0's
+        int m = wStr.length() + 1;
         int[][] b = new int[n][m]; // 0 = DIAGONAL, 1 = UP, -1 = ACROSS
         int[][] s = new int[n][m];
 
@@ -161,7 +142,7 @@ public class Dynamo {
         // COMPUTE
         for (int i = 1; i < n; ++i) { // "1 to n" becase the 0's are needed
             for (int j = 1; j < m; ++j) {
-                if (V.charAt(i - 1) == W.charAt(j - 1)) { // "i - 1" because
+                if (vStr.charAt(i - 1) == wStr.charAt(j - 1)) { // "i - 1" because
                                                             // strings start at
                                                             // 0
                     s[i][j] = s[i - 1][j - 1] + 1;
@@ -181,26 +162,29 @@ public class Dynamo {
         return b;
     }
 
-    String getLCS(int[][] b, String V, int i, int j) {
-        String result = "";
-        if ((i == 0) || (j == 0))
-            return new String();
+    String getLCS(int[][] b, String v, int i, int j) {
+        StringBuilder result = new StringBuilder();
+        if ((i == 0) || (j == 0)) {
+            return "";
+        }
 
-        if (b[i][j] == 0)
-            result += this.getLCS(b, V, i - 1, j - 1) + V.charAt(i - 1);
+        if (b[i][j] == 0) {
+            result.append(getLCS(b, v, i - 1, j - 1) + v.charAt(i - 1));
+        } else if (b[i][j] == 1) {
+            result.append(getLCS(b, v, i - 1, j)); // add '-'
+        } else {
+            result.append(getLCS(b, v, i, j - 1)); // add '|'
+        }
 
-        else if (b[i][j] == 1)
-            result += this.getLCS(b, V, i - 1, j); // + '-';
-
-        else
-            result += this.getLCS(b, V, i, j - 1); // + '|';
-
-        return result;
+        return result.toString();
     }
 
-//    static void main(String[] args) {
-//        Dynamo d = new Dynamo(args);
-//    }
+    public String getBestguess() {
+        return bestguess;
+    }
 
-}// EOC
+    public void setBestguess(String bestguess) {
+        this.bestguess = bestguess;
+    }
+}
 

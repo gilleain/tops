@@ -11,8 +11,6 @@ import tops.engine.Vertex;
 
 public class Pattern implements PatternI {
 
-    private int[] inserts;
-
     private String outsertC; // the vertex sequence from the last edge to the C
                         // terminus
 
@@ -210,49 +208,44 @@ public class Pattern implements PatternI {
 
     // get the correspondance list eg : [1, 2, 4, 5]
     public String getMatchString() {
-        // StringBuffer matchresult = new StringBuffer("<Corr>[");
-        StringBuffer matchresult = new StringBuffer(" [");
+        StringBuilder matchresult = new StringBuilder(" [");
         for (int i = 0; i < this.vertices.size(); ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i);
+            Vertex nxt = this.vertices.get(i);
             if (nxt.getMatch() != 0) {
                 matchresult.append(i).append('-').append(nxt.getMatch())
                         .append(",");
             }
         }
         matchresult.setCharAt(matchresult.length() - 1, ']');
-        // matchresult.deleteCharAt(matchresult.length() -1);
-        // matchresult.append("</Corr>");
         return matchresult.toString();
     }
 
     public void setInserts() {
-        this.inserts = new int[this.vertices.size() - 1];
+        int[] inserts = new int[this.vertices.size() - 1];
         int last = 0;
         Vertex nxt;
         for (int i = 0; i < this.vertices.size(); ++i) {
-            nxt = (Vertex) this.vertices.get(i);
+            nxt = this.vertices.get(i);
             if (nxt.getMatch() > 0) {
-                this.inserts[i] = nxt.getMatch() - last;
-            } else {
-
+                inserts[i] = nxt.getMatch() - last;
             }
         }
     }
 
     // get the pattern with inserts eg : N[0]E[1]E[2]E[1]C
     public String getInsertString(PatternI d) {
-        StringBuffer insertresult = new StringBuffer(" N");
+        StringBuilder insertresult = new StringBuilder(" N");
         int last = 0;
         int isize = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i); // get pattern vertex ref
+            Vertex nxt = this.vertices.get(i); // get pattern vertex ref
             isize = nxt.getMatch() - last;
             if (isize > 0) {
                 insertresult.append('[').append(isize - 1).append(']');
                 last = nxt.getMatch();
             } else {
                 int j = last + 1;
-                for (; j < ((Vertex) this.vertices.get(i + 1)).getMatch(); ++j) {
+                for (; j < (this.vertices.get(i + 1)).getMatch(); ++j) {
                     char dt = d.getVertex(j).getType();
                     if (nxt.getType() == dt)
                         break;
@@ -263,7 +256,6 @@ public class Pattern implements PatternI {
             insertresult.append(nxt.getType());
         }
         isize = d.vsize() - last;
-        // System.out.println("isize = " + isize + " last = " + last);
         if (isize > 0)
             insertresult.append('[').append(isize - 2).append(']');
         else
@@ -277,23 +269,23 @@ public class Pattern implements PatternI {
     public String[] getInsertStringArr(PatternI d, boolean flip) { // 'd' is an
                                                             // EXAMPLE, not a
                                                             // pattern
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i); // get pattern vertex ref
+            Vertex nxt = this.vertices.get(i); // get pattern vertex ref
             m = nxt.getMatch();
             if (m != 0) { // it IS an edge vertex, the setMatch() method is
                             // only called in the Edge class
                 results.add(d.getVertexString(last, m, flip));
                 last = m + 1;
             } else { // it is a random, unattached vertex. do nothing
-                results.add(new String());
+                results.add("");
             }
         }
         String cOut = d.getVertexString(last, 0, flip);
         results.add(cOut); // get the C-outsert
-        return (String[]) results.toArray(new String[0]);
+        return results.toArray(new String[0]);
     }
 
     public String splice(String[] ins) {
@@ -304,11 +296,9 @@ public class Pattern implements PatternI {
 
         for (int i = 0; i < ins.length; i++) {
             s = ins[i];
-            // System.out.println("s = " + s);
             for (int j = 0; j < s.length(); j++) {
                 v = new Vertex(s.charAt(j), j + 1);
                 pos = i + offset;
-                // System.out.println("insert pos = " + pos);
                 this.vertices.add(pos, v);
                 this.renumber(pos, 1);
                 offset++;
@@ -320,9 +310,9 @@ public class Pattern implements PatternI {
     // this method could replace the /splice/ method above.
     // except that splice actually adds new vertices...
     public String mergeInsertArrayWithVertices(String[] ins) {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         for (int i = 0; i < ins.length; i++) {
-            ret.append(((Vertex) this.vertices.get(i)).getType());
+            ret.append((this.vertices.get(i)).getType());
             ret.append(ins[i]);
         }
         ret.append('C');
@@ -331,8 +321,6 @@ public class Pattern implements PatternI {
 
     public boolean preProcess(PatternI d) {
         if (this.esize() > d.esize()) {
-            // System.err.println("pattern larger than target! pattern = " +
-            // this.esize() + " target = " + d.esize());
             return false; // pattern must be smaller.
         }
         boolean found = false;
@@ -372,7 +360,8 @@ public class Pattern implements PatternI {
     }
 
     public boolean subSequenceCompare(String a, String b) {
-        int ptrA, ptrB;
+        int ptrA;
+        int ptrB;
         char c;
         ptrA = ptrB = 0;
         while (ptrA < a.length()) {
@@ -389,7 +378,7 @@ public class Pattern implements PatternI {
 
     public void setMovedUpTo(int k) {
         for (int i = 0; i < k; ++i) {
-            ((Edge) this.edges.get(i)).moved = false;
+            (this.edges.get(i)).moved = false;
         }
     }
 
@@ -404,24 +393,24 @@ public class Pattern implements PatternI {
             for (int i = 0; i < verts.length; ++i) {
                 this.vertices.add(new Vertex(verts[i], i));
             }
-            int l, r;
+            int l;
+            int r;
             char t;
-            Vertex left, right;
+            Vertex left;
+            Vertex right;
             int j = 0;
 
             for (; j < edgeStrings.length; j += 3) {
                 l = Integer.parseInt(edgeStrings[j]);
                 r = Integer.parseInt(edgeStrings[j + 1]);
                 t = edgeStrings[j + 2].charAt(0);
-                left = (Vertex) this.vertices.get(l);
+                left = this.vertices.get(l);
                 left.setIndex((char) (t + 32));
-                right = (Vertex) this.vertices.get(r);
+                right = this.vertices.get(r);
                 right.setIndex(t);
                 this.edges.add(new Edge(left, right, t));
             }
             this.sortEdges();
-            // fillSheets();
-            // setOutserts();
             if (!this.edges.isEmpty()) {
                 int first = edges.get(0).getLeftVertex().getPos();
                 int last = edges.get(edges.size() - 1).getRightVertex().getPos();
@@ -435,7 +424,8 @@ public class Pattern implements PatternI {
 
     public void sortEdges() {
         int size = this.edges.size();
-        Edge first, second;
+        Edge first;
+        Edge second;
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size - 1; ++j) {
                 first = edges.get(j);
@@ -479,11 +469,11 @@ public class Pattern implements PatternI {
 
     public void reset() {
         for (int i = 0; i < this.edges.size(); ++i) {
-            ((Edge) (this.edges.get(i))).reset();
+            this.edges.get(i).reset();
         }
         for (int i = 1; i < this.vertices.size() - 1; ++i) { // don't bother with N/C
-            ((Vertex) (this.vertices.get(i))).resetMatch();
-            ((Vertex) (this.vertices.get(i))).flip();
+            this.vertices.get(i).resetMatch();
+            this.vertices.get(i).flip();
         }
     }
 
@@ -492,14 +482,12 @@ public class Pattern implements PatternI {
             end = this.vertices.size() - 1; // miss 'C'
         if (start == 0)
             start = 1; // miss 'N'
-        // System.out.println("getting vertex string from: " + start + " to " +
-        // end);
         if ((start >= end) || (end > this.vertices.size()))
-            return new String();
-        StringBuffer vstr = new StringBuffer();
+            return "";
+        StringBuilder vstr = new StringBuilder();
         char c;
         for (int i = start; i < end; ++i) {
-            c = ((Vertex) (this.vertices.get(i))).getType();
+            c = this.vertices.get(i).getType();
             if (flip)
                 c = (Character.isUpperCase(c) ? Character.toLowerCase(c) : Character.toUpperCase(c));
             vstr.append(c);
@@ -538,13 +526,13 @@ public class Pattern implements PatternI {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         result.append(this.head);
         result.append(' ');
 
         for (int i = 0; i < this.vertices.size(); ++i) {
-            result.append(((Vertex) this.vertices.get(i)).getType());
+            result.append(this.vertices.get(i).getType());
         }
         // ensure that the pattern has a c-terminus!
         if (result.charAt(result.length() - 1) != 'C')
@@ -554,7 +542,7 @@ public class Pattern implements PatternI {
 
         Edge e;
         for (int j = 0; j < this.edges.size(); ++j) {
-            e = (Edge) this.edges.get(j);
+            e = this.edges.get(j);
             result.append(e.getLeftVertex().getPos());
             result.append(':');
             result.append(e.getRightVertex().getPos());
@@ -566,10 +554,8 @@ public class Pattern implements PatternI {
     private void renumber(int from, int amount) {
         Vertex counter;
         for (int i = from + 1; i < this.vertices.size() - 1; i++) {
-            counter = (Vertex) this.vertices.get(i);
+            counter = this.vertices.get(i);
             int tmp = counter.getPos();
-            // System.out.println("Vertex : " + counter.getType() + "@ " + i +
-            // "|" + tmp + " to Vertex " + (tmp + 1));
             counter.setPos(tmp + amount); // move up all the internal numbers!
         }
     }
