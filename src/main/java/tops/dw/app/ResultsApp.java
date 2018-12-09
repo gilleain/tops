@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Vector;
+import java.util.List;
 
 import tops.dw.editor.PostscriptPrinter;
 import tops.dw.editor.TopsEditor;
@@ -237,7 +237,7 @@ public class ResultsApp extends Applet implements ActionListener, PostscriptPrin
 
     }
 
-    public void printPostscript(Vector<String> ps) {
+    public void printPostscript(List<String> ps) {
 
         StringBuffer urlbase = new StringBuffer(ResultsApp.TopsFileURLbase);
         urlbase.append(this.magic);

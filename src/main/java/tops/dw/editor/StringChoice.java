@@ -18,39 +18,40 @@ import java.util.List;
 
 public class StringChoice extends Dialog implements ActionListener {
 
-    private static int WIDTH = 250, HEIGHT = 300;
+    private static final int WIDTH = 250;
+    private static final int HEIGHT = 300;
 
-    private List<String> Strings = null;
+    private List<String> strings = null;
 
-    private String RetString = null;
+    private String retString = null;
 
-    private int RetInt = -1;
+    private int retInt = -1;
 
-    private Button CancelButton = null;
+    private Button cancelButton = null;
 
-    private Button ContinueButton = null;
+    private Button continueButton = null;
 
     private CheckboxGroup cbg = null;
 
-    public StringChoice(Frame f, String Message, List<String> strs) {
+    public StringChoice(Frame f, String message, List<String> strs) {
         super(f, "StringChoice", true);
 
-        this.Strings = strs;
+        this.strings = strs;
 
         this.setFont(new Font("TimesRoman", Font.BOLD, 12));
         this.setLayout(new BorderLayout());
 
-        this.add("North", new Label(Message));
+        this.add("North", new Label(message));
 
         ScrollPane sp = new ScrollPane();
 
         Panel pan = new Panel();
         pan.setLayout(new GridLayout(0, 1));
 
-        if (this.Strings != null) {
+        if (this.strings != null) {
             this.cbg = new CheckboxGroup();
             boolean st = true;
-            for (String str : Strings) {
+            for (String str : strings) {
                 Checkbox cb = new Checkbox(str, this.cbg, st);
                 pan.add(cb);
                 st = false;
@@ -62,12 +63,12 @@ public class StringChoice extends Dialog implements ActionListener {
         this.add("Center", sp);
 
         Panel bpn = new Panel();
-        this.CancelButton = new Button("Cancel");
-        this.CancelButton.addActionListener(this);
-        bpn.add(this.CancelButton);
-        this.ContinueButton = new Button("Continue");
-        this.ContinueButton.addActionListener(this);
-        bpn.add(this.ContinueButton);
+        this.cancelButton = new Button("Cancel");
+        this.cancelButton.addActionListener(this);
+        bpn.add(this.cancelButton);
+        this.continueButton = new Button("Continue");
+        this.continueButton.addActionListener(this);
+        bpn.add(this.continueButton);
 
         this.add("South", bpn);
 
@@ -84,17 +85,17 @@ public class StringChoice extends Dialog implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == this.CancelButton) {
-            this.RetString = null;
+        if (e.getSource() == this.cancelButton) {
+            this.retString = null;
             this.dispose();
-        } else if (e.getSource() == this.ContinueButton) {
-            this.SetRetString();
+        } else if (e.getSource() == this.continueButton) {
+            this.setRetString();
             this.dispose();
         }
 
     }
 
-    private void SetRetString() {
+    private void setRetString() {
 
         int i = -1;
 
@@ -103,10 +104,10 @@ public class StringChoice extends Dialog implements ActionListener {
             if (cb != null) {
                 String nm = cb.getLabel();
                 i = 0;
-                for (String str : Strings) {
+                for (String str : strings) {
                     if (nm.equals(str)) {
-                        this.RetString = str;
-                        this.RetInt = i;
+                        this.retString = str;
+                        this.retInt = i;
                         return;
                     }
                     i++;
@@ -114,17 +115,17 @@ public class StringChoice extends Dialog implements ActionListener {
             }
         }
 
-        this.RetString = null;
-        this.RetInt = -1;
+        this.retString = null;
+        this.retInt = -1;
 
     }
 
     public String getChoice() {
-        return this.RetString;
+        return this.retString;
     }
 
     public int getChoiceNumber() {
-        return this.RetInt;
+        return this.retInt;
     }
 
 }

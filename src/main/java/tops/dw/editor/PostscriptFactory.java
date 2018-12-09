@@ -2,6 +2,7 @@ package tops.dw.editor;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 
 public final class PostscriptFactory {
@@ -375,8 +376,8 @@ public final class PostscriptFactory {
     private static int border = 36;
 
     public static Vector<String> PSArrayA4(
-    		Vector<String> titles, Vector<String> EPSfiles, int margin, float scle) throws PSException {
-        if (EPSfiles == null || EPSfiles.isEmpty())
+    		List<String> titles, List<String> ePSS, int margin, float scle) throws PSException {
+        if (ePSS == null || ePSS.isEmpty())
             throw new PSException("Nothing to draw!");
         if (scle <= 0.01f)
             throw new PSException("Scale value too small");
@@ -385,14 +386,12 @@ public final class PostscriptFactory {
 
         Vector<String> PS = new Vector<String>();
 
-        int nfiles = EPSfiles.size();
+        int nfiles = ePSS.size();
 
         // determine largest X and Y sizes
         int xs, ys, maxx = 0, maxy = 0;
         int bb[];
-        Enumeration<String> enf = EPSfiles.elements();
-        while (enf.hasMoreElements()) {
-            String eps = enf.nextElement();
+        for (String eps : ePSS) {
             bb = PostscriptFactory.getBoundingBox(eps);
             xs = bb[2] - bb[0];
             ys = bb[3] - bb[1];
@@ -418,13 +417,13 @@ public final class PostscriptFactory {
         PS = PostscriptFactory.makePSHeader(PS, npages, 1);
 
         // construct the array
-        Enumeration<String> ent = titles.elements();
-        enf = EPSfiles.elements();
+        Iterator<String> ent = titles.iterator();
+        Iterator<String> enf = ePSS.iterator();
         int nf = 0, ix, iy = -1, np = 0;
         int lowleft[] = new int[2];
         int xt, yt, tx, ty;
         String ttl;
-        while (enf.hasMoreElements()) {
+        while (enf.hasNext()) {
 
             // new page
             if (PostscriptFactory.mod(nf, nx * ny) == 0) {
@@ -444,12 +443,12 @@ public final class PostscriptFactory {
             PS.addElement(PostscriptFactory.translate(lowleft[0], lowleft[1]));
 
             // get bounding box
-            String eps = enf.nextElement();
+            String eps = enf.next();
             bb = PostscriptFactory.getBoundingBox(eps);
 
             // add title
-            if (ent.hasMoreElements())
-                ttl = ent.nextElement();
+            if (ent.hasNext())
+                ttl = ent.next();
             else
                 ttl = "NoTitle";
             int ttls = 12;

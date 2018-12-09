@@ -11,8 +11,8 @@ import java.awt.Panel;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
@@ -27,19 +27,19 @@ import tops.port.model.Segment;
  */
 public class DomainInfoPanel extends Panel {
 
-    private Vector<Protein> proteins;
+    private List<Protein> proteins;
 
-    private TopsEditor TopsEd;
+    private TopsEditor topsEditor;
 
     public DomainInfoPanel(TopsEditor te) {
-        this.TopsEd = te;
-        this.proteins = new Vector<Protein>();
+        this.topsEditor = te;
+        this.proteins = new ArrayList<>();
         this.setLayout(new GridLayout(0, 4));
         this.setFont(new Font("TimesRoman", Font.BOLD, 12));
     }
 
-    public void Clear() {
-        this.proteins = new Vector<Protein>();
+    public void clear() {
+        this.proteins.clear();
         this.removeAll();
     }
 
@@ -48,19 +48,19 @@ public class DomainInfoPanel extends Panel {
         if (p == null)
             return;
 
-        this.proteins.addElement(p);
+        this.proteins.add(p);
 
-        List<DomainDefinition> DomainDefs = p.getDomainDefs();
-        List<Cartoon> Diagrams = p.getLinkedLists();
+        List<DomainDefinition> domainDefs = p.getDomainDefs();
+        List<Cartoon> diagrams = p.getLinkedLists();
 
         Button b;
         Choice ch;
         Panel panel;
 
         int index = 0;
-        for (DomainDefinition dd : DomainDefs) {
+        for (DomainDefinition dd : domainDefs) {
 
-            Cartoon cartoon = Diagrams.get(index);
+            Cartoon cartoon = diagrams.get(index);
 
             b = new Button("Domain information");
             b.addActionListener(new DomainInfoCommand(dd));
@@ -92,7 +92,7 @@ public class DomainInfoPanel extends Panel {
             ch.addItem("Add arrow");
             ch.addItem("Delete arrow");
 
-            ch.addItemListener(new DomainInfoPanelCommand(this.TopsEd, cartoon,
+            ch.addItemListener(new DomainInfoPanelCommand(this.topsEditor, cartoon,
                     DomainInfoPanelCommand.CHANGE_EDIT_MODE_COMMAND));
 
             panel = new Panel();
@@ -102,8 +102,6 @@ public class DomainInfoPanel extends Panel {
         }
     }
 
-    /* END get and set methods */
-
 }
 
 /**
@@ -112,34 +110,25 @@ public class DomainInfoPanel extends Panel {
  */
 class DomainInfoCommand implements ActionListener {
 
-    /* START instance variables */
-
     DomainDefinition domain = null;
 
-    Frame InfoFrame = null;
-
-    /* END instance variables */
-
-    /* START constructors */
+    Frame infoFrame = null;
 
     public DomainInfoCommand(DomainDefinition d) {
         this.domain = d;
     }
 
-    /* END constructors */
-
-    /* START the ActionListener interface */
     public void actionPerformed(ActionEvent e) {
 
         if (e.getActionCommand() == "Dismiss") {
-            if (this.InfoFrame != null) {
-                this.InfoFrame.dispose();
-                this.InfoFrame = null;
+            if (this.infoFrame != null) {
+                this.infoFrame.dispose();
+                this.infoFrame = null;
             }
         } else {
-            this.InfoFrame = new Frame("Protein domain information for " + this.domain);
-            this.InfoFrame.setLayout(new BorderLayout());
-            this.InfoFrame.setFont(new Font("Courier", Font.PLAIN, 12));
+            this.infoFrame = new Frame("Protein domain information for " + this.domain);
+            this.infoFrame.setLayout(new BorderLayout());
+            this.infoFrame.setFont(new Font("Courier", Font.PLAIN, 12));
 
             TextArea ta = new TextArea();
             ta.setEditable(false);
@@ -155,20 +144,20 @@ class DomainInfoCommand implements ActionListener {
             int index = 0; // XXX generating fragment index here
             for (Segment segment : this.domain.getSegments()) {
                 
-                String StartLab = "N" + index;
-                String EndLab = "C" + (index + 1);
-                ta.append(String.format("%s", StartLab, segment, EndLab));
+                String startLab = "N" + index;
+                String endLab = "C" + (index + 1);
+                ta.append(String.format("%s %s %s", startLab, segment, endLab));
                 ta.append("\n");
                 index++;
             }
-            this.InfoFrame.add("Center", ta);
+            this.infoFrame.add("Center", ta);
 
             Button dismiss = new Button("Dismiss");
-            this.InfoFrame.add("South", dismiss);
+            this.infoFrame.add("South", dismiss);
             dismiss.addActionListener(this);
 
-            this.InfoFrame.pack();
-            this.InfoFrame.setVisible(true);
+            this.infoFrame.pack();
+            this.infoFrame.setVisible(true);
         }
 
     }

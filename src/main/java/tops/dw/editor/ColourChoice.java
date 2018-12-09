@@ -1,64 +1,54 @@
 package tops.dw.editor;
 
-import java.awt.*;
-import java.util.*;
-import java.beans.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 
 public class ColourChoice {
 
-    /* START instance variables */
-
     private ColourChoicePanel ccp;
 
-    private Frame f;
-
-    /* END instance variables */
-
-    /* START constructors */
+    private Frame frame;
 
     public ColourChoice() {
-        this.f = new Frame("Colour choice");
-        this.f.setFont(new Font("TimesRoman", Font.PLAIN, 12));
+        this.frame = new Frame("Colour choice");
+        this.frame.setFont(new Font("TimesRoman", Font.PLAIN, 12));
 
-        this.f.setLayout(new BorderLayout());
+        this.frame.setLayout(new BorderLayout());
 
         this.ccp = new ColourChoicePanel();
 
-        this.f.add("Center", this.ccp);
-
-        this.f.pack();
-
-        this.f.setVisible(false);
-
+        this.frame.add("Center", this.ccp);
+        this.frame.pack();
+        this.frame.setVisible(false);
     }
 
-    /* END constructors */
+    public void addColourChangeListeners(List<? extends PropertyChangeListener> listeners) {
 
-    public void addColourChangeListeners(Vector<? extends PropertyChangeListener> vector) {
-
-        if (vector == null)
+        if (listeners == null) {
             return;
-
-        Enumeration<? extends PropertyChangeListener> enumeration = vector.elements();
-
-        if (this.ccp != null) {
-            while (enumeration.hasMoreElements()) {
-                this.ccp.addPropertyChangeListener(enumeration.nextElement());
-            }
         }
 
+        if (this.ccp != null) {
+            for (PropertyChangeListener listener : listeners) {
+                this.ccp.addPropertyChangeListener(listener);
+            }
+        }
     }
 
     public void setVisible(boolean vis) {
-        if (this.f != null) {
-            this.f.setVisible(vis);
-            if (vis)
-                this.f.toFront();
+        if (this.frame != null) {
+            this.frame.setVisible(vis);
+            if (vis) {
+                this.frame.toFront();
+            }
         }
     }
 
     public void dispose() {
-        this.f.dispose();
+        this.frame.dispose();
     }
 
 }

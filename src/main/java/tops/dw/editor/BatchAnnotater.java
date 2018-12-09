@@ -20,6 +20,10 @@ import tops.dw.protein.Protein;
 import tops.port.model.DomainDefinition;
 
 public class BatchAnnotater {
+    
+    private BatchAnnotater() {
+        // prevent instantiation
+    }
 	
 	public static void annotateCartoon(File inFile, String outputDirectory, int[] residuesToAnnotate) {
 		try {
@@ -52,35 +56,37 @@ public class BatchAnnotater {
 	}
 	
 	public static Map<String, List<Integer>> parse(File file) {
-		Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
-		try {
-			BufferedReader b = new BufferedReader(new FileReader(file));
+		Map<String, List<Integer>> map = new HashMap<>();
+		try (BufferedReader b = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = b.readLine()) != null) {
-				String pdbid = line.substring(0, 4);
-				String[] bits = line.split("\t");
-				String resrange = bits[1];
-				int d = resrange.indexOf("-");
-				int start = Integer.parseInt(resrange.substring(0, d));
-				int end = Integer.parseInt(resrange.substring(d+1));
-				int mid = (start + end) / 2;
-				
-				List<Integer> list;
-				if (map.containsKey(pdbid)) {
-					list = map.get(pdbid);
-					list.add(new Integer(mid));
-				} else {
-					list = new ArrayList<Integer>();
-					list.add(new Integer(mid));
-					map.put(pdbid, list);
-				}
+			    parseLine(line, map);
 			}
-			b.close();
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 		
 		return map;
+	}
+	
+	private static void parseLine(String line, Map<String, List<Integer>> map) {
+	    String pdbid = line.substring(0, 4);
+        String[] bits = line.split("\t");
+        String resrange = bits[1];
+        int d = resrange.indexOf('-');
+        int start = Integer.parseInt(resrange.substring(0, d));
+        int end = Integer.parseInt(resrange.substring(d+1));
+        int mid = (start + end) / 2;
+        
+        List<Integer> list;
+        if (map.containsKey(pdbid)) {
+            list = map.get(pdbid);
+            list.add(mid);
+        } else {
+            list = new ArrayList<>();
+            list.add(mid);
+            map.put(pdbid, list);
+        }
 	}
 
 }

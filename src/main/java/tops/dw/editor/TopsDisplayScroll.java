@@ -4,12 +4,12 @@ import java.awt.Adjustable;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.ScrollPane;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
-import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
 import tops.web.display.applet.TopsDrawCanvas;
 
@@ -33,14 +33,8 @@ public class TopsDisplayScroll extends ScrollPane {
 
     static final int PREF_WIDTH = 1000;
 
-    /* END class variables */
+    private TopsDisplayPanel displayPanel;
 
-    /* START instance variables */
-    private TopsDisplayPanel DisplayPanel;
-
-    /* END instance variables */
-
-    /* START constructors */
 
     /**
      * the basic constructor
@@ -54,8 +48,8 @@ public class TopsDisplayScroll extends ScrollPane {
         Vadjust.setUnitIncrement(10);
         Hadjust.setUnitIncrement(10);
 
-        this.DisplayPanel = new TopsDisplayPanel();
-        this.add(this.DisplayPanel);
+        this.displayPanel = new TopsDisplayPanel();
+        this.add(this.displayPanel);
 
         Dimension ps = this.getPreferredSize();
         this.setSize(ps.width, ps.height);
@@ -102,8 +96,8 @@ public class TopsDisplayScroll extends ScrollPane {
 
     @Override
     public void paint(Graphics g) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.repaint();
+        if (this.displayPanel != null)
+            this.displayPanel.repaint();
     }
 
     /* END paint/update methods */
@@ -114,8 +108,8 @@ public class TopsDisplayScroll extends ScrollPane {
      * this method clears the display
      */
     public void clear() {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.clear();
+        if (this.displayPanel != null)
+            this.displayPanel.clear();
     }
 
     /**
@@ -127,8 +121,8 @@ public class TopsDisplayScroll extends ScrollPane {
      *            the new set of labels
      */
     public void setDiagrams(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.setDiagrams(Diagrams, Labels);
+        if (this.displayPanel != null)
+            this.displayPanel.setDiagrams(Diagrams, Labels);
         this.doLayout();
     }
 
@@ -139,8 +133,8 @@ public class TopsDisplayScroll extends ScrollPane {
      *            the tops.dw.protein
      */
     public void setDiagrams(Protein p) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.setDiagrams(p);
+        if (this.displayPanel != null)
+            this.displayPanel.setDiagrams(p);
         this.doLayout();
     }
 
@@ -153,8 +147,8 @@ public class TopsDisplayScroll extends ScrollPane {
      *            the new set of labels
      */
     public void addDiagrams(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.addDiagrams(Diagrams, Labels);
+        if (this.displayPanel != null)
+            this.displayPanel.addDiagrams(Diagrams, Labels);
         this.doLayout();
     }
 
@@ -165,8 +159,8 @@ public class TopsDisplayScroll extends ScrollPane {
      *            the tops.dw.protein
      */
     public void addDiagrams(Protein p) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.addDiagrams(p);
+        if (this.displayPanel != null)
+            this.displayPanel.addDiagrams(p);
         this.doLayout();
     }
 
@@ -177,8 +171,8 @@ public class TopsDisplayScroll extends ScrollPane {
      *            the new scale required (as percentage, 100 => no change )
      */
     public void scaleDisplay(int scale) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.scaleDisplay(scale);
+        if (this.displayPanel != null)
+            this.displayPanel.scaleDisplay(scale);
         this.doLayout();
     }
 
@@ -191,8 +185,8 @@ public class TopsDisplayScroll extends ScrollPane {
      *            the required edit mode
      */
     public void setEditMode(int index, int EditMode) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.setEditMode(index, EditMode);
+        if (this.displayPanel != null)
+            this.displayPanel.setEditMode(index, EditMode);
     }
 
     /**
@@ -204,8 +198,8 @@ public class TopsDisplayScroll extends ScrollPane {
      *            the required edit mode
      */
     public void setEditMode(Cartoon s, int EditMode) {
-        if (this.DisplayPanel != null)
-            this.DisplayPanel.setEditMode(s, EditMode);
+        if (this.displayPanel != null)
+            this.displayPanel.setEditMode(s, EditMode);
     }
 
     /**
@@ -214,8 +208,8 @@ public class TopsDisplayScroll extends ScrollPane {
      */
     public int NumberDrawCanvases() {
         int n = 0;
-        if (this.DisplayPanel != null)
-            n = this.DisplayPanel.numberDrawCanvases();
+        if (this.displayPanel != null)
+            n = this.displayPanel.numberDrawCanvases();
 
         return n;
     }
@@ -226,12 +220,12 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param index -
      *            the index of the required canvas
      */
-    public TopsDrawCanvas GetDrawCanvas(int index) {
+    public TopsDrawCanvas getDrawCanvas(int index) {
         TopsDrawCanvas tdc = null;
-        if (this.DisplayPanel != null)
-            tdc = this.DisplayPanel.getDrawCanvas(index);
+        if (this.displayPanel != null)
+            tdc = this.displayPanel.getDrawCanvas(index);
 
-        return (tdc);
+        return tdc;
     }
 
     /**
@@ -240,26 +234,24 @@ public class TopsDisplayScroll extends ScrollPane {
      * @param s -
      *            the root SecStrucElement
      */
-    public TopsDrawCanvas GetDrawCanvas(Cartoon s) {
+    public TopsDrawCanvas getDrawCanvas(Cartoon s) {
         TopsDrawCanvas tdc = null;
-        if (this.DisplayPanel != null)
-            tdc = this.DisplayPanel.getDrawCanvas(s);
+        if (this.displayPanel != null)
+            tdc = this.displayPanel.getDrawCanvas(s);
 
         return tdc;
     }
 
-    public Vector<TopsDrawCanvas> GetDrawCanvases() {
-        if (this.DisplayPanel != null)
-            return this.DisplayPanel.getDrawCanvases();
+    public List<TopsDrawCanvas> getDrawCanvases() {
+        if (this.displayPanel != null)
+            return this.displayPanel.getDrawCanvases();
         else
-            return null;
+            return new ArrayList<>();
     }
 
 
     public TopsDisplayPanel getDisplayPanel() {
-        return this.DisplayPanel;
+        return this.displayPanel;
     }
-
-    /* END utility methods */
 
 }

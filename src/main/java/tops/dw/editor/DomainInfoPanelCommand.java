@@ -11,40 +11,28 @@ import tops.web.display.applet.TopsDrawCanvas;
  */
 class DomainInfoPanelCommand implements ItemListener {
 
-    /* START class variables */
-
     static final int SET_VISIBLE_COMMAND = 0;
 
     static final int CHANGE_EDIT_MODE_COMMAND = 1;
 
-    /* END class variables */
+    private TopsEditor topsEditor;
 
-    /* START instance variables */
+    private Cartoon diagramSS;
 
-    private TopsEditor TopsEd;
+    private int commandID;
 
-    private Cartoon DiagramSS;
-
-    private int CommandID;
-
-    /* END instance variables */
-
-    /* START constructors */
     public DomainInfoPanelCommand(TopsEditor te, Cartoon s, int id) {
-        this.TopsEd = te;
-        this.DiagramSS = s;
-        this.CommandID = id;
+        this.topsEditor = te;
+        this.diagramSS = s;
+        this.commandID = id;
     }
 
-    /* END constructors */
-
-    /* START the ItemListener interface */
-
+    @Override
     public void itemStateChanged(ItemEvent e) {
 
-        TopsDisplayScroll tds = this.TopsEd.getDisplayScroll();
+        TopsDisplayScroll tds = this.topsEditor.getDisplayScroll();
 
-        switch (this.CommandID) {
+        switch (this.commandID) {
             case CHANGE_EDIT_MODE_COMMAND:
                 if (tds != null) {
                     int em = 0;
@@ -84,13 +72,10 @@ class DomainInfoPanelCommand implements ItemListener {
                     else if (cs.equals("Align Y direction"))
                         em = TopsDrawCanvas.ALIGN_Y_MODE;
 
-                    tds.setEditMode(this.DiagramSS, em);
+                    tds.setEditMode(this.diagramSS, em);
                 }
                 break;
         }
 
     }
-
-    /* END the ItemListener interface */
-
 }

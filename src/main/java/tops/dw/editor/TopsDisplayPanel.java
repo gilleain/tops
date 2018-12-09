@@ -23,9 +23,9 @@ import tops.web.display.applet.TopsDrawCanvas;
  */
 public class TopsDisplayPanel extends Panel {
 
-    private Vector<TopsDrawCanvas> drawCanvases;
+    private List<TopsDrawCanvas> drawCanvases;
 
-    private Vector<Panel> dcPanels;
+    private List<Panel> dcPanels;
 
 
     private Dimension canvasDimension;
@@ -44,8 +44,8 @@ public class TopsDisplayPanel extends Panel {
 //        LastScale = 1.0f;
 
         this.setBackground(Color.white);
-        this.drawCanvases = new Vector<TopsDrawCanvas>();
-        this.dcPanels = new Vector<Panel>();
+        this.drawCanvases = new Vector<>();
+        this.dcPanels = new Vector<>();
 
         this.canvasDimension = new Dimension(0, 0);
 //        		TopsDrawCanvas.PREF_WIDTH,  TODO
@@ -137,10 +137,10 @@ public class TopsDisplayPanel extends Panel {
         if (cartoon != null) {
         	String lab = (Label == null)? "Tops Diagram" : Label.toString();
         	TopsDrawCanvas tdc = new TopsDrawCanvas(cartoon, lab);
-            this.drawCanvases.addElement(tdc);
+            this.drawCanvases.add(tdc);
             tdc.setSize(this.canvasDimension);
             Panel p = new Panel();
-            this.dcPanels.addElement(p);
+            this.dcPanels.add(p);
             p.add(tdc);
             this.add(p);
         }
@@ -282,7 +282,7 @@ public class TopsDisplayPanel extends Panel {
         TopsDrawCanvas tdc = null;
 
         if ((index >= 0) && (index < this.numberDrawCanvases())) {
-            tdc = this.drawCanvases.elementAt(index);
+            tdc = this.drawCanvases.get(index);
         }
 
         return tdc;
@@ -299,7 +299,7 @@ public class TopsDisplayPanel extends Panel {
         Panel p = null;
 
         if ((index >= 0) && (index < this.numberDrawCanvases())) {
-            p = (Panel) this.dcPanels.elementAt(index);
+            p = (Panel) this.dcPanels.get(index);
         }
 
         return (p);
@@ -329,10 +329,8 @@ public class TopsDisplayPanel extends Panel {
 
     }
 
-    public Vector<TopsDrawCanvas> getDrawCanvases() {
+    public List<TopsDrawCanvas> getDrawCanvases() {
         return this.drawCanvases;
     }
-
-    /* END utility methods */
 
 }

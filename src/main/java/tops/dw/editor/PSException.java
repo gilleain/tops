@@ -2,10 +2,10 @@ package tops.dw.editor;
 
 public class PSException extends Exception {
 
-    public String Message;
+    public String message;
 
     public PSException(String message) {
-        this.Message = message;
+        this.message = message;
     }
 
 }

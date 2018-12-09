@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
@@ -13,19 +13,19 @@ import tops.web.display.applet.TopsDrawCanvas;
 
 public class OrientInfo {
 
-    private Vector<String> dom_names = new Vector<String>();
+    private List<String> domNames = new ArrayList<>();
 
-    private int EquivSSEs[][];
+    private int[][] equivSSEs;
 
-    private int NEquivs;
+    private int nEquivs;
     
-    private static int IDENTITY = 0;
+    private static final int IDENTITY = 0;
 
-    private static int ROT_X_180 = 1;
+    private static final int ROT_X_180 = 1;
 
-    private static int ROT_Y_180 = 2;
+    private static final int ROT_Y_180 = 2;
 
-    private static int ROT_Z_180 = 3;
+    private static final int ROT_Z_180 = 3;
 
     public OrientInfo(File f) throws IOException, EquivFileFormatException {
 
@@ -37,23 +37,23 @@ public class OrientInfo {
     }
     
     public boolean hasMapping() {
-    	return this.dom_names.isEmpty();
+    	return this.domNames.isEmpty();
     }
     
-    public Enumeration<String> getNames() {
-    	return this.dom_names.elements();
+    public List<String> getNames() {
+    	return this.domNames;
     }
     
     public int numberOfMappings() {
-    	return this.NEquivs;
+    	return this.nEquivs;
     }
     
     public int getMapping(int i, int j) {
-    	return this.EquivSSEs[i][j];
+    	return this.equivSSEs[i][j];
     }
     
     public int[] getMapping(int i) {
-    	return this.EquivSSEs[i];
+    	return this.equivSSEs[i];
     }
 
     /**
@@ -67,23 +67,27 @@ public class OrientInfo {
 	 *  same transformation).
 	 * @param refroot
 	 * @param root
-	 * @param equiv_ref
+	 * @param equivalentRef
 	 * @param equiv
 	 * @param tdc
 	 */
-	public void orientConsensus(Cartoon refroot, Cartoon root, int equiv_ref[], int equiv[], TopsDrawCanvas tdc) {
+	public void orientConsensus(Cartoon refroot, Cartoon root, int[] equivalentRef, int[] equiv, TopsDrawCanvas tdc) {
 	
-	    SecStrucElement ref[] = new SecStrucElement[2];
-	    SecStrucElement orient[] = new SecStrucElement[2];
-	    int nequivs = equiv_ref.length;
-	    int trans_counts[] = new int[4];
-	    int i, j, relx, rely, relz;
+	    SecStrucElement[] ref = new SecStrucElement[2];
+	    SecStrucElement[] orient = new SecStrucElement[2];
+	    int nequivs = equivalentRef.length;
+	    int[] transCounts = new int[4];
+	    int i;
+	    int j;
+	    int relx;
+	    int rely;
+	    int relz;
 	
 	    for (i = 0; i < 4; i++)
-	        trans_counts[i] = 0;
+	        transCounts[i] = 0;
 	
 	    for (i = 0; i < nequivs; i++) {
-	        ref[0] = refroot.getSSEByNumber(equiv_ref[i]);
+	        ref[0] = refroot.getSSEByNumber(equivalentRef[i]);
 	        orient[0] = root.getSSEByNumber(equiv[i]);
 	
 	        if (ref[0] == null || orient[0] == null) {
@@ -92,7 +96,7 @@ public class OrientInfo {
 	        }
 	
 	        for (j = i + 1; j < nequivs; j++) {
-	            ref[1] = refroot.getSSEByNumber(equiv_ref[j]);
+	            ref[1] = refroot.getSSEByNumber(equivalentRef[j]);
 	            orient[1] = root.getSSEByNumber(equiv[j]);
 	
 	            if (ref[1] == null || orient[1] == null) {
@@ -113,24 +117,24 @@ public class OrientInfo {
 	
 	            if (relx == 1) {
 	                if (relz == 1)
-	                    trans_counts[OrientInfo.IDENTITY]++;
+	                    transCounts[OrientInfo.IDENTITY]++;
 	                else
-	                    trans_counts[OrientInfo.ROT_X_180]++;
+	                    transCounts[OrientInfo.ROT_X_180]++;
 	            } else if (relx == -1) {
 	                if (relz == 1)
-	                    trans_counts[OrientInfo.ROT_Z_180]++;
+	                    transCounts[OrientInfo.ROT_Z_180]++;
 	                else
-	                    trans_counts[OrientInfo.ROT_Y_180]++;
+	                    transCounts[OrientInfo.ROT_Y_180]++;
 	            } else if (rely == 1) {
 	                if (relz == 1)
-	                    trans_counts[OrientInfo.IDENTITY]++;
+	                    transCounts[OrientInfo.IDENTITY]++;
 	                else
-	                    trans_counts[OrientInfo.ROT_Y_180]++;
+	                    transCounts[OrientInfo.ROT_Y_180]++;
 	            } else if (rely == -1) {
 	                if (relz == 1)
-	                    trans_counts[OrientInfo.ROT_Z_180]++;
+	                    transCounts[OrientInfo.ROT_Z_180]++;
 	                else
-	                    trans_counts[OrientInfo.ROT_X_180]++;
+	                    transCounts[OrientInfo.ROT_X_180]++;
 	            }
 	
 	        }
@@ -139,7 +143,7 @@ public class OrientInfo {
 	    // evaluate and do consensus transformation
 	    int cons = OrientInfo.IDENTITY;
 	    for (i = 0; i < 4; i++) {
-	        if (trans_counts[i] > trans_counts[cons]) {
+	        if (transCounts[i] > transCounts[cons]) {
 	            cons = i;
 	        }
 	    }
@@ -162,37 +166,37 @@ public class OrientInfo {
     }
  
 
-    private int relXOrient(SecStrucElement ref[], SecStrucElement orient[]) {
-        int ref_pos1 = ref[0].getPosition().x;
-        int ref_pos2 = ref[1].getPosition().x;
-        int orient_pos1 = orient[0].getPosition().x;
-        int orient_pos2 = orient[1].getPosition().x;
+    private int relXOrient(SecStrucElement[] ref, SecStrucElement[] orient) {
+        int refPos1 = ref[0].getPosition().x;
+        int refPos2 = ref[1].getPosition().x;
+        int orientPos1 = orient[0].getPosition().x;
+        int orientPos2 = orient[1].getPosition().x;
 
-        if ((ref_pos2 > ref_pos1) && (orient_pos2 > orient_pos1))
+        if ((refPos2 > refPos1) && (orientPos2 > orientPos1))
             return 1;
-        else if ((ref_pos2 < ref_pos1) && (orient_pos2 < orient_pos1))
+        else if ((refPos2 < refPos1) && (orientPos2 < orientPos1))
             return 1;
-        else if ((ref_pos2 > ref_pos1) && (orient_pos2 < orient_pos1))
+        else if ((refPos2 > refPos1) && (orientPos2 < orientPos1))
             return -1;
-        else if ((ref_pos2 < ref_pos1) && (orient_pos2 > orient_pos1))
+        else if ((refPos2 < refPos1) && (orientPos2 > orientPos1))
             return -1;
         else
             return 0;
     }
 
-    private int relYOrient(SecStrucElement ref[], SecStrucElement orient[]) {
-        int ref_pos1 = ref[0].getPosition().y;
-        int ref_pos2 = ref[1].getPosition().y;
-        int orient_pos1 = orient[0].getPosition().y;
-        int orient_pos2 = orient[1].getPosition().y;
+    private int relYOrient(SecStrucElement[] ref, SecStrucElement[] orient) {
+        int refPos1 = ref[0].getPosition().y;
+        int refPos2 = ref[1].getPosition().y;
+        int orientPos1 = orient[0].getPosition().y;
+        int orientPos2 = orient[1].getPosition().y;
 
-        if ((ref_pos2 > ref_pos1) && (orient_pos2 > orient_pos1))
+        if ((refPos2 > refPos1) && (orientPos2 > orientPos1))
             return 1;
-        else if ((ref_pos2 < ref_pos1) && (orient_pos2 < orient_pos1))
+        else if ((refPos2 < refPos1) && (orientPos2 < orientPos1))
             return 1;
-        else if ((ref_pos2 > ref_pos1) && (orient_pos2 < orient_pos1))
+        else if ((refPos2 > refPos1) && (orientPos2 < orientPos1))
             return -1;
-        else if ((ref_pos2 < ref_pos1) && (orient_pos2 > orient_pos1))
+        else if ((refPos2 < refPos1) && (orientPos2 > orientPos1))
             return -1;
         else
             return 0;
@@ -200,7 +204,7 @@ public class OrientInfo {
 
     // assumes that a consistent relative orientation can be evaluated
     // must be guaranteed whenever its called
-    private int relZOrient(SecStrucElement ref[], SecStrucElement orient[]) {
+    private int relZOrient(SecStrucElement[] ref, SecStrucElement[] orient) {
 
         if (ref[0].getDirection().equals(orient[0].getDirection()))
             return 1;

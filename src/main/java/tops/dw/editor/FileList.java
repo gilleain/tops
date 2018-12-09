@@ -1,7 +1,9 @@
 package tops.dw.editor;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * a class which represents a list of File objects
@@ -11,19 +13,13 @@ import java.util.*;
  */
 public class FileList {
 
-    /* START instance variables */
+    private List<File> files;
 
-    private Vector<File> Files;
-
-    private int Current;
-
-    /* END instance variables */
-
-    /* START constructors */
+    private int current;
 
     public FileList() {
-        this.Files = new Vector<File>();
-        this.Current = -1;
+        this.files = new ArrayList<>();
+        this.current = -1;
     }
 
     public FileList(String[] files) {
@@ -36,24 +32,20 @@ public class FileList {
         this.setFiles(dir, files);
     }
 
-    /* END constructors */
-
-    /* START get/set methods */
-
     public synchronized void setFiles(String[] files) {
 
         if (files == null)
             return;
 
-        this.Files = new Vector<File>();
+        this.files = new Vector<>();
         if (files.length > 0)
-            this.Current = 0;
+            this.current = 0;
         else
-            this.Current = -1;
+            this.current = -1;
 
         int i;
         for (i = 0; i < files.length; i++) {
-            this.Files.addElement(new File(files[i]));
+            this.files.add(new File(files[i]));
         }
 
     }
@@ -67,37 +59,37 @@ public class FileList {
         if (!dir.endsWith(fsep))
             dir = dir + fsep;
 
-        this.Files = new Vector<File>();
+        this.files = new Vector<>();
         if (files.length > 0)
-            this.Current = 0;
+            this.current = 0;
         else
-            this.Current = -1;
+            this.current = -1;
 
         int i;
         for (i = 0; i < files.length; i++) {
-            this.Files.addElement(new File(dir + files[i]));
+            this.files.add(new File(dir + files[i]));
         }
 
     }
 
     public synchronized void setCurrent(int i) {
         if ((i >= 0) && (i < this.size()))
-            this.Current = i;
+            this.current = i;
     }
 
     public synchronized int getCurrent() {
-        return this.Current;
+        return this.current;
     }
 
     public synchronized File getCurrentFile() {
-        if (this.Current >= 0)
-            return this.Files.elementAt(this.Current);
+        if (this.current >= 0)
+            return this.files.get(this.current);
         else
             return null;
     }
 
     public synchronized File getNextFile() {
-        int curr = this.Current;
+        int curr = this.current;
         curr++;
         this.setCurrent(curr);
 
@@ -107,7 +99,7 @@ public class FileList {
 
     public synchronized File getPreviousFile() {
 
-        int curr = this.Current;
+        int curr = this.current;
         curr--;
         this.setCurrent(curr);
 
@@ -115,33 +107,27 @@ public class FileList {
 
     }
 
-    /* END get/set methods */
-
-    /* START utils */
-
     public synchronized int size() {
-        return this.Files.size();
+        return this.files.size();
     }
 
     public synchronized void append(File f) {
         if (f == null)
             return;
-        this.Files.addElement(f);
+        this.files.add(f);
     }
 
     public synchronized void add(File f) {
         if (f == null)
             return;
-        if (this.Current == (this.Files.size() - 1)) {
-            this.Files.addElement(f);
-            this.Current++;
+        if (this.current == (this.files.size() - 1)) {
+            this.files.add(f);
+            this.current++;
         } else {
-            int index = this.Current + 1;
-            this.Files.insertElementAt(f, index);
-            this.Current++;
+            int index = this.current + 1;
+            this.files.add(index, f);
+            this.current++;
         }
     }
-
-    /* END utils */
 
 }

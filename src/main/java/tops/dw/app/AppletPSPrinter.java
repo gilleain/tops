@@ -5,9 +5,8 @@ import java.io.*;
 
 public class AppletPSPrinter {
 
-    /* START instance variables */
 
-    private Vector<String> Postscript = null;
+    private List<String> Postscript = null;
 
     private String host = null;
 
@@ -19,14 +18,12 @@ public class AppletPSPrinter {
 
     private String base_url = null;
 
-    /* END instance variables */
-
     public AppletPSPrinter(Vector<String> ps, String Host, int Port, String CGI_path,
             String CGI_print_prog) {
         this(ps, Host, Port, CGI_path, CGI_print_prog, null);
     }
 
-    public AppletPSPrinter(Vector<String> ps, String Host, int Port, String CGI_path,
+    public AppletPSPrinter(List<String> ps, String Host, int Port, String CGI_path,
             String CGI_print_prog, String URLfilebase) {
         this.Postscript = ps;
         this.host = Host;
@@ -95,11 +92,11 @@ public class AppletPSPrinter {
 
     }
 
-    private String formQuery(Vector<String> ps) {
+    private String formQuery(List<String> postscript2) {
 
         String query = null;
 
-        if (ps == null)
+        if (postscript2 == null)
             return null;
 
         StringBuffer sb = new StringBuffer();
@@ -108,9 +105,8 @@ public class AppletPSPrinter {
         sb.append(this.base_url);
         sb.append("\n");
 
-        Enumeration<String> en = ps.elements();
-        while (en.hasMoreElements()) {
-            sb.append((String) en.nextElement());
+        for (String element : postscript2) {
+            sb.append(element);
             sb.append("\n");
         }
 

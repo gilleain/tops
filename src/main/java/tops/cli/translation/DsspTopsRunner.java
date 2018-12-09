@@ -58,11 +58,7 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon, Command {
         
         File pathFile = new File(path);
         if (pathFile.isDirectory()) {
-            String[] files = pathFile.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".pdb");
-                }
-            });
+            String[] files = pathFile.list((dir, name) -> name.endsWith(".pdb"));
             for (int i = 0; i < files.length; i++) {
                 try {
                     runner.convertAndPrint(files[i]);

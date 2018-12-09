@@ -65,7 +65,7 @@ public class DomainInfoScroll extends ScrollPane {
 
     public void Clear() {
         if (this.DomInfPanel != null)
-            this.DomInfPanel.Clear();
+            this.DomInfPanel.clear();
     }
 
     public void addProtein(Protein p) {

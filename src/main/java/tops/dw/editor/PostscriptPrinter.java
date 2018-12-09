@@ -4,5 +4,5 @@ import java.util.*;
 
 public interface PostscriptPrinter {
 
-    public void printPostscript(Vector<String> postscript);
+    public void printPostscript(List<String> postScript);
 }

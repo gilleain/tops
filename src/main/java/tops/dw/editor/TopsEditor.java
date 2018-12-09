@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import tops.dw.app.ImagePrinter;
 import tops.dw.io.TopsFileReader;
@@ -50,6 +51,10 @@ import tops.web.display.applet.TopsDrawCanvas;
  * @version 1.00 21 Apr. 1997
  */
 public class TopsEditor implements ActionListener {
+    
+    private Logger log = Logger.getLogger(TopsEditor.class.getName());
+
+    private static final String TIMES_ROMAN = "TimesRoman";
 
     private static Properties printprefs = new Properties();
 
@@ -61,9 +66,9 @@ public class TopsEditor implements ActionListener {
 
     private ColourChoice colourChoice;
 
-    private FileList filelist = null;
+    private FileList filelist;
 
-    private Vector<Protein> proteins;
+    private List<Protein> proteins;
 
     private boolean appletMode = false;
 
@@ -108,9 +113,9 @@ public class TopsEditor implements ActionListener {
     /**
      * basic constructor
      */
-    public TopsEditor(boolean AppMode, String[] argv) {
+    public TopsEditor(boolean appMode, String[] argv) {
 
-        this.appletMode = AppMode;
+        this.appletMode = appMode;
         
 
         MenuItem mi;
@@ -119,6 +124,7 @@ public class TopsEditor implements ActionListener {
         this.f.setLayout(new BorderLayout());
 
         this.f.addWindowListener(new WindowAdapter() {
+            @Override
         	public void windowClosed(WindowEvent e) {
         		quit();
         	}
@@ -127,12 +133,12 @@ public class TopsEditor implements ActionListener {
         this.topsDisplay = new TopsDisplayScroll();
         this.f.add("Center", this.topsDisplay);
 
-        Menu FileMenu = new Menu("File");
+        Menu fileMenu = new Menu("File");
         mi = new MenuItem("Read tops file");
         mi.setActionCommand(TopsEditor.READ_TOPS);
         mi.addActionListener(this);
         if (!this.appletMode)
-            FileMenu.add(mi);
+            fileMenu.add(mi);
 
         /*
          * this section commented out for release (June 1998) add back in again
@@ -142,69 +148,67 @@ public class TopsEditor implements ActionListener {
          mi.setActionCommand(TopsEditor.READ_DSSP); 
          mi.addActionListener(this); 
          if ( !appletMode )
-        	 FileMenu.add(mi);
+        	 fileMenu.add(mi);
 
         mi = new MenuItem("Write tops file");
         mi.setActionCommand(TopsEditor.WRITE_TOPS);
         mi.addActionListener(this);
         if (!this.appletMode)
-            FileMenu.add(mi);
+            fileMenu.add(mi);
         mi = new MenuItem("Quit");
         mi.setActionCommand(TopsEditor.QUIT);
         mi.addActionListener(this);
-        FileMenu.add(mi);
+        fileMenu.add(mi);
 
-        Menu FileListMenu = new Menu("FileList");
+        Menu fileListMenu = new Menu("FileList");
 
         /*
          * this section commented out for release (June 1998) not yet
          * implemented 
          */
         mi = new MenuItem("Set new file list");
-//        mi.setEnabled(false); 
         mi.setActionCommand(TopsEditor.SET_NEW_FILE_LIST ); 
         mi.addActionListener(this);
-        FileListMenu.add(mi);
+        fileListMenu.add(mi);
 
         mi = new MenuItem("Next tops file");
         mi.setActionCommand(TopsEditor.NEXT_FILE);
         mi.addActionListener(this);
-        FileListMenu.add(mi);
+        fileListMenu.add(mi);
         if (this.filelist == null)
             mi.setEnabled(false);
         mi = new MenuItem("Previous tops file");
         mi.setActionCommand(TopsEditor.PREVIOUS_FILE);
         mi.addActionListener(this);
-        FileListMenu.add(mi);
+        fileListMenu.add(mi);
         if (this.filelist == null)
             mi.setEnabled(false);
 
-        Menu DisplayMenu = new Menu("Display");
+        Menu displayMenu = new Menu("Display");
         mi = new MenuItem("Clear display");
         mi.setActionCommand(TopsEditor.CLEAR_DISPLAY);
         mi.addActionListener(this);
-        DisplayMenu.add(mi);
+        displayMenu.add(mi);
 
         /*
          * this section commented out for release (June 1998) not yet
          * implemented*/
         mi = new MenuItem("Scale display"); 
-        //mi.setEnabled(false);
         mi.setActionCommand(TopsEditor.SCALE_DISPLAY);
         mi.addActionListener(this); 
-        DisplayMenu.add(mi);
+        displayMenu.add(mi);
 
         mi = new MenuItem("Show colour choice");
         mi.setActionCommand(TopsEditor.SHOW_COLOUR_CHOICE);
         mi.addActionListener(this);
         
-        DisplayMenu.add(mi);
+        displayMenu.add(mi);
         mi = new MenuItem("Hide colour choice");
         mi.setActionCommand(TopsEditor.HIDE_COLOUR_CHOICE);
         mi.addActionListener(this);
-        DisplayMenu.add(mi);
+        displayMenu.add(mi);
 
-        Menu PrintMenu = new Menu("Print");
+        Menu printMenu = new Menu("Print");
 
         /*
          * this section commented out for release (June 1998) less confusing for
@@ -212,57 +216,57 @@ public class TopsEditor implements ActionListener {
          mi = new MenuItem("Show print dialog"); 
          mi.setActionCommand(TopsEditor.SHOW_PRINT_DIALOG);
          mi.addActionListener(this); 
-         if ( !appletMode ) PrintMenu.add(mi);
+         if ( !appletMode ) printMenu.add(mi);
 
         if (!this.appletMode) {
             mi = new MenuItem(
                     "Write Encapsulated Postscript file (for single domain/cartoon)");
             mi.setActionCommand(TopsEditor.WRITE_EPS);
             mi.addActionListener(this);
-            PrintMenu.add(mi);
+            printMenu.add(mi);
             mi = new MenuItem("Write Postscript file (for entire display)");
             mi.setActionCommand(TopsEditor.WRITE_PS);
             mi.addActionListener(this);
-            PrintMenu.add(mi);
+            printMenu.add(mi);
         } else {
             mi = new MenuItem("Produce downloadable PDF file of the display");
             mi.setActionCommand(TopsEditor.WRITE_PS);
             mi.addActionListener(this);
-            PrintMenu.add(mi);
+            printMenu.add(mi);
         }
 
-        Menu AlignMenu = new Menu("Alignment");
+        Menu alignMenu = new Menu("Alignment");
         mi = new MenuItem("Orient cartoons according to alignment");
         if (this.appletMode)
             mi.setEnabled(false);
         mi.setActionCommand(TopsEditor.ORIENT_CARTOONS);
         mi.addActionListener(this);
-        AlignMenu.add(mi);
+        alignMenu.add(mi);
         mi = new MenuItem("Colour cartoons according to alignment");
         if (this.appletMode)
             mi.setEnabled(false);
         mi.setActionCommand(TopsEditor.COLOUR_ALIGN);
         mi.addActionListener(this);
-        AlignMenu.add(mi);
+        alignMenu.add(mi);
 
-        Menu HelpMenu = new Menu("Help");
+        Menu helpMenu = new Menu("Help");
         mi = new MenuItem("Help on editor functions");
         if (!this.appletMode)
             mi.setEnabled(false);
         mi.setActionCommand(TopsEditor.HELP_EDITOR);
         mi.addActionListener(this);
-        HelpMenu.add(mi);
+        helpMenu.add(mi);
 
         MenuBar menubar = new MenuBar();
-        menubar.setFont(new Font("TimesRoman", Font.BOLD + Font.ITALIC, 12));
-        menubar.add(FileMenu);
+        menubar.setFont(new Font(TIMES_ROMAN, Font.BOLD + Font.ITALIC, 12));
+        menubar.add(fileMenu);
         if (!this.appletMode)
-            menubar.add(FileListMenu);
-        menubar.add(DisplayMenu);
-        menubar.add(PrintMenu);
-        menubar.add(AlignMenu);
-        menubar.add(HelpMenu);
-        menubar.setHelpMenu(HelpMenu);
+            menubar.add(fileListMenu);
+        menubar.add(displayMenu);
+        menubar.add(printMenu);
+        menubar.add(alignMenu);
+        menubar.add(helpMenu);
+        menubar.setHelpMenu(helpMenu);
 
         this.f.setMenuBar(menubar);
 
@@ -271,7 +275,7 @@ public class TopsEditor implements ActionListener {
 
         this.f.pack();
         this.f.setVisible(true);
-        this.proteins = new Vector<Protein>();
+        this.proteins = new ArrayList<>();
 
         this.colourChoice = new ColourChoice();
         this.colourChoice.setVisible(false);
@@ -286,7 +290,7 @@ public class TopsEditor implements ActionListener {
     }
 
 	public void addProtein(Protein p) {
-        this.proteins.addElement(p);
+        this.proteins.add(p);
         this.topsDisplay.addDiagrams(p);
         this.domainInfo.addProtein(p);
         // TODO FIXME
@@ -298,20 +302,19 @@ public class TopsEditor implements ActionListener {
     }
 
     public void clearDisplay() {
-        this.proteins = new Vector<Protein>();
+        this.proteins.clear();
         this.topsDisplay.clear();
         this.domainInfo.Clear();
     }
 
     public void scaleDisplay() {
-        int scale = 100;
-
         IntegerInDialog iid = new IntegerInDialog(this.f, "Input scale",
                 "Please input a scale value as percentage", 100);
         iid.setVisible(true);
-        scale = iid.getInput();
-        if ((scale <= 0) || (scale > 100))
+        int scale = iid.getInput();
+        if (scale <= 0 || scale > 100) {
             scale = 100;
+        }
 
         this.topsDisplay.scaleDisplay(scale);
     }
@@ -343,6 +346,7 @@ public class TopsEditor implements ActionListener {
             try {
                 rt.exit(0);
             } catch (SecurityException e) {
+                log.warning("Security exception " + e.getMessage());
             }
         }
 
@@ -367,7 +371,7 @@ public class TopsEditor implements ActionListener {
     
     public void error(String error) {
     	TopsErrorFrame tef = new TopsErrorFrame(error);
-    	System.out.println(error);
+    	log.warning(error);
     	tef.setVisible(true);
     }
 
@@ -377,7 +381,7 @@ public class TopsEditor implements ActionListener {
     public void readTopsFile() {
 
         FileDialog fd = new FileDialog(this.f, "Read Tops file", FileDialog.LOAD);
-        fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+        fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
         fd.setFilenameFilter(new TopsFileFilter());
         fd.setVisible(true);
         
@@ -398,7 +402,7 @@ public class TopsEditor implements ActionListener {
     
     public void setNewFileList() {
     	FileDialog fd = new FileDialog(this.f, "Set Tops File List", FileDialog.LOAD);
-    	fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+    	fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
     	fd.setVisible(true);
     	
     	String filename = fd.getFile();
@@ -407,9 +411,9 @@ public class TopsEditor implements ActionListener {
         }
         
         String directoryname = fd.getDirectory();
-        File file = new File(directoryname);
+        File directory = new File(directoryname);
         
-        this.filelist = new FileList(file.list());
+        this.filelist = new FileList(directory.list());
     }
 
     /**
@@ -417,12 +421,14 @@ public class TopsEditor implements ActionListener {
      */
     public void nextFile() {
         Protein p = null;
-        File f = null;
+        File file = null;
 
-        if (this.filelist != null)
-            f = this.filelist.getNextFile();
-        if (f != null)
-            p = this.readTopsFile(f);
+        if (this.filelist != null) {
+            file = this.filelist.getNextFile();
+        }
+        if (file != null) {
+            p = this.readTopsFile(file);
+        }
 
         if (p != null) {
             this.clearDisplay();
@@ -436,12 +442,15 @@ public class TopsEditor implements ActionListener {
      */
     public void previousFile() {
         Protein p = null;
-        File f = null;
+        File file = null;
 
-        if (this.filelist != null)
-            f = this.filelist.getPreviousFile();
-        if (f != null)
-            p = this.readTopsFile(f);
+        if (this.filelist != null) {
+            file = this.filelist.getPreviousFile();
+        }
+        
+        if (file != null) {
+            p = this.readTopsFile(file);
+        }
 
         if (p != null) {
             this.clearDisplay();
@@ -457,13 +466,12 @@ public class TopsEditor implements ActionListener {
         ProteinChoice pc = new ProteinChoice(this.f,
                 "Choose the tops.dw.protein to write to tops file", this.proteins);
         pc.setVisible(true);
-        Protein wr_prot = pc.getChoice();
+        Protein wrProtein = pc.getChoice();
 
-        if (wr_prot != null) {
+        if (wrProtein != null) {
 
-            FileDialog fd = new FileDialog(this.f, "Write Tops file",
-                    FileDialog.SAVE);
-            fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+            FileDialog fd = new FileDialog(this.f, "Write Tops file", FileDialog.SAVE);
+            fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
             fd.setVisible(true);
 
             String file = fd.getFile();
@@ -472,49 +480,36 @@ public class TopsEditor implements ActionListener {
 
             String dir = fd.getDirectory();
 
-            FileOutputStream fos;
-            try {
-                fos = new FileOutputStream(dir + file);
-            } catch (IOException e) {
-                this.error("Problem writing file " + dir + file);
-                return;
-            }
-
-            if (this.topsDisplay != null) {
-                Vector<tops.web.display.applet.TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
-                if (dcs != null) {
-                    Enumeration<tops.web.display.applet.TopsDrawCanvas> dcenum = dcs.elements();
-                    tops.web.display.applet.TopsDrawCanvas dc;
-                    while (dcenum.hasMoreElements()) {
-                        dc =  dcenum.nextElement();
-                        dc.setCCodeCoordinates();
-                    }
-                    if (wr_prot != null) {
+            try (FileOutputStream fos = new FileOutputStream(dir + file)) {
+                if (this.topsDisplay != null) {
+                    List<TopsDrawCanvas> dcs = this.topsDisplay.getDrawCanvases();
+                    if (dcs != null) {
+                        for (TopsDrawCanvas dc : dcs) {
+                            dc.setCCodeCoordinates();
+                        }
+                        
                         TopsFileWriter topsFileWriter = new TopsFileWriter();
-                        topsFileWriter.writeTopsFile(wr_prot, fos);
+                        topsFileWriter.writeTopsFile(wrProtein, fos);
+                        
+                        for (TopsDrawCanvas dc : dcs) {
+                            dc.setCanvasCoordinates();
+                        }
                     }
-                    dcenum = dcs.elements();
-                    while (dcenum.hasMoreElements()) {
-                        dc = dcenum.nextElement();
-                        dc.setCanvasCoordinates();
-                    }
-
                 }
+            } catch (IOException e) {
+                this.error(String.format("Problem writing file %s %s", dir, file));
             }
         }
-
     }
 
     public void writeEPSFile() {
         if (this.proteins == null)
-            this.proteins = new Vector<Protein>();
+            this.proteins = new Vector<>();
 
-        List<String> strs = new ArrayList<String>();
-        List<Cartoon> diags = new ArrayList<Cartoon>();
+        List<String> strs = new ArrayList<>();
+        List<Cartoon> diags = new ArrayList<>();
 
-        Enumeration<Protein> prots = this.proteins.elements();
-        while (prots.hasMoreElements()) {
-            Protein p = prots.nextElement();
+        for (Protein p : this.proteins) {
             List<DomainDefinition> doms = p.getDomainDefs();
             List<Cartoon> lls = p.getLinkedLists();
             for (int i = 0; i < doms.size(); i++) {
@@ -525,25 +520,24 @@ public class TopsEditor implements ActionListener {
 
         StringChoice stc = new StringChoice(this.f, "Select domain", strs);
         stc.setVisible(true);
-        String Chosen = stc.getChoice();
-        int ChosenNum = stc.getChoiceNumber();
+        String chosen = stc.getChoice();
+        int chosenNum = stc.getChoiceNumber();
 
-        if (Chosen != null) {
-            TopsDrawCanvas DrawCanvToPrint = this.topsDisplay.GetDrawCanvas(diags.get(ChosenNum));
+        if (chosen != null) {
+            TopsDrawCanvas drawCanvToPrint = this.topsDisplay.getDrawCanvas(diags.get(chosenNum));
 
-            if (DrawCanvToPrint != null) {
+            if (drawCanvToPrint != null) {
 
                 String eps = null;
                 try {
-                    eps = DrawCanvToPrint.getEPS();
+                    eps = drawCanvToPrint.getEPS();
                 } catch (IOException ioe) {
-                    // TODO
+                    log.warning("IO error writing eps file " + ioe.getMessage());
                 }
 
                 if (!this.appletMode) {
-                    FileDialog fd = new FileDialog(this.f, "Choose EPS filename",
-                            FileDialog.SAVE);
-                    fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+                    FileDialog fd = new FileDialog(this.f, "Choose EPS filename", FileDialog.SAVE);
+                    fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
                     fd.setVisible(true);
 
                     String file = fd.getFile();
@@ -553,17 +547,12 @@ public class TopsEditor implements ActionListener {
                     String dir = fd.getDirectory();
 
                     PrintWriter pw;
-                    try {
-                        FileOutputStream fos = new FileOutputStream(dir + file);
+                    try (FileOutputStream fos = new FileOutputStream(dir + file)) {
                         pw = new PrintWriter(fos);
+                        pw.println(eps);
                     } catch (IOException e) {
                         this.error("Problem writing file " + dir + file);
-                        return;
                     }
-
-                    pw.println(eps);
-
-                    pw.close();
                 } else {
 
                     if (this.controlApplet != null) {
@@ -586,26 +575,23 @@ public class TopsEditor implements ActionListener {
     public void writePSFile() {
 
         // form the postscript
-        Vector<TopsDrawCanvas> dcs = this.topsDisplay.GetDrawCanvases();
-        Vector<String> EPSS = new Vector<String>();
-        Vector<String> titles = new Vector<String>();
-        Enumeration<TopsDrawCanvas> endcs = dcs.elements();
-        TopsDrawCanvas tdc;
-        while (endcs.hasMoreElements()) {
-        	tdc = endcs.nextElement();
+        List<TopsDrawCanvas> dcs = this.topsDisplay.getDrawCanvases();
+        List<String> epSS = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+        for (TopsDrawCanvas tdc : dcs) {
         	try {
-        	    EPSS.addElement(tdc.getEPS());
+        	    epSS.add(tdc.getEPS());
         	} catch (IOException ioe) {
         	    // TODO
         	}
-        	titles.addElement(tdc.getLabel());
+        	titles.add(tdc.getLabel());
         }
 
-        Vector<String> PS;
+        List<String> postScript;
         try {
-            PS = PostscriptFactory.PSArrayA4(titles, EPSS, 54, 0.5f);
+            postScript = PostscriptFactory.PSArrayA4(titles, epSS, 54, 0.5f);
         } catch (PSException pse) {
-            this.error(pse.Message);
+            this.error(pse.message);
             return;
         }
 
@@ -613,7 +599,7 @@ public class TopsEditor implements ActionListener {
         if (!this.appletMode) {
             FileDialog fd = new FileDialog(
             		this.f, "Choose PS filename",FileDialog.SAVE);
-            fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+            fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
             fd.setVisible(true);
 
             String file = fd.getFile();
@@ -623,20 +609,15 @@ public class TopsEditor implements ActionListener {
             String dir = fd.getDirectory();
 
             PrintWriter pw;
-            try {
-                FileOutputStream fos = new FileOutputStream(dir + file);
+            try (FileOutputStream fos = new FileOutputStream(dir + file)) {
                 pw = new PrintWriter(fos);
+                for (String psString : postScript) {
+                    pw.println(psString);
+                }
             } catch (IOException e) {
-                System.out.println("An IOException was caught in WritePS");
+                log.warning("An IOException was caught in WritePS");
                 this.error("Problem writing file " + dir + file);
-                return;
             }
-
-            Enumeration<String> enps = PS.elements();
-            while (enps.hasMoreElements()) {
-                pw.println((String) enps.nextElement());
-            }
-            pw.close();
         } else {
             if (this.controlApplet != null) {
                 PleaseWaitFrame pwf = new PleaseWaitFrame(
@@ -644,7 +625,7 @@ public class TopsEditor implements ActionListener {
                 pwf.setVisible(true);
                 pwf.toFront();
                 PostscriptPrinter psp = (PostscriptPrinter) this.controlApplet;
-                psp.printPostscript(PS);
+                psp.printPostscript(postScript);
                 pwf.dispose();
             }
         }
@@ -654,13 +635,13 @@ public class TopsEditor implements ActionListener {
     // domains and colours these cartoons according to the equivalence
     public void colourAlign() {
         if (this.proteins == null || this.proteins.isEmpty()) {
-            System.out.println("No cartoons to orient !!! ");
+            log.warning("No cartoons to orient !!! ");
             return;
         }
 
         FileDialog fd = 
         	new FileDialog(this.f, "Read SSE alignment file", FileDialog.LOAD);
-        fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+        fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
         fd.setVisible(true);
 
         String file = fd.getFile();
@@ -670,28 +651,23 @@ public class TopsEditor implements ActionListener {
         try {
         	OrientInfo oi = new OrientInfo(new File(file));
             if (oi.hasMapping()) {
-            	this.colourAlign(oi);
-            } else {
-                return;
+                this.colourAlign(oi);
             }
         } catch (EquivFileFormatException effe) {
             this.error("Format error in file " + file);
-            return;
         } catch (IOException ioe) {
             this.error("IO error reading file " + file);
-            return;
         }
     }
     
     public void colourAlign(OrientInfo oi) {
     	// colour equivalences
         int i = 0;
-        Enumeration<String> orient_names = oi.getNames();
-        while (orient_names.hasMoreElements()) {
-            String domname = (String) orient_names.nextElement();
+        List<String> orientNames = oi.getNames();
+        for (String domname : orientNames) {
             Cartoon root = this.getRootSSE(domname);
             if (root == null) {
-                this.error("Domain " + domname + " not found");
+                this.error(String.format("Domain %s not found", domname));
                 break;
             }
             for (int j = 0; j < oi.numberOfMappings(); j++) {
@@ -714,13 +690,13 @@ public class TopsEditor implements ActionListener {
     // domains and orients these cartoons according to the equivalence
     public void orientCartoons() {
         if (this.proteins == null || this.proteins.isEmpty()) {
-            System.out.println("No cartoons to orient !!! ");
+            log.warning("No cartoons to orient !!! ");
             return;
         }
 
         FileDialog fd = new FileDialog(
         		this.f, "Read SSE alignment file",FileDialog.LOAD);
-        fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+        fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
         fd.setVisible(true);
 
         String file = fd.getFile();
@@ -731,26 +707,20 @@ public class TopsEditor implements ActionListener {
         	OrientInfo oi = new OrientInfo(new File(file));
             if (oi.hasMapping()) {
             	this.orientCartoons(oi);
-            } else {
-            	return;
             }
         } catch (EquivFileFormatException effe) {
             this.error("Format error in file " + file);
-            return;
         } catch (IOException ioe) {
             this.error("IO error reading file " + file);
-            return;
         }
-
-        
     }
     
     public void orientCartoons(OrientInfo oi) {
 
         // everything is oriented w.r.t. a reference - the first domain in the
         // equivalence file
-        Enumeration<String> orient_names = oi.getNames();
-        String refdomname = orient_names.nextElement();
+        List<String> orientNames = oi.getNames();
+        String refdomname = orientNames.get(0);
         Cartoon refdomroot = this.getRootSSE(refdomname);
         if (refdomroot == null) {
             this.error("Domain " + refdomname + " not found");
@@ -759,19 +729,17 @@ public class TopsEditor implements ActionListener {
 
         // orient all other domains in equivalence file w.r.t. reference
         Cartoon root;
-        String domname;
         int i = 0;
         try {
             int[] reference = oi.getMapping(0);
-            while (orient_names.hasMoreElements()) {
+            for (String domname : orientNames) {
                 i++;
-                domname = orient_names.nextElement();
                 root = this.getRootSSE(domname);
                 if (root == null) {
                     this.error("Domain " + domname + " not found");
                     break;
                 }
-                TopsDrawCanvas tdc = this.topsDisplay.GetDrawCanvas(root);
+                TopsDrawCanvas tdc = this.topsDisplay.getDrawCanvas(root);
                 oi.orientConsensus(refdomroot, root, reference, oi.getMapping(i), tdc);
             }
         } finally {
@@ -781,15 +749,12 @@ public class TopsEditor implements ActionListener {
 
     }
 
-    private Cartoon getRootSSE(String dom_name) {
+    private Cartoon getRootSSE(String domName) {
         if (this.proteins == null)
             return null;
 
-        Enumeration<Protein> ps = this.proteins.elements();
-
-        while (ps.hasMoreElements()) {
-            Protein p = (Protein) ps.nextElement();
-            Cartoon sseRoot = p.getRootSSE(dom_name);
+        for (Protein p : this.proteins) {
+            Cartoon sseRoot = p.getRootSSE(domName);
             if (sseRoot != null) {
             	return sseRoot;
             }
@@ -802,14 +767,12 @@ public class TopsEditor implements ActionListener {
     public void print() {
 
         if (this.proteins == null)
-            this.proteins = new Vector<Protein>();
+            this.proteins = new ArrayList<>();
 
-        List<String> strs = new ArrayList<String>();
-        List<Cartoon> diags = new ArrayList<Cartoon>();
+        List<String> strs = new ArrayList<>();
+        List<Cartoon> diags = new ArrayList<>();
 
-        Enumeration<Protein> prots = this.proteins.elements();
-        while (prots.hasMoreElements()) {
-            Protein p = (Protein) prots.nextElement();
+        for(Protein p : this.proteins) {
             List<DomainDefinition> doms = p.getDomainDefs();
             List<Cartoon> lls = p.getLinkedLists();
             for (int i = 0; i < doms.size(); i++) {
@@ -820,14 +783,14 @@ public class TopsEditor implements ActionListener {
 
         StringChoice stc = new StringChoice(this.f, "Select domain to print", strs);
         stc.setVisible(true);
-        String Chosen = stc.getChoice();
-        int ChosenNum = stc.getChoiceNumber();
+        String chosen = stc.getChoice();
+        int chosenNum = stc.getChoiceNumber();
 
-        if (Chosen != null) {
-            TopsDrawCanvas DrawCanvToPrint = 
-                    this.topsDisplay.GetDrawCanvas(diags.get(ChosenNum));
+        if (chosen != null) {
+            TopsDrawCanvas drawCanvToPrint = 
+                    this.topsDisplay.getDrawCanvas(diags.get(chosenNum));
 
-            if (DrawCanvToPrint != null) {
+            if (drawCanvToPrint != null) {
 
                 if (!this.appletMode) {
 
@@ -837,13 +800,13 @@ public class TopsEditor implements ActionListener {
                         return;
                     Graphics page = pjob.getGraphics();
 
-                    Dimension canv_size = DrawCanvToPrint.getSize();
-                    Dimension page_size = pjob.getPageDimension();
+                    Dimension canvSize = drawCanvToPrint.getSize();
+                    Dimension pageSize = pjob.getPageDimension();
 
-                    page.translate((page_size.width - canv_size.width) / 2,
-                            (page_size.height - canv_size.height) / 2);
+                    page.translate((pageSize.width - canvSize.width) / 2,
+                            (pageSize.height - canvSize.height) / 2);
 
-                    DrawCanvToPrint.print(page);
+                    drawCanvToPrint.print(page);
 
                     page.dispose();
                     pjob.end();
@@ -854,7 +817,7 @@ public class TopsEditor implements ActionListener {
                         pwf.setVisible(true);
                         pwf.toFront();
                         ImagePrinter ip = (ImagePrinter) this.controlApplet;
-                        ip.printImage(DrawCanvToPrint.getImage());
+                        ip.printImage(drawCanvToPrint.getImage());
                         pwf.dispose();
                     }
                 }
@@ -865,7 +828,7 @@ public class TopsEditor implements ActionListener {
     public void processDSSPFile() {
 
         FileDialog fd = new FileDialog(this.f, "Read DSSP file", FileDialog.LOAD);
-        fd.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+        fd.setFont(new Font(TIMES_ROMAN, Font.PLAIN, 18));
         fd.setFilenameFilter(new DSSPFileFilter());
         fd.setVisible(true);
 
@@ -874,7 +837,7 @@ public class TopsEditor implements ActionListener {
             return;
 
         int i;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (i = 0; i < file.length(); i++) {
             if (file.charAt(i) == '.')
                 break;
@@ -883,40 +846,36 @@ public class TopsEditor implements ActionListener {
 
         String pc = sb.toString();
         String tmpfile = this.randomTopsFile();
-        String TopsCommand = "Topsf " + pc + " -s " + tmpfile;
+        String topsCommand = "Topsf " + pc + " -s " + tmpfile;
 
         Runtime runtime = Runtime.getRuntime();
 
         PleaseWaitFrame pwf = new PleaseWaitFrame(
                 "Please wait while I process the dssp file ... ");
         pwf.setVisible(true);
-        System.out.println("Starting execution: " + TopsCommand);
+        log.info("Starting execution: " + topsCommand);
         Process proc;
         try {
-            proc = runtime.exec(TopsCommand);
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc
-                    .getInputStream()));
-            BufferedReader bre = new BufferedReader(new InputStreamReader(proc
-                    .getErrorStream()));
+            proc = runtime.exec(topsCommand);
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            BufferedReader bre = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
             String line = br.readLine();
             while (line != null) {
-                System.out.println(line);
                 line = br.readLine();
             }
             line = bre.readLine();
             while (line != null) {
-                System.out.println(line);
                 line = bre.readLine();
             }
             proc.waitFor();
-            System.out.println("Finished execution");
+            log.info("Finished execution");
             pwf.dispose();
         } catch (IOException e) {
-            System.out.println("exec threw an IOException");
+            log.warning("exec threw an IOException");
             pwf.dispose();
             return;
         } catch (InterruptedException e) {
-            System.out.println("waitFor threw an InterrputedException");
+            log.warning("waitFor threw an InterrputedException");
             pwf.dispose();
             return;
         }
@@ -961,8 +920,7 @@ public class TopsEditor implements ActionListener {
     private String randomTopsFile() {
         double rd = Math.random();
         long ri = Math.round(rd * 1000000000.0);
-        String s = "tmp" + ri + ".tops";
-        return s;
+        return "tmp" + ri + ".tops";
     }
     
     public void actionPerformed(ActionEvent e) {
@@ -1012,16 +970,16 @@ public class TopsEditor implements ActionListener {
          /* handle the command line */
          /* if an argument is present it must be a directory or a file */
          if ((argv != null) && (argv.length > 0) && (argv[0] != null)) {
-             File f = new File(argv[0]);
-             if (f.exists()) {
-                 if (f.isDirectory()) {
-                     String[] sfilelist = f.list(new TopsFileFilter());
+             File file = new File(argv[0]);
+             if (file.exists()) {
+                 if (file.isDirectory()) {
+                     String[] sfilelist = file.list(new TopsFileFilter());
                      if (sfilelist != null) {
                          list = new FileList(argv[0], sfilelist);
                          cf = list.getCurrentFile();
                      }
-                 } else if (f.isFile()) {
-                     cf = f;
+                 } else if (file.isFile()) {
+                     cf = file;
                  } else {
                 	 this.error("The input argument " 
                     		 + argv[0] + " is not an existing file or  directory");
