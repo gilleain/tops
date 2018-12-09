@@ -4,36 +4,36 @@ import tops.engine.Vertex;
 
 public class StringInsert extends Insert {
 
-    private String string;
+    private String stringValue;
 
     public StringInsert(String string) {
         super(Insert.STRING);
-        this.string = string;
+        this.stringValue = string;
     }
 
     @Override
     public boolean isNull() {
-        return this.string.equals("");
+        return this.stringValue.equals("");
     }
 
     @Override
     public Object getValue() {
-        return this.string;
+        return this.stringValue;
     }
 
     @Override
     public int getMinSize() {
-        return this.string.length();
+        return this.stringValue.length();
     }
 
     @Override
     public int getMaxSize() {
-        return this.string.length();
+        return this.stringValue.length();
     }
 
     @Override
     public String toString() {
-        return this.string;
+        return this.stringValue;
     }
 
     @Override
@@ -44,22 +44,21 @@ public class StringInsert extends Insert {
     @Override
     public boolean compareString(Insert other) {
         String otherString = (String) other.getValue();
-        return this.string.equals(otherString);
+        return this.stringValue.equals(otherString);
     }
 
     @Override
     public boolean compareNumber(Insert other) {
         Integer number = (Integer) other.getValue();
-        return this.string.length() < number.intValue();
+        return this.stringValue.length() < number.intValue();
     }
 
     @Override
     public boolean compareRange(Insert other) {
         int[] otherArray = (int[]) other.getValue();
-        // array is (min, max) this number has to be greater than min and less
-        // than max
-        return (otherArray[0] < this.string.length())
-                && (otherArray[1] > this.string.length());
+        // array is (min, max) this number has to be greater than min and less than max
+        return (otherArray[0] < this.stringValue.length())
+                && (otherArray[1] > this.stringValue.length());
     }
 
     @Override

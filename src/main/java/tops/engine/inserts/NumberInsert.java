@@ -4,15 +4,15 @@ import tops.engine.Vertex;
 
 public class NumberInsert extends Insert {
 
-    private Integer number;
+    private Integer value;
 
-    public NumberInsert(String number) {
-        this(Integer.parseInt(number));
+    public NumberInsert(String value) {
+        this(Integer.parseInt(value));
     }
 
-    public NumberInsert(int number) {
+    public NumberInsert(int value) {
         super(Insert.NUMBER);
-        this.number = new Integer(number);
+        this.value = value;
     }
 
     @Override
@@ -22,39 +22,39 @@ public class NumberInsert extends Insert {
 
     @Override
     public Object getValue() {
-        return this.number;
+        return this.value;
     }
 
     @Override
     public int getMinSize() {
-        return this.number.intValue();
+        return this.value.intValue();
     }
 
     @Override
     public int getMaxSize() {
-        return this.number.intValue();
+        return this.value.intValue();
     }
 
     @Override
     public String toString() {
-        return this.number.toString();
+        return this.value.toString();
     }
 
     @Override
     public boolean match(Vertex v) {
-        return (this.number.intValue() > 0);
+        return (this.value.intValue() > 0);
     }
 
     @Override
     public boolean compareString(Insert other) {
         String otherString = (String) other.getValue();
-        return otherString.length() < this.number.intValue();
+        return otherString.length() < this.value.intValue();
     }
 
     @Override
     public boolean compareNumber(Insert other) {
         Integer otherInteger = (Integer) other.getValue();
-        return otherInteger.intValue() < this.number.intValue();
+        return otherInteger.intValue() < this.value.intValue();
     }
 
     @Override
@@ -62,14 +62,13 @@ public class NumberInsert extends Insert {
         int[] otherArray = (int[]) other.getValue();
         // array is (min, max) this number has to be greater than min and less
         // than max
-        return (otherArray[0] < this.number.intValue())
-                && (otherArray[1] > this.number.intValue());
+        return (otherArray[0] < this.value.intValue())
+                && (otherArray[1] > this.value.intValue());
     }
 
     @Override
     public boolean compareRegex(Insert other) {
-//        java.util.regex.Pattern regex = (java.util.regex.Pattern) other.getValue();
-        // DO java.regex.Matcher/java.regex.Pattern stuff!
+        // TODO java.regex.Matcher/java.regex.Pattern stuff!
         return false;
     }
 

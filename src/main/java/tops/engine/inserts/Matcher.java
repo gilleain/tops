@@ -1,9 +1,14 @@
 package tops.engine.inserts;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import tops.engine.Edge;
@@ -17,8 +22,6 @@ public class Matcher implements MatcherI {
     private int k;
 
     private PatternI[] diagrams;
-
-    private Stack<Integer> PVS, TVS;
 
     private static Logger logger = 
     						Logger.getLogger("tops.engine.inserts.Matcher");
@@ -45,18 +48,15 @@ public class Matcher implements MatcherI {
     public void match(PatternI pattern, PatternI instance, MatchHandler matchHandler) {
     	boolean matchFound = false;
     	boolean shouldReset = false;
-    	if (pattern.preProcess(instance)) {
-    		if (matches(pattern, instance)) {
-    			matchHandler.handle(pattern, instance);
-    			matchFound = true;
-    		}
+    	if (pattern.preProcess(instance) && matches(pattern, instance)) {
+    	    matchHandler.handle(pattern, instance);
+    	    matchFound = true;
     	}
     	if (!matchFound) {
     		pattern.reset();	// flip
     		shouldReset = true;
     		if (matches(pattern, instance)) {
     			matchHandler.handle(pattern, instance);
-    			matchFound = true;
     		}
     	}
     	if (shouldReset) {
@@ -66,63 +66,53 @@ public class Matcher implements MatcherI {
 
     public String[] run(String[] p, String d) {
         Pattern diagram = new Pattern(d);
-        ArrayList<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (int i = 0; i < p.length; i++) {
             String result = this.matchOne(new Pattern(p[i]), diagram);
             if (!result.equals("")) {
                 results.add(result);
             }
         }
-        return (String[]) results.toArray(new String[0]);
+        return results.toArray(new String[0]);
     }
 
     public boolean singleMatch(Pattern p, Pattern d) {
-        if (p.preProcess(d)) {
-            if (this.match(p, d)) {
-                return true;
-            }
+        if (p.preProcess(d) && this.match(p, d)) {
+            return true;
         }
         p.reset();
         // NOTE: Resetting now FLIPS too!
-        if (p.preProcess(d)) {
-            if (this.match(p, d)) {
-                return true;
-            }
+        if (p.preProcess(d) && this.match(p, d)) {
+            return true;
         }
         p.reset();
         return false;
     }
 
     public String matchOne(Pattern p, Pattern d) {
-        String result = new String();
+        String result = "";
         boolean matchfound = false;
-        if (p.preProcess(d)) {
-            if (this.match(p, d)) {
-                matchfound = true;
-                result += p.getMatchString();
-                result += "\t";
-                result += p.getInsertString(d);
-                result += "\t";
-                result += p.getClassification();
-            }
+        if (p.preProcess(d) && this.match(p, d)) {
+            matchfound = true;
+            result += p.getMatchString();
+            result += "\t";
+            result += p.getInsertString(d);
+            result += "\t";
+            result += p.getClassification();
         }
         p.reset();
         // NOTE: Resetting now FLIPS too!
-        if (p.preProcess(d)) {
-            if (this.match(p, d)) {
-                if (!matchfound) {
-                    matchfound = true;
-                    result += p.getMatchString();
-                    result += "\t";
-                    result += p.getInsertString(d);
-                }
-            }
+        if (p.preProcess(d) && this.match(p, d) && !matchfound) {
+            matchfound = true;
+            result += p.getMatchString();
+            result += "\t";
+            result += p.getInsertString(d);
         }
         p.reset();
         if (matchfound)
             return p.toString() + "\t" + result;
         else
-            return new String();
+            return "";
     }
 
     @Override
@@ -133,28 +123,21 @@ public class Matcher implements MatcherI {
 
 	// return a Result array rather than a String array
     public List<Result> runResults(Pattern p) {
-        List<Result> results = new ArrayList<Result>();
+        List<Result> results = new ArrayList<>();
         for (int i = 0; i < this.diagrams.length; ++i) {
             Result result = new Result();
             result.setID(this.diagrams[i].getName());
             boolean matchfound = false;
-            if (p.preProcess(this.diagrams[i])) {
-                if (match(p, this.diagrams[i])) {
+            if (p.preProcess(this.diagrams[i]) && match(p, this.diagrams[i])) {
                     matchfound = true;
                     result.setData(p.getInsertString(this.diagrams[i]) + "\t"
                             + p.getVertexMatchedString());
-                }
             }
             p.reset();
             // NOTE: Resetting now FLIPS too!
-            if (p.preProcess(this.diagrams[i])) {
-                if (match(p, this.diagrams[i])) {
-                    if (!matchfound) {
-                        matchfound = true;
-                        result.setData(p.getInsertString(this.diagrams[i]) + "\t"
-                                + p.getVertexMatchedString());
-                    }
-                }
+            if (p.preProcess(this.diagrams[i]) && match(p, this.diagrams[i]) && !matchfound) {
+                matchfound = true;
+                result.setData(p.getInsertString(this.diagrams[i]) + "\t" + p.getVertexMatchedString());
             }
             p.reset();
             if (matchfound)
@@ -168,52 +151,41 @@ public class Matcher implements MatcherI {
     }
 
     public String[] run(Pattern p) {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (int i = 0; i < this.diagrams.length; ++i) {
-            Matcher.logger.info("matching diagram : " + i);
-            String result = new String(this.diagrams[i].toString());
+            logger.log(Level.INFO, "matching diagram : {0}", i);
+            StringBuilder result = new StringBuilder(this.diagrams[i].toString());
             boolean matchfound = false;
-            if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
-                    matchfound = true;
-                    result += p.getMatchString();
-                    result += p.getInsertString(this.diagrams[i]);
-                }
+            if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i])) {
+                matchfound = true;
+                result.append(p.getMatchString());
+                result.append(p.getInsertString(this.diagrams[i]));
             }
             p.reset();
             // NOTE: Resetting now FLIPS too!
-            if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
-                    if (!matchfound) {
-                        matchfound = true;
-                        result += p.getMatchString();
-                        result += p.getInsertString(this.diagrams[i]);
-                    }
-                }
+            if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i]) && !matchfound) {
+                matchfound = true;
+                result.append(p.getMatchString());
+                result.append(p.getInsertString(this.diagrams[i]));
             }
             p.reset();
             if (matchfound)
-                results.add(result);
+                results.add(result.toString());
         }
-        return (String[]) results.toArray(new String[0]);
+        return results.toArray(new String[0]);
     }
 
     // generate string arrays of the insert strings from an edge pattern
     public String[][] generateInserts(Pattern p) {
         String[][] results = new String[this.diagrams.length][];
         for (int i = 0; i < this.diagrams.length; ++i) {
-            if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
-                    results[i] = p.getInsertStringArr(this.diagrams[i], false);
-                }
+            if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i])) {
+                results[i] = p.getInsertStringArr(this.diagrams[i], false);
             }
             p.reset(); // and flip, of course
-            if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
-                    // this OVERWRITES the previous array if the pattern matches
-                    // twice!
-                    results[i] = p.getInsertStringArr(this.diagrams[i], true);
-                }
+            if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i])) {
+                    // this OVERWRITES the previous array if the pattern matches twice!
+                results[i] = p.getInsertStringArr(this.diagrams[i], true);
             }
             p.reset();
         }
@@ -228,16 +200,14 @@ public class Matcher implements MatcherI {
         boolean matchFound;
         for (int i = 0; i < this.diagrams.length; ++i) {
             matchFound = false;
-            if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
-                    matchFound = true;
-                }
+            if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i])) {
+                matchFound = true;
             }
             if (!matchFound) {
                 p.reset();
                 if (p.preProcess(this.diagrams[i])) {
                     if (this.match(p, this.diagrams[i])) {
-                        matchFound = true;
+                        // do nothing
                     } else {
                         p.reset();
                         return false;
@@ -250,11 +220,7 @@ public class Matcher implements MatcherI {
             }
 
         }
-        if (this.stringMatch(p.getVertexString(0, 0, false))) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.stringMatch(p.getVertexString(0, 0, false));
         // NOTE : now testing vertex match for each graph as it's matched
     }
 
@@ -264,23 +230,18 @@ public class Matcher implements MatcherI {
         String patternString = p.getVertexString(0, 0, false);
         for (int i = 0; i < this.diagrams.length; ++i) {
             matchFound = false;
-            if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
-                    String vstr = this.diagrams[i].getVertexString(0, 0, false);
-                    if (this.subSeqMatch(patternString, vstr)) {
-                        matchFound = true;
-                    }
+            if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i])) {
+                String vstr = this.diagrams[i].getVertexString(0, 0, false);
+                if (this.subSeqMatch(patternString, vstr)) {
+                    matchFound = true;
                 }
             }
             if (!matchFound) {
                 p.reset();
-                if (p.preProcess(this.diagrams[i])) {
-                    if (this.match(p, this.diagrams[i])) {
-                        String reverse_vstr = this.diagrams[i].getVertexString(0, 0,
-                                false);
-                        if (this.subSeqMatch(patternString, reverse_vstr)) {
-                            matchFound = true;
-                        }
+                if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i])) {
+                    String reverseVstr = this.diagrams[i].getVertexString(0, 0, false);
+                    if (this.subSeqMatch(patternString, reverseVstr)) {
+                        matchFound = true;
                     }
                 }
             }
@@ -298,16 +259,14 @@ public class Matcher implements MatcherI {
         boolean matchFound;
         for (int i = 0; i < this.diagrams.length; ++i) {
             matchFound = false;
-            if (p.preProcess(this.diagrams[i])) {
-                if (this.match(p, this.diagrams[i])) {
-                    matchFound = true;
-                }
+            if (p.preProcess(this.diagrams[i]) && this.match(p, this.diagrams[i])) {
+                matchFound = true;
             }
             if (!matchFound) {
                 p.reset();
                 if (p.preProcess(this.diagrams[i])) {
                     if (this.match(p, this.diagrams[i])) {
-                        matchFound = true;
+                        // do nothing
                     } else {
                         p.reset();
                         return false;
@@ -324,7 +283,8 @@ public class Matcher implements MatcherI {
     }
 
     public boolean subSeqMatch(String probe, String target) {
-        int ptrP, ptrT;
+        int ptrP;
+        int ptrT;
         char c;
         ptrP = ptrT = 0;
         while (ptrP < probe.length()) {
@@ -340,7 +300,7 @@ public class Matcher implements MatcherI {
         return true;
     }
 
-    public boolean subSeqMatch(PatternI p, Edge c, int last, PatternI diagram) {
+    public boolean subSeqMatch(PatternI p, Edge c, PatternI diagram) {
         String probe = 
         		p.getVertexString(
         				c.getLeftVertex().getPos() + 1,
@@ -353,10 +313,9 @@ public class Matcher implements MatcherI {
 
     // I /think/ this returns false if true, and true if false! :(
     public boolean stringMatch(String p) {
-        String target, reverse;
         for (int i = 0; i < this.diagrams.length; ++i) {
-            target = this.diagrams[i].getVertexString(0, 0, false);
-            reverse = this.diagrams[i].getVertexString(0, 0, true);
+            String target = this.diagrams[i].getVertexString(0, 0, false);
+            String reverse = this.diagrams[i].getVertexString(0, 0, true);
             if (this.subSeqMatch(p, target) || this.subSeqMatch(p, reverse))
                 return true;
         }
@@ -368,10 +327,9 @@ public class Matcher implements MatcherI {
         if (patt.equals("NC "))
             return numMatch; // -!-
         String p = patt.substring(patt.indexOf('N') + 1, patt.lastIndexOf('C'));
-        String target, reverse;
         for (int i = 0; i < this.diagrams.length; ++i) {
-            target = this.diagrams[i].getVertexString(0, 0, false);
-            reverse = this.diagrams[i].getVertexString(0, 0, true);
+            String target = this.diagrams[i].getVertexString(0, 0, false);
+            String reverse = this.diagrams[i].getVertexString(0, 0, true);
             if ((this.subSeqMatch(p, target) && this.subSeqMatch(p, reverse)))
                 numMatch--;
         }
@@ -383,17 +341,15 @@ public class Matcher implements MatcherI {
         if (patt.equals("NC "))
             return true; // -!-
         String p = patt.substring(patt.indexOf('N') + 1, patt.lastIndexOf('C'));
-        String target, reverse;
+        String target;
+        String reverse;
         target = this.diagrams[i].getVertexString(0, 0, false);
         reverse = this.diagrams[i].getVertexString(0, 0, true);
-        if (this.subSeqMatch(p, target) && this.subSeqMatch(p, reverse))
-            return false;
-        return true;
+        return this.subSeqMatch(p, target) && this.subSeqMatch(p, reverse);
     }
 
     public boolean match(PatternI p, PatternI diagram) {
         this.k = 0;
-        int last = 1;
         while (this.k < p.esize()) { // Run through the pattern edges.
             Edge current = p.getEdge(this.k);
             if (!current.hasMoreMatches()) {
@@ -401,14 +357,11 @@ public class Matcher implements MatcherI {
             }
             if (findNextMatch(p, current) 
             		&& p.verticesIncrease()
-                    && subSeqMatch(p, current, last, diagram)) {
-                last = current.getRightVertex().getPos() + 1; // aargh!
+                    && subSeqMatch(p, current, diagram)) {
                 ++this.k;
             } else {
-                if (this.k > 0) {
-                    if (!nextSmallestEdge(p, current)) {
-                        return false;
-                    }
+                if (this.k > 0 && !nextSmallestEdge(p, current)) {
+                    return false;
                 }
                 p.setMovedUpTo(this.k);
                 if (!advancePositions(p, current)) {
@@ -426,11 +379,7 @@ public class Matcher implements MatcherI {
             String doutCup = diagram.getVertexString(rhe + 1, 0, false);
             String doutCdn = diagram.getVertexString(rhe + 1, 0, true);
             String outsertC = p.getOutsertC(false);
-            if (subSeqMatch(outsertC, doutCup)|| subSeqMatch(outsertC, doutCdn)) {
-                return true;
-            } else {
-                return false;
-            }
+            return subSeqMatch(outsertC, doutCup)|| subSeqMatch(outsertC, doutCdn);
         }
 
     }
@@ -469,10 +418,9 @@ public class Matcher implements MatcherI {
     }
 
     public boolean nextSmallestEdge(PatternI p, Edge current) {
-        // System.out.println("nextSmallestMatch");
         boolean found = false;
         Edge last = p.getEdge(this.k - 1).getCurrentMatch();
-        while ((current.hasMoreMatches()) && (found == false)) {
+        while (current.hasMoreMatches() && !found) {
             Edge match = current.getCurrentMatch();
             if (match.greaterThan(last))
                 found = true;
@@ -484,20 +432,22 @@ public class Matcher implements MatcherI {
 
     public boolean advancePositions(PatternI p, Edge current) {
         // 'isRight' tells you which end of backedge pvert is...
-        // System.out.println("advancePositions");
-        boolean found = false, isRight = false, attached = false;
-        int wt2 = 0, vt2 = 0;
+        boolean found = false;
+        boolean isRight = false;
+        boolean attached = false;
+        int wt2 = 0;
+        int vt2 = 0;
         int pvert = current.getLeftVertex().getPos();
         int tvert = (current.getCurrentMatch()).getLeftVertex().getPos();
 
-        this.PVS = new Stack<Integer>();
-        this.TVS = new Stack<Integer>();
-        this.PVS.push(new Integer(pvert));
-        this.TVS.push(new Integer(tvert));
+        Deque<Integer> patternVertexStack = new ArrayDeque<>();
+        Deque<Integer> targetVertexStack = new ArrayDeque<>();
+        patternVertexStack.push(pvert);
+        targetVertexStack.push(tvert);
 
-        while (!this.PVS.empty()) {
-            pvert = PVS.pop().intValue();
-            tvert = TVS.pop().intValue();
+        while (!patternVertexStack.isEmpty()) {
+            pvert = patternVertexStack.pop().intValue();
+            tvert = targetVertexStack.pop().intValue();
             // FORALL EDGES LESS THAN THE STUCK EDGE
             for (int j = this.k - 1; j >= 0; --j) {
                 Edge backedge = p.getEdge(j);
@@ -512,31 +462,31 @@ public class Matcher implements MatcherI {
                     attached = true;
 
                 if (attached) {
-                    if (backedge.moved == false) {
+                    if (!backedge.moved) {
 
                         backedge.moved = true;
                         found = false;
-                        while ((backedge.hasMoreMatches()) && (found == false)) {
+                        while ((backedge.hasMoreMatches()) && !found) {
                             Edge e = (backedge.getCurrentMatch());
                             wt2 = e.getLeftVertex().getPos();
                             vt2 = e.getLeftVertex().getPos();
                             if ((wt2 >= tvert)
-                                    || ((vt2 >= tvert) && (isRight == true))) {
+                                    || ((vt2 >= tvert) && isRight)) {
                                 if (isRight) {
                                     tvert = wt2;
                                     if (backedge.getLeftVertex().getMatch() != 0) {
                                         backedge.getLeftVertex().resetMatch();
                                         pvert = backedge.getLeftVertex().getPos();
-                                        this.PVS.push(new Integer(pvert));
-                                        this.TVS.push(new Integer(tvert));
+                                        patternVertexStack.push(pvert);
+                                        targetVertexStack.push(tvert);
                                     }
                                 } else {
                                     tvert = vt2;
                                     if (backedge.getRightVertex().getMatch() != 0) {
                                         backedge.getRightVertex().resetMatch();
                                         pvert = backedge.getRightVertex().getPos();
-                                        this.PVS.push(new Integer(pvert));
-                                        this.TVS.push(new Integer(tvert));
+                                        patternVertexStack.push(pvert);
+                                        targetVertexStack.push(tvert);
                                     }
                                 }
                                 found = true;
@@ -547,12 +497,9 @@ public class Matcher implements MatcherI {
                     } else {
                         return false;
                     } // DANGER WIL ROBINSON!
-
-                } // end if (attached)
-
-            } // end for all edges less than current
-
-        } // end while PVS != 0
+                }
+            }
+        } 
 
         // move edgeIndex to the smallest edge with an unmatched end
         for (int l = 0; l < p.esize(); ++l) {
@@ -568,9 +515,9 @@ public class Matcher implements MatcherI {
 
     public void setupLogging() {
         try {
-            java.io.InputStream is = new java.io.FileInputStream("log.level");
-            java.util.logging.LogManager.getLogManager().readConfiguration(is);
-        } catch (java.io.IOException ioe) {
+            InputStream is = new FileInputStream("log.level");
+            LogManager.getLogManager().readConfiguration(is);
+        } catch (IOException ioe) {
             System.err.println("NO LOGGING CONFIGURATION FILE FOUND : " + ioe);
         }
     }

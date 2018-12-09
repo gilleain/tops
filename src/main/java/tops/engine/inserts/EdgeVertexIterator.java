@@ -13,22 +13,22 @@ import tops.engine.Vertex;
  */
 public class EdgeVertexIterator implements Iterator<Vertex> {
 
-    private TreeSet<Vertex> edge_vertices;
+    private TreeSet<Vertex> edgeVertices;
 
     private Iterator<Vertex> vertexIterator;
 
     public EdgeVertexIterator(Iterator<Edge> edgeIterator) {
-        this.edge_vertices = new TreeSet<Vertex>();
+        this.edgeVertices = new TreeSet<>();
         while (edgeIterator.hasNext()) {
-            Edge e = (Edge) edgeIterator.next();
+            Edge e = edgeIterator.next();
 
             Vertex left = e.getLeftVertex();
-            this.edge_vertices.add(left);
+            this.edgeVertices.add(left);
 
             Vertex right = e.getRightVertex();
-            this.edge_vertices.add(right);
+            this.edgeVertices.add(right);
         }
-        this.vertexIterator = this.edge_vertices.iterator();
+        this.vertexIterator = this.edgeVertices.iterator();
     }
 
     public boolean hasNext() {
@@ -39,6 +39,8 @@ public class EdgeVertexIterator implements Iterator<Vertex> {
         return this.vertexIterator.next();
     }
 
+    @Override
     public void remove() {
+        // do nothing
     }
 }

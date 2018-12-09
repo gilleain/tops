@@ -3,6 +3,7 @@ package tops.engine.inserts;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import tops.engine.Edge;
@@ -31,16 +32,15 @@ public class Pattern implements PatternI {
 
     private List<Insert> insertList;
 
-    private static Logger logger = Logger
-            .getLogger("tops.engine.inserts.Pattern");
+    private static Logger logger = Logger.getLogger(Pattern.class.getName());
 
     private float compression;
 
     public Pattern() {
-        this.head = new String("pattern:");
-        this.vertices = new ArrayList<Vertex>();
-        this.edges = new ArrayList<Edge>();
-        this.insertList = new ArrayList<Insert>();
+        this.head = "pattern:";
+        this.vertices = new ArrayList<>();
+        this.edges = new ArrayList<>();
+        this.insertList = new ArrayList<>();
         this.outsertC = "";
         this.outsertN = "";
         this.compression = 1.0f;
@@ -70,7 +70,7 @@ public class Pattern implements PatternI {
     }
 
     public void setVertices(char[] verts) {
-        Pattern.logger.finest("setting vertices to : " + new String(verts));
+        logger.log(Level.FINEST, "setting vertices to : {0}", verts);
 
         for (int i = 0; i < verts.length; ++i) {
             this.vertices.add(new Vertex(verts[i], i));
@@ -78,18 +78,20 @@ public class Pattern implements PatternI {
     }
 
     public void setEdges(String[] edgeStrings, boolean withInserts) {
-        int l, r;
+        int l;
+        int r;
         char t;
-        Vertex left, right;
+        Vertex left;
+        Vertex right;
 
         try {
             for (int j = 0; j < edgeStrings.length; j += 3) {
                 l = Integer.parseInt(edgeStrings[j]);
                 r = Integer.parseInt(edgeStrings[j + 1]);
                 t = edgeStrings[j + 2].charAt(0);
-                left = (Vertex) this.vertices.get(l);
+                left = this.vertices.get(l);
                 left.setIndex((char) (t + 32));
-                right = (Vertex) this.vertices.get(r);
+                right = this.vertices.get(r);
                 right.setIndex(t);
                 Edge edge = new Edge(left, right, t);
                 this.edges.add(edge);
@@ -112,10 +114,8 @@ public class Pattern implements PatternI {
         int rangeMaximum = 0;
         int left = e.getLeft();
         int right = e.getRight();
-        ArrayList<Object> subSequence = this.getSubSequence(left, right);
-        Iterator<Object> itr = subSequence.iterator();
-        while (itr.hasNext()) {
-            Object o = itr.next();
+        List<Object> subSequence = this.getSubSequence(left, right);
+        for(Object o : subSequence) {
             if (o instanceof Vertex) {
                 rangeMinimum++;
                 rangeMaximum++;
@@ -124,21 +124,20 @@ public class Pattern implements PatternI {
                 rangeMinimum += i.getMinSize();
                 rangeMaximum += i.getMaxSize();
             } else {
-                System.err.println("oh no!");
+                logger.warning("oh no!");
             }
         }
-        Pattern.logger.info("setting range to [" + rangeMinimum + ", " + rangeMaximum
-                + "]");
+        logger.log(Level.INFO, "setting range to [{0}, {1}]", new Object[] {rangeMinimum, rangeMaximum});
         e.setRangeMinimum(rangeMinimum);
         e.setRangeMaximum(rangeMaximum);
     }
 
     public void setInserts(String[] insertStrings) {
-        this.insertList = new ArrayList<Insert>();
+        this.insertList = new ArrayList<>();
         for (int i = 0; i < insertStrings.length; i++) {
             String insertString = insertStrings[i];
             Insert insert = this.determineInsertType(insertString);
-            Pattern.logger.info("determined insert : " + insert.toString());
+            logger.log(Level.INFO, "determined insert : {0}", insert);
             this.insertList.add(insert);
         }
     }
@@ -150,7 +149,7 @@ public class Pattern implements PatternI {
 
         char firstCharacter = insertString.charAt(0);
         if (Character.isDigit(firstCharacter)) {
-            if ((insertString.indexOf(RangeInsert.separator)) != -1) {
+            if ((insertString.indexOf(RangeInsert.SEPARATOR)) != -1) {
                 return new RangeInsert(insertString);
             } else {
                 return new NumberInsert(insertString);
@@ -193,7 +192,7 @@ public class Pattern implements PatternI {
     public void convertDisconnectedVerticesToInserts() {
         Pattern.logger.info("converting Disconnected Vertices To Inserts");
 
-        this.insertList = new ArrayList<Insert>();
+        this.insertList = new ArrayList<>();
 
         int lastVertexPosition = 0;
         EdgeVertexIterator connectedVertices = this.getEdgeVertexIterator();
@@ -205,7 +204,7 @@ public class Pattern implements PatternI {
                         lastVertexPosition, currentVertexPosition);
                 this.insertList.add(new StringInsert(insertString));
             } else {
-                this.insertList.add(new StringInsert(new String()));
+                this.insertList.add(new StringInsert(""));
             }
             lastVertexPosition = currentVertexPosition;
         }
@@ -217,7 +216,7 @@ public class Pattern implements PatternI {
                     lastVertexPosition, maxNumberOfVertices);
             this.insertList.add(new StringInsert(outsertString));
         } else {
-            this.insertList.add(new StringInsert(new String()));
+            this.insertList.add(new StringInsert(""));
         }
     }
 
@@ -226,16 +225,16 @@ public class Pattern implements PatternI {
     }
 
     public String getVertexStringWithInserts() {
-        StringBuffer vertexStringWithInserts = new StringBuffer();
+        StringBuilder vertexStringWithInserts = new StringBuilder();
         vertexStringWithInserts.append('N');
-        Insert outsertN = this.insertList.get(0);
-        Pattern.logger.info("got outsert : " + outsertN.toString());
-        vertexStringWithInserts.append('[').append(outsertN.toString()).append(']');
+        Insert outsertN0 = this.insertList.get(0);
+        logger.log(Level.INFO, "got outsert : {0}", outsertN0);
+        vertexStringWithInserts.append('[').append(outsertN0.toString()).append(']');
         for (int i = 1; i < this.vertices.size() - 1; i++) {
             char c = this.vertices.get(i).getType();
             vertexStringWithInserts.append(c);
             Insert insert = this.insertList.get(i);
-            Pattern.logger.info("got insert : " + insert.toString());
+            logger.log(Level.INFO, "got insert : {0}", insert);
             vertexStringWithInserts.append('[').append(insert.toString()).append(']');
         }
         vertexStringWithInserts.append('C');
@@ -244,7 +243,7 @@ public class Pattern implements PatternI {
     }
 
     private String flipString(String toFlip) {
-        StringBuffer toReturn = new StringBuffer();
+        StringBuilder toReturn = new StringBuilder();
         for (int i = 0; i < toFlip.length(); i++) {
             char c = toFlip.charAt(i);
             if (c >= 97)
@@ -282,8 +281,7 @@ public class Pattern implements PatternI {
             }
             // problem : edge exists, but it already has chirality!
             else {
-                System.out.println("edge between " + i + " and " + j
-                        + " not A or P! ");
+                logger.log(Level.WARNING, "edge between {0} and {1} not A or P!", new Object[] {i, j});
                 return false;
             }
         } else { // else, no existing edge - add new one
@@ -318,11 +316,11 @@ public class Pattern implements PatternI {
         }
     }
 
-    public void addEdges(ArrayList<Edge> newEdges) {
+    public void addEdges(List<Edge> newEdges) {
         this.edges.addAll(newEdges);
     }
 
-    public void addVertices(ArrayList<Vertex> newVertices) {
+    public void addVertices(List<Vertex> newVertices) {
         this.vertices.addAll(newVertices);
     }
 
@@ -354,7 +352,7 @@ public class Pattern implements PatternI {
         int sum = 0;
         Iterator<Insert> itr = this.insertList.iterator();
         while (itr.hasNext()) {
-            Insert i = (Insert) itr.next();
+            Insert i = itr.next();
             sum += i.getMinSize();
         }
         return sum;
@@ -372,13 +370,11 @@ public class Pattern implements PatternI {
     }
 
     public boolean isLargerThan(PatternI d) {
-        return (this.vsize() > d.vsize())	// TODO : vsize vs getVSize()!
-                || (this.esize() > d.esize());
+        return this.vsize() > d.vsize() || this.esize() > d.esize();
     }
 
     public boolean isSmallerThan(Pattern other) {
-        return (this.getVSize() < other.getVSize())// TODO : vsize vs getVSize()!
-                || (this.esize() < other.esize());
+        return this.getVSize() < other.getVSize() || this.esize() < other.esize();
     }
 
     public boolean preProcess(PatternI d) {
@@ -388,32 +384,33 @@ public class Pattern implements PatternI {
         }
 
         boolean found = false;
-        Edge current, target;
+        Edge current;
+        Edge target;
         // matches are added to the target edge
         for (int i = 0; i < this.size; ++i) {
             found = false;
             current = this.edges.get(i);
             for (int j = 0; j < d.vsize(); ++j) {
                 target = d.getEdge(j);
-                Pattern.logger.info("matching current: " + i + " and target: " + j);
+                logger.log(Level.INFO, "matching current: {0} and target: {1}", new Object[] {i, j});
                 boolean indicesMatch = current.matches(target);
                 if (!indicesMatch) {
-                    Pattern.logger.info("edges " + i + "(" + current + ") != " + j
-                            + "(" + target + ") => indices don't match");
+                    logger.log(Level.INFO, "edges {0} ({1}) != {2} ({3}) => indices do not match", 
+                            new Object[] {i, current, j, target});
                     continue;
                 }
 
                 boolean subSeqMatch = subSequenceCompareWithInserts(current, target, d);
                 if (!subSeqMatch) {
-                    Pattern.logger.info("edges " + i + "(" + current + ") != " + j
-                            + "(" + target + ") => sub sequences don't match");
+                    logger.log(Level.INFO, "edges {0} ({1}) != {2} ({3}) => subsequences do not match", 
+                            new Object[] {i, current, j, target});
                     continue;
                 }
 
                 boolean rangeMatches = this.rangeMatches(current, target);
                 if (!rangeMatches) {
-                    Pattern.logger.info("edges " + i + "(" + current + ") != " + j
-                            + "(" + target + ") => range doesn't match");
+                    logger.log(Level.INFO, "edges {0} ({1}) != {2} ({3}) => range does not match", 
+                            new Object[] {i, current, j, target});
                     continue;
                 }
 
@@ -424,9 +421,6 @@ public class Pattern implements PatternI {
             if (!found) {
                 return false;
             }
-            
-            // cast the arraylist to an array to speed things up
-//            current.turbo(); 
         }
         return true;
     }
@@ -434,7 +428,7 @@ public class Pattern implements PatternI {
     // TEMPORARY DECORATOR TO CAPTURE RANGE COMPARISON - USE
     // edge.rangeMatches(otherEdge)
     public boolean rangeMatches(Edge thisEdge, Edge thatEdge) {
-        StringBuffer matching = new StringBuffer();
+        StringBuilder matching = new StringBuilder();
         matching.append("matching range : [");
         matching.append(thisEdge.getRangeMinimum());
         matching.append(", ");
@@ -447,15 +441,15 @@ public class Pattern implements PatternI {
 
         boolean matches = thisEdge.rangeMatches(thatEdge);
         matching.append(" " + matches);
-        Pattern.logger.info(matching.toString());
+        logger.log(Level.INFO, "{0}", matching);
         return matches;
     }
 
     // get the simple list of matching
     public String getVertexMatchedString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < this.vertices.size(); ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i);
+            Vertex nxt = this.vertices.get(i);
             int nxtMatch = nxt.getMatch();
             if (nxtMatch != 0) {
                 result.append(nxtMatch).append('.');
@@ -467,9 +461,9 @@ public class Pattern implements PatternI {
 
     // get the correspondance list eg : [1, 2, 4, 5]
     public String getMatchString() {
-        StringBuffer matchresult = new StringBuffer(" [");
+        StringBuilder matchresult = new StringBuilder(" [");
         for (int i = 0; i < this.vertices.size(); ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i);
+            Vertex nxt = this.vertices.get(i);
             if (nxt.getMatch() != 0) {
                 matchresult.append(i).append('-').append(nxt.getMatch())
                         .append(",");
@@ -479,17 +473,14 @@ public class Pattern implements PatternI {
         return matchresult.toString();
     }
 
-    /* ****************** INSERTS!! ****************** */
+    public List<Object> getSubSequence(int leftPos, int rightPos) {
 
-    public ArrayList<Object> getSubSequence(int leftPos, int rightPos) {
-
-        ArrayList<Object> subSequence = new ArrayList<Object>();
+        List<Object> subSequence = new ArrayList<>();
         int start = leftPos + 1;
         int end = rightPos - 1;
 
         for (int i = start; i <= end; i++) {
-            subSequence.add(this.insertList.get(i - 1)); // add the insert
-                                                            // before the vertex
+            subSequence.add(this.insertList.get(i - 1)); // add the insert before the vertex
             subSequence.add(this.vertices.get(i)); // add the vertex itself
         }
 
@@ -508,11 +499,11 @@ public class Pattern implements PatternI {
 
     // get the pattern with inserts eg : N[0]E[1]E[2]E[1]C
     public String getInsertString(PatternI d) {
-        StringBuffer insertresult = new StringBuffer(" N");
+        StringBuilder insertresult = new StringBuilder(" N");
         int last = 0;
         int isize = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i); // get pattern vertex ref
+            Vertex nxt = this.vertices.get(i); // get pattern vertex ref
             isize = nxt.getMatch() - last;
             if (isize > 0) {
                 insertresult.append('[').append(isize - 1).append(']');
@@ -530,7 +521,6 @@ public class Pattern implements PatternI {
             insertresult.append(nxt.getType());
         }
         isize = d.vsize() - last;
-        // System.out.println("isize = " + isize + " last = " + last);
         if (isize > 0)
             insertresult.append('[').append(isize - 2).append(']');
         else
@@ -542,23 +532,23 @@ public class Pattern implements PatternI {
     // get an array of strings of the unattached vertices
     // 'd' is an EXAMPLE, not a pattern
     public String[] getInsertStringArr(PatternI d, boolean flip) { 
-        ArrayList<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
-            Vertex nxt = (Vertex) this.vertices.get(i); // get pattern vertex ref
+            Vertex nxt = this.vertices.get(i); // get pattern vertex ref
             m = nxt.getMatch();
             if (m != 0) { // it IS an edge vertex, the setMatch() method is
                             // only called in the Edge class
                 results.add(d.getVertexString(last, m, flip));
                 last = m + 1;
             } else { // it is a random, unattached vertex. do nothing
-                results.add(new String());
+                results.add("");
             }
         }
         String cOut = d.getVertexString(last, 0, flip);
         results.add(cOut); // get the C-outsert
-        return (String[]) results.toArray(new String[0]);
+        return results.toArray(new String[0]);
     }
 
     public String splice(String[] ins) {
@@ -569,11 +559,9 @@ public class Pattern implements PatternI {
 
         for (int i = 0; i < ins.length; i++) {
             s = ins[i];
-            // System.out.println("s = " + s);
             for (int j = 0; j < s.length(); j++) {
                 v = new Vertex(s.charAt(j), j + 1);
                 pos = i + offset;
-                // System.out.println("insert pos = " + pos);
                 this.vertices.add(pos, v);
                 this.renumber(pos, 1);
                 offset++;
@@ -584,9 +572,9 @@ public class Pattern implements PatternI {
 
     // this method could replace the /splice/ method above.
     public String mergeInsertArrayWithVertices(String[] ins) {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         for (int i = 0; i < ins.length; i++) {
-            ret.append(((Vertex) this.vertices.get(i)).getType());
+            ret.append(this.vertices.get(i).getType());
             ret.append(ins[i]);
         }
         ret.append('C');
@@ -618,70 +606,62 @@ public class Pattern implements PatternI {
                                         // (ie a[6] is the 7th element)
         int tEnd = d.vsize() - 1;
 
-        // boolean outerLeft = subSequenceCompareWithInserts(1, pLeft - 1, 1,
-        // tLeft - 1, target);
         boolean outerLeft = compareRecursively(0, pLeft, 0, tLeft, d);
-        Pattern.logger.info("outerL compare " + outerLeft);
+        logger.log(Level.INFO, "outerL compare {0}", outerLeft);
         if (!outerLeft)
             return false;
 
-        // boolean inner = subSequenceCompareWithInserts(pLeft + 1, pRight - 1,
-        // tLeft + 1, tRight - 1, target);
         boolean inner = compareRecursively(pLeft, pRight, tLeft, tRight, d);
-        Pattern.logger.info("inner compare " + inner);
+        logger.log(Level.INFO, "inner compare {0}", inner);
         if (!inner)
             return false;
 
-        // boolean outerRight = subSequenceCompareWithInserts(pRight + 1, pEnd -
-        // 1, tRight + 1, tEnd - 1, target);
         boolean outerRight = compareRecursively(pRight, pEnd, tRight, tEnd, d);
-        Pattern.logger.info("outerR compare " + outerRight);
-        if (!outerRight)
-            return false;
-
-        return true;
+        logger.log(Level.INFO, "outerR compare {0}", outerRight);
+        return !outerRight;
     }
 
     public boolean compareRecursively(int patternStart, int patternEnd,
             int targetStart, int targetEnd, PatternI d) {
-        Pattern.logger.info("pattern=(" + patternStart + ", " + patternEnd
-                + ") target=(" + targetStart + ", " + targetEnd + ")");
+        logger.log(Level.INFO, "pattern=({0}, {1}) target=({2},{3})", 
+                new Object[] {patternStart, patternEnd, targetStart, targetEnd});
+        
         return recursiveCompare(patternStart, patternEnd, targetStart, targetEnd, d);
     }
 
     public boolean recursiveCompare(int patternPosition, int patternEnd,
             int targetPosition, int targetEnd, PatternI d) {
-        Pattern.logger.info("pattern=(" + patternPosition + ", " + patternEnd
-                + ") target=(" + targetPosition + ", " + targetEnd + ")");
+        logger.log(Level.INFO, "pattern=({0}, {1}) target=({2},{3})", 
+                new Object[] {patternPosition, patternEnd, targetPosition, targetEnd});
         if (patternPosition > patternEnd || targetPosition > targetEnd)
             return false;
-        char pattern_char = getVertex(patternPosition).getType();
-        char target_char = d.getVertex(targetPosition).getType();
-        if (pattern_char == target_char) {
-            Pattern.logger.info(pattern_char + " == " + target_char);
+        char patternChar = getVertex(patternPosition).getType();
+        char targetChar = d.getVertex(targetPosition).getType();
+        if (patternChar == targetChar) {
+            logger.log(Level.INFO, "{0} == {1}", new Object[] {patternChar, targetChar});
             if (patternPosition >= patternEnd) { // got to the last part of
                                                     // the pattern
                 return true;
             }
-            Insert insert = (Insert) this.insertList.get(patternPosition);
-            int min, max;
+            Insert insert = this.insertList.get(patternPosition);
+            int min;
+            int max;
             if (insert.isNull()) {
                 min = 0;
-                max = (targetEnd - targetPosition) - 1; // fenceposts - a
-                                                        // distance of 1 means 0
-                                                        // things in between
+                // fenceposts - a distance of 1 means 0 things in between
+                max = (targetEnd - targetPosition) - 1; 
             } else {
                 min = insert.getMinSize();
                 max = insert.getMaxSize();
             }
-            Pattern.logger.info("range from " + min + " to " + max);
+            logger.log(Level.INFO, "range from {0} to {1}", new Object[] { min, max });
             for (int i = min; i <= max; i++) {
                 int nextPosition = targetPosition + (i + 1); // fenceposts -
                                                                 // an insert of
                                                                 // 0 means
                                                                 // moving 1
                                                                 // forward
-                Pattern.logger.info("trying next position : " + nextPosition);
+                logger.log(Level.INFO, "trying next position : {0}", nextPosition);
                 if (this.recursiveCompare(patternPosition + 1, patternEnd,
                         nextPosition, targetEnd, d)) {
                     return true;
@@ -693,85 +673,77 @@ public class Pattern implements PatternI {
 
     public boolean subSequenceCompareWithInserts(int patternStart,
             int patternEnd, int targetStart, int targetEnd, Pattern target) {
-        Pattern.logger.info("patternStart=" + patternStart + " patternEnd="
-                + patternEnd + " targetStart=" + targetStart + " targetEnd="
-                + targetEnd);
-        int pattern_ptr = patternStart;
-        int target_ptr = targetStart;
-        int max_ptr = targetStart;
-        char pattern_char;
-        char target_char;
+     
+        int patternPtr = patternStart;
+        int targetPtr = targetStart;
+        int maxPtr = targetStart;
+        char patternChar;
+        char targetChar;
 
         // -1 because the first insert before vertex[patternStart] is
         // insertList[patternStart - 1]
         int firstInsertIndex = patternStart - 1;
-        Insert outsertN = (Insert) this.insertList.get(firstInsertIndex);
-        int min = outsertN.getMinSize();
-        int max = outsertN.getMaxSize();
-        target_ptr += min;
-        max_ptr += max;
+        Insert outsertN0 = this.insertList.get(firstInsertIndex);
+        int min = outsertN0.getMinSize();
+        int max = outsertN0.getMaxSize();
+        targetPtr += min;
+        maxPtr += max;
 
-        // this checks for single-insert subsequences - it can be GREATER since
-        // n + 1 > m - 1 if (m - n) = 1
+        // this checks for single-insert subsequences - it can be GREATER 
+        // since n + 1 greater than m - 1 if (m - n) equals 1
         if (patternStart >= patternEnd) {
-            Pattern.logger.info("targetStart=" + targetStart + " <= target_ptr="
-                    + target_ptr + " max_ptr=" + max_ptr + " > targetEnd ="
-                    + targetEnd);
-            return (targetStart <= target_ptr) && (max_ptr > targetEnd);
+            return targetStart <= targetPtr && maxPtr > targetEnd;
         }
 
-        while (pattern_ptr <= patternEnd) { // less than OR EQUAL because we
+        while (patternPtr <= patternEnd) { // less than OR EQUAL because we
                                             // want to consider the
                                             // vertex[patternEnd]
-            Pattern.logger.info("pattern_ptr=" + pattern_ptr);
-            if (target_ptr > targetEnd) {
-                Pattern.logger.info("target pointer > targetEnd");
+            logger.log(Level.INFO, "pattern_ptr= {0}", patternPtr);
+            if (targetPtr > targetEnd) {
+                logger.info("target pointer > targetEnd");
                 return false;
             }
 
-            if ((max_ptr != -1) && (target_ptr > max_ptr)) {
-                Pattern.logger.info("target pointer > max pointer => target_ptr="
-                        + target_ptr + " max_ptr=" + max_ptr);
+            if ((maxPtr != -1) && (targetPtr > maxPtr)) {
+                logger.log(Level.INFO, "target pointer > max pointer => target_ptr= {0} max_ptr= {1}"
+                        , new Object[] {targetPtr, maxPtr});
                 return false;
             }
 
-            pattern_char = getVertex(pattern_ptr).getType();
-            target_char = target.getVertex(target_ptr).getType();
+            patternChar = getVertex(patternPtr).getType();
+            targetChar = target.getVertex(targetPtr).getType();
 
-            Pattern.logger.info("comparing " + pattern_char + " to " + target_char);
-            if (pattern_char == target_char) {
-                pattern_ptr++;
-                max_ptr = target_ptr;
-                Pattern.logger
-                        .info("characters identical, incrementing pattern_ptr, setting max_ptr to "
-                                + target_ptr);
-                if (pattern_ptr >= patternEnd) {
+            logger.log(Level.INFO, "comparing {0} to {1}", new Object[] {patternChar, targetChar});
+            if (patternChar == targetChar) {
+                patternPtr++;
+                maxPtr = targetPtr;
+                logger.log(Level.INFO, 
+                        "characters identical, incrementing pattern_ptr, setting max_ptr to {0}", targetPtr);
+                if (patternPtr >= patternEnd) {
                     continue;
                 }
-                Insert range = (Insert) this.insertList.get(pattern_ptr);
+                Insert range = this.insertList.get(patternPtr);
                 if (range.isNull()) {
-                    max_ptr = -1;
-                    target_ptr++;
-                    Pattern.logger
-                            .info("range is null, setting max_ptr to -1, incrementing target_ptr");
+                    maxPtr = -1;
+                    targetPtr++;
+                    logger.info("range is null, setting max_ptr to -1, incrementing target_ptr");
                     continue;
                 }
-                target_ptr += range.getMinSize();
-                max_ptr += range.getMaxSize() + 1;
-                Pattern.logger.info("target_ptr now " + target_ptr + " and max_ptr is "
-                        + max_ptr);
+                targetPtr += range.getMinSize();
+                maxPtr += range.getMaxSize() + 1;
+                logger.log(Level.INFO, "target_ptr now {0} and max_ptr is {1} ", new Object[] {targetPtr, maxPtr});
             }
-            target_ptr++;
+            targetPtr++;
         }
 
-        Insert outsertC = (Insert) this.insertList.get(patternEnd);
-        min = outsertC.getMinSize();
-        max = outsertC.getMaxSize();
-        int min_endpoint = target_ptr + min + 1; // !
-        int max_endpoint = target_ptr + max + 1; // !
-        if (targetEnd < min_endpoint || targetEnd > max_endpoint) {
-            Pattern.logger.info("target pointer out of range of final outsert => "
-                    + min_endpoint + " " + targetEnd + " " + max_endpoint);
+        Insert outsertC0 = this.insertList.get(patternEnd);
+        min = outsertC0.getMinSize();
+        max = outsertC0.getMaxSize();
+        int minEndpoint = targetPtr + min + 1; // !
+        int maxEndpoint = targetPtr + max + 1; // !
+        if (targetEnd < minEndpoint || targetEnd > maxEndpoint) {
+            logger.log(Level.INFO, "target pointer out of range of final outsert => {0} {1} {2}", 
+                    new Object[] {minEndpoint, targetEnd, maxEndpoint});
             return false;
         }
 
@@ -779,7 +751,8 @@ public class Pattern implements PatternI {
     }
 
     public boolean subSequenceCompare(String a, String b) {
-        int ptrA, ptrB;
+        int ptrA;
+        int ptrB;
         char c;
         ptrA = ptrB = 0;
 
@@ -803,8 +776,6 @@ public class Pattern implements PatternI {
         this.outsertC = getVertexString(last + 1, 0, false);
     }
 
-    /* ****************** INSERTS!! ****************** */
-
     public boolean verticesIncrease() {
         int last = 0;
         int[] m = getMatches();
@@ -822,20 +793,19 @@ public class Pattern implements PatternI {
 
     public void setMovedUpTo(int k) {
         for (int i = 0; i < k; ++i) {
-            ((Edge) this.edges.get(i)).moved = false;
+            this.edges.get(i).moved = false;
         }
     }
 
     public void sortEdges() {
         this.size = this.edges.size();
-        Edge first, second;
+        Edge first;
+        Edge second;
 
         for (int i = 0; i < this.size; ++i) {
             for (int j = 0; j < this.size - 1; ++j) {
-                first = (Edge) this.edges.get(j);
-                second = (Edge) this.edges.get(j + 1);
-                // System.out.println("first = " + first.toString() + " second =
-                // " + second.toString());
+                first = this.edges.get(j);
+                second = this.edges.get(j + 1);
                 if (first.greaterThan(second)) {
                     this.edges.set(j, second);
                     this.edges.set(j + 1, first);
@@ -875,10 +845,10 @@ public class Pattern implements PatternI {
 
     public void reset() {
         for (int i = 0; i < this.edges.size(); ++i) {
-            ((Edge) (this.edges.get(i))).reset();
+            this.edges.get(i).reset();
         }
         for (int i = 1; i < this.vertices.size() - 1; ++i) { // don't bother with N/C
-            Vertex v = (Vertex) this.vertices.get(i);
+            Vertex v = this.vertices.get(i);
             v.resetMatch();
             v.flip();
         }
@@ -894,11 +864,11 @@ public class Pattern implements PatternI {
         if (start == 0)
             start = 1; // miss 'N'
         if (start >= end)
-            return new String();
-        StringBuffer vstr = new StringBuffer();
+            return "";
+        StringBuilder vstr = new StringBuilder();
         char c;
         for (int i = start; i < end; ++i) {
-            c = ((Vertex) (this.vertices.get(i))).getType();
+            c = this.vertices.get(i).getType();
             if (flip)
                 c = (Character.isUpperCase(c) ? Character.toLowerCase(c)
                         : Character.toUpperCase(c));
@@ -914,7 +884,7 @@ public class Pattern implements PatternI {
     public int[] getMatches() {
         int[] matches = new int[this.vertices.size() - 2];
         for (int i = 0; i < matches.length; ++i) {
-            matches[i] = ((Vertex) (this.vertices.get(i + 1))).getMatch();
+            matches[i] = this.vertices.get(i + 1).getMatch();
         }
         return matches;
     }
@@ -922,10 +892,8 @@ public class Pattern implements PatternI {
     private void renumber(int from, int amount) {
         Vertex counter;
         for (int i = from + 1; i < this.vertices.size() - 1; i++) {
-            counter = (Vertex) this.vertices.get(i);
+            counter = this.vertices.get(i);
             int tmp = counter.getPos();
-            // System.out.println("Vertex : " + counter.getType() + "@ " + i +
-            // "|" + tmp + " to Vertex " + (tmp + 1));
             counter.setPos(tmp + amount); // move up all the internal numbers!
         }
     }
@@ -940,7 +908,7 @@ public class Pattern implements PatternI {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         result.append(this.head);
         result.append(' ');
@@ -951,7 +919,7 @@ public class Pattern implements PatternI {
 
         Edge e;
         for (int j = 0; j < this.edges.size(); ++j) {
-            e = (Edge) this.edges.get(j);
+            e = this.edges.get(j);
             result.append(e.getLeftVertex().getPos());
             result.append(':');
             result.append(e.getRightVertex().getPos());

@@ -27,11 +27,10 @@ public class TParser {
     private Matcher m = this.insertP.matcher(""); // blank matcher has to be reset
                                                 // every time
 
-    private static Logger logger = Logger
-            .getLogger("tops.engine.inserts.TParser");
+    private static Logger logger = Logger.getLogger(TParser.class.getName());
 
     public TParser() {
-        TParser.strings = new ArrayList<String>();
+        TParser.strings = new ArrayList<>();
         this.stringsIterator = TParser.strings.iterator();
         TParser.logger.setLevel(Level.OFF);
         TParser.logger.setUseParentHandlers(false);
@@ -67,8 +66,6 @@ public class TParser {
         String[] inserts;
         boolean hasInserts = this.hasInserts();
         if (hasInserts) {
-        	// logger.info(pattern + " has inserts");
-        	// System.out.println(pattern + " has inserts");
         	vertices = this.getVerticesWithInserts();
         } else {
         	vertices = this.getVertices();
@@ -83,11 +80,7 @@ public class TParser {
         }
 
         String[] edges = this.getEdges();
-        if (hasInserts) {
-        	p.setEdges(edges, true);
-        } else {
-        	p.setEdges(edges, false);
-        }
+        p.setEdges(edges, hasInserts);
         p.sortEdges();
 
         return p;
@@ -103,7 +96,7 @@ public class TParser {
      */
 
     public String next() {
-        return (String) this.stringsIterator.next();
+        return this.stringsIterator.next();
     }
 
     public boolean hasNext() {
@@ -137,17 +130,15 @@ public class TParser {
         return c;
     }
 
-    // public char[] getVerticesAlone() {
-
     public String[] getInserts() {
-        ArrayList<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         this.m.reset(this.getVertexString());
         while (this.m.find()) {
             String insert = this.m.group(1);
-            TParser.logger.info("insert : " + insert);
+            logger.log(Level.INFO, "insert : {0}", insert);
             l.add(insert); // add the next insert to the list (minus [])
         }
-        return (String[]) l.toArray(new String[0]);
+        return l.toArray(new String[0]);
     }
 
     public String getEdgeString() {
@@ -159,21 +150,11 @@ public class TParser {
         return this.current.substring(spsp + 1, spspsp);
     }
 
-    /*
-     * removed because it doesn't work in java1.3 public String[] getEdges() {
-     * String tail = this.getEdgeString(); Matcher m = edgeP.matcher(tail);
-     * ArrayList bits = new ArrayList(); while (m.find()) { //start i at 1,
-     * because group(0) is the whole match! for (int i = 1; i <= m.groupCount();
-     * i++) { bits.add(m.group(i)); } } return (String[]) bits.toArray(new
-     * String[0]); }
-     */
-
-    // ALTERNATIVE 1.3 method
     public String[] getEdges() {
         String tail = this.getEdgeString();
-        ArrayList<String> bytes = new ArrayList<String>();
+        List<String> bytes = new ArrayList<>();
         char[] bits = tail.toCharArray();
-        StringBuffer numstr = new StringBuffer();
+        StringBuilder numstr = new StringBuilder();
         for (int i = 0; i < bits.length; i++) {
             char c = bits[i];
 
@@ -182,13 +163,13 @@ public class TParser {
             } else if (Character.isLetter(c)) {
                 bytes.add(numstr.toString());
                 bytes.add(String.valueOf(c));
-                numstr = new StringBuffer();
+                numstr = new StringBuilder();
             } else {
                 bytes.add(numstr.toString());
-                numstr = new StringBuffer();
+                numstr = new StringBuilder();
             }
         }
-        return (String[]) bytes.toArray(new String[0]);
+        return bytes.toArray(new String[0]);
     }
 
     public String getClassification() {

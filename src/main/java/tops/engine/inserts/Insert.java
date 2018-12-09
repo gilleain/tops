@@ -1,9 +1,14 @@
 package tops.engine.inserts;
 
-//represents a regular expression or just a number
-//that constrains the gap between two SSEs.
 import tops.engine.Vertex;
 
+/**
+ * Represents a regular expression or just a number
+ * that constrains the gap between two SSEs.
+ * 
+ * @author gilleain
+ *
+ */
 public abstract class Insert {
 
     public static final int STRING = 0; // a string of sses
