@@ -3,6 +3,8 @@ package tops.engine.drg;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import tops.engine.Edge;
 import tops.engine.Result;
@@ -10,8 +12,9 @@ import tops.engine.TopsStringFormatException;
 import tops.engine.Vertex;
 
 public class Comparer {
+    private Logger log = Logger.getLogger(Comparer.class.getName());
     private Pattern largestCommonPattern;
-    private Matcher m;
+    private Matcher matcher;
 
     private static final Edge[] hbond_types = {
         new Edge(new Vertex('E',0), new Vertex('E', 0), 'P'),
@@ -33,14 +36,14 @@ public class Comparer {
 
     public Comparer() {
         this.largestCommonPattern = new Pattern();
-        this.m = new Matcher();
+        this.matcher = new Matcher();
     }
     
     public Pattern findPattern(List<String> instances) throws TopsStringFormatException {
-    	m.setDiagrams(instances);
+    	matcher.setDiagrams(instances);
     	Pattern p = this.extendAndMatch();
         
-        String[][] ins = m.generateInserts(p);
+        String[][] ins = matcher.generateInserts(p);
         if (ins != null) {
             String[] fin = Utilities.doInserts(ins);
             if (fin != null) {
@@ -50,7 +53,7 @@ public class Comparer {
                 chi.rename("pattern:");
                 return chi;
             } else {
-                System.out.println("Problem : " + p);
+                log.log(Level.WARNING, "Problem : {0}", p);
                 return p;
             }
         }
@@ -59,15 +62,15 @@ public class Comparer {
     }
    
     public String matchAndGetInserts(Pattern p) {
-        return this.m.matchAndGetInserts(p);
+        return this.matcher.matchAndGetInserts(p);
     }
 
     public String findPatternStringWithInserts(List<String> instances) {
         try {
             Pattern p = this.findPattern(instances);
-            return this.m.matchAndGetInserts(p);
+            return this.matcher.matchAndGetInserts(p);
         } catch (TopsStringFormatException tsfe) {
-            System.err.println("AARGH! : " + tsfe.toString());
+            log.log(Level.INFO, "AARGH! : {0}", tsfe);
             return "";
         }
     }
@@ -76,10 +79,10 @@ public class Comparer {
         Pattern p = this.findPattern(instances);
         float compression = 1 - Utilities.doCompression(instances, p);
         if (makeInserts) {
-            String resultWithInserts = m.matchAndGetInserts(p);
-            return new String( compression + "\t" + resultWithInserts);
+            String resultWithInserts = matcher.matchAndGetInserts(p);
+            return compression + "\t" + resultWithInserts;
         } else {
-            return new String( compression + "\t" + p.toString());
+            return compression + "\t" + p.toString();
         }
     }
 
@@ -88,25 +91,21 @@ public class Comparer {
     }
 
     public List<Result> compare(String probe, List<String> examples) throws TopsStringFormatException {
-        List<Result> results = new ArrayList<Result>(examples.size());
+        List<Result> results = new ArrayList<>(examples.size());
         Pattern[] pair = new Pattern[2];
         pair[0] = new Pattern(probe);
-        System.out.println("for probe : \t" + probe);
-        m = new Matcher();
+        log.log(Level.INFO, "for probe : \t{0}", probe);
+        matcher = new Matcher();
 
         for (String e : examples) { //for each example, compare to pattern
             pair[1] = new Pattern(e);
-            m.setDiagrams(pair);
+            matcher.setDiagrams(pair);
 
             Pattern p = this.extendAndMatch();
 
-            if (m.runsSuccessfully(p)) {
-//              String tmp = result.getMatchString(); TODO : remove?
-            } else { 
-                //System.out.println("SEVERE PROBLEM : FINAL PATTERN " + result + " does not match " + examples[e]); 
-            }
+            matcher.runsSuccessfully(p);
 
-            String[][] ins = m.generateInserts(p);
+            String[][] ins = matcher.generateInserts(p);
             String[] fin = Utilities.doInserts(ins);
 
             Pattern chi = p;
@@ -134,22 +133,23 @@ public class Comparer {
 
 
     public void reproduce(final String example) throws TopsStringFormatException {
-        List<String> ex = new ArrayList<String>() { {add(example); }};
+        List<String> ex = new ArrayList<>();
+        ex.add(example);
 
-        this.m.setDiagrams(ex);
+        this.matcher.setDiagrams(ex);
 
         Pattern p = this.extendAndMatch();
 
-        p.rename(example.substring(0,example.indexOf(" ")));
-        System.out.println("hbonds...." + p);
-        String[][] ins = m.generateInserts(p);
+        p.rename(example.substring(0,example.indexOf(' ')));
+        log.log(Level.INFO, "hbonds.... {0}", p);
+        String[][] ins = matcher.generateInserts(p);
 
         String[] fin = Utilities.doInserts(ins);
         String spliced = p.splice(fin);
-        System.out.println("spliced..." + spliced);
+        log.log(Level.INFO, "spliced... {0}", spliced);
         Pattern chi = doChirals(new Pattern(spliced));
         chi.sortEdges();
-        System.out.println("chirals..." + chi);
+        log.log(Level.INFO, "chirals... {0}", chi);
     }
 
     public Pattern extendAndMatch() {
@@ -165,7 +165,6 @@ public class Comparer {
     public void store(Pattern p) {
     	if (p.esize() > this.largestCommonPattern.esize()) {
     		this.largestCommonPattern = p;
-    		System.out.println("storing " + p);
     	}
     }
     
@@ -180,7 +179,7 @@ public class Comparer {
                     Pattern next = new Pattern(p);
                     next.addNewSheet(i, j, hbond_types[t]);
 
-                    if (m.runsSuccessfully(next)) {
+                    if (matcher.runsSuccessfully(next)) {
                     	this.store(next);
                     	return this.extendAllPossibleWays(next);
                     } 
@@ -194,19 +193,16 @@ public class Comparer {
     	Pattern next;
     	
     	next = this.extendToRight(p);
-    	//System.out.println("extended to right : " + next);
         if (next != null) { 
         	extendAllPossibleWays(next); 
         }
         
         next = this.extendFromLeft(p);
-        //System.out.println("extended from left : " + next);
         if (next != null) { 
         	extendAllPossibleWays(next); 
         }
         
         next = this.extendCycle(p);
-        //System.out.println("extended cyclically : " + next);
         if (next != null) {
         	extendAllPossibleWays(next);
         }
@@ -227,7 +223,7 @@ public class Comparer {
             			Pattern next = new Pattern(p);
             			next.insertBefore(i, l);
             			next.extend(i, j, ed);
-            			if (this.m.runsSuccessfully(next)) {
+            			if (this.matcher.runsSuccessfully(next)) {
             				this.store(next);
             				return next;
             			}
@@ -253,7 +249,7 @@ public class Comparer {
             			Pattern next = new Pattern(p);
             			next.insertBefore(i, r);
             			next.extend(i, j, ed);
-            			if (this.m.runsSuccessfully(next)) {
+            			if (this.matcher.runsSuccessfully(next)) {
             				this.store(next);
             				return next;
             			}
@@ -276,7 +272,7 @@ public class Comparer {
             		if (p.canCyclise(i, j, ed)) {
             			Pattern next = new Pattern(p);
             			next.extend(i, j, ed);
-            			if (this.m.runsSuccessfully(next)) {
+            			if (this.matcher.runsSuccessfully(next)) {
             				this.store(next);
             				return next;
             			}
@@ -287,7 +283,7 @@ public class Comparer {
     	return null;
     }
   
-    public Pattern doChirals(Pattern p) throws TopsStringFormatException {
+    public Pattern doChirals(Pattern p) {
         int end = p.getCTermPosition();
         for (int i = 1; i < end - 2; i++) {
         	int lastPos = Math.min(end, i + 7);
@@ -299,7 +295,7 @@ public class Comparer {
             			if (vleft == ltyp) {
             				Pattern next = new Pattern(p);
             				if (next.addChiral(i, j, chiral_types[t].getType())) {
-            					if (m.runChiral(next)) {
+            					if (matcher.runChiral(next)) {
             						break;
             					} else {
             						next.removeLastChiral();

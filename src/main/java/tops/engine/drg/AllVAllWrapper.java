@@ -5,18 +5,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import tops.engine.Result;
 import tops.engine.TParser;
 import tops.engine.TopsStringFormatException;
 
 public class AllVAllWrapper {
+    
+    private Logger log = Logger.getLogger(AllVAllWrapper.class.getName());
 
     public Result[] allVsAllWithResults(List<String[]> pairList, Map<String, String> instMap) throws TopsStringFormatException {
         //the domain names we are comparing are (pairKey, pairValue).
-        String pair1, pair2;
+        String pair1;
+        String pair2;
         String[][] pairs = pairList.toArray(new String[0][]);
-        List<String> couple = new ArrayList<String>();
+        List<String> couple = new ArrayList<>();
         TParser tp = new TParser();
         Result[] results = new Result[pairList.size()];
         Comparer comparer = new Comparer();
@@ -45,18 +50,21 @@ public class AllVAllWrapper {
 
                     comparer.clear();
                 } catch (Exception e) { 
-                    System.err.println(pair1 + " , " + pair2 + ", " + e); 
+                    log.log(Level.WARNING, "{0}, {1}, {2}", new Object[] { pair1, pair2, e }); 
                 }
-            } else { System.err.println("ONE OF THE NAMES WAS NULL!"); }
+            } else { 
+                log.log(Level.WARNING, "One of {0} is null", couple); 
+            }
         }
         return results;
     }
     
     public void allVsAll(List<String[]> pairList, Map<String, String> instMap) throws TopsStringFormatException {
         //the domain names we are comparing are (pairKey, pairValue).
-        String pair1, pair2;
-        String[][] pairs = (String[][]) pairList.toArray(new String[0][]);
-        List<String> couple = new ArrayList<String>();
+        String pair1;
+        String pair2;
+        String[][] pairs = pairList.toArray(new String[0][]);
+        List<String> couple = new ArrayList<>();
         TParser tp = new TParser();
         Comparer comparer = new Comparer();
 
@@ -71,30 +79,35 @@ public class AllVAllWrapper {
                 try {
                     Pattern chi = comparer.findPattern(couple);
                     
-                    System.out.print(Utilities.doCompression(couple, chi));
-                    System.out.print('\t');
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(Utilities.doCompression(couple, chi));
+                    builder.append('\t');
                     //print out the pattern
-                    System.out.print(pair1 + '\t' + pair2 + '\t');  //say which we are trying
-                    System.out.print(chi);
-                    System.out.print('\t');
+                    builder.append(pair1 + '\t' + pair2 + '\t');  //say which we are trying
+                    builder.append(chi);
+                    builder.append('\t');
                     tp.load(couple.get(0));
-                    System.out.print(tp.getClassification());
-                    System.out.print('\t');
+                    builder.append(tp.getClassification());
+                    builder.append('\t');
                     tp.load(couple.get(1));
-                    System.out.print(tp.getClassification());
-                    System.out.print('\n');
+                    builder.append(tp.getClassification());
+                    builder.append('\n');
+                    
+                    log.log(Level.INFO, "{0}", builder);
                     
                     comparer.clear();
                 } catch (Exception e) { 
-                    System.err.println(pair1 + " , " + pair2 + ", " + e); 
+                    log.log(Level.WARNING, "{0}, {1}, {2}", new Object[] { pair1, pair2, e });
                 }
-            } else { System.out.println("ONE OF THE NAMES WAS NULL!"); }
+            } else { 
+                log.log(Level.WARNING, "One of {0} is null", couple);  
+            }
         }
     }
 
 
     public List<String> getNames(List<String> examples) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         TParser tp = new TParser();
 
         for (String nextLine : examples) {
@@ -108,8 +121,8 @@ public class AllVAllWrapper {
 
     // do an all-v-all on the examples
     public Result[] run(List<String> names, List<String> examples) {
-        List<String[]> pairList = new ArrayList<String[]>();
-        Map<String, String> instMap = new HashMap<String, String>(names.size());
+        List<String[]> pairList = new ArrayList<>();
+        Map<String, String> instMap = new HashMap<>(names.size());
 
         // map the names to the examples
         for (int i = 0; i < examples.size(); i++) {
@@ -135,7 +148,7 @@ public class AllVAllWrapper {
         try {
             results = this.allVsAllWithResults(pairList, instMap);
         } catch (TopsStringFormatException tsfe) {
-            System.err.println(tsfe.toString());
+            log.warning(tsfe.toString());
             results = new Result[0];
         }
 

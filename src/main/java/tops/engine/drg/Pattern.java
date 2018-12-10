@@ -31,16 +31,17 @@ public class Pattern implements PatternI {
 
     private float compression;
     
-    private Vertex rhv, lhv;
+    private Vertex lhv;
+    private Vertex rhv;
 
     private Edge currentChiralEdge;
     
     private List<Vertex> currentSheet;
 
     public Pattern() {
-        this.head = new String("pattern:");
-        this.vertices = new ArrayList<Vertex>();
-        this.edges = new ArrayList<Edge>();
+        this.head = "pattern:";
+        this.vertices = new ArrayList<>();
+        this.edges = new ArrayList<>();
         this.outsertC = "";
         this.lastEdgeVertex = -1;
         this.outsertN = "";
@@ -48,7 +49,7 @@ public class Pattern implements PatternI {
         
         this.lhv = null;	//XXX
         this.rhv = null;	//XXX
-        this.currentSheet = new ArrayList<Vertex>();
+        this.currentSheet = new ArrayList<>();
     }
 
     public Pattern(String s) throws TopsStringFormatException {
@@ -97,7 +98,6 @@ public class Pattern implements PatternI {
         // edge of which this sheet is composed
     	Vertex l = new Vertex(e.getLType(), i);
     	Vertex r = new Vertex(e.getRType(), j);
-//    	System.out.println("vsize " + this.vertices.size());
     	
         this.vertices.add(i, l);
         this.vertices.add(j, r);
@@ -172,6 +172,7 @@ public class Pattern implements PatternI {
     public void extend(int i, int j, Edge e) {
         this.edges.add(this.makeEdge(i, j, e.getType()));
         this.sortEdges();	// TODO : more efficient to sort as we add somehow? 
+        // FIXME - convert to a ordered set?
     }
 
     private Edge makeEdge(int i, int j, char e) {
@@ -234,7 +235,7 @@ public class Pattern implements PatternI {
     }
 
     private String flipString(String toFlip) {
-        StringBuffer toReturn = new StringBuffer();
+        StringBuilder toReturn = new StringBuilder();
         for (int i = 0; i < toFlip.length(); i++) {
             char c = toFlip.charAt(i);
             if (c >= 97)
@@ -283,8 +284,7 @@ public class Pattern implements PatternI {
             
             // problem : edge exists, but it already has chirality!
             else {
-                System.out.println("edge between " + i + " and " + j
-                        + " not A or P! ");
+                System.out.println("edge between " + i + " and " + j + " not A or P! ");
                 return false;
             }
         } else { // else, no existing edge - add new one
@@ -320,11 +320,11 @@ public class Pattern implements PatternI {
         }
     }
 
-    public void addEdges(ArrayList<Edge> newEdges) {
+    public void addEdges(List<Edge> newEdges) {
         this.edges.addAll(newEdges);
     }
 
-    public void addVertices(ArrayList<Vertex> newVertices) {
+    public void addVertices(List<Vertex> newVertices) {
         this.vertices.addAll(newVertices);
     }
 
@@ -372,7 +372,7 @@ public class Pattern implements PatternI {
 
     // get the simple list of matching
     public String getVertexMatchedString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < this.vertices.size(); ++i) {
             Vertex nxt = this.vertices.get(i);
             int nxtMatch = nxt.getMatch();
@@ -386,7 +386,7 @@ public class Pattern implements PatternI {
 
     // get the correspondence list eg : [1, 2, 4, 5]
     public String getMatchString() {
-        StringBuffer matchresult = new StringBuffer(" [");
+        StringBuilder matchresult = new StringBuilder(" [");
         for (int i = 0; i < this.vertices.size(); ++i) {
             Vertex nxt = this.vertices.get(i);
             if (nxt.getMatch() != 0) {
@@ -415,14 +415,14 @@ public class Pattern implements PatternI {
             if (nxt.getMatch() > 0) {
                 this.inserts[i] = nxt.getMatch() - last;
             } else {
-
+                // TODO
             }
         }
     }
 
     // get the pattern with inserts eg : N[0]E[1]E[2]E[1]C
     public String getInsertString(PatternI d) {
-        StringBuffer insertresult = new StringBuffer(" N");
+        StringBuilder insertresult = new StringBuilder(" N");
         int last = 0;
         int isize = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
@@ -455,7 +455,7 @@ public class Pattern implements PatternI {
     // get an array of strings of the unattached vertices
     // 'd' is an EXAMPLE, not a pattern
     public String[] getInsertStringArr(PatternI d, boolean flip) { 
-        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<String> results = new ArrayList<>();
         int last = 1;
         int m = 0;
         for (int i = 1; i < this.vertices.size() - 1; ++i) {
@@ -466,12 +466,12 @@ public class Pattern implements PatternI {
                 results.add(d.getVertexString(last, m, flip));
                 last = m + 1;
             } else { // it is a random, unattached vertex. do nothing
-                results.add(new String());
+                results.add("");
             }
         }
         String cOut = d.getVertexString(last, 0, flip);
         results.add(cOut); // get the C-outsert
-        return (String[]) results.toArray(new String[0]);
+        return results.toArray(new String[0]);
     }
 
     public String splice(String[] ins) {
@@ -496,7 +496,7 @@ public class Pattern implements PatternI {
     // this method could replace the /splice/ method above.
     // except that splice actually adds new vertices...
     public String mergeInsertArrayWithVertices(String[] ins) {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
         for (int i = 0; i < ins.length; i++) {
             ret.append(this.vertices.get(i).getType());
             ret.append(ins[i]);
@@ -507,7 +507,6 @@ public class Pattern implements PatternI {
 
     public boolean preProcess(PatternI d) {
         if (this.esize() > d.esize()) {
-//        	System.out.println("pattern larger than target");
             return false; // pattern must be smaller.
         }
         boolean found = false;
@@ -600,7 +599,8 @@ public class Pattern implements PatternI {
     }
 
     public boolean subSequenceCompare(String a, String b) {
-        int ptrA, ptrB;
+        int ptrA;
+        int ptrB;
         char c;
         ptrA = ptrB = 0;
         while (ptrA < a.length()) {
@@ -617,7 +617,7 @@ public class Pattern implements PatternI {
 
     public void setMovedUpTo(int k) {
         for (int i = 0; i < k; ++i) {
-            ((Edge) this.edges.get(i)).moved = false;
+            this.edges.get(i).moved = false;
         }
     }
 
@@ -663,7 +663,8 @@ public class Pattern implements PatternI {
     }
 
     public void sortEdges() {		// TODO Replace with Collections.sort??
-        Edge first, second;
+        Edge first;
+        Edge second;
         for (int i = 0; i < this.esize(); ++i) {
             for (int j = 0; j < this.esize() - 1; ++j) {
                 first = this.edges.get(j);
@@ -719,11 +720,11 @@ public class Pattern implements PatternI {
         if (start == 0)
             start = 1; // miss 'N'
         if ((start >= end) || (end > this.vertices.size()))
-            return new String();
-        StringBuffer vstr = new StringBuffer();
+            return "";
+        StringBuilder vstr = new StringBuilder();
         char c;
         for (int i = start; i < end; ++i) {
-            c = ((Vertex) (this.vertices.get(i))).getType();
+            c = this.vertices.get(i).getType();
             if (flip)
                 c = (Character.isUpperCase(c) ? Character.toLowerCase(c) : Character.toUpperCase(c));
             vstr.append(c);
@@ -740,7 +741,7 @@ public class Pattern implements PatternI {
     }
 
     public String getEdgeString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (Edge e : this.edges) {
             result.append(e.getLeftVertex().getPos());
             result.append(':');
@@ -752,7 +753,7 @@ public class Pattern implements PatternI {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         result.append(this.getName());
         result.append(' ');

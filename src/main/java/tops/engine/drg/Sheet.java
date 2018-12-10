@@ -1,8 +1,9 @@
 package tops.engine.drg;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 import tops.engine.Edge;
 import tops.engine.Vertex;
@@ -11,15 +12,16 @@ public class Sheet {
 
     private List<Vertex> vertices; // a reference to the underlying list of vertices
 
-    private Stack<Edge> edges; // a stack to enable mistakes to be popped off
+    private Deque<Edge> edges; // a stack to enable mistakes to be popped off
 
     private int lastInsertedVertex; // last vertex insertion point in the List 
 
-    private Vertex rhv, lhv;
+    private Vertex rhv;
+    private Vertex lhv;
 
     public Sheet(Vertex l, Vertex r, char type, List<Vertex> v) {
         this.vertices = v;
-        this.edges = new Stack<Edge>();
+        this.edges = new ArrayDeque<>();
         this.lastInsertedVertex = 0;
         this.lhv = l;
         this.rhv = r;
@@ -43,8 +45,8 @@ public class Sheet {
         return this.rhv.getPos();
     }
 
-    public ArrayList<Edge> getEdges() {
-        return new ArrayList<Edge>(this.edges);
+    public List<Edge> getEdges() {
+        return new ArrayList<>(this.edges);
     }
 
     public boolean canExtend(int i, char typ) {
@@ -141,7 +143,6 @@ public class Sheet {
 
     @Override
     public String toString() {
-        return new String("vertices = " + this.vertices.toString() + 
-        		", edges = " + this.edges.toString());
+        return "vertices = " + this.vertices.toString() + ", edges = " + this.edges.toString();
     }
 }
