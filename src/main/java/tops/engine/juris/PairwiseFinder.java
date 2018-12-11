@@ -100,11 +100,11 @@ public class PairwiseFinder {
         this.cPV = this.countPV(this.maxpat);
         this.cPE = this.countPE(this.maxpat);
 
-        this.CVraw = c.total_vert - this.cPV;
-        this.CEraw = c.total_edge - this.cPE;
+        this.CVraw = c.getTotalVert() - this.cPV;
+        this.CEraw = c.getTotalEdge() - this.cPE;
 
-        this.tmp1 = c.total_things - (this.CVraw + this.CEraw);
-        this.tmp2 = c.total_things - c.max_things;
+        this.tmp1 = c.getTotalThings() - (this.CVraw + this.CEraw);
+        this.tmp2 = c.getTotalThings() - c.getMaxThings();
 
         this.Cnorm = 1 - ((float) this.tmp1 / (float) this.tmp2);
         return this.Cnorm;
@@ -136,7 +136,7 @@ public class PairwiseFinder {
         } else {
             this.Mtot++;
         }
-        if (gr.esize > 0) {
+        if (gr.geteSize() > 0) {
             if (this.m.run(gr.toString(), false)) {
             } else {
                 return;
@@ -151,8 +151,8 @@ public class PairwiseFinder {
         if ((gr.toString()).length() > this.maxpat.length())
             this.maxpat = gr.toString();
 
-        if (gr.canAddEdge(1, this.c.maxAIn)) {
-            if ((v = gr.getEdges(this.c.maxAOut, 'A')) != null) {
+        if (gr.canAddEdge(1, this.c.getMaxAIn())) {
+            if ((v = gr.getEdges(this.c.getMaxAOut(), 'A')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(
                             new Grower(gr.toString()).add(v[i], 'A'));
@@ -160,8 +160,8 @@ public class PairwiseFinder {
             }
         }
 
-        if (gr.canAddEdge(3, this.c.maxPIn)) {
-            if ((v = gr.getEdges(this.c.maxPOut, 'P')) != null) {
+        if (gr.canAddEdge(3, this.c.getMaxPIn())) {
+            if ((v = gr.getEdges(this.c.getMaxPOut(), 'P')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(
                             new Grower(gr.toString()).add(v[i], 'P'));
@@ -169,8 +169,8 @@ public class PairwiseFinder {
             }
         }
 
-        if (gr.canAddEdge(5, this.c.maxRIn)) {
-            if ((v = gr.getEdges(this.c.maxROut, 'R')) != null) {
+        if (gr.canAddEdge(5, this.c.getMaxRIn())) {
+            if ((v = gr.getEdges(this.c.getMaxROut(), 'R')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(
                             new Grower(gr.toString()).add(v[i], 'R'));
@@ -178,8 +178,8 @@ public class PairwiseFinder {
             }
         }
 
-        if (gr.canAddEdge(7, this.c.maxLIn)) {
-            if ((v = gr.getEdges(this.c.maxLOut, 'L')) != null) {
+        if (gr.canAddEdge(7, this.c.getMaxLIn())) {
+            if ((v = gr.getEdges(this.c.getMaxLOut(), 'L')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(
                             new Grower(gr.toString()).add(v[i], 'L'));
@@ -187,8 +187,8 @@ public class PairwiseFinder {
             }
         }
 
-        if (gr.canAddEdge(9, this.c.maxZIn)) {
-            if ((v = gr.getEdges(this.c.maxZOut, 'Z')) != null) {
+        if (gr.canAddEdge(9, this.c.getMaxZIn())) {
+            if ((v = gr.getEdges(this.c.getMaxZOut(), 'Z')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(
                             new Grower(gr.toString()).add(v[i], 'Z'));
@@ -196,8 +196,8 @@ public class PairwiseFinder {
             }
         }
 
-        if (gr.canAddEdge(11, this.c.maxXIn)) {
-            if ((v = gr.getEdges(this.c.maxXOut, 'X')) != null) {
+        if (gr.canAddEdge(11, this.c.getMaxXIn())) {
+            if ((v = gr.getEdges(this.c.getMaxXOut(), 'X')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(
                             new Grower(gr.toString()).add(v[i], 'X'));
@@ -208,19 +208,19 @@ public class PairwiseFinder {
         // if (edgeJustAdded || gr.vsize < 2) { //ensure that we are in need of
         // a new vertex
 
-        if (gr.num_E < this.c.maxEUpper) {
+        if (gr.getNumUpperE() < this.c.getMaxEUpper()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addUpStrand());
         }
 
-        if (gr.num_e < this.c.maxELower) {
+        if (gr.getNumLowerE() < this.c.getMaxELower()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addDownStrand());
         }
 
-        if (gr.num_H < this.c.maxHUpper) {
+        if (gr.getNumUpperH() < this.c.getMaxHUpper()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addUpHelix());
         }
 
-        if (gr.num_h < this.c.maxHLower) {
+        if (gr.getNumLowerH() < this.c.getMaxHLower()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addDownHelix());
         }
     }

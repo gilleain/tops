@@ -97,9 +97,7 @@ class Matcher {
             // NOTE: Resetting now FLIPS too!
             if (!matchFound) {
                 if (this.pattern.preProcess(this.diagrams[i], noInserts)) {
-                    if (this.match(this.diagrams[i], noInserts)) {
-                        matchFound = true; // everything OK
-                    } else {
+                    if (!this.match(this.diagrams[i], noInserts)) {
                         return false;
                     }
                 } else {
@@ -123,18 +121,20 @@ class Matcher {
             matchFound = false;
             this.pattern = this.diagrams[i]; // DANGER WIL ROBINSON!
             if (this.pattern.preProcess(instance, noInserts)) {
-                if (this.match(instance, noInserts))
+                if (this.match(instance, noInserts)) {
                     matchFound = true;
-                if (!this.stringMatch(this.pattern.toString(), diagram))
+                }
+                if (!this.stringMatch(this.pattern.toString(), diagram)) {
                     matchFound = false;
+                }
             }
             this.pattern.reset();
-            if (!matchFound) {
-                if (this.pattern.preProcess(instance, noInserts)) {
-                    if (this.match(instance, noInserts))
-                        matchFound = true;
-                    if (!this.stringMatch(this.pattern.toString(), diagram))
-                        matchFound = false;
+            if (!matchFound && this.pattern.preProcess(instance, noInserts)) {
+                if (this.match(instance, noInserts)) {
+                    matchFound = true;
+                }
+                if (!this.stringMatch(this.pattern.toString(), diagram)) {
+                    matchFound = false;
                 }
             }
             this.pattern.reset();
@@ -274,8 +274,8 @@ class Matcher {
                 return false;
             }
 
-            if (this.findNextMatch(current) && this.verticesIncrease(current)
-                    && ((noInserts) || this.subSeqMatch(current, last, d))) {
+            if (this.findNextMatch(current) && this.verticesIncrease()
+                    && (noInserts || this.subSeqMatch(current, last, d))) {
                 last = current.getRightVertex().getPos() + 1; // aargh!
                 ++this.k;
             } else {
@@ -289,23 +289,18 @@ class Matcher {
             }
         }
 
-        int rhe;
         if (this.pattern.noEdges() || noInserts) {
-            rhe = 0;
+            return true;
         } else {
             Edge e = this.pattern.getEdge(this.k);
-            rhe = e.getCurrentMatch().getRightVertex().getPos();
+            int rhe = e.getCurrentMatch().getRightVertex().getPos();
 
             String doutCup = d.getVertexString(rhe + 1, 0, false);
             String doutCdn = d.getVertexString(rhe + 1, 0, true);
-            if (this.subSeqMatch(this.pattern.getOutsertC(), doutCup)
-                    && this.subSeqMatch(this.pattern.getOutsertC(), doutCdn)) {
-                return false;
-            } else {
-                return true;
-            }
+            // TODO - need to invert the logic of subSeqMatch
+            return !this.subSeqMatch(this.pattern.getOutsertC(), doutCup)
+                    && !this.subSeqMatch(this.pattern.getOutsertC(), doutCdn);
         }
-        return true; // noedges or no in/out-serts
     }
 
     // ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
@@ -357,7 +352,7 @@ class Matcher {
         return found;
     }
 
-    boolean verticesIncrease(Edge current) {
+    boolean verticesIncrease() {
         int last = 0;
         int[] m = this.pattern.getMatches();
         for (int i = 0; i < m.length; i++) {

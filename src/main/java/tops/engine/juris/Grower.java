@@ -5,10 +5,18 @@ import java.util.List;
 
 class Grower {
 
-    public int num_h, num_H, num_e, num_E, vsize, esize, old_esize, old_vsize,
-            rHE, lHE;
+    private int numLowerH;
+    private int numUpperH;
+    private int numLowerE;
+    private int numUpperE;
+    private int vSize;
+    private int eSize;
+    private int oldEsize;
+    private int oldVsize;
+    private int rHE;
+    private int lHE;
 
-    private StringBuffer pattern;
+    private StringBuilder pattern;
 
     private String[] edgeStrings;
 
@@ -17,84 +25,82 @@ class Grower {
     private int[] caster;
 
     public Grower() { // empty constructor - start with a null pattern!
-        this.num_h = this.num_H = this.num_e = this.num_E = 0; // really!
-        this.vsize = 0;
-        this.esize = 0;
-        this.old_vsize = 0;
-        this.old_esize = 0;
-        this.rHE = 0;
-        this.lHE = 0;
+        this.setNumLowerH(this.setNumUpperH(this.setNumLowerE(this.setNumUpperE(0)))); // really!
+        this.setvSize(0);
+        this.seteSize(0);
+        this.setOldVsize(0);
+        this.setOldEsize(0);
+        this.setrHE(0);
+        this.setlHE(0);
 
-        this.pattern = new StringBuffer("NC ");
-        this.edgeArrays = new ArrayList<int[]>();
+        this.pattern = new StringBuilder("NC ");
+        this.edgeArrays = new ArrayList<>();
         this.edgeArrays.add(new int[12]); // dummy edge
     }
 
     public Grower(String p) {
         String body;
         int f;
-        if ((f = p.indexOf(" ")) != -1) {
+        if ((f = p.indexOf(' ')) != -1) {
             body = p.substring(0, f);
-            this.edgeStrings = this.splitEdges(p.substring(p.lastIndexOf(" ") + 1));
+            this.edgeStrings = this.splitEdges(p.substring(p.lastIndexOf(' ') + 1));
         } else {
             body = p;
-            this.esize = 0;
+            this.seteSize(0);
         } // no edges!
     
-        this.num_h = this.findMax(body, 'h');
-        this.num_H = this.findMax(body, 'H');
-        this.num_e = this.findMax(body, 'e');
-        this.num_E = this.findMax(body, 'E');
-        this.vsize = body.length() - 2;
-        this.old_esize = 0;
-        this.old_vsize = 0;
-        this.rHE = this.vsize;
-        this.lHE = 1; // wouldn't it be nice not to store the N & C terminii?
+        this.setNumLowerH(this.findMax(body, 'h'));
+        this.setNumUpperH(this.findMax(body, 'H'));
+        this.setNumLowerE(this.findMax(body, 'e'));
+        this.setNumUpperE(this.findMax(body, 'E'));
+        this.setvSize(body.length() - 2);
+        this.setOldEsize(0);
+        this.setOldVsize(0);
+        this.setrHE(this.getvSize());
+        this.setlHE(1); // wouldn't it be nice not to store the N & C terminii?
     
-        this.pattern = new StringBuffer(p);
+        this.pattern = new StringBuilder(p);
     
-        this.edgeArrays = new ArrayList<int[]>();
-        for (int i = 0; i < this.vsize + 1; ++i) {
+        this.edgeArrays = new ArrayList<>();
+        for (int i = 0; i < this.getvSize() + 1; ++i) {
             this.edgeArrays.add(this.calculate(i));
         }
     }
 
     public boolean canAddEdge(int idx, int max) { // for the RIGHT hand end!
-        if (this.vsize < 2)
+        if (this.getvSize() < 2)
             return false; // you can't add edges to a single vertex!
         
         // better to not try adding h-bonds to helices!
-        if (((this.pattern.charAt(this.rHE) == 'H') || (this.pattern.charAt(this.rHE) == 'h'))
+        if (((this.pattern.charAt(this.getrHE()) == 'H') || (this.pattern.charAt(this.getrHE()) == 'h'))
                 && ((idx != 5) || (idx != 7)))
             return false;
-        this.caster = (int[]) (this.edgeArrays.get(this.rHE));
+        this.caster = (int[]) (this.edgeArrays.get(this.getrHE()));
         return (this.caster[idx] < max);
     }
 
     // returns a list of the vertices to which an edge of this type can be
     // attached.
     public int[] getEdges(int max, char tp) {
-        int[] ptr, vals;
-        char lefttype, righttype;
+        int[] ptr;
+        int[] vals;
+        char lefttype;
+        char righttype;
         int idx = this.translateOut(tp);
-        righttype = this.pattern.charAt(this.rHE);
+        righttype = this.pattern.charAt(this.getrHE());
         int counter = 0;
         int l;
-        vals = new int[this.vsize];
+        vals = new int[this.getvSize()];
     
         // note that the left hand end is being used as an incrementer, and is
         // SET by the search process
         // NO! this is not possible, as the only thing that can change is the
         // NEW grower object passed to the function
-        for (l = 1; l < this.vsize; ++l) {
+        for (l = 1; l < this.getvSize(); ++l) {
             ptr = (int[]) (this.edgeArrays.get(l));
             lefttype = this.pattern.charAt(l);
-            // System.out.println("lHE = " + l + " rHE = " + rHE + " ptr[idx] =
-            // " + ptr[idx] + " max = " + max + " ltype = " + lefttype + " rtype
-            // = " + righttype);
-            if ((ptr[idx] < max) && (this.notGot(l, this.rHE))
+            if ((ptr[idx] < max) && (this.notGot(l, this.getrHE()))
                     && (this.verify(lefttype, righttype, tp))) {
-                // System.out.println("number " + counter + " is valid! ");
                 vals[counter++] = l; // store the valid vertex pos
             }
         }
@@ -105,44 +111,44 @@ class Grower {
     // rHE != vsize
     // DON@T TRY ANY MORE VERTICES : LCS WORKS!
     public Grower addUpStrand() {
-        this.pattern.insert(++this.vsize, 'E');
+        this.pattern.insert(this.setvSize(this.getvSize() + 1), 'E');
         this.edgeArrays.add(new int[12]);
-        this.rHE++;
-        this.num_E++;
+        this.setrHE(this.getrHE() + 1);
+        this.setNumUpperE(this.getNumUpperE() + 1);
         return this;
     }
 
     public Grower addDownStrand() {
-        this.pattern.insert(++this.vsize, 'e');
+        this.pattern.insert(this.setvSize(this.getvSize() + 1), 'e');
         this.edgeArrays.add(new int[12]);
-        this.rHE++;
-        this.num_e++;
+        this.setrHE(this.getrHE() + 1);
+        this.setNumLowerE(this.getNumLowerE() + 1);
         return this;
     }
 
     public Grower addUpHelix() {
-        this.pattern.insert(++this.vsize, 'H');
+        this.pattern.insert(this.setvSize(this.getvSize() + 1), 'H');
         this.edgeArrays.add(new int[12]);
-        this.rHE++;
-        this.num_H++;
+        this.setrHE(this.getrHE() + 1);
+        this.setNumUpperH(this.getNumUpperH() + 1);
         return this;
     }
 
     public Grower addDownHelix() {
-        this.pattern.insert(++this.vsize, 'h');
+        this.pattern.insert(this.setvSize(this.getvSize() + 1), 'h');
         this.edgeArrays.add(new int[12]);
-        this.rHE++;
-        this.num_h++;
+        this.setrHE(this.getrHE() + 1);
+        this.setNumLowerH(this.getNumLowerH() + 1);
         return this;
     }
 
     public Grower add(int l, char t) {
-        this.pattern.append(l).append(':').append(this.rHE).append(t);
+        this.pattern.append(l).append(':').append(this.getrHE()).append(t);
         this.caster = (int[]) (this.edgeArrays.get(l));
         this.caster[this.translateOut(t)]++; // outgoing A
-        this.caster = (int[]) (this.edgeArrays.get(this.rHE));
+        this.caster = (int[]) (this.edgeArrays.get(this.getrHE()));
         this.caster[this.translateIn(t)]++; // incoming A
-        this.esize++;
+        this.seteSize(this.geteSize() + 1);
         return this;
     }
 
@@ -157,7 +163,7 @@ class Grower {
         char type;
         String sv = String.valueOf(j);
         int len = sv.length();
-        for (int i = 0; i < this.esize; ++i) {
+        for (int i = 0; i < this.geteSize(); ++i) {
             curr = this.edgeStrings[i];
             type = curr.charAt(curr.length() - 1);
             if (curr.regionMatches(0, sv, 0, len)) { // outgoing edge from
@@ -174,10 +180,10 @@ class Grower {
     private String[] splitEdges(String e) {
         for (int i = 0; i < e.length(); ++i) {
             if (e.charAt(i) == ':')
-                this.esize++;
+                this.seteSize(this.geteSize() + 1);
         }
 
-        String[] result = new String[this.esize];
+        String[] result = new String[this.geteSize()];
         int counter = 0;
         int last = 0;
         for (int i = 0; i < e.length(); ++i) {
@@ -218,14 +224,12 @@ class Grower {
 
         if (((t == 'P') || (t == 'Z') || (t == 'X')) && (l != r))
             result = false; // parallel, but Ee or eE
-            // System.out.println("verification : " + result);
         return result;
     }
 
     private boolean notGot(int lhe, int rhe) {
-        String probe = new String();
-        probe += String.valueOf(lhe) + ':' + String.valueOf(rhe);
-        return ((this.pattern.toString()).indexOf(probe) == -1);
+        String probe = String.valueOf(lhe) + ':' + String.valueOf(rhe);
+        return this.pattern.toString().indexOf(probe) == -1;
     }
 
     private int translateOut(char c) {
@@ -242,8 +246,9 @@ class Grower {
                 return 8;
             case 'X':
                 return 10;
+            default:
+                return -1;
         }
-        return -1;
     }
 
     private int translateIn(char c) {
@@ -260,8 +265,93 @@ class Grower {
                 return 9;
             case 'X':
                 return 11;
+            default:
+                return -1;
         }
-        return -1;
+    }
+
+    public int getNumLowerH() {
+        return numLowerH;
+    }
+
+    public void setNumLowerH(int numLowerH) {
+        this.numLowerH = numLowerH;
+    }
+
+    public int getNumUpperH() {
+        return numUpperH;
+    }
+
+    public int setNumUpperH(int numUpperH) {
+        this.numUpperH = numUpperH;
+        return numUpperH;
+    }
+
+    public int getNumLowerE() {
+        return numLowerE;
+    }
+
+    public int setNumLowerE(int numLowerE) {
+        this.numLowerE = numLowerE;
+        return numLowerE;
+    }
+
+    public int getNumUpperE() {
+        return numUpperE;
+    }
+
+    public int setNumUpperE(int numUpperE) {
+        this.numUpperE = numUpperE;
+        return numUpperE;
+    }
+
+    public int getvSize() {
+        return vSize;
+    }
+
+    public int setvSize(int vSize) {
+        this.vSize = vSize;
+        return vSize;
+    }
+
+    public int geteSize() {
+        return eSize;
+    }
+
+    public void seteSize(int eSize) {
+        this.eSize = eSize;
+    }
+
+    public int getOldEsize() {
+        return oldEsize;
+    }
+
+    public void setOldEsize(int oldEsize) {
+        this.oldEsize = oldEsize;
+    }
+
+    public int getOldVsize() {
+        return oldVsize;
+    }
+
+    public void setOldVsize(int oldVsize) {
+        this.oldVsize = oldVsize;
+    }
+
+    public int getrHE() {
+        return rHE;
+    }
+
+    public void setrHE(int rHE) {
+        this.rHE = rHE;
+    }
+
+    public int getlHE() {
+        return lHE;
+    }
+
+    public void setlHE(int lHE) {
+        this.lHE = lHE;
     }
 
 }

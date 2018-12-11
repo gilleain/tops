@@ -1,8 +1,9 @@
 package tops.engine.juris;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
+import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TParser {
 
@@ -68,14 +69,14 @@ public class TParser {
     public String[] getEdges() {
         String tail = this.getEdgeString();
         Matcher m = this.edgeP.matcher(tail);
-        ArrayList<String> bits = new ArrayList<String>();
+        List<String> bits = new ArrayList<>();
         while (m.find()) {
             // start i at 1, because group(0) is the whole match!
             for (int i = 1; i <= m.groupCount(); i++) {
                 bits.add(m.group(i));
             }
         }
-        return (String[]) bits.toArray(new String[0]);
+        return bits.toArray(new String[0]);
     }
 
     public String getClassification() {

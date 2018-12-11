@@ -10,61 +10,61 @@ public class Constrainer {
 
     private int pop;
 
-    public int maxAOut;
+    private int maxAOut;
 
-    public int maxPOut;
+    private int maxPOut;
 
-    public int maxLOut;
+    private int maxLOut;
 
-    public int maxROut;
+    private int maxROut;
 
-    public int maxZOut;
+    private int maxZOut;
 
-    public int maxXOut;
+    private int maxXOut;
 
-    public int maxAIn;
+    private int maxAIn;
 
-    public int maxPIn;
+    private int maxPIn;
 
-    public int maxLIn;
+    private int maxLIn;
 
-    public int maxRIn;
+    private int maxRIn;
 
-    public int maxZIn;
+    private int maxZIn;
 
-    public int maxXIn;
+    private int maxXIn;
 
-    public int maxELower;
+    private int maxELower;
 
-    public int maxEUpper;
+    private int maxEUpper;
 
-    public int maxHLower;
+    private int maxHLower;
 
-    public int maxHUpper;
+    private int maxHUpper;
 
-    public int max_vert;
+    private int maxVert;
 
-    public int max_A;
+    private int maxA;
 
-    public int max_P;
+    private int maxP;
 
-    public int max_Z;
+    private int maxZ;
 
-    public int max_X;
+    private int maxX;
 
-    public int max_R;
+    private int maxR;
 
-    public int max_L;
+    private int maxL;
 
-    public int max_edge;
+    private int maxEdge;
 
-    public int max_things;
+    private int maxThings;
 
-    public int total_vert;
+    private int totalVert;
 
-    public int total_edge;
+    private int totalEdge;
 
-    public int total_things;
+    private int totalThings;
 
     public Constrainer(String[] victims) {
         this.pop = victims.length;
@@ -77,41 +77,41 @@ public class Constrainer {
             tp.next();
         }
 
-        this.maxAOut = this.findMaxOutdex('A');
+        this.setMaxAOut(this.findMaxOutdex('A'));
         this.maxPOut = this.findMaxOutdex('P');
-        this.maxLOut = this.findMaxOutdex('L');
-        this.maxROut = this.findMaxOutdex('R');
-        this.maxZOut = this.findMaxOutdex('Z');
-        this.maxXOut = this.findMaxOutdex('X');
+        this.setMaxLOut(this.findMaxOutdex('L'));
+        this.setMaxROut(this.findMaxOutdex('R'));
+        this.setMaxZOut(this.findMaxOutdex('Z'));
+        this.setMaxXOut(this.findMaxOutdex('X'));
 
-        this.maxAIn = this.findMaxIndex('A');
-        this.maxPIn = this.findMaxIndex('P');
-        this.maxLIn = this.findMaxIndex('L');
-        this.maxRIn = this.findMaxIndex('R');
-        this.maxZIn = this.findMaxIndex('Z');
-        this.maxXIn = this.findMaxIndex('X');
+        this.setMaxAIn(this.findMaxIndex('A'));
+        this.setMaxPIn(this.findMaxIndex('P'));
+        this.setMaxLIn(this.findMaxIndex('L'));
+        this.setMaxRIn(this.findMaxIndex('R'));
+        this.setMaxZIn(this.findMaxIndex('Z'));
+        this.setMaxXIn(this.findMaxIndex('X'));
 
-        this.maxELower = this.findMin('e', this.vstrs);
-        this.maxEUpper = this.findMin('E', this.vstrs);
-        this.maxHLower = this.findMin('h', this.vstrs);
-        this.maxHUpper = this.findMin('H', this.vstrs);
+        this.setMaxELower(this.findMin('e', this.vstrs));
+        this.setMaxEUpper(this.findMin('E', this.vstrs));
+        this.setMaxHLower(this.findMin('h', this.vstrs));
+        this.setMaxHUpper(this.findMin('H', this.vstrs));
         
      // !!!if e = E and h = H, then it doesn't matter which we sum!
-        this.max_vert = this.maxELower + this.maxHUpper; 
+        this.setMaxVert(this.getMaxELower() + this.getMaxHUpper()); 
 
-        this.max_A = this.findMin('A', this.estrs);
-        this.max_P = this.findMin('P', this.estrs);
-        this.max_Z = this.findMin('Z', this.estrs);
-        this.max_X = this.findMin('X', this.estrs);
-        this.max_R = this.findMin('R', this.estrs);
-        this.max_L = this.findMin('L', this.estrs);
-        this.max_edge = this.max_A + this.max_P + this.max_Z + this.max_X + this.max_R + this.max_L;
+        this.setMaxA(this.findMin('A', this.estrs));
+        this.setMaxP(this.findMin('P', this.estrs));
+        this.setMaxZ(this.findMin('Z', this.estrs));
+        this.setMaxX(this.findMin('X', this.estrs));
+        this.setMaxR(this.findMin('R', this.estrs));
+        this.setMaxL(this.findMin('L', this.estrs));
+        this.setMaxEdge(this.getMaxA() + this.getMaxP() + this.getMaxZ() + this.getMaxX() + this.getMaxR() + this.getMaxL());
 
-        this.max_things = this.max_vert + this.max_edge;
+        this.setMaxThings(this.getMaxVert() + this.getMaxEdge());
 
-        this.total_vert = this.sums(this.vstrs);
-        this.total_edge = this.sums(this.estrs);
-        this.total_things = this.total_vert + this.total_edge;
+        this.setTotalVert(this.sums(this.vstrs));
+        this.setTotalEdge(this.sums(this.estrs));
+        this.setTotalThings(this.getTotalVert() + this.getTotalEdge());
     }
 
     private int sums(String[] e) {
@@ -128,26 +128,26 @@ public class Constrainer {
     private int findMin(char n, String[] vORe) {
         int min = 0; // store best result
         // N is the /opposite/ of n, in terms of case
-        char N = (Character.isUpperCase(n)) ? Character.toLowerCase(n)
+        char nChar = (Character.isUpperCase(n)) ? Character.toLowerCase(n)
                 : Character.toUpperCase(n);
         char ch;
         for (int i = 0; i < this.pop; ++i) {
             int c = 0;
             for (int j = 0; j < vORe[i].length(); ++j) {
                 ch = vORe[i].charAt(j);
-                if ((ch == n) || (ch == N))
+                if ((ch == n) || (ch == nChar))
                     c++;
             }
             if (c == 0)
                 return 0;
-            if ((c <= min) || ((c > 0) && (min == 0)))
+            if (c <= min)
                 min = c;
         }
         return min;
     }
 
     private int findMaxOutdex(char type) {
-        ArrayList<String> fragments = new ArrayList<String>();
+        ArrayList<String> fragments = new ArrayList<>();
         int max = 0;
         for (int i = 0; i < this.estrs.length; ++i) {
             int last = 0;
@@ -169,13 +169,11 @@ public class Constrainer {
             // currmax stores the maximum degree for this graph
             int currmax = 0; 
 
-            String temp = (String) (fragments.get(0)); // look at first
+            String temp = fragments.get(0); // look at first
             String node = temp.substring(0, temp.indexOf(':'));
 
             int c = 0;
-            Iterator<String> itr = fragments.iterator();
-            while (itr.hasNext()) {
-                String edge = (String) (itr.next());
+            for (String edge : fragments) {
                 String current = edge.substring(0, edge.indexOf(':'));
                 if (current.equals(node)) {
                     c++;
@@ -195,7 +193,7 @@ public class Constrainer {
     }
 
     private int findMaxIndex(char type) {
-        ArrayList<String> fragments = new ArrayList<String>();
+        ArrayList<String> fragments = new ArrayList<>();
         int max = 0;
         
         for (int i = 0; i < this.estrs.length; ++i) {
@@ -218,12 +216,12 @@ public class Constrainer {
             int currmax = 0;
             Iterator<String> itr = fragments.iterator();
             while (itr.hasNext()) { 
-                String t = (String) (itr.next());
+                String t = itr.next();
                 String node = t.substring(t.indexOf(':'), t.length() - 1);
                 itr.remove();
                 int c = 1;
                 while (itr.hasNext()) {
-                    t = (String) (itr.next());
+                    t = itr.next();
                     String current = t.substring(t.indexOf(':'), t.length() - 1);
                     if (node.equals(current)) {
                         itr.remove();
@@ -243,59 +241,283 @@ public class Constrainer {
     }
 
     public String toString() {
-        StringBuffer outstring = new StringBuffer("");
+        StringBuilder outstring = new StringBuilder("");
         outstring.append("max_e= ");
-        outstring.append(this.maxELower);
+        outstring.append(this.getMaxELower());
         outstring.append("\nmax_E= ");
-        outstring.append(this.maxEUpper);
+        outstring.append(this.getMaxEUpper());
         outstring.append("\nmax_h= ");
-        outstring.append(this.maxHLower);
+        outstring.append(this.getMaxHLower());
         outstring.append("\nmax_H= ");
-        outstring.append(this.maxHUpper);
+        outstring.append(this.getMaxHUpper());
         outstring.append("\nmax_vert= ");
-        outstring.append(this.max_vert);
+        outstring.append(this.getMaxVert());
         outstring.append("\nmax_A_out= ");
         outstring.append(this.maxAOut);
         outstring.append("\nmax_P_out= ");
         outstring.append(this.maxPOut);
         outstring.append("\nmax_L_out= ");
-        outstring.append(this.maxLOut);
+        outstring.append(this.getMaxLOut());
         outstring.append("\nmax_R_out= ");
-        outstring.append(this.maxROut);
+        outstring.append(this.getMaxROut());
         outstring.append("\nmax_Z_out= ");
-        outstring.append(this.maxZOut);
+        outstring.append(this.getMaxZOut());
         outstring.append("\nmax_X_out= ");
-        outstring.append(this.maxXOut);
+        outstring.append(this.getMaxXOut());
         outstring.append("\nmax_A_in= ");
-        outstring.append(this.maxAIn);
+        outstring.append(this.getMaxAIn());
         outstring.append("\nmax_P_in= ");
-        outstring.append(this.maxPIn);
+        outstring.append(this.getMaxPIn());
         outstring.append("\nmax_L_in= ");
-        outstring.append(this.maxLIn);
+        outstring.append(this.getMaxLIn());
         outstring.append("\nmax_R_in= ");
-        outstring.append(this.maxRIn);
+        outstring.append(this.getMaxRIn());
         outstring.append("\nmax_Z_in= ");
-        outstring.append(this.maxZIn);
+        outstring.append(this.getMaxZIn());
         outstring.append("\nmax_X_in= ");
-        outstring.append(this.maxXIn);
+        outstring.append(this.getMaxXIn());
         outstring.append("\nmax_A= ");
-        outstring.append(this.max_A);
+        outstring.append(this.getMaxA());
         outstring.append("\nmax_P= ");
-        outstring.append(this.max_P);
+        outstring.append(this.getMaxP());
         outstring.append("\nmax_Z= ");
-        outstring.append(this.max_Z);
+        outstring.append(this.getMaxZ());
         outstring.append("\nmax_X= ");
-        outstring.append(this.max_X);
+        outstring.append(this.getMaxX());
         outstring.append("\nmax_R= ");
-        outstring.append(this.max_R);
+        outstring.append(this.getMaxR());
         outstring.append("\nmax_L= ");
-        outstring.append(this.max_L);
+        outstring.append(this.getMaxL());
         outstring.append("\nmax_edge= ");
-        outstring.append(this.max_edge);
+        outstring.append(this.getMaxEdge());
         outstring.append("\ntotal_vert= ");
-        outstring.append(this.total_vert);
+        outstring.append(this.getTotalVert());
         outstring.append("\ntotal_edge= ");
-        outstring.append(this.total_edge);
+        outstring.append(this.getTotalEdge());
         return outstring.toString();
+    }
+
+    public int getMaxAOut() {
+        return maxAOut;
+    }
+
+    public void setMaxAOut(int maxAOut) {
+        this.maxAOut = maxAOut;
+    }
+
+    public int getMaxPOut() {
+        return maxPOut;
+    }
+
+    public void setMaxPOut(int maxPOut) {
+        this.maxPOut = maxPOut;
+    }
+
+    public int getMaxLOut() {
+        return maxLOut;
+    }
+
+    public void setMaxLOut(int maxLOut) {
+        this.maxLOut = maxLOut;
+    }
+
+    public int getMaxROut() {
+        return maxROut;
+    }
+
+    public void setMaxROut(int maxROut) {
+        this.maxROut = maxROut;
+    }
+
+    public int getMaxZOut() {
+        return maxZOut;
+    }
+
+    public void setMaxZOut(int maxZOut) {
+        this.maxZOut = maxZOut;
+    }
+
+    public int getMaxXOut() {
+        return maxXOut;
+    }
+
+    public void setMaxXOut(int maxXOut) {
+        this.maxXOut = maxXOut;
+    }
+
+    public int getMaxAIn() {
+        return maxAIn;
+    }
+
+    public void setMaxAIn(int maxAIn) {
+        this.maxAIn = maxAIn;
+    }
+
+    public int getMaxPIn() {
+        return maxPIn;
+    }
+
+    public void setMaxPIn(int maxPIn) {
+        this.maxPIn = maxPIn;
+    }
+
+    public int getMaxLIn() {
+        return maxLIn;
+    }
+
+    public void setMaxLIn(int maxLIn) {
+        this.maxLIn = maxLIn;
+    }
+
+    public int getMaxRIn() {
+        return maxRIn;
+    }
+
+    public void setMaxRIn(int maxRIn) {
+        this.maxRIn = maxRIn;
+    }
+
+    public int getMaxZIn() {
+        return maxZIn;
+    }
+
+    public void setMaxZIn(int maxZIn) {
+        this.maxZIn = maxZIn;
+    }
+
+    public int getMaxXIn() {
+        return maxXIn;
+    }
+
+    public void setMaxXIn(int maxXIn) {
+        this.maxXIn = maxXIn;
+    }
+
+    public int getMaxELower() {
+        return maxELower;
+    }
+
+    public void setMaxELower(int maxELower) {
+        this.maxELower = maxELower;
+    }
+
+    public int getMaxEUpper() {
+        return maxEUpper;
+    }
+
+    public void setMaxEUpper(int maxEUpper) {
+        this.maxEUpper = maxEUpper;
+    }
+
+    public int getMaxHLower() {
+        return maxHLower;
+    }
+
+    public void setMaxHLower(int maxHLower) {
+        this.maxHLower = maxHLower;
+    }
+
+    public int getMaxHUpper() {
+        return maxHUpper;
+    }
+
+    public void setMaxHUpper(int maxHUpper) {
+        this.maxHUpper = maxHUpper;
+    }
+
+    public int getMaxVert() {
+        return maxVert;
+    }
+
+    public void setMaxVert(int maxVert) {
+        this.maxVert = maxVert;
+    }
+
+    public int getMaxA() {
+        return maxA;
+    }
+
+    public void setMaxA(int maxA) {
+        this.maxA = maxA;
+    }
+
+    public int getMaxP() {
+        return maxP;
+    }
+
+    public void setMaxP(int maxP) {
+        this.maxP = maxP;
+    }
+
+    public int getMaxZ() {
+        return maxZ;
+    }
+
+    public void setMaxZ(int maxZ) {
+        this.maxZ = maxZ;
+    }
+
+    public int getMaxX() {
+        return maxX;
+    }
+
+    public void setMaxX(int maxX) {
+        this.maxX = maxX;
+    }
+
+    public int getMaxR() {
+        return maxR;
+    }
+
+    public void setMaxR(int maxR) {
+        this.maxR = maxR;
+    }
+
+    public int getMaxL() {
+        return maxL;
+    }
+
+    public void setMaxL(int maxL) {
+        this.maxL = maxL;
+    }
+
+    public int getMaxEdge() {
+        return maxEdge;
+    }
+
+    public void setMaxEdge(int maxEdge) {
+        this.maxEdge = maxEdge;
+    }
+
+    public int getMaxThings() {
+        return maxThings;
+    }
+
+    public void setMaxThings(int maxThings) {
+        this.maxThings = maxThings;
+    }
+
+    public int getTotalVert() {
+        return totalVert;
+    }
+
+    public void setTotalVert(int totalVert) {
+        this.totalVert = totalVert;
+    }
+
+    public int getTotalEdge() {
+        return totalEdge;
+    }
+
+    public void setTotalEdge(int totalEdge) {
+        this.totalEdge = totalEdge;
+    }
+
+    public int getTotalThings() {
+        return totalThings;
+    }
+
+    public void setTotalThings(int totalThings) {
+        this.totalThings = totalThings;
     }
 }

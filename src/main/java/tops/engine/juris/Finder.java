@@ -58,7 +58,7 @@ class Finder {
         // compression calculations
         int cP = this.countP(this.maxpat);
         int num = inst.length - 1;
-        int Craw = this.c.total_edge - (cP * num);
+        int Craw = this.c.getTotalEdge() - (cP * num);
         // System.out.println("<Patt_ID></Patt_ID>");
         // System.out.println("Pattern edge number = " + cP);
         // System.out.println("Input set edge number = " + c.total_edge + " for
@@ -67,8 +67,8 @@ class Finder {
         // "</Compression_RAW>");
         // System.out.println("Craw = " + Craw);
 
-        int tmp1 = this.c.total_edge - Craw;
-        int tmp2 = this.c.total_edge - this.c.max_edge;
+        int tmp1 = this.c.getTotalEdge() - Craw;
+        int tmp2 = this.c.getTotalEdge() - this.c.getMaxEdge();
         // System.out.println("tmp1 = " + tmp1 + " tmp2 = " + tmp2);
         float Cnorm = 1 - ((float) tmp1 / (float) tmp2);
         // System.out.println("Cnorm = 1 - [(" + c.total_edge + " - " + Craw +
@@ -212,7 +212,7 @@ class Finder {
         if (this.debugging)
             System.out.println(" Pattern at start = " + gr.toString());
 
-        if (gr.esize > 0) {
+        if (gr.geteSize() > 0) {
             if (this.m.run(gr.toString(), false)) {
                 if (this.debugging)
                     System.out.println("!!!!!!!!!!!!!!!!");
@@ -238,48 +238,48 @@ class Finder {
             this.maxpat = gr.toString();
         // first, do the edges
 
-        if (gr.canAddEdge(1, this.c.maxAIn)) {
-            if ((v = gr.getEdges(this.c.maxAOut, 'A')) != null) {
+        if (gr.canAddEdge(1, this.c.getMaxAIn())) {
+            if ((v = gr.getEdges(this.c.getMaxAOut(), 'A')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'A'));
                 }
             }
         }
 
-        if (gr.canAddEdge(3, this.c.maxPIn)) {
-            if ((v = gr.getEdges(this.c.maxPOut, 'P')) != null) {
+        if (gr.canAddEdge(3, this.c.getMaxPIn())) {
+            if ((v = gr.getEdges(this.c.getMaxPOut(), 'P')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'P'));
                 }
             }
         }
 
-        if (gr.canAddEdge(5, this.c.maxRIn)) {
-            if ((v = gr.getEdges(this.c.maxROut, 'R')) != null) {
+        if (gr.canAddEdge(5, this.c.getMaxRIn())) {
+            if ((v = gr.getEdges(this.c.getMaxROut(), 'R')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'R'));
                 }
             }
         }
 
-        if (gr.canAddEdge(7, this.c.maxLIn)) {
-            if ((v = gr.getEdges(this.c.maxLOut, 'L')) != null) {
+        if (gr.canAddEdge(7, this.c.getMaxLIn())) {
+            if ((v = gr.getEdges(this.c.getMaxLOut(), 'L')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'L'));
                 }
             }
         }
 
-        if (gr.canAddEdge(9, this.c.maxZIn)) {
-            if ((v = gr.getEdges(this.c.maxZOut, 'Z')) != null) {
+        if (gr.canAddEdge(9, this.c.getMaxZIn())) {
+            if ((v = gr.getEdges(this.c.getMaxZOut(), 'Z')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'Z'));
                 }
             }
         }
 
-        if (gr.canAddEdge(11, this.c.maxXIn)) {
-            if ((v = gr.getEdges(this.c.maxXOut, 'X')) != null) {
+        if (gr.canAddEdge(11, this.c.getMaxXIn())) {
+            if ((v = gr.getEdges(this.c.getMaxXOut(), 'X')) != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'X'));
                 }
@@ -287,19 +287,19 @@ class Finder {
         }
 
         // Now, do the vertices
-        if (gr.num_E < this.c.maxEUpper) {
+        if (gr.getNumUpperE() < this.c.getMaxEUpper()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addUpStrand());
         }
 
-        if (gr.num_e < this.c.maxELower) {
+        if (gr.getNumLowerE() < this.c.getMaxELower()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addDownStrand());
         }
 
-        if (gr.num_H < this.c.maxHUpper) {
+        if (gr.getNumUpperH() < this.c.getMaxHUpper()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addUpHelix());
         }
 
-        if (gr.num_h < this.c.maxHLower) {
+        if (gr.getNumLowerH() < this.c.getMaxHLower()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addDownHelix());
         }
 
