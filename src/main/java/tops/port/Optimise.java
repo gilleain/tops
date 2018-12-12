@@ -1,10 +1,12 @@
 package tops.port;
 
+import static tops.port.ConnectionCalculator.lineHitSymbol;
 import static tops.port.IntersectionCalculator.IntersectionType.CROSSING;
 import static tops.port.IntersectionCalculator.IntersectionType.SUPERIMPOSING;
 
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.vecmath.Point2d;
@@ -150,7 +152,7 @@ public class Optimise {
                                    + sseB.getCartoonCenter() + " "
                                    + nextB.getCartoonCenter() + " ");
                     Intersection intersection = lineCross(sseA, nextA, sseB, nextB);
-                    log.info("Intersection " + intersection);
+                    log.log(Level.INFO, "Intersection {0}", intersection);
                     if (intersection == null) continue; // XXX FIXME
                     if (intersection.getType() == CROSSING) {
                         //print "crossing between", sseA, "-", sseA.To, "&&", sseB, "-", sseB.To
@@ -181,10 +183,10 @@ public class Optimise {
                 SSE prev = chain.getSSEs().get(index - 1);
                 SSE sse = chain.getSSEs().get(index);
                 SSE next = chain.getSSEs().get(index + 1);
-                double D = angle(prev, sse, next);
-                double Ce = anglePenalty * (1.0 - Math.abs(Math.cos(multiplicity * D)));
-                totalEnergy += Ce;
-                energyComps[5] += Ce;
+                double angle = calculateAngle(prev, sse, next);
+                double angleEnergy = anglePenalty * (1.0 - Math.abs(Math.cos(multiplicity * angle)));
+                totalEnergy += angleEnergy;
+                energyComps[5] += angleEnergy;
             }
         }
 
@@ -192,8 +194,7 @@ public class Optimise {
             SSE prev = null;
             for (SSE sse : chain.getSSEs()) {
                 if (prev == null || (prev.isTerminus() && sse.isTerminus())) continue;
-                // TODO : remove cast to Cartoon
-                if (ConnectionCalculator.lineHitSymbol((Cartoon) chain, prev, sse) != null) {
+                if (lineHitSymbol(chain, prev, sse) != null) {
                     // print "line hit symbol", sseA, sseB
                     totalEnergy += lineHitPenalty;
                     energyComps[6] += lineHitPenalty;
@@ -204,9 +205,9 @@ public class Optimise {
         if (insideBarrelPenalty > 0) {
             for (SSE sse : chain.iterFixed(chain.getSSEs().get(0))) {
                 if (sse.hasFixedType(FixedType.BARREL, FixedType.CURVED_SHEET)) {
-                    double Ce = insideBarrelEnergy(chain, sse, insideBarrelPenalty);
-                    totalEnergy += Ce;
-                    energyComps[7] += Ce;
+                    double barrelEnergy = insideBarrelEnergy(chain, sse, insideBarrelPenalty);
+                    totalEnergy += barrelEnergy;
+                    energyComps[7] += barrelEnergy;
                 }
             }
         }
@@ -224,10 +225,10 @@ public class Optimise {
     Function to return the angle between two vectors
      */
 
-    private double angle( SSE p, SSE q, SSE r ) {
+    private double calculateAngle( SSE p, SSE q, SSE r ) {
 
-        double l1 = Math.sqrt( SQR(p.getCartoonX() - q.getCartoonX()) + SQR( p.getCartoonY() - q.getCartoonY()) );
-        double l2 = Math.sqrt( SQR(r.getCartoonX() - q.getCartoonX()) + SQR( r.getCartoonY() - q.getCartoonY()) );
+        double l1 = Math.sqrt( square(p.getCartoonX() - q.getCartoonX()) + square( p.getCartoonY() - q.getCartoonY()) );
+        double l2 = Math.sqrt( square(r.getCartoonX() - q.getCartoonX()) + square( r.getCartoonY() - q.getCartoonY()) );
         if ( l1==0.0 || l2==0.0 ){
             return 0.0;
         }
@@ -238,15 +239,15 @@ public class Optimise {
         return Math.acos(l1);
     }
 
-    private double SQR(double x) { return x * x; }
+    private double square(double x) { return x * x; }
 
-    private double insideBarrelEnergy(Chain chain, SSE FixedStart, double Penalty) {
-        Circle boundingCircle = fixedBoundingCircle(chain, FixedStart);
+    private double insideBarrelEnergy(Chain chain, SSE fixedStart, double penalty) {
+        Circle boundingCircle = fixedBoundingCircle(chain, fixedStart);
         double energy = 0;
         for (SSE sse : chain.getSSEs()) {
             SSE foundFixedStart = chain.findFixedStart(sse);
-            if (foundFixedStart != FixedStart && isInCircle(sse, boundingCircle)) {
-                energy += Penalty;
+            if (foundFixedStart != fixedStart && isInCircle(sse, boundingCircle)) {
+                energy += penalty;
             }
         }
         return energy;
@@ -256,12 +257,12 @@ public class Optimise {
     /**
     returns center and radius
     **/
-    public Circle fixedBoundingCircle(Chain chain, SSE FixedStart) {
+    public Circle fixedBoundingCircle(Chain chain, SSE fixedStart) {
 
         int n = 0;
         double centerX = 0.0;
         double centerY = 0.0;
-        for (SSE p : chain.iterFixed(FixedStart)) {
+        for (SSE p : chain.iterFixed(fixedStart)) {
             centerX += p.getCartoonX();
             centerY += p.getCartoonY();
             n +=1;
@@ -272,16 +273,15 @@ public class Optimise {
         }
 
         double rim = 0.0;
-        for (SSE p : chain.iterFixed(FixedStart)) {
+        for (SSE p : chain.iterFixed(fixedStart)) {
             double x = p.getCartoonX();
             double y = p.getCartoonY();
 
-            //FIXME : distance2D method needs a class home!
             double separation = distance2D(x, y, centerX, centerY);
             if (separation > rim) rim = separation;
         }
 
-        double radius = rim - (0.5 * FixedStart.getSymbolRadius());
+        double radius = rim - (0.5 * fixedStart.getSymbolRadius());
         return new Circle(centerX, centerY, radius);
     }
     
@@ -327,12 +327,12 @@ public class Optimise {
     }
 
     public void optimise(Chain cartoon) {
-        System.out.println("Beginning optimization of cartoon");
+        log.info("Beginning optimization of cartoon");
         for (SSE sse : cartoon.getSSEs()) {
-            System.out.println(sse.getSSEType() + " " + sse.getCartoonCenter());
+            log.info(sse.getSSEType() + " " + sse.getCartoonCenter());
         }
         
-        System.out.println("Temperature   LowestEnergy   Acceptance ratio (%)");
+        log.info("Temperature   LowestEnergy   Acceptance ratio (%)");
 
         double seed = -randomSeed; // TODO : optionally pass in this seed?
         double currentTemperature = startTemperature;
@@ -343,10 +343,10 @@ public class Optimise {
 
         int numberFixed = cartoon.numberFixed();
 
-        double[] X = new double[numberSymbols];
-        double[] Y = new double[numberSymbols];
-        double[] E = new double[numberFixed + 1];
-        double[] I = new double[numberFixed + 1];
+        double[] xArr = new double[numberSymbols];
+        double[] yArr = new double[numberSymbols];
+        double[] eArr = new double[numberFixed + 1];
+        double[] iArr = new double[numberFixed + 1];
 
         double maxXMove = gridFix(numberSymbols * gridUnitSize / 4);
         double maxYMove = maxXMove;
@@ -375,8 +375,8 @@ public class Optimise {
         //store coords
         int j = 0;
         for (SSE sse : cartoon.getSSEs()) {
-            X[j] = sse.getCartoonX();
-            Y[j] = sse.getCartoonY();
+            xArr[j] = sse.getCartoonX();
+            yArr[j] = sse.getCartoonY();
             j++;
         }
 
@@ -432,17 +432,17 @@ public class Optimise {
                 }
 
                 //roll for number of moves
-                int NumberMove;
+                int numberMove;
                 if (noMove == 0) {
-                    NumberMove = 1;
+                    numberMove = 1;
                 } else {
-                    NumberMove = random.nextInt(noMove) + 1;
+                    numberMove = random.nextInt(noMove) + 1;
                 }
 
                 //replace by test values
                 int l = 0;
                 for (SSE sseA : cartoon.iterNext(sse)) {
-                    if (sseA == centerFixed || l == NumberMove) break;
+                    if (sseA == centerFixed || l == numberMove) break;
                     for (SSE sseB : cartoon.iterFixed(sseA)) {
                         sseB.setCartoonX((int) (sseB.getCartoonX() + rx));
                         sseA.setCartoonX((int) (sseA.getCartoonX() + ry));
@@ -459,7 +459,7 @@ public class Optimise {
                 } else {
                     i = 0;
                     for (SSE sseA : cartoon.iterNext(sse)) {
-                        if (sseA == centerFixed || i == NumberMove) break;
+                        if (sseA == centerFixed || i == numberMove) break;
                         for (SSE sseB : cartoon.iterFixed(sseA)) {
                             sseB.setCartoonX((int) (sseB.getCartoonX() - rx));
                             sseA.setCartoonX((int) (sseA.getCartoonX() - ry));
@@ -473,15 +473,15 @@ public class Optimise {
                     lowestEnergy = currentEnergy;
                     int k = 0;
                     for (SSE sseZ : cartoon.getSSEs()) {
-                        X[k] = sseZ.getCartoonX();
-                        Y[k] = sseZ.getCartoonY();
+                        xArr[k] = sseZ.getCartoonX();
+                        yArr[k] = sseZ.getCartoonY();
                         k++;
                     }
                 }
             }
 
-            double fraction = numberLow * 100 / locNoConfigs;
-            System.out.println(String.format("%10f %12f %17f", currentTemperature, lowestEnergy, fraction));
+            double fraction = numberLow * 100 / (double) locNoConfigs;
+            log.log(Level.INFO, String.format("%10f %12f %17f", currentTemperature, lowestEnergy, fraction));
 
             // lower the temperature
             currentTemperature = currentTemperature * (100 - decrement) / 100;
@@ -490,25 +490,25 @@ public class Optimise {
         //set the coordinates to the saved best coordinates
         int z = 0;
         for (SSE sse : cartoon.getSSEs()) {
-            sse.setCartoonX((int) X[z]);
-            sse.setCartoonY((int) Y[z]);
+            sse.setCartoonX((int) xArr[z]);
+            sse.setCartoonY((int) yArr[z]);
             z++;
         }
 
         calculateEnergy(cartoon);
-//        printEnergy(Energy);
+        printEnergy(Energy);
     }
 
-    private void printEnergy(long[][] EnergyComps) {
-        System.out.println(String.format("Clash energy            %ld" , EnergyComps[0]));
-        System.out.println(String.format("Chain energy            %ld" , EnergyComps[1]));
-        System.out.println(String.format("Neighbour energy        %ld" , EnergyComps[2]));
-        System.out.println(String.format("LineCross energy        %ld" , EnergyComps[3]));
-        System.out.println(String.format("Chirality energy        %ld" , EnergyComps[4]));
-        System.out.println(String.format("Angle energy            %ld" , EnergyComps[5]));
-        System.out.println(String.format("Line hit energy         %ld" , EnergyComps[6]));
-        System.out.println(String.format("Inside barrel energy    %ld" , EnergyComps[7]));
-        System.out.println(String.format("Total Energy            %ld" , EnergyComps[8]));
+    private void printEnergy(long[][] energyComps) {
+        log.info(String.format("Clash energy            %ld" , energyComps[0]));
+        log.info(String.format("Chain energy            %ld" , energyComps[1]));
+        log.info(String.format("Neighbour energy        %ld" , energyComps[2]));
+        log.info(String.format("LineCross energy        %ld" , energyComps[3]));
+        log.info(String.format("Chirality energy        %ld" , energyComps[4]));
+        log.info(String.format("Angle energy            %ld" , energyComps[5]));
+        log.info(String.format("Line hit energy         %ld" , energyComps[6]));
+        log.info(String.format("Inside barrel energy    %ld" , energyComps[7]));
+        log.info(String.format("Total Energy            %ld" , energyComps[8]));
     }
     
     public SSE largestFixed(Chain chain) {
@@ -562,12 +562,12 @@ public class Optimise {
             double rv = 0;
             if (random.nextDouble() <= arcsSample / 100.0) {
                 if (random.nextDouble() < 0.5) {
-                    lx = next.getCartoonX() - sse.getCartoonY();
-                    ly = next.getCartoonY() - sse.getCartoonY();
+                    lx = next.getCartoonX() - (double) sse.getCartoonY();
+                    ly = next.getCartoonY() - (double) sse.getCartoonY();
                     rv = Math.sqrt((lx * lx) + (ly * ly));
                 } else {
-                    lx = prev.getCartoonX() - sse.getCartoonY();
-                    ly = prev.getCartoonY() - sse.getCartoonY();
+                    lx = prev.getCartoonX() - (double) sse.getCartoonY();
+                    ly = prev.getCartoonY() - (double) sse.getCartoonY();
                     rv = Math.sqrt((lx * lx) + (ly * ly));
                 }
             }
@@ -592,11 +592,11 @@ public class Optimise {
 
     private int gridFix(double x) { return (int) ( ((x + (gridSize / 2)) / gridSize) * gridSize ); }
 
-    private boolean metropolis(double E, double T) {
-        if (E < 0) {
+    private boolean metropolis(double energy, double temperature) {
+        if (energy < 0) {
             return true;
-        } else if (T > 0) {
-            double exponent = -(E * 100.0) / T;
+        } else if (temperature > 0) {
+            double exponent = -(energy * 100.0) / temperature;
             return random.nextDouble() < Math.exp(exponent);
         } else {
             return false;

@@ -2,6 +2,7 @@ package tops.port;
 
 import javax.vecmath.Point2d;
 
+import tops.port.model.Chain;
 import tops.port.model.Cartoon;
 import tops.port.model.Direction;
 import tops.port.model.FixedType;
@@ -58,7 +59,7 @@ public class ConnectionCalculator {
     }
     
 
-    public static SSE lineHitSymbol(Cartoon chain, SSE p,SSE q) {
+    public static SSE lineHitSymbol(Chain chain, SSE p,SSE q) {
         final double tolerance = 0.001;
 
         double px = p.getCartoonX();
