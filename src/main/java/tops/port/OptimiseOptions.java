@@ -31,6 +31,146 @@ public class OptimiseOptions {
     public void setGridUnitSize(int radius) {
         gridUnitSize = 2 * radius + radius / 2;
     }
+    
+    private int parseAnglePenalty(String arg) {
+        try {
+            anglePenalty = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log("ERROR: unable to read angle penalty (int) after -a %s\n", arg);
+            return 1;
+        }
+    }
+    
+    public int parseClashPenalty(String arg) {
+        try {
+            clashPenalty = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log("ERROR: unable to read clash penalty (int) after -b %s\n", arg);
+            return 1;
+        }
+    }
+    
+    private int parseChainPenalty(String arg) {
+        try {
+            chainPenalty = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log("ERROR: unable to read chain penalty (int) after -c %s\n", arg);
+            return 1;
+        }
+    }
+    
+    private int parseHandPenalty(String arg) {
+        try {
+            handPenalty = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log("ERROR: unable to read hand penalty (int) after -h %s\n", arg);
+            return 1;
+        }
+    }
+    
+    private int parseInsideBarrelPenalty(String arg) {
+        try {
+            insideBarrelPenalty = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log("ERROR: unable to read inside barrel penalty (int) after -i %s\n", arg);
+            return 1;
+        }
+    }
+    
+    private int parseMultiplicity(String arg) {
+        try {
+            multiplicity = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log("ERROR: unable to read Multiplicity (int) after -m %s\n", arg);
+            return 1;
+        }
+    }
+    
+    private int parseNeighbourPenalty(String arg) {
+        try {
+            neighbourPenalty = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read NeighbourPenalty (int) after -n %s%n", arg));
+            return 1;
+        }
+    }
+    
+    private int parseCrossPenalty(String arg) {
+        try {
+            crossPenalty = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read CrossPenalty (int) after -x %s%n", arg));
+            return 1;
+        }
+    }
+    
+    private int parseGridSize(String arg) {
+        try {
+            gridSize = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read grid size (int) after -G %s%n", arg));
+            return 1;
+        }
+    }
+    
+    private int parseNoConfigs(String arg) {
+        try {
+            noConfigs = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read number of configs (int) after -N %s%n", arg));
+            return 1;
+        }
+    }
+    
+    private int parseRandomSeed(String arg) {
+        try {
+            randomSeed = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read random seed (int) after -S %s%n", arg));
+            return 1;
+        }
+    }
+    
+    private int parseStartTemperature(String arg) {
+        try {
+            startTemperature = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read finish temperature (int) after -U %s%n", arg));
+            return 1;
+        }
+    }
+    
+    private int parseFinishTemperature(String arg) {
+        try {
+            finishTemperature = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read finish temperature (int) after -U %s%n", arg));
+            return 1;
+        }
+    }
+    
+    private int parseTemperatureDecrement(String arg) {
+        try {
+            decrement = Integer.valueOf(arg);
+            return 0;
+        } catch (Exception e) {
+            log(String.format("ERROR: unable to read temperature decrement (int) after -V %s%n", arg));
+            return 1;
+        }
+    }
 
     public void parseArguments(String[] args) {
         int errorStatus = 0;
@@ -38,220 +178,117 @@ public class OptimiseOptions {
 
         for (int i = 1; i < args.length; i++) {
             String c = args[i];
-            char s = (c.charAt(0) == '-' || c.charAt(0) == '+' ? c.charAt(0)
-                    : '*');
+            char s = (c.charAt(0) == '-' || c.charAt(0) == '+' ? c.charAt(0) : '*');
             char cmd = c.charAt(0);
-
+            boolean hasNext = i < args.length - 1;
             switch (cmd) {
                 case 'a':
-                    if (++i < args.length) {
-                        try {
-                            anglePenalty = Integer.valueOf(args[i]);
-                        } catch (Exception e) {
-                            log("ERROR: unable to read angle penalty (int) after -a %s\n",
-                                    args[i]);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseAnglePenalty(args[i + 1]);
                     } else {
                         log("ERROR: No angle penalty after -a\n");
                         errorStatus = 1;
                     }
                     break;
                 case 'b':
-                    if (++i < args.length) {
-                        try {
-                            clashPenalty = Integer.valueOf(args[i]);
-                        } catch (Exception e) {
-                            log("ERROR: unable to read clash penalty (int) after -b %s\n",
-                                    args[i]);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                        errorStatus = parseClashPenalty(args[i + 1]);
                     } else {
                         log("ERROR: No clash penalty after -b\n");
                         errorStatus = 1;
                     }
                     break;
                 case 'c':
-                    if (++i < args.length) {
-                        try {
-                            chainPenalty = Integer.valueOf(args[i]);
-                        } catch (Exception e) {
-                            log("ERROR: unable to read chain penalty (int) after -c %s\n",
-                                    args[i]);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseChainPenalty(args[i + 1]);
                     } else {
                         log("ERROR: No chain penalty after -c\n");
                         errorStatus = 1;
                     }
                     break;
                 case 'h':
-                    if (++i < args.length) {
-                        try {
-                            handPenalty = Integer.valueOf(args[i]);
-                        } catch (Exception e) {
-                            log(errStr,
-                                    "ERROR: unable to read hand penalty (int) after -h %s\n",
-                                    args[i]);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                        errorStatus = parseHandPenalty(args[i + 1]);
                     } else {
                         log("ERROR: No hand penalty after -h\n");
                         errorStatus = 1;
                     }
                     break;
                 case 'i':
-                    if (++i < args.length) {
-                        try {
-                            insideBarrelPenalty = Integer.valueOf(args[i]);
-                        } catch (Exception e) {
-                            log("ERROR: unable to read inside barrel penalty (int) after -i %s\n",
-                                    args[i]);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseInsideBarrelPenalty(args[i + 1]);
                     } else {
                         log("ERROR: No inside barrel penalty after -h\n");
                         errorStatus = 1;
                     }
                     break;
                 case 'm':
-                    if (++i < args.length) {
-                        try {
-                            multiplicity = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            log("ERROR: unable to read Multiplicity (int) after -m %s\n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseMultiplicity(c);
                     } else {
                         log("ERROR: No multiplicity after -m\n");
                         errorStatus = 1;
                     }
                     break;
                 case 'n':
-                    if (++i < args.length) {
-                        try {
-                            neighbourPenalty = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read NeighbourPenalty (int) after -n %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseNeighbourPenalty(c);
                     } else {
-                        errStr = "ERROR: No NeighbourPenalty after -n\n";
+                        log("ERROR: No NeighbourPenalty after -n\n");
                         errorStatus = 1;
                     }
                     break;
                 case 'x':
-                    if (++i < args.length) {
-                        try {
-                            crossPenalty = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read CrossPenalty (int) after -x %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseCrossPenalty(c);
                     } else {
                         errStr = "ERROR: No CrossPenalty after -x\n";
                         errorStatus = 1;
                     }
                     break;
                 case 'G':
-                    if (++i < args.length) {
-                        try {
-                            gridSize = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read grid size (int) after -G %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                        errorStatus = parseGridSize(c);
                     } else {
                         errStr = "ERROR: No grid size after -G\n";
                         errorStatus = 1;
                     }
                     break;
                 case 'N':
-                    if (++i < args.length) {
-                        try {
-                            noConfigs = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read number of configs (int) after -N %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseNoConfigs(c);
                     } else {
                         errStr = "ERROR: No MergeStrands after -N\n";
                         errorStatus = 1;
                     }
                     break;
                 case 'S':
-                    if (++i < args.length) {
-                        try {
-                            randomSeed = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read random seed (int) after -S %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseRandomSeed(c);
                     } else {
                         errStr = "ERROR: No random seed after -S\n";
                         errorStatus = 1;
                     }
                     break;
                 case 'T':
-                    if (++i < args.length) {
-                        try {
-                            startTemperature = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read start temperature (int) after -T %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                        errorStatus = parseStartTemperature(c);
                     } else {
                         errStr = "ERROR: No temperature after -T\n";
                         errorStatus = 1;
                     }
                     break;
                 case 'U':
-                    if (++i < args.length) {
-                        try {
-                            finishTemperature = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read finish temperature (int) after -U %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                        errorStatus = parseFinishTemperature(c);
                     } else {
                         errStr = "ERROR: No temperature after -U\n";
                         errorStatus = 1;
                     }
                     break;
                 case 'V':
-                    if (++i < args.length) {
-                        try {
-                            decrement = Integer.valueOf(c);
-                        } catch (Exception e) {
-
-                            errStr = String.format(
-                                    "ERROR: unable to read temperature decrement (int) after -V %s%n",
-                                    c);
-                            errorStatus = 1;
-                        }
+                    if (hasNext) {
+                       errorStatus = parseTemperatureDecrement(c);
                     } else {
                         errStr = "ERROR: No temperature decrement after -V%n";
                         errorStatus = 1;

@@ -9,16 +9,16 @@ public class Options {
     private String defaultFileType = "dssp";
     
     private String pdbFilePath = "./";
-    private String pdb_pref = "pdb";
-    private String pdb_ext = "ent";
+    private String pdbPref = "pdb";
+    private String pdbExt = "ent";
     
     private String strideFilePath = "./";
-    private String stride_pref = null;
-    private String stride_ext = "stride";
+    private String stridePref = null;
+    private String strideExt = "stride";
     
     private String dsspFilePath = "./";
-    private String dssp_pref = null;
-    private String dssp_ext = "dssp";
+    private String dsspPref = null;
+    private String dsspExt = "dssp";
     
     private String postscript = null; /* Save picture into postscript file */
     private String topsFilename = null;
@@ -95,6 +95,7 @@ public class Options {
         String errStr = "";
 
         int errorStatus = 0;
+        final String unableToReadError = "ERROR: unable to read %s from defaults file";
 
         while ((buffer = def.readLine()) != null) {
 
@@ -120,9 +121,7 @@ public class Options {
                         mergeStrands = Integer.parseInt(value);
                     } catch (Exception e) {
                         errorStatus = 1;
-                        errStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errStr = String.format(unableToReadError, key);
                         break;
                     }
                 } else if ("CutoffDistance".equals(key)) {
@@ -130,9 +129,7 @@ public class Options {
                         cutoffDistance = Integer.parseInt(value);
                     } catch (Exception e) {
                         errorStatus = 1;
-                        errStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errStr = String.format(unableToReadError, key);
                         break;
                     }
                 } else if ("Postscript".equals(key)) {
@@ -145,26 +142,24 @@ public class Options {
                     }
                     fileType = fileType.toLowerCase();
                 } else if ("DSSPPrefix".equals(key)) {
-                    dssp_pref = value;
+                    dsspPref = value;
                 } else if ("DSSPExtension".equals(key)) {
-                    dssp_ext = value;
+                    dsspExt = value;
                 } else if ("PDBPrefix".equals(key)) {
-                    pdb_pref = value;
+                    pdbPref = value;
                 } else if ("PDBExtension".equals(key)) {
-                    pdb_ext = value;
+                    pdbExt = value;
                 } else if ("STRIDEPrefix".equals(key)) {
-                    stride_pref = value;
+                    stridePref = value;
                 } else if ("STRIDEExtension".equals(key)) {
-                    stride_ext = value;
+                    strideExt = value;
                 
                 } else if ("Radius".equals(key)) {
                     try {
                         radius = Integer.parseInt(value);
                     } catch (Exception e) {
                         errorStatus = 1;
-                        errStr = String.format(
-                                "ERROR: unable to read %s from defaults file",
-                                key);
+                        errStr = String.format(unableToReadError, key);
                         break;
                     }
                 } else if ("Verbose".equals(key)) {
@@ -268,7 +263,7 @@ public class Options {
                     } catch (Exception e) {
 
                         errStr = String.format(
-                                "ERROR: unable to read Radius (int) after -r %s\n",
+                                "ERROR: unable to read Radius (int) after -r %s%n",
                                 c);
                         errorStatus = 1;
                     }
@@ -337,7 +332,7 @@ public class Options {
                     } catch (Exception e) {
 
                         errStr = String.format(
-                                "ERROR: unable to read domain (int) after -D %s\n",
+                                "ERROR: unable to read domain (int) after -D %s%n",
                                 c);
                         errorStatus = 1;
                     }
@@ -426,19 +421,26 @@ public class Options {
     /*
      * Function to check runtime options are reasonable
      */
-    public void checkOptions() throws Exception {
+    public void checkOptions() throws OptionException {
        
         if (radius <= 0) {
-            throw new Exception("ERROR: Radius negative or zero");
+            throw new OptionException("ERROR: Radius negative or zero");
         }
+        
         if (mergeStrands < 0) {
-            throw new Exception("ERROR: MergeStrands negative");
+            throw new OptionException("ERROR: MergeStrands negative");
         }
         
         if (cutoffDistance <= 0.0) {
-            throw new Exception("ERROR: CutoffDistance negative");
+            throw new OptionException("ERROR: CutoffDistance negative");
         }
 
+    }
+    
+    public class OptionException extends Exception {
+        public OptionException(String message) {
+            super(message);
+        }
     }
     
     public void printRunParams(PrintStream out) {
@@ -472,15 +474,15 @@ public class Options {
             print(out, "DomainFile %s\n", domBoundaryFile);
         else
             print(out, "DomainFile NON\n");
-        if (dssp_pref != null)
-            print(out, "DSSP prefix %s\n", dssp_pref);
-        print(out, "DSSP extension %s\n", dssp_ext);
-        if (pdb_pref != null)
-            print(out, "PDB prefix %s\n", pdb_pref);
-        print(out, "PDB extension %s\n", pdb_ext);
-        if (stride_pref != null)
-            print(out, "STRIDE prefix %s\n", stride_pref);
-        print(out, "STRIDE extension %s\n", stride_ext);
+        if (dsspPref != null)
+            print(out, "DSSP prefix %s\n", dsspPref);
+        print(out, "DSSP extension %s\n", dsspExt);
+        if (pdbPref != null)
+            print(out, "PDB prefix %s\n", pdbPref);
+        print(out, "PDB extension %s\n", pdbExt);
+        if (stridePref != null)
+            print(out, "STRIDE prefix %s\n", stridePref);
+        print(out, "STRIDE extension %s\n", strideExt);
         print(out, "\n");
 
         if (chainToPlot != null)

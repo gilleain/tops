@@ -37,7 +37,7 @@ public class IntersectionCalculator {
     }
     
     public Intersection lineCross(Point2d p, Point2d q, Point2d r, Point2d s) {
-        double TOL = 0.01;
+        double tolerance = 0.01;
 
         Intersection intersection = simpleIntersection(p.x, p.y, q.x, q.y, r.x, r.y, s.x, s.y);
         if (intersection.type == IntersectionType.CROSSING) {
@@ -50,14 +50,14 @@ public class IntersectionCalculator {
 
         // - for superimposing condition require that the lines do not just overlap : a single point 
         //both lines are nearly vertical
-        if (Math.abs(p.x - q.x) < TOL && Math.abs(r.x - s.x) < TOL) {
+        if (Math.abs(p.x - q.x) < tolerance && Math.abs(r.x - s.x) < tolerance) {
             x = p.x;
             y = parallel(p.y, q.y, r.y, s.y);
-            p.y += 2.0 * TOL * signof(p.y, q.y);
-            q.y -= 2.0 * TOL * signof(p.y, q.y);
-            r.y += 2.0 * TOL * signof(r.y, s.y);
-            s.y -= 2.0 * TOL * signof(r.y, s.y);
-            if (Math.abs(p.x - r.x) < TOL && overlap(y, p.y, q.y, r.y, s.y)) {
+            p.y += 2.0 * tolerance * signof(p.y, q.y);
+            q.y -= 2.0 * tolerance * signof(p.y, q.y);
+            r.y += 2.0 * tolerance * signof(r.y, s.y);
+            s.y -= 2.0 * tolerance * signof(r.y, s.y);
+            if (Math.abs(p.x - r.x) < tolerance && overlap(y, p.y, q.y, r.y, s.y)) {
                 return new Intersection(new Vector2d(x, y), IntersectionType.SUPERIMPOSING);
             } else {
                 //print "not crossing, both vertical:", p, q, r, s
@@ -66,12 +66,12 @@ public class IntersectionCalculator {
         }
 
         //the first line is nearly vertical
-        if (Math.abs(p.x - q.x) < TOL) {
+        if (Math.abs(p.x - q.x) < tolerance) {
             double c1 = p.x;
             double m2 = slope(r.x, r.y, s.x, s.y);
             double c2 = constant(r.x, r.y, s.x, s.y);
             y = m2 * c1 + c2;
-            if (Math.abs(m2) > TOL) {
+            if (Math.abs(m2) > tolerance) {
                 x = (y - c2) / m2;
             } else {
                 x = p.x;
@@ -85,12 +85,12 @@ public class IntersectionCalculator {
         }
 
         //the second line is nearly vertical
-        if (Math.abs(r.x - s.x) < TOL) {
+        if (Math.abs(r.x - s.x) < tolerance) {
             double m1 = slope(p.x, p.y, q.x, q.y);
             double c1 = constant(p.x, p.y, q.x, q.y);
             double c2 = r.x;
             y = m1 * c2 + c1;
-            if (Math.abs(m1) > TOL) {
+            if (Math.abs(m1) > tolerance) {
                 x = (y - c1) / m1;
             } else {
                 x = r.x;
@@ -109,14 +109,14 @@ public class IntersectionCalculator {
             c2 = constant(r.x, r.y, s.x, s.y);
 
             // Parallel case - for superimposing condition require that the lines do not just overlap : a single point */
-            if (Math.abs(m1 - m2) < TOL) {
+            if (Math.abs(m1 - m2) < tolerance) {
                 x = parallel(p.x, q.x, r.x, s.x);
                 y = x * m1 + c1;
-                p.x += 2.0 * TOL * signof(p.x, q.x);
-                q.x -= 2.0 * TOL * signof(p.x, q.x);
-                r.x += 2.0 * TOL * signof(r.x, s.x);
-                s.x -= 2.0 * TOL * signof(r.x, s.x);
-                if (Math.abs(c1 - c2) < TOL && overlap(x, p.x, q.x, r.x, s.x)) { 
+                p.x += 2.0 * tolerance * signof(p.x, q.x);
+                q.x -= 2.0 * tolerance * signof(p.x, q.x);
+                r.x += 2.0 * tolerance * signof(r.x, s.x);
+                s.x -= 2.0 * tolerance * signof(r.x, s.x);
+                if (Math.abs(c1 - c2) < tolerance && overlap(x, p.x, q.x, r.x, s.x)) { 
                     return new Intersection(new Vector2d(x, y), IntersectionType.SUPERIMPOSING);
                 } else {
                     //print "not crossing, parallel :", p, q, r, s
@@ -141,10 +141,10 @@ public class IntersectionCalculator {
     }
     
     public Intersection simpleIntersection(double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) {
-        double TOL = 0.01;
+        double tolerance = 0.01;
         double denom = (bx - ax) * (dy - cy) - (by - ay) * (dx - cx);
         //print "denom = ", denom
-        if (denom > TOL) {
+        if (denom > tolerance) {
             double r = (ay - cy) * (dx - cx) - (ax - cx) * (dy - cy) / denom;
             double s = (ay - cy) * (bx - ax) - (ax - cx) * (by - ay) / denom;
             if (0 <= r && r <= 1 && 0 <= s && s <= 1) {

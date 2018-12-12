@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tops.dw.protein.CATHcode;
-import tops.port.DomainCalculator.DomDefError;
-import tops.port.DomainCalculator.ErrorType;
 
 public class DomainDefinition {
     
@@ -63,29 +61,31 @@ public class DomainDefinition {
         return -1;
     }
     
-    public boolean hasResidues(Protein protein, DomDefError ddep) {
+    public DomDefError hasResidues(Protein protein, DomDefError ddep) {
         for (Segment segment : segments) {
-            if (!check(protein, segment.getStartIndex(), segment.getStartChain(), ddep)) {
-                return false;
+            DomDefError error;
+            
+            error = check(protein, segment.getStartIndex(), segment.getStartChain(), ddep);
+            if (!error.isOk()) {
+                return error;
             }
             
-            if (!check(protein, segment.getEndIndex(), segment.getEndChain(), ddep)) {
-                return false;
+            error = check(protein, segment.getEndIndex(), segment.getEndChain(), ddep);
+            if (!error.isOk()) {
+                return error;
             }
         }
-        return true;
+        return new DomDefError("", ErrorType.NO_DOMAIN_ERRORS);
     }
     
-    private boolean check(Protein protein, int segmentIndex, char segmentChain, DomDefError ddep) {
+    private DomDefError check(Protein protein, int segmentIndex, char segmentChain, DomDefError ddep) {
         if (protein.getSequenceNumber(segmentIndex, segmentChain) < 0) {
-            ddep.errorType = ErrorType.DOMAIN_RESIDUE_ERROR;
-            ddep.errorString += 
+            return new DomDefError(
                     String.format(
                             "Residue %c %d for domain definition not found in protein",
-                            segmentIndex, segmentChain);
-            return false;
+                            segmentIndex, segmentChain), ErrorType.DOMAIN_RESIDUE_ERROR);
         }
-        return true;
+        return new DomDefError("", ErrorType.NO_DOMAIN_ERRORS);
     }
     
     public boolean hasChain(List<Chain> chains) {

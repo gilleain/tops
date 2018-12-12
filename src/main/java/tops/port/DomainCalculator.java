@@ -10,14 +10,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import tops.dw.protein.CATHcode;
 import tops.port.calculate.chirality.ChiralityCalculator;
 import tops.port.model.BridgePartner;
 import tops.port.model.Cartoon;
 import tops.port.model.Chain;
+import tops.port.model.DomDefError;
 import tops.port.model.DomainBreakType;
 import tops.port.model.DomainDefinition;
+import tops.port.model.ErrorType;
 import tops.port.model.Hand;
 import tops.port.model.PlotFragInformation;
 import tops.port.model.Protein;
@@ -33,25 +36,30 @@ import tops.port.model.Segment;
  */
 public class DomainCalculator {
     
+    private Logger log = Logger.getLogger(DomainCalculator.class.getName());
+    
     private class DomainId {
-        public int segment;
-        public int domain;
-        public int exclusionType;
+        private final int segment;
+        private final int domain;
+        private final int exclusionType;
         
         public DomainId(int segment, int domain, int exclusionType) {
             this.segment = segment;
             this.domain = domain;
             this.exclusionType = exclusionType;
         }
-    }
 
-    public enum ErrorType {
-        NO_DOMAIN_ERRORS, DOMAIN_CHAIN_ERROR, DOMAIN_RESIDUE_ERROR, DOMAIN_RANGE_OVERLAP_ERROR
-    }
-    
-    public class DomDefError {
-        public String errorString;
-        public ErrorType errorType;
+        public int getSegment() {
+            return segment;
+        }
+
+        public int getDomain() {
+            return domain;
+        }
+
+        public int getExclusionType() {
+            return exclusionType;
+        }
     }
 
     public List<DomainDefinition> defaultDomains(Protein protein, char chainToPlot) {
@@ -87,19 +95,16 @@ public class DomainCalculator {
     
     public DomDefError checkDomainDefs(List<DomainDefinition> domains, Protein protein) {
 
-        DomDefError ddep = new DomDefError();
-
-        ddep.errorType = ErrorType.NO_DOMAIN_ERRORS;
+        DomDefError ddep = new DomDefError("", ErrorType.NO_DOMAIN_ERRORS);
         
         int numberOfDomains = domains.size();
       
         /* check each domain in turn for chains not in protein */
         for (DomainDefinition dm : domains) {
             if (!dm.hasChain(protein.getChains())) {
-                ddep.errorType = ErrorType.DOMAIN_CHAIN_ERROR;
-                System.out.println(ddep.errorString + String.format(
-                        "Chain not found for domain definition %s ", dm));
-                return ddep;
+                return new DomDefError(
+                        String.format("Chain not found for domain definition %s ", dm), 
+                        ErrorType.DOMAIN_CHAIN_ERROR);
             }
         }
 
@@ -109,8 +114,11 @@ public class DomainCalculator {
          */
         for (int i = 0; i < numberOfDomains; i++) {
             DomainDefinition dm = domains.get(i);
-            if (dm.is(SEGMENT_SET) && !dm.hasResidues(protein, ddep)) {
-                return ddep;
+            if (dm.is(SEGMENT_SET)) {
+                DomDefError error = dm.hasResidues(protein, ddep);
+                if (error.errorType != ErrorType.NO_DOMAIN_ERRORS) {
+                    return error;
+                }
             }
         }
 
@@ -124,10 +132,9 @@ public class DomainCalculator {
                         for (Segment segment1 : dm1.getSegments()) {
                             for (Segment segment2 : dm2.getSegments()) {
                                 if (segment1.overlaps(segment2)) {
-                                    ddep.errorType = ErrorType.DOMAIN_RANGE_OVERLAP_ERROR;
-                                    System.out.println(ddep.errorString
-                                            + " Overlaps were found in residue ranges specifying domains");
-                                    return ddep;
+                                    return new DomDefError(
+                                            "Overlaps were found in residue ranges specifying domains", 
+                                            ErrorType.DOMAIN_RANGE_OVERLAP_ERROR);
                                 }
                             }
                         }
@@ -135,7 +142,8 @@ public class DomainCalculator {
                 }
             }
         }
-        return ddep;
+        
+        return new DomDefError("", ErrorType.NO_DOMAIN_ERRORS);
     }
     
     
@@ -162,7 +170,7 @@ public class DomainCalculator {
         SSE sse = null;
         for (int index = 1; index < sses.size() && segment < 0; index++) {
             sse = sses.get(index);
-            segment = findDomain(domains, protein, sse).segment;
+            segment = findDomain(domains, protein, sse).getSegment();
         }
     
         if (sse == null) {
@@ -176,9 +184,9 @@ public class DomainCalculator {
         DomainId result = findDomain(domains, protein, sse);
         lastDomain = -1;
         lastSegment = -1;
-        if (result.segment > -1) {
-            lastDomain = result.domain;
-            lastSegment = result.segment;
+        if (result.getSegment() > -1) {
+            lastDomain = result.getDomain();
+            lastSegment = result.getSegment();
         }
     
         nf = 1;
@@ -193,13 +201,13 @@ public class DomainCalculator {
     
         for (SSE sseA : sses) {
             DomainId result2 = findDomain(domains, protein, sseA);
-            domain = result2.domain;
+            domain = result2.getDomain();
     
             if (domain != lastDomain || segment != lastSegment) {
     
                 DomainId did = ssIsInDomain(protein, sseA, domains.get(lastDomain));
     
-                if (did.exclusionType == 0 || domain == lastDomain) {
+                if (did.getExclusionType() == 0 || domain == lastDomain) {
     
                     count++;
     
@@ -216,7 +224,7 @@ public class DomainCalculator {
                     domain = -1;
                     while (sse != null && domain < 0) {
 //                        sse = sse.To; TODO
-                        domain = findDomain(domains, protein, sse).domain;
+                        domain = findDomain(domains, protein, sse).getDomain();
                     }
                     if (sse != null) {
                         sse.domainBreakNumber = count;
@@ -255,17 +263,16 @@ public class DomainCalculator {
         } else {
             for (int i = 0; i < domains.size(); i++) {
                 DomainDefinition domain = domains.get(i);
-                if (chainToPlot == 0 || chainToPlot == getChain(domain.getCode())) {
-                    if (domainToPlot == 0 || domainToPlot == getDomainNumber(domain.getCode())) {
-                        domainsToPlot.add(domain);
-                    }
+                if (chainToPlot == 0 || chainToPlot == getChain(domain.getCode())
+                  && domainToPlot == 0 || domainToPlot == getDomainNumber(domain.getCode())) {
+                    domainsToPlot.add(domain);
                 }
             }
         }
     
         if (domainsToPlot.isEmpty()) {
-            System.out.println("Tops Error: no domains found to plot\n");
-            System.err.println("Tops Error: no domains found to plot\n");
+            log.warning("Tops Error: no domains found to plot\n");
+            log.warning("Tops Error: no domains found to plot\n");
         }
     
         return domainsToPlot;
@@ -288,7 +295,7 @@ public class DomainCalculator {
         for (SSE r : originalSSEList) {
 
             DomainId domainId = ssIsInDomain(protein, r, domain);
-            if (domainId.segment != -1) {
+            if (domainId.getSegment() != -1) {
 
                 /*
                  * add an N terminus if we're starting a new piece of continuous
@@ -377,17 +384,17 @@ public class DomainCalculator {
             for (int i = 0; i < chain.sequenceLength(); i++) {
                 if ( chain.isExtended(i) ) {
 
-                    int Dom = residueDomain(chain, i, domains);
+                    int dom = residueDomain(chain, i, domains);
 
                     // TODO
                     BridgePartner bpl = chain.getBridgePartner(i).get(0);
                     BridgePartner bpr = chain.getBridgePartner(i).get(1);
 
-                    if ( residueDomain(chain, bpl.getPartnerResidue(), domains) != Dom || Dom<0  ) {
+                    if ( residueDomain(chain, bpl.getPartnerResidue(), domains) != dom || dom<0  ) {
 //                        chain.removeLeftBridge(i);
                     }
 
-                    if ( residueDomain(chain, bpr.getPartnerResidue(), domains) != Dom||Dom<0 ) {
+                    if ( residueDomain(chain, bpr.getPartnerResidue(), domains) != dom||dom<0 ) {
 //                        chain.removeRightBridge(i);
                     }
                 }
@@ -470,7 +477,7 @@ public class DomainCalculator {
     private DomainId findDomain(List<DomainDefinition> domains, Protein protein, SSE p) {
         for (Chain chain : protein.getChains()) {
             DomainId domainId = findDomain(domains, chain, p);
-            if (domainId.segment > -1) {
+            if (domainId.getSegment() > -1) {
                 return domainId;
             }
         }
@@ -480,7 +487,7 @@ public class DomainCalculator {
     private DomainId findDomain(List<DomainDefinition> domains, Chain chain, SSE p) {
         for (int i = 0; i < domains.size(); i++) {
             DomainId result = ssIsInDomain(chain, p, domains.get(i));
-            if (result.segment > -1) {
+            if (result.getSegment() > -1) {
                 return result;
             }
         }
@@ -513,7 +520,7 @@ public class DomainCalculator {
     private DomainId ssIsInDomain(Protein protein, SSE p, DomainDefinition domain) {
         for (Chain chain : protein.getChains()) {
             DomainId domainId = ssIsInDomain(chain, p, domain);
-            if (domainId.segment > -1) {
+            if (domainId.getSegment() > -1) {
                 return domainId;
             }
         }

@@ -19,6 +19,7 @@ import tops.port.Options;
 import tops.port.io.PostscriptFileWriter;
 import tops.port.io.TopsFileWriter;
 import tops.port.model.Cartoon;
+import tops.port.model.DomDefError;
 import tops.port.model.DomainDefinition;
 import tops.port.model.DsspReader;
 import tops.port.model.PlotFragInformation;
@@ -74,7 +75,7 @@ public class BuildTopologyCommand implements Command {
         /* check runtime options are reasonable */
         try {
             options.checkOptions();
-        } catch (Exception e) {
+        } catch (Options.OptionException e) {
             log("ERROR: checking runtime options\n");
             System.exit(1);
         }
@@ -158,7 +159,7 @@ public class BuildTopologyCommand implements Command {
                 domainCalculator.defaultDomains(protein, options.getChainToPlot().charAt(0));
 
         /* check domain definitions */
-        DomainCalculator.DomDefError ddep  = domainCalculator.checkDomainDefs(domains, protein);
+        DomDefError ddep  = domainCalculator.checkDomainDefs(domains, protein);
         if (ddep != null) {
             if (ddep.errorType != null) {
                 log("Tops warning: problem with domain definitions type %d\n", ddep.errorType);

@@ -5,6 +5,7 @@ import static tops.port.IntersectionCalculator.IntersectionType.SUPERIMPOSING;
 
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.vecmath.Point2d;
 
@@ -19,8 +20,10 @@ import tops.port.model.SSE;
 
 public class Optimise {
     
-    private double PARALLEL_SCALE = 5.0;
-    private int N_ENERGY_COMPS = 9;
+    private Logger log = Logger.getLogger(Optimise.class.getName());
+    
+    private double parallelScale = 5.0;
+    private int nEnergyComps = 9;
     
     private double anglePenalty		 = 0;
     private double arcsSample		 = 0;
@@ -63,8 +66,8 @@ public class Optimise {
     }
 
     private double calculateEnergy(Chain chain) {
-        double[] EnergyComps = new double[N_ENERGY_COMPS];
-        double TotalEnergy = 0;
+        double[] energyComps = new double[nEnergyComps];
+        double totalEnergy = 0;
 
         SSE root = chain.getSSEs().get(0);
 
@@ -74,15 +77,19 @@ public class Optimise {
                     for (SSE sseC : chain.iterFixed(sseA)) {
                         for (SSE sseD : chain.iterFixed(sseB)) {
                             if (sseC == sseD) continue;
-                            double d = distance2D(sseC, sseD);
-                            double D = sseC.getSymbolRadius() + sseD.getSymbolRadius();
-                            if (d < D) {
-                                double DHard = 3 * D / 4;
-                                double Ce;
-                                if (d <= DHard) Ce = clashPenalty;
-                                else Ce = clashPenalty * Math.exp(d - DHard / d - D);
-                                TotalEnergy += Ce;
-                                EnergyComps[0] += Ce;
+                            double centerSeparation = distance2D(sseC, sseD);
+                            double diameter = sseC.getSymbolRadius() + sseD.getSymbolRadius();
+                            if (centerSeparation < diameter) {
+                                double dHard = 3 * diameter / 4;
+                                double clashEnergy;
+                                if (centerSeparation <= dHard) {
+                                    clashEnergy = clashPenalty;
+                                } else {
+                                    clashEnergy = clashPenalty * 
+                                        Math.exp(centerSeparation - dHard / centerSeparation - diameter);
+                                }
+                                totalEnergy += clashEnergy;
+                                energyComps[0] += clashEnergy;
                                 //print TotalEnergy, d, D, DHard
                             }
                         }
@@ -96,33 +103,34 @@ public class Optimise {
                 SSE sseA = sses.get(index);
                 SSE sseB = sses.get(index + 1);
                 if (sseB == null || (sseA.isTerminus() && sseB.isTerminus())) continue;
-                double d = distance2D(sseA, sseB);
-                double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
-                if (d > D) {
-                    double penalty = (d - D) / gridUnitSize;
-                    double Ce = Math.pow(penalty , 2) * chainPenalty;
+                double centerSeparation = distance2D(sseA, sseB);
+                double diameter = sseA.getSymbolRadius() + sseB.getSymbolRadius();
+                if (centerSeparation > diameter) {
+                    double penalty = (centerSeparation - diameter) / gridUnitSize;
+                    double cE = Math.pow(penalty , 2) * chainPenalty;
                     //print "d > D for", sseA, sseB, int(d), D, Ce
-                    TotalEnergy += Ce;
-                    EnergyComps[1] += Ce;
+                    totalEnergy += cE;
+                    energyComps[1] += cE;
                 }
             }
         }
 
         if (neighbourPenalty > 0) {
             for (SSE sseA : chain.getSSEs()) {
-                if (sseA.getNeighbours().size() == 0) continue;
+                if (sseA.getNeighbours().isEmpty()) continue;
                 Neighbour first = sseA.getNeighbours().get(0);   // assumes sorted...
                 //NOTE: tops files do not contain neighbour distances!
                 if (first.getDistance() == -1) break;	
                 for (int i = 0; i < sseA.getNeighbours().size(); i++) {
                     Neighbour neighbour = sseA.getNeighbours().get(i); 
                     SSE sseB = neighbour.getSse();
-                    double d = distance2D(sseA, sseB);
-                    double D = sseA.getSymbolRadius() + sseB.getSymbolRadius();
+                    double centerSeparation = distance2D(sseA, sseB);
+                    double diameter = sseA.getSymbolRadius() + sseB.getSymbolRadius();
                     double ratio = first.getDistance() / neighbour.getDistance();
-                    double Ce = Math.pow((d - D) / gridUnitSize, 2) * neighbourPenalty * Math.pow(ratio, 2);
-                    TotalEnergy += Ce;
-                    EnergyComps[2] += Ce;
+                    double clashEnergy = Math.pow((centerSeparation - diameter) / gridUnitSize, 2) 
+                            * neighbourPenalty * Math.pow(ratio, 2);
+                    totalEnergy += clashEnergy;
+                    energyComps[2] += clashEnergy;
                 }
             }
         }
@@ -137,22 +145,22 @@ public class Optimise {
                     SSE sseB = sses.get(secondIndex);
                     SSE nextB = sses.get(secondIndex + 1);
                     if (nextB == null || (sseB.isTerminus() && nextB.isTerminus())) continue;
-                    System.out.print(sseA.getCartoonCenter() + " "
+                    log.info(sseA.getCartoonCenter() + " "
                                    + nextA.getCartoonCenter() + " "
                                    + sseB.getCartoonCenter() + " "
                                    + nextB.getCartoonCenter() + " ");
                     Intersection intersection = lineCross(sseA, nextA, sseB, nextB);
-                    System.out.println("Intersection " + intersection);
+                    log.info("Intersection " + intersection);
                     if (intersection == null) continue; // XXX FIXME
                     if (intersection.getType() == CROSSING) {
                         //print "crossing between", sseA, "-", sseA.To, "&&", sseB, "-", sseB.To
-                        TotalEnergy += crossPenalty;
-                        EnergyComps[3] += crossPenalty;
+                        totalEnergy += crossPenalty;
+                        energyComps[3] += crossPenalty;
                     }
                     if (intersection.getType() == SUPERIMPOSING) {
                         //print "superimposition of lines", sseA, "-", sseA.To, "&&", sseB, "-", sseB.To
-                        TotalEnergy += PARALLEL_SCALE * crossPenalty;
-                        EnergyComps[3] += PARALLEL_SCALE * crossPenalty;
+                        totalEnergy += parallelScale * crossPenalty;
+                        energyComps[3] += parallelScale * crossPenalty;
                     }
                 }
             }
@@ -162,8 +170,8 @@ public class Optimise {
             for (SSE sse : chain.getSSEs()) {
                 if (sse.chirality != Hand.NONE && 
                         ChiralityCalculator.hand2D(chain, sse) != sse.chirality) {
-                    TotalEnergy += handPenalty;
-                    EnergyComps[4] += handPenalty;
+                    totalEnergy += handPenalty;
+                    energyComps[4] += handPenalty;
                 }
             }
         }
@@ -175,8 +183,8 @@ public class Optimise {
                 SSE next = chain.getSSEs().get(index + 1);
                 double D = angle(prev, sse, next);
                 double Ce = anglePenalty * (1.0 - Math.abs(Math.cos(multiplicity * D)));
-                TotalEnergy += Ce;
-                EnergyComps[5] += Ce;
+                totalEnergy += Ce;
+                energyComps[5] += Ce;
             }
         }
 
@@ -187,8 +195,8 @@ public class Optimise {
                 // TODO : remove cast to Cartoon
                 if (ConnectionCalculator.lineHitSymbol((Cartoon) chain, prev, sse) != null) {
                     // print "line hit symbol", sseA, sseB
-                    TotalEnergy += lineHitPenalty;
-                    EnergyComps[6] += lineHitPenalty;
+                    totalEnergy += lineHitPenalty;
+                    energyComps[6] += lineHitPenalty;
                 }
             }
         }	
@@ -197,14 +205,14 @@ public class Optimise {
             for (SSE sse : chain.iterFixed(chain.getSSEs().get(0))) {
                 if (sse.hasFixedType(FixedType.BARREL, FixedType.CURVED_SHEET)) {
                     double Ce = insideBarrelEnergy(chain, sse, insideBarrelPenalty);
-                    TotalEnergy += Ce;
-                    EnergyComps[7] += Ce;
+                    totalEnergy += Ce;
+                    energyComps[7] += Ce;
                 }
             }
         }
 
-        EnergyComps[8] = TotalEnergy;
-        return TotalEnergy;
+        energyComps[8] = totalEnergy;
+        return totalEnergy;
     }
 
 

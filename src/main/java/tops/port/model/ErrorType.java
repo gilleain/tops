@@ -1,0 +1,5 @@
+package tops.port.model;
+
+public enum ErrorType {
+    NO_DOMAIN_ERRORS, DOMAIN_CHAIN_ERROR, DOMAIN_RESIDUE_ERROR, DOMAIN_RANGE_OVERLAP_ERROR
+}
