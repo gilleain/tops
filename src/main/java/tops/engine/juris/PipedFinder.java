@@ -71,7 +71,7 @@ public class PipedFinder {
         int[] v; // this is the left hand end! - NO : this is now the points
                     // to add edges to!
 
-        if (gr.geteSize() > 0) {
+        if (gr.getESize() > 0) {
             if (this.m.run(gr.toString(), false)) {
             } else {
                 return;

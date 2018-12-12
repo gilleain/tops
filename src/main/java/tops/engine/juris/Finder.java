@@ -6,8 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class Finder {
+    
+    private Logger log = Logger.getLogger(Finder.class.getName());
 
     private FileReader inFile;
 
@@ -19,23 +23,17 @@ class Finder {
 
     private Matcher m;
 
-    private String instr, maxpat;
+    private String instr;
+    private String maxpat;
 
-    private boolean debugging = false;
-
-//    private int totalMatchNum, goodMatchNum;
-
-    public Finder(String fi, String flag) {
-        if (flag.equals("full"))
-            this.debugging = true;
-//        totalMatchNum = goodMatchNum = 0;
+    public Finder(String filename) {
         this.maxpat = "";
-        this.instances = new ArrayList<String>();
+        this.instances = new ArrayList<>();
 
         try {
-            this.inFile = new FileReader(fi);
+            this.inFile = new FileReader(filename);
         } catch (FileNotFoundException f) {
-            System.out.println("No such file");
+            log.info("No such file");
         }
         this.buffy = new BufferedReader(this.inFile);
 
@@ -44,84 +42,42 @@ class Finder {
                 this.instances.add(this.instr);
         }
 
-        catch (IOException IOE) {
-            System.out.println("Major Error: " + IOE);
+        catch (IOException ioe) {
+            log.info("Major Error: " + ioe);
         }
-        String[] inst = (String[]) this.instances.toArray(new String[0]);
+        String[] inst = this.instances.toArray(new String[0]);
 
         this.c = new Constrainer(inst);
         this.m = new Matcher(inst);
-//        long startTime = System.currentTimeMillis();
         this.matchExtendRepeat(new Grower());
-//        long endTime = System.currentTimeMillis() - startTime;
 
         // compression calculations
         int cP = this.countP(this.maxpat);
         int num = inst.length - 1;
-        int Craw = this.c.getTotalEdge() - (cP * num);
-        // System.out.println("<Patt_ID></Patt_ID>");
-        // System.out.println("Pattern edge number = " + cP);
-        // System.out.println("Input set edge number = " + c.total_edge + " for
-        // " + num + " instances");
-        // System.out.println("<Compression_RAW>" + Craw +
-        // "</Compression_RAW>");
-        // System.out.println("Craw = " + Craw);
+        int cRaw = this.c.getTotalEdge() - (cP * num);
 
-        int tmp1 = this.c.getTotalEdge() - Craw;
+        int tmp1 = this.c.getTotalEdge() - cRaw;
         int tmp2 = this.c.getTotalEdge() - this.c.getMaxEdge();
-        // System.out.println("tmp1 = " + tmp1 + " tmp2 = " + tmp2);
-        float Cnorm = 1 - ((float) tmp1 / (float) tmp2);
-        // System.out.println("Cnorm = 1 - [(" + c.total_edge + " - " + Craw +
-        // ") / (" + c.total_edge + " - "+ c.max_edge + ")]");
-        // System.out.println("<Compression_NORM>" + Cnorm +
-        // "</Compression_NORM>");
-        // System.out.println("Cnorm = " + Cnorm);
-
-        // String fullP = "patt_ID ";
+        float cNorm = 1 - ((float) tmp1 / (float) tmp2);
         String fullP = "pattern= ";
 
         fullP += this.maxpat;
-        // System.out.println("Time taken = " + endTime + " NumM = " +
-        // totalMatchNum + " SuccM = " + goodMatchNum);
 
-        // print out the input file!
-        // for (int j = 0; j < inst.length; ++j) {
-        // System.out.println(inst[j]);
-        // }
-        int indy = this.maxpat.indexOf(" ") + 1;
+        int indy = this.maxpat.indexOf(' ') + 1;
 
         if (indy != this.maxpat.length() - 1) {
-            /*
-             * m = new Matcher(maxpat, inst); String[] res = m.run(); for (int i =
-             * 0; i < res.length; ++i) { //System.out.print(convert(res[i]));
-             * System.out.println(res[i]); }
-             */
-            // fullP = getMax(res) + doEdges(maxpat.substring(indy)); //collage!
-            // System.out.println('\n' + convertPatt(fullP));
-            System.out.print(fullP + "\t" + Craw + "\t" + Cnorm + "\n");
+            log.log(Level.INFO, "{0}\t{1}\t{2}%n", new Object[] { fullP, cRaw, cNorm });
         }
     }
 
     // prettify the output to conform to the standard DMamtora format
     public String convert(String s) {
-        StringBuffer bloat = new StringBuffer();
+        StringBuilder bloat = new StringBuilder();
         int sp = s.indexOf(' '); // first space
         int ssp = s.indexOf("<Dom_Inserts>");
         bloat.append("<Dom_ID>"); // domain Id 'tag'
         bloat.append(s.substring(0, sp)); // domain Id (head or pdbname)
         bloat.append("</Dom_ID>\n");
-        // do vertices
-        /*-----------------------------cut!-----------------------
-         for (int i = sp; i < ssp - 2; ++i) {
-         if (s.charAt(i) == '[') bloat.append("<INS>").append(s.charAt(i + 1)).append('\n');
-         if (s.charAt(i) == ']') bloat.append("<SSE>").append(s.charAt(i + 1)).append('\n');
-         }
-         //do correspondances
-         for (int j = ssp; j < s.length(); ++j) {
-         if (s.charAt(j) == '[') bloat.append("\n<COR>").append(s.charAt(j + 1)).append('\n');
-         if (s.charAt(j) == ',') bloat.append("<COR>").append(s.charAt(j + 2)).append('\n');
-         }
-         ---------------------------cut!---------------------------*/
         bloat.append("<Corr>").append(s.substring(sp + 1, ssp)).append(
                 "</Corr>\n");
         return bloat.toString();
@@ -137,7 +93,7 @@ class Finder {
     }
 
     public String convertPatt(String s) {
-        StringBuffer bloat = new StringBuffer();
+        StringBuilder bloat = new StringBuilder();
         int sp = s.indexOf(' '); // first space
         int ssp = s.indexOf(' ', sp + 1); // second space
         bloat.append("<Patt_ID>"); // primary key
@@ -159,7 +115,7 @@ class Finder {
 
     String doEdges(String s) {
         // do edges
-        StringBuffer bloat = new StringBuffer();
+        StringBuilder bloat = new StringBuilder();
         int lastT = 0;
         int lastC = lastT;
         for (int j = 0; j < s.length(); ++j) {
@@ -180,7 +136,7 @@ class Finder {
     }
 
     public String getMax(String[] r) {
-        StringBuffer maxStr = new StringBuffer("<Patt_SSE>N</Patt_SSE>");
+        StringBuilder maxStr = new StringBuilder("<Patt_SSE>N</Patt_SSE>");
         String tmp;
         int last = (this.maxpat.indexOf(' ') == -1) ? this.maxpat.length() : this.maxpat
                 .indexOf(' ') - 1;
@@ -207,29 +163,14 @@ class Finder {
     }
 
     public void matchExtendRepeat(Grower gr) {
-        int[] v; // this is the left hand end! - NO : this is now the points
-                    // to add edges to!
-        if (this.debugging)
-            System.out.println(" Pattern at start = " + gr.toString());
+        int[] v; // this is the left hand end! - NO : this is now the points to add edges to!
 
-        if (gr.geteSize() > 0) {
-            if (this.m.run(gr.toString(), false)) {
-                if (this.debugging)
-                    System.out.println("!!!!!!!!!!!!!!!!");
-            } else {
-                if (this.debugging)
-                    System.out
-                            .println("-------------------no EDGE match!----------");
+        if (gr.getESize() > 0) {
+            if (!this.m.run(gr.toString(), false)) {
                 return;
             }
         } else {
-            if (this.m.stringMatch(gr.toString())) {
-                if (this.debugging)
-                    System.out.println("#################");
-            } else {
-                if (this.debugging)
-                    System.out
-                            .println("--------------no VERTEX match!--------------");
+            if (!this.m.stringMatch(gr.toString())) {
                 return;
             }
         }
@@ -239,7 +180,8 @@ class Finder {
         // first, do the edges
 
         if (gr.canAddEdge(1, this.c.getMaxAIn())) {
-            if ((v = gr.getEdges(this.c.getMaxAOut(), 'A')) != null) {
+            v = gr.getEdges(this.c.getMaxAOut(), 'A');
+            if (v != null) {
                 for (int i = 0; i < v.length && v[i] != 0; i++) {
                     this.matchExtendRepeat(new Grower(gr.toString()).add(v[i], 'A'));
                 }
@@ -302,8 +244,6 @@ class Finder {
         if (gr.getNumLowerH() < this.c.getMaxHLower()) {
             this.matchExtendRepeat(new Grower(gr.toString()).addDownHelix());
         }
-
-        return;
     }
 
 }
