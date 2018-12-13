@@ -3,37 +3,38 @@ package tops.drawing.app;
 
 public class ServletConnection {
     
-    private static int TOPS_STRING_NAME = 0;
-    private static int NUM_RESULTS_TO_RETURN = 1;
-    private static int RESULTS_PER_PAGE = 2;
-    private static int SUB_CLASSES = 3;
-    private static int SUBMISSION_TYPE = 4;
+    private static final int TOPS_STRING_NAME = 0;
+    private static final int NUM_RESULTS_TO_RETURN = 1;
+    private static final int RESULTS_PER_PAGE = 2;
+    private static final int SUB_CLASSES = 3;
+    private static final int SUBMISSION_TYPE = 4;
 
-    private static final String base_URL = "http://compbio.dcs.gla.ac.uk/tops/pattern/simple";
-    //private static final String base_URL = "http://localhost:8080/tops/pattern/simple";
-
-    public static String makeURL(String tBody, String tTail, String[] sub_Data) {
-        String tName = sub_Data[TOPS_STRING_NAME];
-        String topNum = sub_Data[NUM_RESULTS_TO_RETURN];
-        String pSize = sub_Data[RESULTS_PER_PAGE];
-        String subClass = sub_Data[SUB_CLASSES];
-        String tService = sub_Data[SUBMISSION_TYPE];
-        // convert to X and Z
-        tTail = extract(tTail, tBody);
-        String extra_URL = generateExtra(tName, tBody, tTail, topNum, pSize, subClass, tService);
-        StringBuffer tmp = new StringBuffer(extra_URL);
-        replaceAll(extra_URL, tmp, " ", "%20");
-        replaceAll(extra_URL, tmp, ",", "%2C");
-        replaceAll(extra_URL, tmp, ":", "%3A");
-
-        String URL = base_URL + "?" + tmp.toString();
-
-        return URL;
+    private static final String BASE_URL = "http://localhost:8080/tops/pattern/simple";
+    
+    private ServletConnection() {
+        // prevent instantiation
     }
 
-    private static void replaceAll(String s, StringBuffer sb, String stringToSearchFor, String stringToReplace) {
+    public static String makeURL(String tBody, String tTail, String[] subData) {
+        String tName = subData[TOPS_STRING_NAME];
+        String topNum = subData[NUM_RESULTS_TO_RETURN];
+        String pSize = subData[RESULTS_PER_PAGE];
+        String subClass = subData[SUB_CLASSES];
+        String tService = subData[SUBMISSION_TYPE];
+        // convert to X and Z
+        tTail = extract(tTail, tBody);
+        String extraURL = generateExtra(tName, tBody, tTail, topNum, pSize, subClass, tService);
+        StringBuilder builder = new StringBuilder(extraURL);
+        replaceAll(extraURL, builder, " ", "%20");
+        replaceAll(extraURL, builder, ",", "%2C");
+        replaceAll(extraURL, builder, ":", "%3A");
+
+        return BASE_URL + "?" + builder.toString();
+    }
+
+    private static void replaceAll(String s, StringBuilder sb, String stringToSearchFor, String stringToReplace) {
         int index = 0;
-        while ((index = s.indexOf(stringToReplace, index)) != -1) {
+        while ((index = s.indexOf(stringToSearchFor, index)) != -1) {
             sb.replace(index, index + 1, stringToReplace);
         }
     }
@@ -42,42 +43,40 @@ public class ServletConnection {
         String targetName = "target-name=" + tName;
         String targetBody = "target-body=" + tBody;
         String targetTail = "target-tail=" + tTail;
-        String topNum_st = "topnum=" + topNum;
+        String topNumSt = "topnum=" + topNum;
         String pageSize = "pagesize=" + pSize;
         String subClasses = "subclasses=" + subClass;
         String targetService = "targetService=" + tService;
 
-        String EXTRA = targetName + "&" + targetBody + "&" + targetTail + "&" + topNum_st + "&" + pageSize + "&" + subClasses + "&" + targetService;
-
-        return EXTRA;
+        return targetName + "&" + targetBody + "&" + targetTail + "&" + topNumSt + "&" + pageSize + "&" + subClasses + "&" + targetService;
     }
 
     // this replaces a R-P with Z and L-P with X
     public static String extract(String bonds, String vertices) {
 
-        int num_of_figs = vertices.length() - 2;
+        int numOfFigs = vertices.length() - 2;
 
-        for (int i = 1; i < num_of_figs + 1; i++) {
-            for (int j = 1; j < num_of_figs + 1; j++) {
-                StringBuffer temp = new StringBuffer(bonds);
-                String p_bond = i + ":" + j + "P";
+        for (int i = 1; i < numOfFigs + 1; i++) {
+            for (int j = 1; j < numOfFigs + 1; j++) {
+                StringBuilder builder = new StringBuilder(bonds);
+                String pBond = i + ":" + j + "P";
 
-                int pIndex = bonds.indexOf(p_bond);
+                int pIndex = bonds.indexOf(pBond);
                 if (pIndex >= 0) {
-                    String r_p = i + ":" + j + "R";
+                    String rP = i + ":" + j + "R";
 
-                    int rIndex = bonds.indexOf(r_p);
+                    int rIndex = bonds.indexOf(rP);
                     if (rIndex >= 0) {
-                        temp.replace(pIndex + 3, pIndex + 4, "Z");
-                        temp.delete(rIndex, rIndex + 4);
-                        bonds = temp.toString();
+                        builder.replace(pIndex + 3, pIndex + 4, "Z");
+                        builder.delete(rIndex, rIndex + 4);
+                        bonds = builder.toString();
                     } else {
-                        String l_p = i + ":" + j + "L";
-                        int lIndex = bonds.indexOf(l_p);
+                        String lP = i + ":" + j + "L";
+                        int lIndex = bonds.indexOf(lP);
                         if (lIndex >= 0) {
-                            temp.replace(pIndex + 3, pIndex + 4, "X");
-                            temp.delete(lIndex, lIndex + 4);
-                            bonds = temp.toString();
+                            builder.replace(pIndex + 3, pIndex + 4, "X");
+                            builder.delete(lIndex, lIndex + 4);
+                            bonds = builder.toString();
                         }
                     }
                 }

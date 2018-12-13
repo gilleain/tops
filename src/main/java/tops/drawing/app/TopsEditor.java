@@ -26,33 +26,35 @@ import tops.drawing.symbols.CartoonConnector;
 public class TopsEditor extends JApplet {
     
     // Activities
-    public static int SELECT           = 0;
-    public static int UNDO             = 1;
-    public static int DELETE           = 2;
-    public static int CLEAR            = 3;
-    public static int ZOOM_IN          = 4;
-    public static int ZOOM_OUT         = 5;
-    public static int SUBMIT           = 6;
-    
-    // Symbols
-    public static int STRAND_UP        = 7;
-    public static int STRAND_DOWN      = 8;
-    public static int HELIX_UP         = 9;
-    public static int HELIX_DOWN       = 10;
-    public static int TEMPLATE         = 11;
-    
-    // Arcs
-    public static int H_BOND           = 12;
-    public static int RIGHT_ARC        = 13;
-    public static int LEFT_ARC         = 14;
-    public static int RANGE            = 15;
-    
-    // Flips and Align
-    public static int FLIP             = 16;
-    public static int HORIZONTAL_ALIGN = 17;
-    public static int VERTICAL_ALIGN   = 18;
-    public static int FLIP_X           = 19;
-    public static int FLIP_Y           = 20;
+    public enum State {
+        SELECT,
+        UNDO,
+        DELETE,
+        CLEAR,
+        ZOOM_IN,
+        ZOOM_OUT,
+        SUBMIT,
+        
+        // Symbols
+        STRAND_UP,
+        STRAND_DOWN,
+        HELIX_UP,
+        HELIX_DOWN,
+        TEMPLATE,
+        
+        // Arcs
+        H_BOND,
+        RIGHT_ARC,
+        LEFT_ARC,
+        RANGE,
+        
+        // Flips and Align
+        FLIP,
+        HORIZONTAL_ALIGN,
+        VERTICAL_ALIGN,
+        FLIP_X,
+        FLIP_Y
+    }
     
     private String currentFilename; // the name of where the file is currently stored
     private String currentDir;
@@ -67,7 +69,7 @@ public class TopsEditor extends JApplet {
     private SubmissionDialog submitDialog;
     private InsertEditRangeDialog addEditDialog;
     
-    private int currentState;
+    private State currentState;
 
     public TopsEditor() {
         
@@ -158,11 +160,11 @@ public class TopsEditor extends JApplet {
         return this.canvas.getCartoon();
     }
 
-    public int getState() {
+    public State getState() {
         return this.currentState;
     }
     
-    public void setState(int state) {
+    public void setState(State state) {
         currentState = state;
         this.canvas.setState(state);
     }
@@ -172,7 +174,7 @@ public class TopsEditor extends JApplet {
         if (numberOfSelected < 1) {
             System.err.println("You must select two or more figures to align!");
         } else {
-            this.setState(HORIZONTAL_ALIGN);
+            this.setState(State.HORIZONTAL_ALIGN);
         }
     }
     
@@ -181,7 +183,7 @@ public class TopsEditor extends JApplet {
         if (numberOfSelected < 1) {
             System.err.println("You must select two or more figures to align!");
         } else {
-            this.setState(VERTICAL_ALIGN);
+            this.setState(State.VERTICAL_ALIGN);
         }
     }
     

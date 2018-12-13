@@ -13,34 +13,34 @@ public class MediaCenter {
     private static HashMap<String, Image> images;
 
     private MediaCenter() {
-        MediaCenter.images = new HashMap<String, Image>();
-        for (int i = 0; i < buttonImageNames.length; i++) {
-            URL imageURL = this.getClass().getResource("images/" + MediaCenter.buttonImageNames[i] + ".gif");
+        MediaCenter.images = new HashMap<>();
+        for (int i = 0; i < BUTTON_IMAGE_NAMES.length; i++) {
+            URL imageURL = this.getClass().getResource("images/" + MediaCenter.BUTTON_IMAGE_NAMES[i] + ".gif");
             if (imageURL == null) {
-                MediaCenter.images.put(MediaCenter.buttonImageNames[i], null);
-                System.err.println("image not found : " + MediaCenter.buttonImageNames[i] + ".gif");
+                MediaCenter.images.put(MediaCenter.BUTTON_IMAGE_NAMES[i], null);
+                System.err.println("image not found : " + MediaCenter.BUTTON_IMAGE_NAMES[i] + ".gif");
             } else {
-                MediaCenter.images.put(MediaCenter.buttonImageNames[i], Toolkit.getDefaultToolkit().getImage(imageURL));
+                MediaCenter.images.put(MediaCenter.BUTTON_IMAGE_NAMES[i], Toolkit.getDefaultToolkit().getImage(imageURL));
             }
         }
 
-        for (int j = 0; j < rolloverImageNames.length; j++) {
-            URL imageURL = this.getClass().getResource("images/" + MediaCenter.rolloverImageNames[j] + ".gif");
+        for (int j = 0; j < ROLLOVER_IMAGE_NAMES.length; j++) {
+            URL imageURL = this.getClass().getResource("images/" + MediaCenter.ROLLOVER_IMAGE_NAMES[j] + ".gif");
             if (imageURL == null) {
-                MediaCenter.images.put(MediaCenter.rolloverImageNames[j], null);
-                System.err.println("image not found : " + MediaCenter.rolloverImageNames[j] + ".gif");
+                MediaCenter.images.put(MediaCenter.ROLLOVER_IMAGE_NAMES[j], null);
+                System.err.println("image not found : " + MediaCenter.ROLLOVER_IMAGE_NAMES[j] + ".gif");
             } else {
-                MediaCenter.images.put(MediaCenter.rolloverImageNames[j], Toolkit.getDefaultToolkit().getImage(imageURL));
+                MediaCenter.images.put(MediaCenter.ROLLOVER_IMAGE_NAMES[j], Toolkit.getDefaultToolkit().getImage(imageURL));
             }
         }
 
-        for (int k = 0; k < cursorImageNames.length; k++) {
-            URL imageURL = this.getClass().getResource("images/" + MediaCenter.cursorImageNames[k] + ".gif");
+        for (int k = 0; k < CURSOR_IMAGE_NAMES.length; k++) {
+            URL imageURL = this.getClass().getResource("images/" + MediaCenter.CURSOR_IMAGE_NAMES[k] + ".gif");
             if (imageURL == null) {
-                MediaCenter.images.put(MediaCenter.cursorImageNames[k], null);
+                MediaCenter.images.put(MediaCenter.CURSOR_IMAGE_NAMES[k], null);
 //                System.err.println("image not found : " + this.cursorImageNames[k] + ".gif"); XXX
             } else {
-                MediaCenter.images.put(MediaCenter.cursorImageNames[k], Toolkit.getDefaultToolkit().getImage(imageURL));
+                MediaCenter.images.put(MediaCenter.CURSOR_IMAGE_NAMES[k], Toolkit.getDefaultToolkit().getImage(imageURL));
             }
         }
     }
@@ -48,10 +48,10 @@ public class MediaCenter {
     public static Image getImage(String imageName) {
         if (reference == null)
             reference = new MediaCenter();
-        return (Image) MediaCenter.images.get(imageName);
+        return MediaCenter.images.get(imageName);
     }
 
-    public static String[] buttonImageNames = {
+    public static String[] BUTTON_IMAGE_NAMES = {
         "DefaultButton",
         "UndoButton",
         "ClearSelectedButton",
@@ -100,7 +100,7 @@ public class MediaCenter {
         "ubrol_thumb"
     };
 
-    public static String[] rolloverImageNames = {
+    public static String[] ROLLOVER_IMAGE_NAMES = {
         "DefaultRollover",
         "UndoRollover",
         "ClearSelectedRollover",
@@ -127,7 +127,7 @@ public class MediaCenter {
         "FlipYRollover",
     };
 
-    public static String[] cursorImageNames = {
+    public static String[] CURSOR_IMAGE_NAMES = {
         "Dummy",
         "Dummy",
         "Dummy",

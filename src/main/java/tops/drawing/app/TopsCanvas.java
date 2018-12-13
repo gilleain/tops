@@ -1,5 +1,12 @@
 package tops.drawing.app;
 
+import static tops.drawing.app.TopsEditor.State.HELIX_DOWN;
+import static tops.drawing.app.TopsEditor.State.HELIX_UP;
+import static tops.drawing.app.TopsEditor.State.RANGE;
+import static tops.drawing.app.TopsEditor.State.SELECT;
+import static tops.drawing.app.TopsEditor.State.STRAND_DOWN;
+import static tops.drawing.app.TopsEditor.State.STRAND_UP;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -26,46 +33,47 @@ import javax.swing.JOptionPane;
 import javax.swing.RepaintManager;
 
 import tops.drawing.Cartoon;
+import tops.drawing.app.TopsEditor.State;
 import tops.drawing.symbols.CartoonConnector;
 import tops.drawing.symbols.SSESymbol;
 
 
 public class TopsCanvas extends JComponent implements Printable, MouseListener, MouseMotionListener { 
 
-    // Activities
-    public static final int SELECT           = 0;
-    public static final int UNDO             = 1;
-    public static final int DELETE           = 2;
-    public static final int CLEAR            = 3;
-    public static final int ZOOM_IN          = 4;
-    public static final int ZOOM_OUT         = 5;
-    public static final int SUBMIT           = 6;
-    
-    // Symbols
-    public static final int STRAND_UP        = 7;
-    public static final int STRAND_DOWN      = 8;
-    public static final int HELIX_UP         = 9;
-    public static final int HELIX_DOWN       = 10;
-    public static final int TEMPLATE         = 11;
-    
-    // Arcs
-    public static final int H_BOND           = 12;
-    public static final int RIGHT_ARC        = 13;
-    public static final int LEFT_ARC         = 14;
-    public static final int RANGE            = 15;
-    
-    // Flips and Align
-    public static final int FLIP             = 16;
-    public static final int HORIZONTAL_ALIGN = 17;
-    public static final int VERTICAL_ALIGN   = 18;
-    public static final int FLIP_X           = 19;
-    public static final int FLIP_Y           = 20;
+//    // Activities
+//    public static final int SELECT           = 0;
+//    public static final int UNDO             = 1;
+//    public static final int DELETE           = 2;
+//    public static final int CLEAR            = 3;
+//    public static final int ZOOM_IN          = 4;
+//    public static final int ZOOM_OUT         = 5;
+//    public static final int SUBMIT           = 6;
+//    
+//    // Symbols
+//    public static final int STRAND_UP        = 7;
+//    public static final int STRAND_DOWN      = 8;
+//    public static final int HELIX_UP         = 9;
+//    public static final int HELIX_DOWN       = 10;
+//    public static final int TEMPLATE         = 11;
+//    
+//    // Arcs
+//    public static final int H_BOND           = 12;
+//    public static final int RIGHT_ARC        = 13;
+//    public static final int LEFT_ARC         = 14;
+//    public static final int RANGE            = 15;
+//    
+//    // Flips and Align
+//    public static final int FLIP             = 16;
+//    public static final int HORIZONTAL_ALIGN = 17;
+//    public static final int VERTICAL_ALIGN   = 18;
+//    public static final int FLIP_X           = 19;
+//    public static final int FLIP_Y           = 20;
     
     // various constants
     private static final double SCALE_FACTOR = 0.1;
     
     private SSESymbol currentlyDraggedSymbol = null;
-    private int state;
+    private State state;
     
     private SSESymbol first_bond_figure = null;
     private boolean dragging = false;
@@ -91,11 +99,11 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
         this.addMouseMotionListener(this);
         setBackground(Color.white);
         
-        int numberOfCursors = MediaCenter.cursorImageNames.length;
+        int numberOfCursors = MediaCenter.CURSOR_IMAGE_NAMES.length;
         cursors = new Cursor[numberOfCursors];
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         for (int i = 0; i < numberOfCursors; i++) {
-            Image image = MediaCenter.getImage(MediaCenter.cursorImageNames[i]);
+            Image image = MediaCenter.getImage(MediaCenter.CURSOR_IMAGE_NAMES[i]);
             if (image != null) {
                 cursors[i] = toolkit.createCustomCursor(image, new Point(0, 0), "img");
             }
@@ -106,7 +114,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
         this.fitToScreen();
     }
     
-    public void setState(int state) {
+    public void setState(State state) {
         this.state = state;
         
         // XXX custom cursors disabled until attractive examples created...
@@ -418,7 +426,7 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
         }
     }
 
-    public void createSymbol(Point p, int currentState) {
+    public void createSymbol(Point p, State currentState) {
         this.saveState();
         
         int symbolInt = cartoon.numberOfSSESymbols() + 1;
@@ -459,17 +467,17 @@ public class TopsCanvas extends JComponent implements Printable, MouseListener, 
                     SSESymbol source = first_bond_figure;
                     SSESymbol dest = selectedSSESymbol;
 
-                    if (state == RIGHT_ARC) {
+                    if (state == State.RIGHT_ARC) {
                         if (cartoon.canCreateRArc(source, dest)) {
                             this.saveState();
                             cartoon.createRightArc(source, dest);
                         }
-                    } else if (state == LEFT_ARC) {
+                    } else if (state == State.LEFT_ARC) {
                         if (cartoon.canCreateLArc(source, dest)) {
                             this.saveState();
                             cartoon.createLeftArc(source, dest);
                         }
-                    } else if (state == H_BOND) {      
+                    } else if (state == State.H_BOND) {      
                         if (cartoon.canCreateHydrogenBond(source, dest)) {
                             if (cartoon.shouldCreateParallelBond(source, dest)) {
                                 this.saveState();

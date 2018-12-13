@@ -28,14 +28,14 @@ public class TemplateDialog extends JDialog implements ActionListener {
 
     private Container container;
 
-    private String[] template_names = { "GreekKey", "Rossmann",
+    private String[] templateNames = { "GreekKey", "Rossmann",
             "ImmununoGlobulin", "Plait", "JellyRoll", "TimBarrel", "KeyBarrel",
             "UbiquitinRoll", };
 
-    private String[] template_desc = { "----", "----", "----", "----", "----",
+    private String[] templateDesc = { "----", "----", "----", "----", "----",
             "----", "----", "----", };
 
-    private String[] template_sse = { "NEeEeEC 1:4A 2:3A 2:5A 3:4A",
+    private String[] templateSSE = { "NEeEeEC 1:4A 2:3A 2:5A 3:4A",
             "NEhEhEhEhEC 1:3R 1:3P 1:7P 3:5R 3:5P 5:7R 7:9R 7:9P",
             "NEeEeeEeEC 1:2A 2:6A 3:4A 3:7A 5:6A 7:8A ",
             "NEhEeHeC 1:3R 1:4A 1:6A 3:4A 4:6R ",
@@ -45,7 +45,7 @@ public class TemplateDialog extends JDialog implements ActionListener {
             "NEeHeEC 1:2A 1:5P 2:4R 4:5A", 
     };
 
-    private JLabel[] template_images = {
+    private JLabel[] templateImages = {
             new JLabel(new ImageIcon(MediaCenter.getImage("greek_thumb"))),
             new JLabel(new ImageIcon(MediaCenter.getImage("rosma_thumb"))),
             new JLabel(new ImageIcon(MediaCenter.getImage("immun_thumb"))),
@@ -56,29 +56,31 @@ public class TemplateDialog extends JDialog implements ActionListener {
             new JLabel(new ImageIcon(MediaCenter.getImage("ubrol_thumb"))), 
     };
 
-    private JLabel templateName_label;
-    private JComboBox<Object> templateName_combo;
+    private JComboBox<Object> templateNameCombo;
     private JPanel templateComboPanel;
-    private JPanel middle_panel, template_image_panel, inner_pic_panel;
-    private JPanel template_description_panel;
+    private JPanel middlePanel;
+    private JPanel templateImagePanel;
+    private JPanel innerPicPanel;
+    private JPanel templateDescriptionPanel;
 
-    private JPanel template_button_panel;
+    private JPanel templateButtonPanel;
 
-    private JButton submit, cancel;
+    private JButton submit;
+    private JButton cancel;
 
     // labels for the description
-    private JLabel template_name_label;
+    private JLabel templateNameLabel;
 
-    private JLabel template_sse_label;
+    private JLabel templateSseLabel;
 
-    private JLabel template_desc_label;
+    private JLabel templateDescLabel;
 
     // the Strings for the label
-    private String TEMPLATE_NAME = "Template Name:  ";
+    private static final String TEMPLATE_NAME = "Template Name:  ";
 
-    private String TEMPLATE_SSE = "SSE String   :  ";
+    private static final String TEMPLATE_SSE = "SSE String   :  ";
 
-    private String TEMPLATE_DESC = "Protein Desc :  ";
+    private static final String TEMPLATE_DESC = "Protein Desc :  ";
 
     /** Creates a new instance of TemplateDialog */
     public TemplateDialog(TopsEditor parentPanel) {
@@ -87,25 +89,25 @@ public class TemplateDialog extends JDialog implements ActionListener {
 
         container = getContentPane();
 
-        templateName_label = new JLabel();
-        templateName_combo = new JComboBox<Object>();
+        templateNameLabel = new JLabel();
+        templateNameCombo = new JComboBox<>();
         templateComboPanel = new JPanel();
 
-        template_image_panel = new JPanel();
-        inner_pic_panel = new JPanel();
+        templateImagePanel = new JPanel();
+        innerPicPanel = new JPanel();
         
         // this contains the imae and the description
-        middle_panel = new JPanel(); 
+        middlePanel = new JPanel(); 
 
-        template_description_panel = new JPanel();
+        templateDescriptionPanel = new JPanel();
 
-        template_button_panel = new JPanel();
+        templateButtonPanel = new JPanel();
         submit = new JButton("Load Template");
         cancel = new JButton("Cancel");
 
-        template_name_label = new JLabel(TEMPLATE_NAME);
-        template_sse_label = new JLabel(TEMPLATE_SSE);
-        template_desc_label = new JLabel(TEMPLATE_DESC);
+        templateNameLabel = new JLabel(TEMPLATE_NAME);
+        templateSseLabel = new JLabel(TEMPLATE_SSE);
+        templateDescLabel = new JLabel(TEMPLATE_DESC);
         
         // the main settings
         setSize(400, 500);
@@ -123,95 +125,91 @@ public class TemplateDialog extends JDialog implements ActionListener {
         
         // JLabel Settings
         String templateName = "Template Name:         ";
-        templateName_label.setText(templateName);
-        templateName_label.setForeground(Color.black);
+        templateNameLabel.setText(templateName);
+        templateNameLabel.setForeground(Color.black);
         
         // combo box settings
-        templateName_combo.setModel(new DefaultComboBoxModel<Object>(this.template_names));
-        templateName_combo.setSelectedIndex(0);
-        templateName_combo.setForeground(Color.black);
+        templateNameCombo.setModel(new DefaultComboBoxModel<Object>(this.templateNames));
+        templateNameCombo.setSelectedIndex(0);
+        templateNameCombo.setForeground(Color.black);
         
         templateComboPanel.setBorder(titled);
-        templateComboPanel.add(templateName_label);
-        templateComboPanel.add(templateName_combo);
+        templateComboPanel.add(templateNameLabel);
+        templateComboPanel.add(templateNameCombo);
         
         container.add(templateComboPanel);
         
         
         Border etched1 = BorderFactory.createEtchedBorder();
-        Border empty_border = BorderFactory.createEmptyBorder(0, 20, 10, 20);
-        Border compound = BorderFactory.createCompoundBorder(etched1, empty_border);
+        Border emptyBorder = BorderFactory.createEmptyBorder(0, 20, 10, 20);
+        Border compound = BorderFactory.createCompoundBorder(etched1, emptyBorder);
         Border titled1 = BorderFactory.createTitledBorder(compound,
                 "Template Picture & Description");
         Border line = BorderFactory.createLineBorder(Color.black);
         
-        Border empty_outer = BorderFactory.createEmptyBorder(0, 0, 0, 0);
-        Border empty_inner = BorderFactory.createEmptyBorder(10, 10, 10, 10);
-        Border empty_line = BorderFactory.createCompoundBorder(empty_outer,
-                line);
-        Border empty_line_empty_border = BorderFactory.createCompoundBorder(
-                empty_line, empty_inner);
+        Border emptyOuter = BorderFactory.createEmptyBorder(0, 0, 0, 0);
+        Border emptyInner = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+        Border emptyLine = BorderFactory.createCompoundBorder(emptyOuter, line);
+        Border emptyLineEmptyBorder = BorderFactory.createCompoundBorder(emptyLine, emptyInner);
         
         // middle panel settings
-        middle_panel.setLayout(new BoxLayout(middle_panel, BoxLayout.Y_AXIS));
-        middle_panel.setBorder(titled1);
-        middle_panel.setPreferredSize(new Dimension(100, 300));
+        middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.Y_AXIS));
+        middlePanel.setBorder(titled1);
+        middlePanel.setPreferredSize(new Dimension(100, 300));
         
         // the template image panel and its containing inner panel
-        template_image_panel.setLayout(new BoxLayout(template_image_panel,
-                BoxLayout.X_AXIS));
-        inner_pic_panel.setPreferredSize(new Dimension(30, 200));
-        inner_pic_panel.setBorder(empty_line_empty_border);
-        inner_pic_panel.setBackground(Color.white);
+        templateImagePanel.setLayout(new BoxLayout(templateImagePanel, BoxLayout.X_AXIS));
+        innerPicPanel.setPreferredSize(new Dimension(30, 200));
+        innerPicPanel.setBorder(emptyLineEmptyBorder);
+        innerPicPanel.setBackground(Color.white);
         
         // the panel containing the description
-        template_description_panel.setLayout(new BoxLayout(
-                template_description_panel, BoxLayout.Y_AXIS));
-        template_description_panel.setLayout(new GridLayout(3, 1));
+        templateDescriptionPanel.setLayout(new BoxLayout(
+                templateDescriptionPanel, BoxLayout.Y_AXIS));
+        templateDescriptionPanel.setLayout(new GridLayout(3, 1));
         
-        template_description_panel.setBorder(empty_line_empty_border);
+        templateDescriptionPanel.setBorder(emptyLineEmptyBorder);
         
         // adding everything together
         
         JPanel dummyPanel = new JPanel();
         dummyPanel.setPreferredSize(new Dimension(30, 20));
         
-        template_image_panel.add(inner_pic_panel);
+        templateImagePanel.add(innerPicPanel);
         
         // add the template name, SSE String equivalent, description to the
         // template_image_panel
-        template_description_panel.add(template_name_label);
-        template_description_panel.add(template_sse_label);
-        // template_description_panel.add(template_desc_label);
+        templateDescriptionPanel.add(templateNameLabel);
+        templateDescriptionPanel.add(templateSseLabel);
         
         // now add the picture & desc panels to the middle panel
-        middle_panel.add(template_image_panel);
-        middle_panel.add(dummyPanel);
-        middle_panel.add(template_description_panel);
+        middlePanel.add(templateImagePanel);
+        middlePanel.add(dummyPanel);
+        middlePanel.add(templateDescriptionPanel);
         
         // add the middle to the container
-        container.add(middle_panel);
+        container.add(middlePanel);
         
         updateTemplateDescription();
-        template_button_panel.setPreferredSize(new Dimension(100, 70));
+        templateButtonPanel.setPreferredSize(new Dimension(100, 70));
         // border settings
         Border etched2 = BorderFactory.createEtchedBorder();
         Border titled2 = BorderFactory.createTitledBorder(etched2, "");
         
         // add the buttons
-        template_button_panel.add(this.submit);
-        template_button_panel.add(this.cancel);
-        template_button_panel.setBorder(titled2);
+        templateButtonPanel.add(this.submit);
+        templateButtonPanel.add(this.cancel);
+        templateButtonPanel.setBorder(titled2);
         
-        container.add(template_button_panel);
+        container.add(templateButtonPanel);
         
         
         submit.addActionListener(this);
         cancel.addActionListener(this);
-        templateName_combo.addActionListener(this);
+        templateNameCombo.addActionListener(this);
 
         selectedIndex = 0;
-        updateTemplatePicture_at_start();
+        updateTemplatePictureAtStart();
         updateTemplateDescription();
         setVisible(false);
     }
@@ -221,27 +219,27 @@ public class TemplateDialog extends JDialog implements ActionListener {
     }
 
     private void updateTemplatePicture() {
-        this.inner_pic_panel.removeAll();
-        inner_pic_panel.add(template_images[selectedIndex]);
-        inner_pic_panel.repaint();
+        this.innerPicPanel.removeAll();
+        innerPicPanel.add(templateImages[selectedIndex]);
+        innerPicPanel.repaint();
         this.repaint();
         this.setVisible(false);
         this.setVisible(true);
     }
 
     // dont have the setVisible true and false
-    private void updateTemplatePicture_at_start() {
-        this.inner_pic_panel.removeAll();
-        inner_pic_panel.add(template_images[selectedIndex]);
-        inner_pic_panel.repaint();
+    private void updateTemplatePictureAtStart() {
+        this.innerPicPanel.removeAll();
+        innerPicPanel.add(templateImages[selectedIndex]);
+        innerPicPanel.repaint();
         this.repaint();
     }
 
     // update the picture panel with picture templatePics[selectedIndex]
     private void updateTemplateDescription() {
-        template_name_label.setText(TEMPLATE_NAME + template_names[selectedIndex]);
-        template_desc_label.setText(TEMPLATE_DESC + template_desc[selectedIndex]);
-        template_sse_label.setText(TEMPLATE_SSE + template_sse[selectedIndex]);
+        templateNameLabel.setText(TEMPLATE_NAME + templateNames[selectedIndex]);
+        templateDescLabel.setText(TEMPLATE_DESC + templateDesc[selectedIndex]);
+        templateSseLabel.setText(TEMPLATE_SSE + templateSSE[selectedIndex]);
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -249,31 +247,31 @@ public class TemplateDialog extends JDialog implements ActionListener {
         if (ae.getSource() == submit) {
             // parentPanel.fireTemplateSelected(templateNum) // maybe a
             // Template Object?
-            int template_ID_index = templateName_combo.getSelectedIndex();
-            String template_ID = template_names[template_ID_index];
+            int templateIDIndex = templateNameCombo.getSelectedIndex();
+            String templateID = templateNames[templateIDIndex];
 
             String filename = "";
-            if (template_ID.equals("GreekKey"))
+            if (templateID.equals("GreekKey"))
                 filename = "greek.tops";
-            else if (template_ID.equals("ImmunoGlobulin"))
+            else if (templateID.equals("ImmunoGlobulin"))
                 filename = "immun.tops";
-            else if (template_ID.equals("KeyBarrel"))
+            else if (templateID.equals("KeyBarrel"))
                 filename = "keyba.tops";
-            else if (template_ID.equals("Plait"))
+            else if (templateID.equals("Plait"))
                 filename = "plait.tops";
-            else if (template_ID.equals("Rossmann"))
+            else if (templateID.equals("Rossmann"))
                 filename = "rosma.tops";
-            else if (template_ID.equals("TimBarrel"))
+            else if (templateID.equals("TimBarrel"))
                 filename = "timba.tops";
-            else if (template_ID.equals("UbiquitinRoll"))
+            else if (templateID.equals("UbiquitinRoll"))
                 filename = "ubrol.tops";
-            else if (template_ID.equals("JellyRoll"))
+            else if (templateID.equals("JellyRoll"))
                 filename = "jelly.tops";
 
             parentPanel.fireLoadTemplateEvent("templates/" + filename);
             setVisible(false);
-        } else if (ae.getSource() == this.templateName_combo) {
-            selectedIndex = templateName_combo.getSelectedIndex();
+        } else if (ae.getSource() == this.templateNameCombo) {
+            selectedIndex = templateNameCombo.getSelectedIndex();
             updateTemplatePicture();
             updateTemplateDescription();
         } else {

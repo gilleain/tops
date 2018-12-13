@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.border.Border;
 
+import tops.drawing.app.TopsEditor.State;
+
 
 /**
  * @author maclean
@@ -75,14 +77,14 @@ public class EditingToolbar extends JPanel implements ActionListener {
         buttons = new JToggleButton[numOfButtons];
         
         for (int i = 0; i < buttons.length; i++) {
-            Image mainImage = MediaCenter.getImage(MediaCenter.buttonImageNames[i]);
+            Image mainImage = MediaCenter.getImage(MediaCenter.BUTTON_IMAGE_NAMES[i]);
             if (mainImage != null) {
                 buttons[i] = new JToggleButton(new ImageIcon(mainImage));
             } else {
                 buttons[i] = new JToggleButton(new ImageIcon());
             }
         
-            Image selectedImage = MediaCenter.getImage(MediaCenter.rolloverImageNames[i]);
+            Image selectedImage = MediaCenter.getImage(MediaCenter.ROLLOVER_IMAGE_NAMES[i]);
             ImageIcon selectedIcon;
             if (selectedImage != null) {
                 selectedIcon = new ImageIcon(selectedImage);
@@ -180,63 +182,63 @@ public class EditingToolbar extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
 
         if (ae.getSource() == buttons[SELECT]) {
-            this.parentPanel.setState(SELECT);
+            this.parentPanel.setState(State.SELECT);
         } else if (ae.getSource() == buttons[STRAND_UP]) {
-            this.parentPanel.setState(STRAND_UP);
+            this.parentPanel.setState(State.STRAND_UP);
             this.parentPanel.deselectAll();
         } else if (ae.getSource() == buttons[STRAND_DOWN]) {
-            this.parentPanel.setState(STRAND_DOWN);
+            this.parentPanel.setState(State.STRAND_DOWN);
             this.parentPanel.deselectAll();
         } else if (ae.getSource() == buttons[HELIX_UP]) {
-            this.parentPanel.setState(HELIX_UP);
+            this.parentPanel.setState(State.HELIX_UP);
             this.parentPanel.deselectAll();
         } else if (ae.getSource() == buttons[HELIX_DOWN]) {
-            this.parentPanel.setState(HELIX_DOWN);
+            this.parentPanel.setState(State.HELIX_DOWN);
             this.parentPanel.deselectAll();
         } else if (ae.getSource() == buttons[RIGHT_ARC]) {
-            this.parentPanel.setState(RIGHT_ARC);
+            this.parentPanel.setState(State.RIGHT_ARC);
             this.parentPanel.deselectAll();
         } else if (ae.getSource() == buttons[LEFT_ARC]) {
-            this.parentPanel.setState(LEFT_ARC);
+            this.parentPanel.setState(State.LEFT_ARC);
             this.parentPanel.deselectAll();
         } else if (ae.getSource() == buttons[H_BOND]) {
-            this.parentPanel.setState(H_BOND);
+            this.parentPanel.setState(State.H_BOND);
             this.parentPanel.deselectAll();
         } else if (ae.getSource() == buttons[RANGE]) {
-            this.parentPanel.setState(RANGE);
+            this.parentPanel.setState(State.RANGE);
             parentPanel.fireInsertRangesEvent();
         } else if (ae.getSource() == buttons[DELETE]) {
-            this.parentPanel.setState(DELETE);
+            this.parentPanel.setState(State.DELETE);
         } else if (ae.getSource() == buttons[FLIP]) {
-            this.parentPanel.setState(FLIP);
+            this.parentPanel.setState(State.FLIP);
         } else if (ae.getSource() == buttons[HORIZONTAL_ALIGN]) {
             this.parentPanel.fireHorizontalAlign();
         } else if (ae.getSource() == buttons[VERTICAL_ALIGN]) {
            this.parentPanel.fireVerticalAlign();
         } else if (ae.getSource() == buttons[CLEAR]) {
-            parentPanel.setState(CLEAR);
+            parentPanel.setState(State.CLEAR);
             parentPanel.fireDeleteAll();
         } else if (ae.getSource() == buttons[FLIP_X]) {
-            parentPanel.setState(FLIP_X);
+            parentPanel.setState(State.FLIP_X);
         } else if (ae.getSource() == buttons[FLIP_Y]) {
-            parentPanel.setState(FLIP_X);
+            parentPanel.setState(State.FLIP_X);
         } else if (ae.getSource() == buttons[ZOOM_IN]) {
-            parentPanel.setState(ZOOM_IN);
+            parentPanel.setState(State.ZOOM_IN);
             parentPanel.zoomIn();
         } else if (ae.getSource() == buttons[ZOOM_OUT]) {
-            parentPanel.setState(ZOOM_OUT);
+            parentPanel.setState(State.ZOOM_OUT);
             parentPanel.zoomOut();
         }  else if (ae.getSource() == buttons[UNDO]) {
-            parentPanel.setState(UNDO);
+            parentPanel.setState(State.UNDO);
             parentPanel.revert();
-            parentPanel.setState(SELECT);
+            parentPanel.setState(State.SELECT);
             this.buttons[UNDO].setSelected(false);
             this.buttons[SELECT].setSelected(true);
         } else if (ae.getSource() == buttons[TEMPLATE]) {
-            parentPanel.setState(TEMPLATE);
+            parentPanel.setState(State.TEMPLATE);
             parentPanel.setTemplateDialogVisible();
         } else if (ae.getSource() == buttons[SUBMIT]) {
-            parentPanel.setState(SUBMIT);
+            parentPanel.setState(State.SUBMIT);
             parentPanel.setSubmitDialogVisible(true);
         }
      

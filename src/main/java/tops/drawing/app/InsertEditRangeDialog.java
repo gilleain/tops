@@ -28,15 +28,15 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
     private JPanel mainPanel;     // the panel that tells the user what this dialog box is used for
     private JPanel buttonPanel;  // the panel that contians the buttons
 
-    private JTextField to_field;
-    private JTextField from_field;
+    private JTextField toField;
+    private JTextField fromField;
 
     private JButton confirm;
     private JButton cancel;
     private TopsEditor controller;
 
-    private JCheckBox infinite_cb;
-    private JCheckBox zero_range;
+    private JCheckBox infiniteCb;
+    private JCheckBox zeroRange;
 
     public InsertEditRangeDialog(TopsEditor controller) {
         this.controller = controller;
@@ -61,7 +61,6 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         
-        //mainPanel.add(new JPanel());
         textPanel.add(new JLabel("               Please enter the range that is to be added "));
         textPanel.add(new JLabel("                           to the target connection."));
         textPanel.add(new JPanel());
@@ -73,36 +72,36 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
         
         JPanel textFieldsPanel = new JPanel();
         
-        this.to_field = new JTextField();
-        this.from_field = new JTextField();
+        this.toField = new JTextField();
+        this.fromField = new JTextField();
         
-        infinite_cb = new JCheckBox("Infinite Range");
-        infinite_cb.setSelected(false);
-        infinite_cb.addActionListener(this);
+        infiniteCb = new JCheckBox("Infinite Range");
+        infiniteCb.setSelected(false);
+        infiniteCb.addActionListener(this);
         
-        zero_range = new JCheckBox("Zero Range");
-        zero_range.setSelected(false);
-        zero_range.addActionListener(this);
+        zeroRange = new JCheckBox("Zero Range");
+        zeroRange.setSelected(false);
+        zeroRange.addActionListener(this);
         
-        to_field.setPreferredSize(new Dimension(40, 25));
-        from_field.setPreferredSize(new Dimension(40, 25));
+        toField.setPreferredSize(new Dimension(40, 25));
+        fromField.setPreferredSize(new Dimension(40, 25));
         
         textFieldsPanel.add(new JLabel("From: "));
-        textFieldsPanel.add(from_field);
+        textFieldsPanel.add(fromField);
         
         textFieldsPanel.add(new JLabel("To: "));
-        textFieldsPanel.add(to_field);
+        textFieldsPanel.add(toField);
         
-        JPanel checkbox_panel = new JPanel();
-        checkbox_panel.add(this.infinite_cb);
-        checkbox_panel.add(this.zero_range);
+        JPanel checkboxPanel = new JPanel();
+        checkboxPanel.add(this.infiniteCb);
+        checkboxPanel.add(this.zeroRange);
         
-        Border cb_etched = BorderFactory.createEtchedBorder();
-        Border cb_empty = BorderFactory.createEmptyBorder(0, 20, 0, 20);
-        Border cb_combo = BorderFactory.createCompoundBorder(cb_empty, cb_etched);
-        Border cb_titled = BorderFactory.createTitledBorder(cb_combo, "Infinite & Zero Range");
+        Border cbEtched = BorderFactory.createEtchedBorder();
+        Border cbEmpty = BorderFactory.createEmptyBorder(0, 20, 0, 20);
+        Border cbCombo = BorderFactory.createCompoundBorder(cbEmpty, cbEtched);
+        Border cbTitled = BorderFactory.createTitledBorder(cbCombo, "Infinite & Zero Range");
         
-        checkbox_panel.setBorder(cb_titled);
+        checkboxPanel.setBorder(cbTitled);
         
         Border etched = BorderFactory.createEtchedBorder();
         Border empty = BorderFactory.createEmptyBorder(0, 20, 0, 20);
@@ -114,7 +113,7 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
         mainPanel.add(new JPanel());
         mainPanel.add(textFieldsPanel);
         mainPanel.add(new JPanel());
-        mainPanel.add(checkbox_panel);
+        mainPanel.add(checkboxPanel);
         
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         
@@ -132,8 +131,8 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
     }
     
     public void reset(int to, int from) {
-        this.to_field.setText(to + "");
-        this.from_field.setText(from + "");
+        this.toField.setText(to + "");
+        this.fromField.setText(from + "");
         this.setVisible(true);
     }
 
@@ -157,25 +156,27 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
 
         if (ae.getSource() == confirm) {
             // get the to from values
-            String to_val = to_field.getText();
+            String toVal = toField.getText();
 
             boolean inValid = false;
 
             String message = "";
-            int to_int = -1;
-            int from_int = -1;
+            int toInt = -1;
+            int fromInt = -1;
+            
+            final String RANGE_HEAD = "Range Insertion";
 
             // check to see what they have chosen to do.
-            if (infinite_cb.isSelected()) {
+            if (infiniteCb.isSelected()) {
                 message = "Enter an infinite range onto the selected connection?";
-                int i = TopsCanvas.yesNoDialog(message, "Range Insertion");
+                int i = TopsCanvas.yesNoDialog(message, RANGE_HEAD);
                 if (i == JOptionPane.YES_OPTION) {
 //                  connection.setLabel("*");     //TODO
                     setVisible(false);
                 }
-            } else if (zero_range.isSelected()) {
+            } else if (zeroRange.isSelected()) {
                 message = "Enter a zero range onto the selected connection?";
-                int i = TopsCanvas.yesNoDialog(message, "Range Insertion");
+                int i = TopsCanvas.yesNoDialog(message, RANGE_HEAD);
                 if (i == JOptionPane.YES_OPTION) {
 //                  connection.setLabel("0");     //TODO
                     setVisible(false);
@@ -183,27 +184,27 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
             } else {
 
                 try {
-                    to_int = Integer.parseInt(to_val);
+                    toInt = Integer.parseInt(toVal);
                 } catch (Exception e) {
                     message = "Enter a positive number in 'To' field.\n";
                     inValid = true;
                 }
 
-                String from_val = from_field.getText();
+                String fromVal = fromField.getText();
                 try {
-                    from_int = Integer.parseInt(from_val);
+                    fromInt = Integer.parseInt(fromVal);
                 } catch (Exception e) {
                     message += "Enter a positive number in 'From' field.\n";
                     inValid = true;
                 }
 
                 // now check that the 'from' is < than 'to'
-                if (from_int > to_int && (to_int != -1 && from_int != -1)) {
+                if (fromInt > toInt && (toInt != -1 && fromInt != -1)) {
                     message += "'To' value must be larger than 'From' field";
                     inValid = true;
                 }
 
-                if ( !(from_int >= 0 && to_int >= 0)) {
+                if ( !(fromInt >= 0 && toInt >= 0)) {
                     message += "'To' value and 'From' value must both be positive integers.";
                     inValid = true;
                 }
@@ -232,37 +233,37 @@ public class InsertEditRangeDialog extends JDialog implements ActionListener {
         }
 
 
-    if (ae.getSource() == infinite_cb) {
-        if (!infinite_cb.isSelected()) { // go from true to false
-            zero_range.setSelected(false);
-            to_field.setEditable(true);
-            from_field.setEditable(true);
+    if (ae.getSource() == infiniteCb) {
+        if (!infiniteCb.isSelected()) { // go from true to false
+            zeroRange.setSelected(false);
+            toField.setEditable(true);
+            fromField.setEditable(true);
         } else {// going from false to true
             //infinite_cb.setSelected(true);
 
             // deselect the others
-            zero_range.setSelected(false);
+            zeroRange.setSelected(false);
 
-            to_field.setText("");
-            from_field.setText("");
-            to_field.setEditable(false);
-            from_field.setEditable(false);
+            toField.setText("");
+            fromField.setText("");
+            toField.setEditable(false);
+            fromField.setEditable(false);
         }
-    } else if (ae.getSource() == zero_range) {
-        if (!zero_range.isSelected()) // go from true to false
+    } else if (ae.getSource() == zeroRange) {
+        if (!zeroRange.isSelected()) // go from true to false
         {
-            infinite_cb.setSelected(false);
+            infiniteCb.setSelected(false);
 
-            to_field.setEditable(true);
-            from_field.setEditable(true);
+            toField.setEditable(true);
+            fromField.setEditable(true);
         } else // going from false to true
         {
-            infinite_cb.setSelected(false);
+            infiniteCb.setSelected(false);
 
-            to_field.setText("");
-            from_field.setText("");
-            to_field.setEditable(false);
-            from_field.setEditable(false);
+            toField.setText("");
+            fromField.setText("");
+            toField.setEditable(false);
+            fromField.setEditable(false);
         }
     }
 }

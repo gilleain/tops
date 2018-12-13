@@ -8,9 +8,10 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 import tops.drawing.Diagram;
 import tops.drawing.actions.Action;
@@ -29,8 +30,8 @@ import tops.drawing.symbols.Triangle;
 
 public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseMotionListener {
     private Diagram diagram;
-    private Stack<Action> undoStack;
-    private Stack<Action> redoStack;
+    private Deque<Action> undoStack;
+    private Deque<Action> redoStack;
     private DiagramEditorToolbar diagramEditorToolbar;
 //    private Rectangle2D selectionBox; TODO
 
@@ -57,8 +58,8 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
         this.setSize(width, height);
         
         //set up the undo/redo stacks
-        this.undoStack = new Stack<>();
-        this.redoStack = new Stack<>();
+        this.undoStack = new ArrayDeque<>();
+        this.redoStack = new ArrayDeque<>();
         
         //initialise a blank diagram
         this.diagram = new Diagram();
@@ -149,14 +150,22 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
         }
     }
     
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
-    public void mousePressed(MouseEvent e) { }
-    public void mouseReleased(MouseEvent e) { }
+    public void mouseEntered(MouseEvent e) { 
+        // no op
+    }
+    public void mouseExited(MouseEvent e) { 
+     // no op
+    }
+    public void mousePressed(MouseEvent e) { 
+     // no op
+    }
+    public void mouseReleased(MouseEvent e) { 
+     // no op
+    }
     
     public void mouseDragged(MouseEvent e) {
         if (lastClickedPoint != null) {
-            
+            // TODO
         }
         
     }
@@ -275,6 +284,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
         }
     }
 
+    @Override
     public void paint(Graphics g) {
         this.diagram.paint((Graphics2D) g);
     }
@@ -299,7 +309,7 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
         action.doIt();
         
         //set the undo button to enabled if there was nothing on the stack
-        if (this.undoStack.empty()) { this.diagramEditorToolbar.toggleUndoButton(true); }
+        if (this.undoStack.isEmpty()) { this.diagramEditorToolbar.toggleUndoButton(true); }
         
         //push the action on the undo stack
         this.undoStack.push(action);
@@ -308,15 +318,15 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
     
     public void undo() {
         //get the action from the stack and undo it
-        Action action = (Action) this.undoStack.pop();
+        Action action = this.undoStack.pop();
         System.out.println("Undoing action : " + action.description());
         action.undoIt();
         
         //if this was the last action on the undo stack, disable the button
-        if (this.undoStack.empty()) { this.diagramEditorToolbar.toggleUndoButton(false); }
+        if (this.undoStack.isEmpty()) { this.diagramEditorToolbar.toggleUndoButton(false); }
         
         //if this would be the first action on the redo stack, enable the button
-        if (this.redoStack.empty()) { this.diagramEditorToolbar.toggleRedoButton(true); }
+        if (this.redoStack.isEmpty()) { this.diagramEditorToolbar.toggleRedoButton(true); }
         
         //now add the action to the redo stack
         this.redoStack.push(action);
@@ -325,15 +335,15 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
     
     public void redo() {
         //get the action from the stack and redo it
-        Action action = (Action) this.redoStack.pop();
+        Action action = this.redoStack.pop();
         System.out.println("Redoing action : " + action.description());
         action.doIt();
                
         //if this was the last action on the redo stack, disable the button
-        if (this.redoStack.empty()) { this.diagramEditorToolbar.toggleRedoButton(false); }
+        if (this.redoStack.isEmpty()) { this.diagramEditorToolbar.toggleRedoButton(false); }
         
         //if this would be the first action on the undo stack, enable the button
-        if (this.undoStack.empty()) { this.diagramEditorToolbar.toggleUndoButton(true); }
+        if (this.undoStack.isEmpty()) { this.diagramEditorToolbar.toggleUndoButton(true); }
         
         //now add the action to the undo stack
         this.undoStack.push(action);
@@ -341,11 +351,11 @@ public class DiagramEditorCanvas extends Canvas implements MouseListener, MouseM
     }
     
     public boolean hasMoreActionsToUndo() { 
-        return !this.undoStack.empty(); 
+        return !this.undoStack.isEmpty(); 
     }
     
     public boolean hasMoreActionsToRedo() { 
-        return !this.redoStack.empty(); 
+        return !this.redoStack.isEmpty(); 
     }
     
     /* ACTIONS */
