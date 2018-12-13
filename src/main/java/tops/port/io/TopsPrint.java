@@ -4,6 +4,7 @@ import static tops.port.model.Direction.DOWN;
 import static tops.port.model.Direction.UNKNOWN;
 import static tops.port.model.Direction.UP;
 
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -33,45 +34,43 @@ public class TopsPrint {
     public static final double A4_W = 21.0; /* A4 width */
     public static final double A4_H = 29.7; /* A4 height */
     
-    private PrintStream OUT; /* Output file */
-    private double WIDTH = A4_W; /* A4 width */
-    private double HEIGHT = A4_H; /* A4 height */
-    private double PWIDTH = A4_W; /* Picture width */
-    private double PHEIGHT = A4_H; /* Picture height */
-    private double XMIN = 0.0; /* X minimum */
-    private double YMIN = 0.0; /* Y minimum */
-    private double XMAX = A4_W; /* X default scale = centimeters */
-    private double YMAX = A4_H; /* Y default scale = centimeters */
-    private double XP = PPI / ITOC; /* X default points per centimeter */
-    private double YP = PPI / ITOC; /* Y default points per centimeter */
-    private String FONT = null; /* Default font */
-    private int POINT = 15; /* Default point size */
-    private double TEXTPOS = 0.0; /* Default text position */
-    private double TEXTHGT = 0.0; /* Default text position */
+    private PrintStream out; /* Output file */
+    private double width = A4_W; /* A4 width */
+    private double height = A4_H; /* A4 height */
+    private double pWidth = A4_W; /* Picture width */
+    private double pHeight = A4_H; /* Picture height */
+    private double xMin = 0.0; /* X minimum */
+    private double yMin = 0.0; /* Y minimum */
+    private double xMax = A4_W; /* X default scale = centimeters */
+    private double yMax = A4_H; /* Y default scale = centimeters */
+    private double xp = PPI / ITOC; /* X default points per centimeter */
+    private double yp = PPI / ITOC; /* Y default points per centimeter */
+    private String font = null; /* Default font */
+    private int point = 15; /* Default point size */
+    private double textpos = 0.0; /* Default text position */
+    private double texthgt = 0.0; /* Default text position */
 
     private static final double PI2 = 0;
     /* Hard coded but will change */
-    int Radius;
-    double Scale = 0.60;
-    StringBuffer buffer;
+    private int radius;
+    private double scale = 0.60;
+    private StringBuilder buffer;
 
-    boolean Small;
+    private boolean small;
 
-    SSE Root;
+    private int gridUnitSize;
 
-    int GridUnitSize;
-
-    private double PSxy(double v) {
-        return ((double) (v) / (double) GridUnitSize);
+    private double psXY(double v) {
+        return (v / (double) gridUnitSize);
     }
 
     private double iPSxy(double v) {
-        return ((double) (v) * (double) GridUnitSize);
+        return (v * (double) gridUnitSize);
     }
 
-    private final double VERT_SEP = 2.0;
-    private final double BORDER = 5.0;
-    private final String TITLE_PREF = "TOPS Cartoon: ";
+    private static final double VERT_SEP = 2.0;
+    private static final double BORDER = 5.0;
+    private static final String TITLE_PREF = "TOPS Cartoon: ";
     
     private IntersectionCalculator intersectionCalculator;
     
@@ -79,81 +78,78 @@ public class TopsPrint {
         this.intersectionCalculator = new IntersectionCalculator();
     }
 
-    public boolean printCartoons(List<Cartoon> cartoons,
-            String FileName, String ProtName, PlotFragInformation pfi) {
+    public boolean printCartoons(List<Cartoon> cartoons, String fileName, String proteinName, PlotFragInformation pfi) {
 
         int i;
-        double Xmax= 0;
-        double Xmin = 0;
-        double Ymax = 0;
-        double Ymin = 0;
-        double[] CartoonTransX, CartoonTransY;
-        double RubricSpace;
-        String Title;
+        
+        double[] cartoonTransX;
+        double[] cartoonTransY;
+        double rubricSpace;
+        String title;
         int lt;
 
         if (cartoons.isEmpty()) { return false; }
 
         /* Open file */
         try {
-            OpenPostscript(FileName);
+            openPostscript(fileName);
         } catch (FileNotFoundException fnf) { 
             return false;
         }
 
         /* Find size of space required for cartoons */
-        CartoonTransX = new double[cartoons.size()];
-        CartoonTransY = new double[cartoons.size()];
+        cartoonTransX = new double[cartoons.size()];
+        cartoonTransY = new double[cartoons.size()];
 
-        FindTotSize(cartoons, Xmin, Xmax, Ymin, Ymax, CartoonTransX, CartoonTransY);
+        Rectangle2D b = findTotSize(cartoons, cartoonTransX, cartoonTransY);
 
         /* Find space needed for rubric */
-        RubricSpace = 1.0 + (pfi.getNumberOfFragments()) * 0.5;
+        rubricSpace = 1.0 + (pfi.getNumberOfFragments()) * 0.5;
 
         /* Print bounding box command */
-        if (Small) {
-            PageSize(Xmax - Xmin + BORDER, Ymax - Ymin + BORDER + RubricSpace
+        if (small) {
+            setPageSize(b.getWidth() + BORDER, b.getHeight() + BORDER + rubricSpace
                     + VERT_SEP * (cartoons.size() - 1));
         } else {
-            PageSize(21.9, 29.0);
+            setPageSize(21.9, 29.0);
         }
 
         /* Define cartoon symbols */
-        DefCartoonSymbols();
+        defCartoonSymbols();
 
         /* Prepare plotting area */
-        PictureSize(Xmax - Xmin + BORDER, Ymax - Ymin + BORDER + RubricSpace
+        setPictureSize(b.getWidth() + BORDER, b.getHeight() + BORDER + rubricSpace
                 + VERT_SEP * (cartoons.size() - 1));
-        if (!Small)
-            CentrePage();
-        ScalePage(Xmin - (BORDER / 2.0), Xmax + (BORDER / 2.0),
-                Ymin - (BORDER / 2.0) - VERT_SEP * (cartoons.size() - 1),
-                Ymax + RubricSpace + (BORDER / 2.0));
-        if (!Small)
-            Perimeter();
-        ChooseFont("Courier", ConvertXPoint(PSxy(Radius)));
-        TextCentre(0.5, 0.38);
-        LineWidth(0.01);
+        if (!small)
+            centrePage();
+        scalePage(b.getMinX() - (BORDER / 2.0), b.getMaxX() + (BORDER / 2.0),
+                b.getMinY() - (BORDER / 2.0) - VERT_SEP * (cartoons.size() - 1),
+                b.getMaxY() + rubricSpace + (BORDER / 2.0));
+        if (!small)
+            perimeter();
+        chooseFont("Courier", convertXPoint(psXY(radius)));
+        textCentre(0.5, 0.38);
+        lineWidth(0.01);
 
         /* Print title */
-        lt = TITLE_PREF.length() + ProtName.length() + 1;
+        lt = TITLE_PREF.length() + proteinName.length() + 1;
         if (lt > 0) {
-            Title = TITLE_PREF + ProtName;
-            PrintText(Title, (Xmax + Xmin) / 2.0,
-                    Ymax + RubricSpace + (BORDER / 4.0));
+            title = TITLE_PREF + proteinName;
+            printText(title, (b.getMinX() + b.getMaxX()) / 2.0,
+                    b.getMaxY() + rubricSpace + (BORDER / 4.0));
         }
 
         /* Print plot rubric */
-        PrintPlotRubric(pfi, (Xmax + Xmin) / 2.0, Ymax + RubricSpace);
+        printPlotRubric(pfi, (b.getMinX() + b.getMaxX()) / 2.0, b.getMaxY() + rubricSpace);
 
         /* Print the Cartoons */
         for (i = 0; i < cartoons.size(); i++) {
-            Translate(PSxy(CartoonTransX[i]), PSxy(CartoonTransY[i]));
-            PrintCartoon(cartoons.get(i));
+            translate(psXY(cartoonTransX[i]), psXY(cartoonTransY[i]));
+            printCartoon(cartoons.get(i));
         }
 
         /* Done */
-        EndPostscript();
+        endPostscript();
 
         return true;
     }
@@ -163,21 +159,24 @@ public class TopsPrint {
      * cartoons stacked in the y direction centred in the x direction on the
      * centre of the first
      */
-    private void FindTotSize(List<Cartoon> cartoons, double Xmin,
-            double Xmax, double Ymin, double Ymax, double[] CartoonTransX,
-            double[] CartoonTransY) {
+    private Rectangle2D findTotSize(List<Cartoon> cartoons,double[] cartoonTransX, double[] cartoonTransY) {
 
         double xmax = 0;
         double xmin = 0;
         double ymax = 0;
         double ymin = 0;
-        double cxmax, cxmin, cymax, cymin = 0;
-        double cyminp, tx;
-        double exwid, wid;
+        double cxmax;
+        double cxmin;
+        double cymax;
+        double cymin = 0;
+        double cyminp;
+        double tx;
+        double exwid;
+        double wid;
 
         for (int i = 0; i < cartoons.size(); i++) {
-            CartoonTransX[i] = 0.0;
-            CartoonTransY[i] = 0.0;
+            cartoonTransX[i] = 0.0;
+            cartoonTransY[i] = 0.0;
         }
 
         for (int i = 0; i < cartoons.size(); i++) {
@@ -200,69 +199,64 @@ public class TopsPrint {
             }
 
             if (i == 0) {
-                xmin = PSxy(cxmin);
-                xmax = PSxy(cxmax);
-                ymin = PSxy(cymin);
-                ymax = PSxy(cymax);
-                CartoonTransY[0] = 0.0;
+                xmin = psXY(cxmin);
+                xmax = psXY(cxmax);
+                ymin = psXY(cymin);
+                ymax = psXY(cymax);
+                cartoonTransY[0] = 0.0;
             } else {
-                wid = PSxy(cxmax - cxmin);
+                wid = psXY(cxmax - cxmin);
                 exwid = wid - xmax + xmin;
                 if (exwid > 0.0) {
                     xmin -= exwid / 2.0;
                     xmax += exwid / 2.0;
                 }
-                ymin -= PSxy(cymax - cymin);
+                ymin -= psXY(cymax - cymin);
 
-                CartoonTransY[i] -= (cymax + iPSxy(VERT_SEP) - cyminp);
+                cartoonTransY[i] -= (cymax + iPSxy(VERT_SEP) - cyminp);
             }
         }
 
-        Xmin = xmin;
-        Xmax = xmax;
-        Ymin = ymin;
-        Ymax = ymax;
+    
 
         tx = 0.0;
         for (int i = 0; i < cartoons.size(); i++) {
             Cartoon cartoon = cartoons.get(i);
             cxmin = cartoon.getSSEs().get(0).getCartoonX();
             for (SSE p : cartoon.getSSEs()) {
-                if (p.isSymbolPlaced()) {
-                    if ((double) p.getCartoonX() < cxmin) {
-                        cxmin = (double) p.getCartoonX();
-                    }
+                if (p.isSymbolPlaced() && (double) p.getCartoonX() < cxmin) {
+                    cxmin = (double) p.getCartoonX();
                 }
             }
 
-            CartoonTransX[i] = iPSxy(xmin) - cxmin - tx;
+            cartoonTransX[i] = iPSxy(xmin) - cxmin - tx;
 
-            tx += CartoonTransX[i];
+            tx += cartoonTransX[i];
 
         }
 
-        return;
+        return new Rectangle2D.Double(xmin, xmax, ymin, ymax);
 
     }
 
     /*
      * Function to Print a rubric for the plot
      */
-    private void PrintPlotRubric(PlotFragInformation pfi, double xpos, double ypos) {
-        StringBuffer buffer = new StringBuffer();
+    private void printPlotRubric(PlotFragInformation pfi, double xpos, double ypos) {
+        StringBuilder rubric = new StringBuilder();
         double y = ypos;
 
         for (int i = 0; i < pfi.getNumberOfFragments(); i++) {
-            buffer.append('N');
-            buffer.append(i + 1);
-            buffer.append(pfi.getStartFragmentChainLimit(i));
-            buffer.append(pfi.getStartFragmentResidueLimit(i));
-            buffer.append('C');
-            buffer.append(i + 2);
-            buffer.append(pfi.getEndFragmentChainLimit(i));
-            buffer.append(pfi.getEndFragmentResidueLimit(i));
+            rubric.append('N');
+            rubric.append(i + 1);
+            rubric.append(pfi.getStartFragmentChainLimit(i));
+            rubric.append(pfi.getStartFragmentResidueLimit(i));
+            rubric.append('C');
+            rubric.append(i + 2);
+            rubric.append(pfi.getEndFragmentChainLimit(i));
+            rubric.append(pfi.getEndFragmentResidueLimit(i));
 
-            PrintText(buffer.toString(), xpos, y);
+            printText(rubric.toString(), xpos, y);
             y = y - 0.5;
         }
     }
@@ -270,24 +264,26 @@ public class TopsPrint {
     /*
      * a function which prints a single Cartoon
      */
-    private void PrintCartoon(Cartoon cartoon) {
+    private void printCartoon(Cartoon cartoon) {
 
-        int i, ncp;
-        SSEType FromSSType, ToSSType;
+        int i;
+        int ncp;
+        SSEType fromSSType;
+        SSEType toSSType;
 
         // Symbols
         for (SSE p : cartoon.getSSEs()) {
             if (p.isSymbolPlaced()) {
                 switch (p.getSSEType()) {
                     case EXTENDED:
-                        MakeObject(
+                        makeObject(
                                 p.getDirection() == UP ? "UpTriangle" : "DownTriangle",
-                                3, Verbatim(1.0 - (p.getFill()? 0 : 1)), /// XXX Fill?
-                                PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
+                                3, verbatim(1.0 - (p.getFill()? 0 : 1)), /// XXX Fill?
+                                psXY(p.getCartoonX()), psXY(p.getCartoonY()));
                         break;
                     case HELIX:
-                        MakeObject("Circle", 3, Verbatim(1.0 - (p.getFill()? 0 : 1)), /// XXX Fill?
-                                PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
+                        makeObject("Circle", 3, verbatim(1.0 - (p.getFill()? 0 : 1)), /// XXX Fill?
+                                psXY(p.getCartoonX()), psXY(p.getCartoonY()));
                         break;
                     default:
                         break;
@@ -300,64 +296,64 @@ public class TopsPrint {
         for (SSE p : cartoon.getSSEs()) {
             if (p.isSymbolPlaced()) {
 
-                ToSSType = p.getSSEType();
+                toSSType = p.getSSEType();
 
                 if (prev != null) {
 
-                    FromSSType = prev.getSSEType();
-                    if (!(ToSSType == SSEType.CTERMINUS || ToSSType == SSEType.NTERMINUS)
-                      && (FromSSType == SSEType.CTERMINUS) || (FromSSType == SSEType.NTERMINUS)) {
+                    fromSSType = prev.getSSEType();
+                    if (!(toSSType == SSEType.CTERMINUS || toSSType == SSEType.NTERMINUS)
+                      && (fromSSType == SSEType.CTERMINUS) || (fromSSType == SSEType.NTERMINUS)) {
 
                         if (prev.getNConnectionPoints() > 0) {
                             ncp = prev.getNConnectionPoints();
 
-                            JoinPoints(PSxy(prev.getCartoonX()),
-                                    PSxy(prev.getCartoonY()),
-                                    PSxy(prev.getConnectionTo(0).x),
-                                    PSxy(prev.getConnectionTo(0).y),
+                            JoinPoints(psXY(prev.getCartoonX()),
+                                    psXY(prev.getCartoonY()),
+                                    psXY(prev.getConnectionTo(0).x),
+                                    psXY(prev.getConnectionTo(0).y),
                                     prev.getDirection(), UNKNOWN,
                                     prev.getSSEType(),
                                     p.getSSEType());
 
                             for (i = 0; i < (ncp - 1); i++) {
-                                JoinPoints(PSxy(prev.getConnectionTo(i).x),
-                                        PSxy(prev.getConnectionTo(i).y),
-                                        PSxy(prev.getConnectionTo(i + 1).x),
-                                        PSxy(prev.getConnectionTo(i + 1).y),
+                                JoinPoints(psXY(prev.getConnectionTo(i).x),
+                                        psXY(prev.getConnectionTo(i).y),
+                                        psXY(prev.getConnectionTo(i + 1).x),
+                                        psXY(prev.getConnectionTo(i + 1).y),
                                         UNKNOWN, UNKNOWN, prev.getSSEType(),
                                         p.getSSEType());
                             }
 
-                            JoinPoints(PSxy(prev.getConnectionTo(ncp - 1).x),
-                                    PSxy(prev.getConnectionTo(ncp - 1).y),
-                                    PSxy(p.getCartoonX()),
-                                    PSxy(p.getCartoonY()), UNKNOWN, p.getDirection(),
+                            JoinPoints(psXY(prev.getConnectionTo(ncp - 1).x),
+                                    psXY(prev.getConnectionTo(ncp - 1).y),
+                                    psXY(p.getCartoonX()),
+                                    psXY(p.getCartoonY()), UNKNOWN, p.getDirection(),
                                     prev.getSSEType(),
                                     p.getSSEType());
 
                         } else {
-                            JoinPoints(PSxy(prev.getCartoonX()),
-                                    PSxy(prev.getCartoonY()),
-                                    PSxy(p.getCartoonX()),
-                                    PSxy(p.getCartoonY()), prev.getDirection(),
+                            JoinPoints(psXY(prev.getCartoonX()),
+                                    psXY(prev.getCartoonY()),
+                                    psXY(p.getCartoonX()),
+                                    psXY(p.getCartoonY()), prev.getDirection(),
                                     p.getDirection(), prev.getSSEType(),
                                     p.getSSEType());
                         }
 
                     }
 
-                    if (FromSSType == SSEType.NTERMINUS) {
-                        MakeObject("Square", 2, PSxy(prev.getCartoonX()),
-                                PSxy(prev.getCartoonY()));
-                        PrintText(prev.getLabel(), PSxy(prev.getCartoonX()),
-                                PSxy(prev.getCartoonY()));
+                    if (fromSSType == SSEType.NTERMINUS) {
+                        makeObject("Square", 2, psXY(prev.getCartoonX()),
+                                psXY(prev.getCartoonY()));
+                        printText(prev.getLabel(), psXY(prev.getCartoonX()),
+                                psXY(prev.getCartoonY()));
                     }
 
                 }
 
-                if (ToSSType == SSEType.CTERMINUS) {
-                    MakeObject("Square", 2, PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
-                    PrintText(p.getLabel(), PSxy(p.getCartoonX()), PSxy(p.getCartoonY()));
+                if (toSSType == SSEType.CTERMINUS) {
+                    makeObject("Square", 2, psXY(p.getCartoonX()), psXY(p.getCartoonY()));
+                    printText(p.getLabel(), psXY(p.getCartoonX()), psXY(p.getCartoonY()));
                 }
                 
                 prev = p;
@@ -369,52 +365,52 @@ public class TopsPrint {
      * a function which writes out postscript code to define the symbols used in
      * cartoons
      */
-    private void DefCartoonSymbols() {
+    private void defCartoonSymbols() {
 
-        DefineObject("Square");
-        Literal("moveto");
-        MoveRelative(PSxy(-Radius) / 2.0, PSxy(Radius) / 2.0);
-        LineRelative(PSxy(Radius), 0.0);
-        LineRelative(0.0, PSxy(-Radius));
-        LineRelative(PSxy(-Radius), 0.0);
-        ClosePath();
-        Fill(1.0);
-        EndObject();
+        defineObject("Square");
+        literal("moveto");
+        moveRelative(psXY(-radius) / 2.0, psXY(radius) / 2.0);
+        lineRelative(psXY(radius), 0.0);
+        lineRelative(0.0, psXY(-radius));
+        lineRelative(psXY(-radius), 0.0);
+        closePath();
+        fill(1.0);
+        endObject();
 
-        DefineObject("Circle");
-        buffer.append(String.format(" %d %d %d arc", ConvertXPoint(PSxy(Radius) * Scale), 0,360));
-        Literal(buffer.toString());
-        Fill(-1.0);
-        OutLine();
-        EndObject();
+        defineObject("Circle");
+        buffer.append(String.format(" %d %d %d arc", convertXPoint(psXY(radius) * scale), 0,360));
+        literal(buffer.toString());
+        fill(-1.0);
+        outLine();
+        endObject();
 
-        DefineObject("UpTriangle");
-        Literal("moveto");
-        MoveRelative(0.0, PSxy(Radius));
-        LineRelative(PSxy(Radius) * Math.sin(PI2 / 3.0),
-                PSxy(Radius) * (Math.cos(PI2 / 3.0) - 1.0));
-        LineRelative(-2.0 * PSxy(Radius) * Math.sin(PI2 / 3.0), 0.0);
-        ClosePath();
-        Fill(-1.0);
-        OutLine();
-        EndObject();
+        defineObject("UpTriangle");
+        literal("moveto");
+        moveRelative(0.0, psXY(radius));
+        lineRelative(psXY(radius) * Math.sin(PI2 / 3.0),
+                psXY(radius) * (Math.cos(PI2 / 3.0) - 1.0));
+        lineRelative(-2.0 * psXY(radius) * Math.sin(PI2 / 3.0), 0.0);
+        closePath();
+        fill(-1.0);
+        outLine();
+        endObject();
 
-        DefineObject("DownTriangle");
-        Literal("moveto");
-        MoveRelative(0.0, PSxy(-Radius));
-        LineRelative(PSxy(Radius) * Math.sin(PI2 / 3.0),
-                PSxy(-Radius) * (Math.cos(PI2 / 3.0) - 1.0));
-        LineRelative(-2.0 * PSxy(Radius) * Math.sin(Math.PI / 3.0), 0.0);
-        ClosePath();
-        Fill(-1.0);
-        OutLine();
-        EndObject();
+        defineObject("DownTriangle");
+        literal("moveto");
+        moveRelative(0.0, psXY(-radius));
+        lineRelative(psXY(radius) * Math.sin(PI2 / 3.0),
+                psXY(-radius) * (Math.cos(PI2 / 3.0) - 1.0));
+        lineRelative(-2.0 * psXY(radius) * Math.sin(Math.PI / 3.0), 0.0);
+        closePath();
+        fill(-1.0);
+        outLine();
+        endObject();
 
-        DefineObject("Line");
-        Literal("moveto");
-        Literal("lineto");
-        OutLine();
-        EndObject();
+        defineObject("Line");
+        literal("moveto");
+        literal("lineto");
+        outLine();
+        endObject();
 
     }
 
@@ -426,19 +422,19 @@ public class TopsPrint {
      * Function to return crossing point at which a line from A, B crosses the
      * circle X and Y are replaced by the crossing point
      */
-    private Vector2d crossCircle(double X, double Y, double A, double B) {
+    private Vector2d crossCircle(double x, double y, double a, double b) {
         int i;
         double itv = 20.0; 
 
         Point2d lp = new Point2d(0, 0);
-        Point2d AB = new Point2d(A, B);
-        Point2d XY = new Point2d(X, Y);
+        Point2d ab = new Point2d(a, b);
+        Point2d xy = new Point2d(x, y);
         for (i = 0; i <= itv; i++) {
-            double rx = X + PSxy(Radius) * Math.sin((double) i * PI2 / itv) * Scale;
-            double ry = Y + PSxy(Radius) * Math.cos((double) i * PI2 / itv) * Scale;
+            double rx = x + psXY(radius) * Math.sin((double) i * PI2 / itv) * scale;
+            double ry = y + psXY(radius) * Math.cos((double) i * PI2 / itv) * scale;
             if (i > 0) {
                 Intersection intersection = 
-                        intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
+                        intersectionCalculator.lineCross(lp, new Point2d(rx, ry), ab, xy);
                 if (intersection.getType() != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
                     return intersection.getPoint();
                 }
@@ -465,8 +461,8 @@ public class TopsPrint {
         Point2d XY = new Point2d(X, Y);
         
         for (i = 0; i <= itv; i++) {
-            double rx = X + PSxy(Radius) * Math.sin((double) i * PI2 / itv);
-            double ry = Y + PSxy(Radius) * Math.cos((double) i * PI2 / itv);
+            double rx = X + psXY(radius) * Math.sin((double) i * PI2 / itv);
+            double ry = Y + psXY(radius) * Math.cos((double) i * PI2 / itv);
             if (i > 0) {
                 Intersection intersection = intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
                 if (intersection.getType() != IntersectionCalculator.IntersectionType.NOT_CROSSING) {
@@ -493,8 +489,8 @@ public class TopsPrint {
         Point2d AB = new Point2d(A, B);
         Point2d XY = new Point2d(X, Y);
         for (int i = 0; i <= itv; i++) {
-            double rx = X + PSxy(Radius) * Math.sin((double) i * PI2 / itv);
-            double ry = Y - PSxy(Radius) * Math.cos((double) i * PI2 / itv);
+            double rx = X + psXY(radius) * Math.sin((double) i * PI2 / itv);
+            double ry = Y - psXY(radius) * Math.cos((double) i * PI2 / itv);
             if (i > 0) {
                 Intersection intersection =
                         intersectionCalculator.lineCross(lp, new Point2d(rx, ry), AB, XY);
@@ -528,7 +524,7 @@ public class TopsPrint {
             if (pt == SSEType.HELIX)
                 crossCircle(qx, qy, px, py);
         }
-        MakeObject("Line", 4, px, py, qx, qy);
+        makeObject("Line", 4, px, py, qx, qy);
     }
 
     /*
@@ -538,7 +534,7 @@ public class TopsPrint {
      * 
      * Function to convert pointsize to centremetres (useful with text)
      */
-    private double PointToCm(double point) {
+    private double pointToCm(double point) {
         return point * ITOC / PPI;
     }
 
@@ -552,17 +548,17 @@ public class TopsPrint {
      * stdout. Function returns false on failure. This function writes all the
      * header parts to the file
      */
-    private boolean OpenPostscript(String output_file) throws FileNotFoundException {
-        if ("".equals(output_file)) {
-            OUT = System.out;
+    private boolean openPostscript(String outputFile) throws FileNotFoundException {
+        if ("".equals(outputFile)) {
+            out = System.out;
         } else {
-            OUT = new PrintStream(new File(output_file));
+            out = new PrintStream(new File(outputFile));
         }
-        fprintf(OUT, "%%!PS-Adobe-1.0\n");
-        fprintf(OUT, "%%%%Creator: postgen written by Tom Flores\n");
-        fprintf(OUT, "%%%%Title: postscript procedure\n");
-        fprintf(OUT, "%%%%CreationDate: Unknown\n");
-        fprintf(OUT, "%%%%Pages: 1\n");
+        fprintf(out, "%%!PS-Adobe-1.0\n");
+        fprintf(out, "%%%%Creator: postgen written by Tom Flores\n");
+        fprintf(out, "%%%%Title: postscript procedure\n");
+        fprintf(out, "%%%%CreationDate: Unknown\n");
+        fprintf(out, "%%%%Pages: 1\n");
 
         return true;    // XXX TODO
     }
@@ -574,18 +570,18 @@ public class TopsPrint {
      * 
      * This function sets the page size
      */
-    private void PageSize(double width, double height) {
+    private void setPageSize(double width, double height) {
 
         if (width > 0.0)
-            WIDTH = width;
+            this.width = width;
         if (height > 0.0)
-            HEIGHT = height;
-        if (WIDTH < PWIDTH)
-            PWIDTH = WIDTH;
-        if (HEIGHT < PHEIGHT)
-            PHEIGHT = HEIGHT;
-        fprintf(OUT, "%%%%BoundingBox: %.1f %.1f %.1f %.1f\n", 0.0, 0.0,
-                WIDTH * PPI * CTOI, HEIGHT * PPI * CTOI);
+            this.height = height;
+        if (this.width < pWidth)
+            pWidth = this.width;
+        if (this.height < pHeight)
+            pHeight = this.height;
+        fprintf(out, "%%%%BoundingBox: %.1f %.1f %.1f %.1f\n", 0.0, 0.0,
+                this.width * PPI * CTOI, this.height * PPI * CTOI);
     }
 
     /*
@@ -595,11 +591,11 @@ public class TopsPrint {
      * 
      * This function sets up the picture size
      */
-    private void PictureSize(double width, double height) {
+    private void setPictureSize(double width, double height) {
         if (width > 0.0)
-            PWIDTH = width;
+            pWidth = width;
         if (height > 0.0)
-            PHEIGHT = height;
+            pHeight = height;
     }
 
     /*
@@ -609,22 +605,22 @@ public class TopsPrint {
      * 
      * This function sets the page scale
      */
-    private void ScalePage(double xmin, double xmax, double ymin, double ymax) {
+    private void scalePage(double xmin, double xmax, double ymin, double ymax) {
 
         if (xmin < xmax) {
-            XMIN = xmin;
-            XMAX = xmax;
+            this.xMin = xmin;
+            this.xMax = xmax;
         }
         if (ymin < ymax) {
-            YMIN = ymin;
-            YMAX = ymax;
+            this.yMin = ymin;
+            this.yMax = ymax;
         }
-        XP = (PWIDTH * PPI) / ((XMAX - XMIN) * ITOC);
-        YP = (PHEIGHT * PPI) / ((YMAX - YMIN) * ITOC);
-        if (XMIN != 0.0 && YMIN != 0.0)
-            fprintf(OUT, "%.1f %.1f  translate\n",
-                    -XMIN * PWIDTH / (XMAX - XMIN) * PPI * CTOI,
-                    -YMIN * PHEIGHT / (YMAX - YMIN) * PPI * CTOI);
+        this.xp = (pWidth * PPI) / ((this.xMax - this.xMin) * ITOC);
+        this.yp = (pHeight * PPI) / ((this.yMax - this.yMin) * ITOC);
+        if (this.xMin != 0.0 && this.yMin != 0.0)
+            fprintf(out, "%.1f %.1f  translate\n",
+                    -this.xMin * pWidth / (this.xMax - this.xMin) * PPI * CTOI,
+                    -this.yMin * pHeight / (this.yMax - this.yMin) * PPI * CTOI);
     }
 
     /*
@@ -634,10 +630,10 @@ public class TopsPrint {
      * 
      * This function centres a picture on a page
      */
-    private void CentrePage() {
-        fprintf(OUT, "%.1f %.1f translate\n",
-                ((WIDTH - PWIDTH) / 2.0 * PPI * CTOI),
-                ((HEIGHT - PHEIGHT) / 2.0 * PPI * CTOI));
+    private void centrePage() {
+        fprintf(out, "%.1f %.1f translate\n",
+                ((width - pWidth) / 2.0 * PPI * CTOI),
+                ((height - pHeight) / 2.0 * PPI * CTOI));
     }
 
     /*
@@ -647,15 +643,15 @@ public class TopsPrint {
      * 
      * This function draws a box round the picture
      */
-    private void Perimeter() {
-        fprintf(OUT, "newpath\n");
-        fprintf(OUT, "  %.1f %.1f moveto\n", (XMIN * XP), (YMIN * YP));
-        fprintf(OUT, "  %.1f %.1f lineto\n", (XMIN * XP), (YMAX * YP));
-        fprintf(OUT, "  %.1f %.1f lineto\n", (XMAX * XP), (YMAX * YP));
-        fprintf(OUT, "  %.1f %.1f lineto\n", (XMAX * XP), (YMIN * YP));
-        fprintf(OUT, "  %.1f %.1f lineto\n", (XMIN * XP), (YMIN * YP));
-        fprintf(OUT, "  closepath\n");
-        fprintf(OUT, "stroke\n");
+    private void perimeter() {
+        fprintf(out, "newpath\n");
+        fprintf(out, "  %.1f %.1f moveto\n", (xMin * xp), (yMin * yp));
+        fprintf(out, "  %.1f %.1f lineto\n", (xMin * xp), (yMax * yp));
+        fprintf(out, "  %.1f %.1f lineto\n", (xMax * xp), (yMax * yp));
+        fprintf(out, "  %.1f %.1f lineto\n", (xMax * xp), (yMin * yp));
+        fprintf(out, "  %.1f %.1f lineto\n", (xMin * xp), (yMin * yp));
+        fprintf(out, "  closepath\n");
+        fprintf(out, "stroke\n");
     }
 
     /*
@@ -665,8 +661,8 @@ public class TopsPrint {
      * 
      * Function to begin an object definition
      */
-    private void DefineObject(String object_name) {
-        fprintf(OUT, "/%s\n{ newpath\n", object_name);
+    private void defineObject(String objectName) {
+        fprintf(out, "/%s\n{ newpath\n", objectName);
     }
 
     /*
@@ -676,8 +672,8 @@ public class TopsPrint {
      * 
      * Function to finish object definition
      */
-    private void EndObject() {
-        fprintf(OUT, " } def\n");
+    private void endObject() {
+        fprintf(out, " } def\n");
     }
 
     /*
@@ -690,19 +686,19 @@ public class TopsPrint {
      * number of of parameters to be stacked before the object is drawn these
      * must all be doubles!
      */
-    private void MakeObject(String object_name, int i, double... args) {
-        fprintf(OUT, "  ");
+    private void makeObject(String objectName, int i, double... args) {
+        fprintf(out, "  ");
         for (double arg : args) {
-            fprintf(OUT, "%.1f ", (double) (arg * XP));
+            fprintf(out, "%.1f ", (double) (arg * xp));
         }
-        fprintf(OUT, "%s\n", object_name);
+        fprintf(out, "%s\n", objectName);
     }
 
     /*
      * function translate D. Westhead 11/09/96
      */
-    private void Translate(double x, double y) {
-        fprintf(OUT, "  %.1f %.1f translate\n", (x * XP), (y * YP));
+    private void translate(double x, double y) {
+        fprintf(out, "  %.1f %.1f translate\n", (x * xp), (y * yp));
     }
 
     /*
@@ -711,7 +707,7 @@ public class TopsPrint {
      * Tom F. October 1992
      */
     private void MoveTo(double x, double y) {
-        fprintf(OUT, "  %.1f %.1f moveto\n", (x * XP), (y * YP));
+        fprintf(out, "  %.1f %.1f moveto\n", (x * xp), (y * yp));
     }
 
     /*
@@ -719,8 +715,8 @@ public class TopsPrint {
      * 
      * Tom F. October 1992
      */
-    private void MoveRelative(double x, double y) {
-        fprintf(OUT, "  %.1f %.1f rmoveto\n", (x * XP), (y * YP));
+    private void moveRelative(double x, double y) {
+        fprintf(out, "  %.1f %.1f rmoveto\n", (x * xp), (y * yp));
     }
 
     /*
@@ -729,7 +725,7 @@ public class TopsPrint {
      * Tom F. October 1992
      */
     private void LineTo(double x, double y) {
-        fprintf(OUT, "  %.1f %.1f lineto\n", (x * XP), (y * YP));
+        fprintf(out, "  %.1f %.1f lineto\n", (x * xp), (y * yp));
     }
 
     /*
@@ -737,8 +733,8 @@ public class TopsPrint {
      * 
      * Tom F. October 1992
      */
-    private void LineRelative(double x, double y) {
-        fprintf(OUT, "  %.1f %.1f rlineto\n", (x * XP), (y * YP));
+    private void lineRelative(double x, double y) {
+        fprintf(out, "  %.1f %.1f rlineto\n", (x * xp), (y * yp));
     }
 
     /*
@@ -746,8 +742,8 @@ public class TopsPrint {
      * 
      * Tom F. October 1992
      */
-    private void ClosePath() {
-        fprintf(OUT, "  closepath\n");
+    private void closePath() {
+        fprintf(out, "  closepath\n");
     }
 
     /*
@@ -755,8 +751,8 @@ public class TopsPrint {
      * 
      * Tom F. October 1992
      */
-    private void NewPath() {
-        fprintf(OUT, "newpath\n");
+    private void newPath() {
+        fprintf(out, "newpath\n");
     }
 
     /*
@@ -766,10 +762,10 @@ public class TopsPrint {
      * 
      * Function to complete postscript picture
      */
-    private void EndPostscript() {
-        fprintf(OUT, "showpage\n");
-        if (OUT != System.out)
-            OUT.close();
+    private void endPostscript() {
+        fprintf(out, "showpage\n");
+        if (out != System.out)
+            out.close();
     }
 
     /*
@@ -777,8 +773,8 @@ public class TopsPrint {
      * 
      * TOm F. October 1992
      */
-    private void OutLine() {
-        fprintf(OUT, "  stroke\n");
+    private void outLine() {
+        fprintf(out, "  stroke\n");
     }
 
     /*
@@ -786,11 +782,11 @@ public class TopsPrint {
      * 
      * Tom F. October 1992
      */
-    private void Fill(double level) {
+    private void fill(double level) {
         if (level >= 0.0)
-            fprintf(OUT, "  gsave\n  %.2f setgray fill\n  grestore\n", level);
+            fprintf(out, "  gsave\n  %.2f setgray fill\n  grestore\n", level);
         else
-            fprintf(OUT, "  gsave\n  setgray fill\n  grestore\n");
+            fprintf(out, "  gsave\n  setgray fill\n  grestore\n");
     }
 
     /*
@@ -798,8 +794,8 @@ public class TopsPrint {
      * 
      * Tom F. October 1992
      */
-    private void LineWidth(double width) {
-        fprintf(OUT, "  %.1f setlinewidth\n", (width * XP));
+    private void lineWidth(double width) {
+        fprintf(out, "  %.1f setlinewidth\n", (width * xp));
     }
 
     /*
@@ -810,8 +806,8 @@ public class TopsPrint {
      * Function to allow literal translation of postscript ie. written to file
      * directly - this allows for any additional bits to be added freely
      */
-    private void Literal(String postlit) {
-        fprintf(OUT, "  %s\n", postlit);
+    private void literal(String postlit) {
+        fprintf(out, "  %s\n", postlit);
     }
 
     /*
@@ -821,11 +817,11 @@ public class TopsPrint {
      * 
      * function to select font
      */
-    private void ChooseFont(String font, int point_size) {
-        FONT = font;
-        if (point_size > 0)
-            POINT = point_size;
-        fprintf(OUT, "/%s findfont %d scalefont setfont\n", FONT, POINT);
+    private void chooseFont(String font, int pointSize) {
+        this.font = font;
+        if (pointSize > 0)
+            point = pointSize;
+        fprintf(out, "/%s findfont %d scalefont setfont\n", this.font, point);
     }
 
     /*
@@ -836,9 +832,9 @@ public class TopsPrint {
      * This function set the character height
      */
     private void CharacterHeight(double height) {
-        if (POINT != height * YP && height * YP > 0.0) {
-            POINT = (int) (height * YP);
-            ChooseFont(FONT, POINT);
+        if (point != height * yp && height * yp > 0.0) {
+            point = (int) (height * yp);
+            chooseFont(font, point);
         }
     }
 
@@ -849,12 +845,12 @@ public class TopsPrint {
      * 
      * Function to output text
      */
-    private void PrintText(String text, double x, double y) {
-        fprintf(OUT, "  %.1f %.1f moveto\n", (x * XP),
-                (y * YP - TEXTHGT * POINT));
-        fprintf(OUT, "  (%s) dup stringwidth pop\n", text);
-        fprintf(OUT, "  %.2f mul 0 rmoveto\n", -TEXTPOS);
-        fprintf(OUT, "   show\n");
+    private void printText(String text, double x, double y) {
+        fprintf(out, "  %.1f %.1f moveto\n", (x * xp),
+                (y * yp - texthgt * point));
+        fprintf(out, "  (%s) dup stringwidth pop\n", text);
+        fprintf(out, "  %.2f mul 0 rmoveto\n", -textpos);
+        fprintf(out, "   show\n");
     }
 
     /*
@@ -864,9 +860,9 @@ public class TopsPrint {
      * 
      * Function to determine text centre value as fraction
      */
-    private void TextCentre(double length, double height) {
-        TEXTPOS = length;
-        TEXTHGT = height;
+    private void textCentre(double length, double height) {
+        textpos = length;
+        texthgt = height;
     }
 
     /*
@@ -876,12 +872,12 @@ public class TopsPrint {
      * 
      * This function converts a given x value to its point value
      */
-    private int ConvertXPoint(double value) {
-        return (int) (value * XP);
+    private int convertXPoint(double value) {
+        return (int) (value * xp);
     }
 
-    private double Verbatim(double value) {
-        return value / XP;
+    private double verbatim(double value) {
+        return value / xp;
     }
 
     /*
@@ -892,7 +888,7 @@ public class TopsPrint {
      * This function converts a given y value to its point value
      */
     private int ConvertYPoint(double value) {
-        return (int) (value * YP);
+        return (int) (value * yp);
     }
 
     /*
@@ -902,23 +898,22 @@ public class TopsPrint {
      * 
      * This function outputs the values and states of internal variables
      */
-    void debug_ps() {
+    void debugPs() {
         fprintf(System.err, "PS - variables:\n");
-        fprintf(System.err, "WIDTH     = %f\n", WIDTH);
-        fprintf(System.err, "HEIGHT    = %f\n", HEIGHT);
-        fprintf(System.err, "PWIDTH    = %f\n", PWIDTH);
-        fprintf(System.err, "PHEIGHT   = %f\n", PHEIGHT);
-        fprintf(System.err, "XMIN      = %f\n", XMIN);
-        fprintf(System.err, "XMAX      = %f\n", XMAX);
-        fprintf(System.err, "YMIN      = %f\n", YMIN);
-        fprintf(System.err, "YMAX      = %f\n", YMAX);
-        fprintf(System.err, "XP        = %f\n", XP);
-        fprintf(System.err, "YP        = %f\n", YP);
+        fprintf(System.err, "WIDTH     = %f\n", width);
+        fprintf(System.err, "HEIGHT    = %f\n", height);
+        fprintf(System.err, "PWIDTH    = %f\n", pWidth);
+        fprintf(System.err, "PHEIGHT   = %f\n", pHeight);
+        fprintf(System.err, "XMIN      = %f\n", xMin);
+        fprintf(System.err, "XMAX      = %f\n", xMax);
+        fprintf(System.err, "YMIN      = %f\n", yMin);
+        fprintf(System.err, "YMAX      = %f\n", yMax);
+        fprintf(System.err, "XP        = %f\n", xp);
+        fprintf(System.err, "YP        = %f\n", yp);
     }
 
-    private void fprintf(PrintStream stream, String message,
-            Object... inserts) {
-
+    private void fprintf(PrintStream stream, String message, Object... inserts) {
+        stream.print(String.format(message, inserts));
     }
 
 }
