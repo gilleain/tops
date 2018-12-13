@@ -6,7 +6,8 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.PrintWriter;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import tops.view.cartoon.PostscriptFactory;
 import tops.view.cartoon.TextCartoonBuilder;
@@ -15,14 +16,14 @@ public class PSBuilder implements TextCartoonBuilder {
     
     private String font = "Times-Roman";
 
-    private Vector<String> eps; // the product that this builder will return
+    private List<String> eps; // the product that this builder will return
 
 //    private Rectangle bBox; // the bounds of the cartoon
 
     private int h; // convenience variable
 
     public PSBuilder(Rectangle bBox) {
-        this.eps = new Vector<String>();
+        this.eps = new ArrayList<>();
         this.eps = PostscriptFactory.makeEPSHeader(this.eps, 0, 0, bBox.width, bBox.height);
 //        this.bBox = bBox;
         this.h = bBox.height;
@@ -33,21 +34,19 @@ public class PSBuilder implements TextCartoonBuilder {
             // eps = PostscriptFactory.addBoundingBox( eps, bBox.x, bBox.y,
             // bBox.x + bBox.width, bBox.y + bBox.height );
 
-            this.eps.addElement(PostscriptFactory.showpage());
-            this.eps.addElement(PostscriptFactory.EndDocument());
-            this.eps.addElement(PostscriptFactory.EOF());
-            for (int idx = 0; idx < this.eps.size(); idx++) {
-                String s = (String) this.eps.get(idx);
+            this.eps.add(PostscriptFactory.showpage());
+            this.eps.add(PostscriptFactory.endDocument());
+            this.eps.add(PostscriptFactory.eof());
+            for (String s : this.eps) {;
                 out.println(s);
-                //System.err.println(s);
             }
         }
     }
 
     public void connect(Point p1, Point p2) {
-        this.eps.addElement(PostscriptFactory.makeMove(this.h - p1.x, p1.y));
-        this.eps.addElement(PostscriptFactory.makeLine(this.h - p1.x, p1.y));
-        this.eps.addElement(PostscriptFactory.stroke());
+        this.eps.add(PostscriptFactory.makeMove(this.h - p1.x, p1.y));
+        this.eps.add(PostscriptFactory.makeLine(this.h - p1.x, p1.y));
+        this.eps.add(PostscriptFactory.stroke());
     }
 
     public void drawHelix(Point center, int rad, Color c) {
@@ -56,20 +55,20 @@ public class PSBuilder implements TextCartoonBuilder {
     }
 
     public void drawStrand(Point center, Point left, Point right, Color c) {
-        this.eps.addElement(PostscriptFactory.newPath());
-        this.eps.addElement(PostscriptFactory.makeMove(this.h - center.x, center.x));
-        this.eps.addElement(PostscriptFactory.makeLine(this.h - left.x, left.y));
-        this.eps.addElement(PostscriptFactory.makeLine(this.h - right.x, right.y));
-        this.eps.addElement(PostscriptFactory.closePath());
+        this.eps.add(PostscriptFactory.newPath());
+        this.eps.add(PostscriptFactory.makeMove(this.h - center.x, center.x));
+        this.eps.add(PostscriptFactory.makeLine(this.h - left.x, left.y));
+        this.eps.add(PostscriptFactory.makeLine(this.h - right.x, right.y));
+        this.eps.add(PostscriptFactory.closePath());
         // do colour stuff
-        this.eps.addElement(PostscriptFactory.gsave());
-        this.eps.addElement(PostscriptFactory.setColour(c));
-        this.eps.addElement(PostscriptFactory.fill());
-        this.eps.addElement(PostscriptFactory.grestore());
-        this.eps.addElement(PostscriptFactory.setColour(Color.black));
+        this.eps.add(PostscriptFactory.gsave());
+        this.eps.add(PostscriptFactory.setColour(c));
+        this.eps.add(PostscriptFactory.fill());
+        this.eps.add(PostscriptFactory.grestore());
+        this.eps.add(PostscriptFactory.setColour(Color.black));
         // end colour stuff
-        this.eps.addElement(PostscriptFactory.stroke());
-        this.eps.addElement(PostscriptFactory.makeMove(this.h - center.x, center.y));
+        this.eps.add(PostscriptFactory.stroke());
+        this.eps.add(PostscriptFactory.makeMove(this.h - center.x, center.y));
     }
 
     public void drawTerminus(Point center, int r, String label) {

@@ -1,76 +1,89 @@
 package tops.view.cartoon;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public final class PostscriptFactory {
 
+    private static final String EOF = "%%EOF";
+
+    private static final String END_DOCUMENT = "%%EndDocument";
+
+    private static final String SHOWPAGE = "showpage";
+
+    private static final String GRESTORE = "grestore";
+
+    private static final String GSAVE = "gsave";
+
+    private static final String FILL = "fill";
+
+    private static final String STROKE = "stroke";
+
+    private static final String BOUNDING_BOX = "%%BoundingBox: ";
+
     private static double root3 = Math.sqrt(3.0);
 
-    public static int A4Width = 595;
+    public static final int A4_WIDTH = 595;
 
-    public static int A4Height = 841;
+    public static final int A4_HEIGHT = 841;
+    
+    private PostscriptFactory() {
+        // prevent construction
+    }
 
-    public static Vector<String> makeEPSHeader(Vector<String> ps, int bbx1, int bby1, int bbx2,
+    public static List<String> makeEPSHeader(List<String> ps, int bbx1, int bby1, int bbx2,
             int bby2) {
         if (ps == null) {
-            ps = new Vector<String>();
+            ps = new ArrayList<>();
         }
 
-        ps.addElement("%!PS-Adobe-3.0 EPSF-3.0");
-        ps
-                .addElement("%%Creator: DWPostscriptFactoryClass, Copyright 1998, European Bioinformatics Institute");
-        ps.addElement("%%BoundingBox: " + bbx1 + " " + bby1 + " " + bbx2 + " "
-                + bby2);
-        ps.addElement("%%EndComments");
-        ps.addElement("%%EndProlog");
+        ps.add("%!PS-Adobe-3.0 EPSF-3.0");
+        ps.add("%%Creator: DWPostscriptFactoryClass, Copyright 1998, European Bioinformatics Institute");
+        ps.add(BOUNDING_BOX + bbx1 + " " + bby1 + " " + bbx2 + " " + bby2);
+        ps.add("%%EndComments");
+        ps.add("%%EndProlog");
 
         return ps;
 
     }
 
-    public static Vector<String> makePSHeader(Vector<String> ps, int npages, int page_order) {
+    public static List<String> makePSHeader(List<String> ps, int npages, int pageOrder) {
         if (ps == null) {
-            ps = new Vector<String>();
+            ps = new ArrayList<>();
         }
 
-        ps.addElement("%!PS-Adobe-3.0");
-        ps
-                .addElement("%%Creator: DWPostscriptFactoryClass, Copyright 1998, European Bioinformatics Institute");
-        ps.addElement(PostscriptFactory.Pages(npages));
-        ps.addElement(PostscriptFactory.PageOrder(page_order));
-        ps.addElement("%%EndComments");
-        ps.addElement("%%EndProlog");
+        ps.add("%!PS-Adobe-3.0");
+        ps.add("%%Creator: DWPostscriptFactoryClass, Copyright 1998, European Bioinformatics Institute");
+        ps.add(PostscriptFactory.pages(npages));
+        ps.add(PostscriptFactory.pageOrder(pageOrder));
+        ps.add("%%EndComments");
+        ps.add("%%EndProlog");
 
         return ps;
 
     }
 
-    public static Vector<String> addBoundingBox(Vector<String> ps, int bbx1, int bby1,
-            int bbx2, int bby2) {
+    public static List<String> addBoundingBox(List<String> ps, int bbx1, int bby1, int bbx2, int bby2) {
         if (ps == null)
-            return null;
+            return new ArrayList<>();
 
-        Enumeration<String> en = ps.elements();
-
-        String s;
         int i = 0;
         boolean found = false;
-        while (en.hasMoreElements()) {
-            s = en.nextElement();
+        for (String s : ps) {
             if (s.startsWith("%%BoundingBox")) {
                 found = true;
                 break;
             }
-            ++i;
+            i++;
         }
 
         if (found) {
-            ps.setElementAt("%%BoundingBox: " + bbx1 + " " + bby1 + " " + bbx2
-                    + " " + bby2, i);
+            ps.set(i, BOUNDING_BOX + bbx1 + " " + bby1 + " " + bbx2 + " " + bby2);
         } else {
-            ps.insertElementAt("%%BoundingBox: " + bbx1 + " " + bby1 + " "
-                    + bbx2 + " " + bby2, 1);
+            ps.add(i, BOUNDING_BOX + bbx1 + " " + bby1 + " " + bbx2 + " " + bby2);
         }
 
         return ps;
@@ -78,7 +91,7 @@ public final class PostscriptFactory {
     }
 
     public static String translate(int x, int y) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(x);
         sb.append(" ");
@@ -90,7 +103,7 @@ public final class PostscriptFactory {
     }
 
     public static String scale(float sx, float sy) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(sx);
         sb.append(" ");
@@ -101,96 +114,97 @@ public final class PostscriptFactory {
         return sb.toString();
     }
 
-    public static Vector<String> makeUpTriangle(int x, int y, int r, Color c, Vector<String> ps) {
-        int dx, dy;
-        Vector<String> postscript;
+    public static List<String> makeUpTriangle(int x, int y, int r, Color c, List<String> ps) {
+        int dx;
+        int dy;
+        List<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector<String>();
+            postscript = new ArrayList<>();
         } else {
             postscript = ps;
         }
 
-        postscript.addElement(PostscriptFactory.newPath());
-        postscript.addElement(PostscriptFactory.makeMove(x, y));
-        postscript.addElement(PostscriptFactory.makeRelativeMove(0, r));
+        postscript.add(PostscriptFactory.newPath());
+        postscript.add(PostscriptFactory.makeMove(x, y));
+        postscript.add(PostscriptFactory.makeRelativeMove(0, r));
 
         double dbr = r;
         dx = (int) (dbr * (PostscriptFactory.root3 / 2.0));
         dy = (int) (-1.5 * dbr);
-        postscript.addElement(PostscriptFactory.makeRelativeLine(dx, dy));
+        postscript.add(PostscriptFactory.makeRelativeLine(dx, dy));
 
         dx = (int) (-dbr * PostscriptFactory.root3);
         dy = 0;
-        postscript.addElement(PostscriptFactory.makeRelativeLine(dx, dy));
+        postscript.add(PostscriptFactory.makeRelativeLine(dx, dy));
 
-        postscript.addElement(PostscriptFactory.closePath());
+        postscript.add(PostscriptFactory.closePath());
         if ((c != null)) {
-            postscript.addElement(PostscriptFactory.gsave());
-            postscript.addElement(PostscriptFactory.setColour(c));
-            postscript.addElement(PostscriptFactory.fill());
-            postscript.addElement(PostscriptFactory.grestore());
-            postscript.addElement(PostscriptFactory.setColour(Color.black));
+            postscript.add(PostscriptFactory.gsave());
+            postscript.add(PostscriptFactory.setColour(c));
+            postscript.add(PostscriptFactory.fill());
+            postscript.add(PostscriptFactory.grestore());
+            postscript.add(PostscriptFactory.setColour(Color.black));
         }
-        postscript.addElement(PostscriptFactory.stroke());
+        postscript.add(PostscriptFactory.stroke());
 
-        postscript.addElement(PostscriptFactory.makeMove(x, y));
+        postscript.add(PostscriptFactory.makeMove(x, y));
 
         return postscript;
     }
 
-    public static Vector<String> makeDownTriangle(int x, int y, int r, Color c,
-            Vector<String> ps) {
-        int dx, dy;
+    public static List<String> makeDownTriangle(int x, int y, int r, Color c, List<String> ps) {
+        int dx;
+        int dy;
 
-        Vector<String> postscript;
+        List<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector<String>();
+            postscript = new ArrayList<>();
         } else {
             postscript = ps;
         }
 
-        postscript.addElement(PostscriptFactory.newPath());
-        postscript.addElement(PostscriptFactory.makeMove(x, y));
-        postscript.addElement(PostscriptFactory.makeRelativeMove(0, -r));
+        postscript.add(PostscriptFactory.newPath());
+        postscript.add(PostscriptFactory.makeMove(x, y));
+        postscript.add(PostscriptFactory.makeRelativeMove(0, -r));
 
         double dbr = r;
         dx = (int) (dbr * (PostscriptFactory.root3 / 2.0));
         dy = (int) (1.5 * dbr);
-        postscript.addElement(PostscriptFactory.makeRelativeLine(dx, dy));
+        postscript.add(PostscriptFactory.makeRelativeLine(dx, dy));
 
         dx = (int) (-dbr * PostscriptFactory.root3);
         dy = 0;
-        postscript.addElement(PostscriptFactory.makeRelativeLine(dx, dy));
+        postscript.add(PostscriptFactory.makeRelativeLine(dx, dy));
 
-        postscript.addElement(PostscriptFactory.closePath());
+        postscript.add(PostscriptFactory.closePath());
         if ((c != null)) {
-            postscript.addElement(PostscriptFactory.gsave());
-            postscript.addElement(PostscriptFactory.setColour(c));
-            postscript.addElement(PostscriptFactory.fill());
-            postscript.addElement(PostscriptFactory.grestore());
-            postscript.addElement(PostscriptFactory.setColour(Color.black));
+            postscript.add(PostscriptFactory.gsave());
+            postscript.add(PostscriptFactory.setColour(c));
+            postscript.add(PostscriptFactory.fill());
+            postscript.add(PostscriptFactory.grestore());
+            postscript.add(PostscriptFactory.setColour(Color.black));
         }
-        postscript.addElement(PostscriptFactory.stroke());
+        postscript.add(PostscriptFactory.stroke());
 
-        postscript.addElement(PostscriptFactory.makeMove(x, y));
+        postscript.add(PostscriptFactory.makeMove(x, y));
 
         return postscript;
     }
 
-    public static Vector<String> makeCircle(int x, int y, int r, Color c, Vector<String> ps) {
-        Vector<String> postscript;
+    public static List<String> makeCircle(int x, int y, int r, Color c, List<String> ps) {
+        List<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector<String>();
+            postscript = new ArrayList<>();
         } else {
             postscript = ps;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
-        postscript.addElement(PostscriptFactory.newPath());
+        postscript.add(PostscriptFactory.newPath());
 
         sb.append(x);
         sb.append(" ");
@@ -199,47 +213,47 @@ public final class PostscriptFactory {
         sb.append(r);
         sb.append(" 0 360 arc");
 
-        postscript.addElement(sb.toString());
-        postscript.addElement(PostscriptFactory.closePath());
+        postscript.add(sb.toString());
+        postscript.add(PostscriptFactory.closePath());
 
         if ((c != null)) {
-            postscript.addElement(PostscriptFactory.gsave());
-            postscript.addElement(PostscriptFactory.setColour(c));
-            postscript.addElement(PostscriptFactory.fill());
-            postscript.addElement(PostscriptFactory.grestore());
-            postscript.addElement(PostscriptFactory.setColour(Color.black));
+            postscript.add(PostscriptFactory.gsave());
+            postscript.add(PostscriptFactory.setColour(c));
+            postscript.add(PostscriptFactory.fill());
+            postscript.add(PostscriptFactory.grestore());
+            postscript.add(PostscriptFactory.setColour(Color.black));
         }
-        postscript.addElement(PostscriptFactory.stroke());
+        postscript.add(PostscriptFactory.stroke());
 
-        postscript.addElement(PostscriptFactory.makeMove(x, y));
+        postscript.add(PostscriptFactory.makeMove(x, y));
 
         return postscript;
 
     }
 
-    public static Vector<String> makeText(String font, int font_size, int x, int y,
-            String text, Vector<String> ps) {
-        Vector<String> postscript;
+    public static List<String> makeText(String font, int fontSize, int x, int y,
+            String text, List<String> ps) {
+        List<String> postscript;
 
         if (ps == null) {
-            postscript = new Vector<String>();
+            postscript = new ArrayList<>();
         } else {
             postscript = ps;
         }
 
-        postscript.addElement("/" + font + " findfont");
-        StringBuffer sb = new StringBuffer();
-        sb.append(font_size);
+        postscript.add("/" + font + " findfont");
+        StringBuilder sb = new StringBuilder();
+        sb.append(fontSize);
         sb.append(" scalefont");
-        postscript.addElement(sb.toString());
-        postscript.addElement("setfont");
-        sb = new StringBuffer();
+        postscript.add(sb.toString());
+        postscript.add("setfont");
+        sb = new StringBuilder();
         sb.append(x);
         sb.append(" ");
         sb.append(y);
         sb.append(" moveto");
-        postscript.addElement(sb.toString());
-        postscript.addElement("(" + text + ")" + " show");
+        postscript.add(sb.toString());
+        postscript.add("(" + text + ")" + " show");
 
         return postscript;
 
@@ -254,7 +268,7 @@ public final class PostscriptFactory {
     }
 
     public static String makeMove(int x, int y) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(x);
         sb.append(" ");
@@ -266,7 +280,7 @@ public final class PostscriptFactory {
     }
 
     public static String makeRelativeMove(int x, int y) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(x);
         sb.append(" ");
@@ -278,7 +292,7 @@ public final class PostscriptFactory {
     }
 
     public static String makeRelativeLine(int x, int y) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(x);
         sb.append(" ");
@@ -290,7 +304,7 @@ public final class PostscriptFactory {
     }
 
     public static String makeLine(int x, int y) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(x);
         sb.append(" ");
@@ -311,7 +325,7 @@ public final class PostscriptFactory {
     }
 
     public static String setColour(float r, float g, float b) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(r);
         sb.append(" ");
         sb.append(g);
@@ -322,49 +336,49 @@ public final class PostscriptFactory {
     }
 
     public static String stroke() {
-        return "stroke";
+        return STROKE;
     }
 
     public static String fill() {
-        return "fill";
+        return FILL;
     }
 
     public static String gsave() {
-        return "gsave";
+        return GSAVE;
     }
 
     public static String grestore() {
-        return "grestore";
+        return GRESTORE;
     }
 
     public static String showpage() {
-        return "showpage";
+        return SHOWPAGE;
     }
 
-    public static String EndDocument() {
-        return "%%EndDocument";
+    public static String endDocument() {
+        return END_DOCUMENT;
     }
 
-    public static String EOF() {
-        return "%%EOF";
+    public static String eof() {
+        return EOF;
     }
 
-    public static String Page(int x, int y) {
-        StringBuffer stb = new StringBuffer("%%Page: ");
+    public static String page(int x, int y) {
+        StringBuilder stb = new StringBuilder("%%Page: ");
         stb.append(x);
         stb.append(" ");
         stb.append(y);
         return stb.toString();
     }
 
-    public static String Pages(int x) {
-        StringBuffer stb = new StringBuffer("%%Pages: ");
+    public static String pages(int x) {
+        StringBuilder stb = new StringBuilder("%%Pages: ");
         stb.append(x);
         return stb.toString();
     }
 
-    public static String PageOrder(int x) {
-        StringBuffer stb = new StringBuffer("%%PageOrder: ");
+    public static String pageOrder(int x) {
+        StringBuilder stb = new StringBuilder("%%PageOrder: ");
         if (x >= 0)
             stb.append("Ascend");
         else
@@ -375,27 +389,26 @@ public final class PostscriptFactory {
     // a method to make a PS array from a set of EPS files
     private static int border = 36;
 
-    public static Vector<String> PSArrayA4(
-    		Vector<String> titles, Vector<Vector<String>> EPSfiles, int margin, float scle) 
-    				throws PSException {
-        if (EPSfiles == null || EPSfiles.isEmpty())
+    public static List<String> psArrayA4(
+    		List<String> titles, List<List<String>> epsFiles, int margin, float scale) throws PSException {
+        if (epsFiles == null || epsFiles.isEmpty())
             throw new PSException("Nothing to draw!");
-        if (scle <= 0.01f)
+        if (scale <= 0.01f)
             throw new PSException("Scale value too small");
 
-        float invscle = 1.0f / scle;
+        float invscle = 1.0f / scale;
 
-        Vector<String> PS = new Vector<String>();
+        List<String> postscript = new ArrayList<>();
 
-        int nfiles = EPSfiles.size();
+        int nfiles = epsFiles.size();
 
         // determine largest X and Y sizes
-        int xs, ys, maxx = 0, maxy = 0;
-        int bb[];
-        Enumeration<Vector<String>> enf = EPSfiles.elements();
-        Vector<String> eps;
-        while (enf.hasMoreElements()) {
-            eps = enf.nextElement();
+        int xs;
+        int ys;
+        int maxx = 0;
+        int maxy = 0;
+        int[] bb;
+        for (List<String> eps : epsFiles) {
             bb = PostscriptFactory.getBoundingBox(eps);
             xs = bb[2] - bb[0];
             ys = bb[3] - bb[1];
@@ -404,38 +417,43 @@ public final class PostscriptFactory {
             if (ys > maxy)
                 maxy = ys;
         }
-        maxx = Math.round(scle * maxx);
-        maxy = Math.round(scle * maxy);
+        maxx = Math.round(scale * maxx);
+        maxy = Math.round(scale * maxy);
 
         // determine array parameters and number of pages required.
         int xsize = maxx + PostscriptFactory.border;
         int ysize = maxy + PostscriptFactory.border;
-        int nx = (PostscriptFactory.A4Width - 2 * margin) / xsize;
-        int ny = (PostscriptFactory.A4Height - 2 * margin) / ysize;
+        int nx = (PostscriptFactory.A4_WIDTH - 2 * margin) / xsize;
+        int ny = (PostscriptFactory.A4_HEIGHT - 2 * margin) / ysize;
 
         if (nx <= 0 || ny <= 0)
             throw new PSException("Diagrams too big for page!");
 
         int npages = 1 + (nfiles - 1) / (nx * ny);
 
-        PS = PostscriptFactory.makePSHeader(PS, npages, 1);
+        postscript = PostscriptFactory.makePSHeader(postscript, npages, 1);
 
         // construct the array
-        Enumeration<String> ent = titles.elements();
-        enf = EPSfiles.elements();
-        int nf = 0, ix, iy = -1, np = 0;
-        int lowleft[] = new int[2];
-        int xt, yt, tx, ty;
+        Iterator<String> ent = titles.iterator();
+        int nf = 0;
+        int ix;
+        int iy = -1;
+        int np = 0;
+        int[] lowleft = new int[2];
+        int xt;
+        int yt;
+        int tx;
+        int ty;
         String ttl;
-        while (enf.hasMoreElements()) {
+        for (List<String> eps : epsFiles) {
 
             // new page
             if (PostscriptFactory.mod(nf, nx * ny) == 0) {
                 np++;
                 iy = -1;
                 if (nf > 0)
-                    PS.addElement(PostscriptFactory.showpage());
-                PS.addElement(PostscriptFactory.Page(np, np));
+                    postscript.add(PostscriptFactory.showpage());
+                postscript.add(PostscriptFactory.page(np, np));
             }
             ix = PostscriptFactory.mod(nf, nx);
             if (ix == 0)
@@ -444,59 +462,55 @@ public final class PostscriptFactory {
             // translate to the lower left corner
             lowleft[0] = margin + PostscriptFactory.border / 2 + ix * xsize;
             lowleft[1] = margin + (ny - iy - 1) * ysize;
-            PS.addElement(PostscriptFactory.translate(lowleft[0], lowleft[1]));
+            postscript.add(PostscriptFactory.translate(lowleft[0], lowleft[1]));
 
             // get bounding box
-            eps = enf.nextElement();
             bb = PostscriptFactory.getBoundingBox(eps);
 
             // add title
-            if (ent.hasMoreElements())
-                ttl = (String) ent.nextElement();
+            if (ent.hasNext())
+                ttl = ent.next();
             else
                 ttl = "NoTitle";
             int ttls = 12;
             ty = ysize - (2 * PostscriptFactory.border) / 3;
             // tx = xsize/2 - border/2 - 12*ttl.length()/2;
             tx = xsize / 2 - PostscriptFactory.border / 2;
-            PS = PostscriptFactory.makeText("TimesRoman", ttls, tx, ty, ttl, PS);
+            postscript = PostscriptFactory.makeText("TimesRoman", ttls, tx, ty, ttl, postscript);
 
             // translate and scale so that bounding box lies in correct position
-            PS.addElement(PostscriptFactory.scale(scle, scle));
-            xt = -Math.round(scle * bb[0]);
-            yt = -Math.round(scle * bb[1]);
-            PS.addElement(PostscriptFactory.translate(xt, yt));
+            postscript.add(PostscriptFactory.scale(scale, scale));
+            xt = -Math.round(scale * bb[0]);
+            yt = -Math.round(scale * bb[1]);
+            postscript.add(PostscriptFactory.translate(xt, yt));
 
             // add the EPS file (may need a new path)
-            PS.addElement(PostscriptFactory.newPath());
+            postscript.add(PostscriptFactory.newPath());
 
-            PostscriptFactory.appendEPS(PS, eps);
+            PostscriptFactory.appendEPS(postscript);
 
             // reposition the origin at the lower left of the page
-            PS.addElement(PostscriptFactory.translate(-xt, -yt));
-            PS.addElement(PostscriptFactory.scale(invscle, invscle));
-            PS.addElement(PostscriptFactory.translate(-lowleft[0], -lowleft[1]));
+            postscript.add(PostscriptFactory.translate(-xt, -yt));
+            postscript.add(PostscriptFactory.scale(invscle, invscle));
+            postscript.add(PostscriptFactory.translate(-lowleft[0], -lowleft[1]));
 
             // increment file number
             nf++;
 
         }
 
-        PS.addElement(PostscriptFactory.showpage());
-        PS.addElement(PostscriptFactory.EndDocument());
-        PS.addElement(PostscriptFactory.EOF());
+        postscript.add(PostscriptFactory.showpage());
+        postscript.add(PostscriptFactory.endDocument());
+        postscript.add(PostscriptFactory.eof());
 
-        return PS;
+        return postscript;
 
     }
 
-    private static void appendEPS(Vector<String> PS, Vector<String> EPS) {
-        String line;
-        Enumeration<String> en = EPS.elements();
-        while (en.hasMoreElements()) {
-            line = (String) en.nextElement();
-            if (!line.startsWith("%") && !line.startsWith("showpage")) {
-                PS.addElement(line);
+    private static void appendEPS(List<String> postscript) {
+        for (String line : postscript) {
+            if (!line.startsWith("%") && !line.startsWith(SHOWPAGE)) {
+                postscript.add(line);
             }
         }
     }
@@ -508,40 +522,34 @@ public final class PostscriptFactory {
         return md;
     }
 
-    private static int[] getBoundingBox(Vector<String> eps) throws PSException {
-        String line, tok;
-        StringTokenizer st;
-        int b, i;
-        int bb[] = new int[4];
-        for (i = 0; i < 4; i++)
-            bb[i] = 0;
-
+    private static int[] getBoundingBox(List<String> eps) throws PSException {
         if (eps != null) {
-            Enumeration<String> e = eps.elements();
-            while (e.hasMoreElements()) {
-                line = (String) e.nextElement();
+            for (String line : eps) {
                 if (line.startsWith("%%BoundingBox:")) {
-                    st = new StringTokenizer(line);
-                    if (st.countTokens() == 5) {
-                        tok = st.nextToken();
-                        for (i = 0; i < 4; i++) {
-                            tok = st.nextToken();
-                            try {
-                                b = Integer.parseInt(tok);
-                            } catch (NumberFormatException nfe) {
-                                throw new PSException(
-                                        "Incorrect specification of bounding box");
-                            }
-                            bb[i] = b;
-                        }
-                    }
-                    break;
+                    return getBoundingBox(line);
                 }
             }
         }
-
+        return new int[] {0, 0, 0, 0};
+    }
+    
+    private static int[] getBoundingBox(String line) throws PSException {
+        int[] bb = new int[4];
+        StringTokenizer st = new StringTokenizer(line);
+        if (st.countTokens() == 5) {
+            st.nextToken();
+            for (int i = 0; i < 4; i++) {
+                String tok = st.nextToken();
+                try {
+                    int b = Integer.parseInt(tok);
+                    bb[i] = b;
+                } catch (NumberFormatException nfe) {
+                    throw new PSException(
+                            "Incorrect specification of bounding box");
+                }
+            }
+        }
         return bb;
-
     }
 
 }
