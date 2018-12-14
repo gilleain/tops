@@ -60,7 +60,7 @@ public class SecStrucElement {
     }
 
     public void addBridgePartner(int bp) {
-        this.bridgePartner.add(new Integer(bp));
+        this.bridgePartner.add(bp);
     }
 
     public void addBridgePartnerSide(String side) {
@@ -84,7 +84,7 @@ public class SecStrucElement {
     }
 
     public void addNeighbour(int nb) {
-        this.neighbour.add(new Integer(nb));
+        this.neighbour.add(nb);
     }
 
     public List<Integer> getNeighbour() {

@@ -18,7 +18,8 @@ import java.util.List;
 
 public class ProteinChoice extends Dialog implements ActionListener {
 
-    private static int WIDTH = 250, HEIGHT = 300;
+    private static final int WIDTH = 250;
+    private static final int HEIGHT = 300;
 
     private List<Protein> proteins = null;
 

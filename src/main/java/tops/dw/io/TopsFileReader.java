@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-import tops.dw.protein.CATHcode;
+import tops.dw.protein.CathCode;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
@@ -333,7 +333,7 @@ public class TopsFileReader {
         st.nextToken();
         
         int[] tmp_int = new int[3];
-        CATHcode ccode = new CATHcode(st.nextToken());
+        CathCode ccode = new CathCode(st.nextToken());
         
         // XXX? CHAIN or SEGMENT?
         DomainDefinition ddef = 

@@ -15,8 +15,8 @@ public class Protein {
     private List<DomainDefinition> domainDefs;
 
     public Protein() {
-        this.domainDefs = new ArrayList<DomainDefinition>();
-        this.topsLinkedLists = new ArrayList<Cartoon>();
+        this.domainDefs = new ArrayList<>();
+        this.topsLinkedLists = new ArrayList<>();
         this.name = "Unknown";
     }
     
@@ -33,10 +33,10 @@ public class Protein {
         this.domainDefs.add(d);
     }
 
-    public int getDomainIndex(CATHcode cc) {
+    public int getDomainIndex(CathCode cc) {
 
         int index = -1;
-        CATHcode compareCathCode;
+        CathCode compareCathCode;
 
         for (DomainDefinition domainDef : domainDefs) {
             compareCathCode = domainDef.getCATHcode();
@@ -50,7 +50,7 @@ public class Protein {
     
     public Cartoon getRootSSE(String domainName) {
     	for (int i = 0; i < this.domainDefs.size(); i++) {
-    		CATHcode code = this.domainDefs.get(i).getCATHcode();
+    		CathCode code = this.domainDefs.get(i).getCATHcode();
     		if (code.toString().equals(domainName)) {
     			return this.topsLinkedLists.get(i);
     		}

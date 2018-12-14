@@ -11,7 +11,7 @@ import java.awt.Color;
 
 import org.junit.Test;
 
-import tops.dw.protein.CATHcode;
+import tops.dw.protein.CathCode;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
@@ -29,7 +29,7 @@ public class TestTopsFileWriter {
         
         Protein protein = new Protein();
         protein.setName("2BOP");
-        CATHcode c = new CATHcode("2bopA0");
+        CathCode c = new CathCode("2bopA0");
         DomainDefinition dd = new DomainDefinition(c, DomainType.CHAIN_SET);
         dd.addSegment(c.getChain(), 10, 100);
         SecStrucElement root = make("A", Color.BLACK, UP, "N1", 10, 11, 1, NTERMINUS);
@@ -48,7 +48,7 @@ public class TestTopsFileWriter {
         
         Protein protein = new Protein();
         protein.setName("2BOP");
-        CATHcode c = new CATHcode("2bopA0");
+        CathCode c = new CathCode("2bopA0");
         DomainDefinition dd = new DomainDefinition(c, DomainType.CHAIN_SET);
         dd.addSegment(c.getChain(), 10, 100);
         SecStrucElement root = make("A", Color.BLACK, UP, "N1", 10, 11, 1, NTERMINUS);
@@ -59,7 +59,7 @@ public class TestTopsFileWriter {
         
         protein.addTopsLinkedList(new Cartoon(root, e1, h2, e3, c4), dd);
         
-        CATHcode c2 = new CATHcode("2bopB0");
+        CathCode c2 = new CathCode("2bopB0");
         DomainDefinition dd2 = new DomainDefinition(c2, DomainType.CHAIN_SET);
         dd2.addSegment(c2.getChain(), 110, 200);
         SecStrucElement root2 = make("B", Color.BLACK, UP, "N5", 10, 11, 1, NTERMINUS);

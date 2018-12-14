@@ -24,14 +24,14 @@ public class Cartoon {
     private List<Annotation> annotations;  
     
     public Cartoon(SecStrucElement... elements) {
-        this.sses = new ArrayList<SecStrucElement>();
+        this.sses = new ArrayList<>();
         for (SecStrucElement element : elements) {
             sses.add(element);
         }
         
-        this.fixed = new ArrayList<SecStrucElement>();
+        this.fixed = new ArrayList<>();
         
-        this.annotations = new ArrayList<Annotation>();
+        this.annotations = new ArrayList<>();
     }
     
     public Cartoon() {
@@ -87,24 +87,23 @@ public class Cartoon {
             if (selectedSymbol.getType() == CTERMINUS) {
                 sses.add(sses.indexOf(selectedSymbol), newSSE);
             } else {
-                sses.add(sses.indexOf(selectedSymbol), newSSE);
+                sses.add( newSSE);
             }
         }
         
         return newSSE;
     }
     
-    public void delete(SecStrucElement SelectedSymbol) {
+    public void delete(SecStrucElement selectedSymbol) {
         // can't delete terminii!
-        if (SelectedSymbol.getType() == NTERMINUS || SelectedSymbol.getType() == CTERMINUS) {
+        if (selectedSymbol.getType() == NTERMINUS || selectedSymbol.getType() == CTERMINUS) {
             System.err.println("can't delete terminii!");
             return;
         }
 
         // delete terminii if we delete the final symbol
         if (sses.size() == 3) { // selected symbol plus two terminii
-            sses.remove(SelectedSymbol);
-            return;
+            sses.remove(selectedSymbol);
         }
     }
 
@@ -123,7 +122,7 @@ public class Cartoon {
     }
     
     public List<SecStrucElement> selectContained(Rectangle r) {
-        List<SecStrucElement> list = new ArrayList<SecStrucElement>();
+        List<SecStrucElement> list = new ArrayList<>();
         for (SecStrucElement s : sses) {
             Point pos = s.getPosition();
             if (r.contains(pos)) {
@@ -151,10 +150,10 @@ public class Cartoon {
     }
     
     public String convertStructureToString() {
-        StringBuffer topsString = new StringBuffer();
+        StringBuilder topsString = new StringBuilder();
         for (SecStrucElement s : sses) {
             char type = s.getType().getOneLetterName().charAt(0);
-            type = (s.getDirection().equals("D")) ? 
+            type = (s.getDirection() == Direction.DOWN) ? 
                     Character.toLowerCase(type) : type;
             topsString.append(type);
         }
@@ -229,7 +228,9 @@ public class Cartoon {
         int rmax = Integer.MIN_VALUE;
 
         Point pos;
-        int rad, x, y;
+        int rad;
+        int x;
+        int y;
         for (SecStrucElement s : sses) {
             pos = s.getPosition();
             x = pos.x;
@@ -286,7 +287,9 @@ public class Cartoon {
     /* private method to apply a scaling value to the diagram */
     public void applyScale(float scale) {
         Point p;
-        int x, y, r;
+        int x;
+        int y;
+        int r;
         
         for (SecStrucElement s : sses) {
 

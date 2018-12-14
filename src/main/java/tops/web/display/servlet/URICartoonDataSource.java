@@ -13,7 +13,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
 import tops.dw.io.TopsFileReader;
-import tops.dw.protein.CATHcode;
+import tops.dw.protein.CathCode;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
@@ -84,7 +84,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 //		System.out.println("Got protein " + p.getName());
 
 		List<Cartoon> doms = p.getLinkedLists();
-		int domainIndex = p.getDomainIndex(new CATHcode(domid));
+		int domainIndex = p.getDomainIndex(new CathCode(domid));
 		if (domainIndex == -1) {
 			return p;
 		}

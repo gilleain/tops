@@ -15,8 +15,8 @@ public class CorrespondenceList {
 	private List<int[]> correspondences;
 	
 	public CorrespondenceList() {
-		this.names = new ArrayList<String>();
-		this.correspondences = new ArrayList<int[]>();
+		this.names = new ArrayList<>();
+		this.correspondences = new ArrayList<>();
 	}
 	
 	/**

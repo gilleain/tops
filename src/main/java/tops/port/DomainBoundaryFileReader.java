@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import tops.dw.protein.CATHcode;
+import tops.dw.protein.CathCode;
 import tops.port.model.DomainDefinition;
 import tops.port.model.Protein;
 
@@ -81,7 +81,7 @@ public class DomainBoundaryFileReader {
     }
     
     private DomainDefinition parseDomainDefinition(String code, StringTokenizer tokenizer) {
-        DomainDefinition domain = new DomainDefinition(new CATHcode(code), SEGMENT_SET);
+        DomainDefinition domain = new DomainDefinition(new CathCode(code), SEGMENT_SET);
 
         String currentToken = tokenizer.nextToken();
         int nsegs = Integer.parseInt(currentToken);
