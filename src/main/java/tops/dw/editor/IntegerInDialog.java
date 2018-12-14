@@ -5,36 +5,37 @@ import java.awt.event.*;
 
 public class IntegerInDialog extends Dialog implements ActionListener {
 
-    private static int WIDTH = 350, HEIGHT = 150;
+    private static final int WIDTH = 350;
+    private static final int HEIGHT = 150;
 
     private TextField tf = null;
 
-    private int RetVal = 0;
+    private int retVal = 0;
 
-    private Button CancelButton = null;
+    private Button cancelButton = null;
 
-    public IntegerInDialog(Frame f, String Title, String Message, int Default) {
+    public IntegerInDialog(Frame f, String title, String message, int defaultValue) {
 
-        super(f, Title, true);
+        super(f, title, true);
 
         this.setFont(new Font("TimesRoman", Font.PLAIN, 12));
         this.setLayout(new BorderLayout());
 
-        this.add("North", new Label(Message));
+        this.add("North", new Label(message));
 
-        this.RetVal = Default;
+        this.retVal = defaultValue;
 
         this.tf = new TextField(10);
         this.tf.addActionListener(this);
         this.tf.setEditable(true);
-        this.tf.setText((new Integer(Default)).toString());
+        this.tf.setText(String.valueOf(defaultValue));
         Panel p = new Panel();
         p.add(this.tf);
         this.add("Center", p);
 
-        this.CancelButton = new Button("Cancel");
-        this.CancelButton.addActionListener(this);
-        this.add("South", this.CancelButton);
+        this.cancelButton = new Button("Cancel");
+        this.cancelButton.addActionListener(this);
+        this.add("South", this.cancelButton);
 
         this.setSize(IntegerInDialog.WIDTH, IntegerInDialog.HEIGHT);
 
@@ -55,7 +56,7 @@ public class IntegerInDialog extends Dialog implements ActionListener {
             boolean failed = false;
             if (ans != null) {
                 try {
-                    ians = Integer.valueOf(ans).intValue();
+                    ians = Integer.parseInt(ans);
                 } catch (NumberFormatException nfe) {
                     failed = true;
                 }
@@ -63,19 +64,20 @@ public class IntegerInDialog extends Dialog implements ActionListener {
                     try {
                         ians = Float.valueOf(ans).intValue();
                     } catch (NumberFormatException nfe) {
+                        // still failed
                     }
                 }
             }
-            this.RetVal = ians;
+            this.retVal = ians;
             this.dispose();
-        } else if (e.getSource() == this.CancelButton) {
+        } else if (e.getSource() == this.cancelButton) {
             this.dispose();
         }
 
     }
 
     public int getInput() {
-        return this.RetVal;
+        return this.retVal;
     }
 
 }

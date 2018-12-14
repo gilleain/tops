@@ -32,17 +32,11 @@ public class TopsDisplayPanel extends Panel {
 
     private int nColumns;
 
-//    private float LastScale = 1.0f;
-
     /**
      * the basic constructor
      */
     public TopsDisplayPanel() {
-
         super();
-
-//        LastScale = 1.0f;
-
         this.setBackground(Color.white);
         this.drawCanvases = new Vector<>();
         this.dcPanels = new Vector<>();
@@ -88,13 +82,13 @@ public class TopsDisplayPanel extends Panel {
 
     public Dimension getRequiredSize() {
 
-        int UnitWidth = this.canvasDimension.width;
-        int UnitHeight = this.canvasDimension.height;
+        int unitWidth = this.canvasDimension.width;
+        int unitHeight = this.canvasDimension.height;
 
         int n = this.dcPanels.size();
 
-        int width = this.nColumns * UnitWidth;
-        int height = (1 + (n - 1) / this.nColumns) * UnitHeight;
+        int width = this.nColumns * unitWidth;
+        int height = (1 + (n - 1) / this.nColumns) * unitHeight;
 
         return new Dimension(width, height);
 
@@ -117,8 +111,8 @@ public class TopsDisplayPanel extends Panel {
     public void clear() {
 
         this.removeAll();
-        this.drawCanvases = new Vector<TopsDrawCanvas>();
-        this.dcPanels = new Vector<Panel>();
+        this.drawCanvases = new Vector<>();
+        this.dcPanels = new Vector<>();
 
         Dimension ps = this.getPreferredSize();
         this.setSize(ps.width, ps.height);
@@ -131,11 +125,11 @@ public class TopsDisplayPanel extends Panel {
      * this method adds a diagram to the display
      * 
      * @param s - the root secondary structure for the diagram
-     * @param Label - the label for the diagram
+     * @param label - the label for the diagram
      */
-    private void addDiagram(Cartoon cartoon, DomainDefinition Label) {
+    private void addDiagram(Cartoon cartoon, DomainDefinition label) {
         if (cartoon != null) {
-        	String lab = (Label == null)? "Tops Diagram" : Label.toString();
+        	String lab = (label == null)? "Tops Diagram" : label.toString();
         	TopsDrawCanvas tdc = new TopsDrawCanvas(cartoon, lab);
             this.drawCanvases.add(tdc);
             tdc.setSize(this.canvasDimension);
@@ -172,12 +166,12 @@ public class TopsDisplayPanel extends Panel {
     /**
      * method adds to the diagrams being managed
      * 
-     * @param Diagrams -
+     * @param diagrams -
      *            the new set of diagrams (all Cartoons)
-     * @param Labels -
+     * @param labels -
      *            the new set of labels
      */
-    public void addDiagrams(List<Cartoon> Diagrams, List<DomainDefinition> Labels) {
+    public void addDiagrams(List<Cartoon> diagrams, List<DomainDefinition> labels) {
 
         int i;
 
@@ -189,21 +183,22 @@ public class TopsDisplayPanel extends Panel {
             this.getDrawCanvas(i).setCCodeCoordinates();
         }
 
-        for (i = 0; i < Diagrams.size(); i++) {
-            Cartoon el = Diagrams.get(i);
+        for (i = 0; i < diagrams.size(); i++) {
+            Cartoon el = diagrams.get(i);
             DomainDefinition lab = null;
-            if (i < Labels.size())
-            	lab = Labels.get(i);
+            if (i < labels.size())
+            	lab = labels.get(i);
             this.addDiagram(el, lab);
         }
 
-        float MinScale = 1.0F, scale;
+        float minScale = 1.0F;
+        float scale;
         for (i = 0; i < this.numberDrawCanvases(); i++) {
-            if ((scale = this.getDrawCanvas(i).getMaxScale()) < MinScale)
-                MinScale = scale;
+            if ((scale = this.getDrawCanvas(i).getMaxScale()) < minScale)
+                minScale = scale;
         }
         for (i = 0; i < this.numberDrawCanvases(); i++) {
-            this.getDrawCanvas(i).setCanvasCoordinates(MinScale);
+            this.getDrawCanvas(i).setCanvasCoordinates(minScale);
         }
 
         Dimension d = this.getRequiredSize();
@@ -230,7 +225,7 @@ public class TopsDisplayPanel extends Panel {
      *            DOES NOT WORK YET SO COMMENTED OUT
      */
     public void scaleDisplay(int scale) {
-
+        // commented out?
     }
 
 
@@ -239,13 +234,13 @@ public class TopsDisplayPanel extends Panel {
      * 
      * @param index -
      *            the diagram index
-     * @param EditMode -
+     * @param editMode -
      *            the required edit mode
      */
-    public void setEditMode(int index, int EditMode) {
+    public void setEditMode(int index, int editMode) {
         TopsDrawCanvas dc = this.getDrawCanvas(index);
         if (dc != null)
-            dc.setEditMode(EditMode);
+            dc.setEditMode(editMode);
     }
 
     /**
@@ -253,13 +248,13 @@ public class TopsDisplayPanel extends Panel {
      * 
      * @param s -
      *            the root SecStrucElement for the diagram
-     * @param EditMode -
+     * @param editMode -
      *            the required edit mode
      */
-    public void setEditMode(Cartoon s, int EditMode) {
+    public void setEditMode(Cartoon s, int editMode) {
         TopsDrawCanvas dc = this.getDrawCanvas(s);
         if (dc != null)
-            dc.setEditMode(EditMode);
+            dc.setEditMode(editMode);
     }
 
 
@@ -295,15 +290,10 @@ public class TopsDisplayPanel extends Panel {
      * @param index - the index of the required canvas
      */
     public Panel getDCPanel(int index) {
-
-        Panel p = null;
-
         if ((index >= 0) && (index < this.numberDrawCanvases())) {
-            p = (Panel) this.dcPanels.get(index);
+            return this.dcPanels.get(index);
         }
-
-        return (p);
-
+        return null;
     }
 
     /**

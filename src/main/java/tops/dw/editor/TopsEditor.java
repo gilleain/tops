@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -41,6 +40,8 @@ import tops.dw.protein.ProteinChoice;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.port.model.DomainDefinition;
+import tops.view.cartoon.PSException;
+import tops.view.cartoon.PostscriptFactory;
 import tops.web.display.applet.TopsDrawCanvas;
 
 /**
@@ -576,11 +577,13 @@ public class TopsEditor implements ActionListener {
 
         // form the postscript
         List<TopsDrawCanvas> dcs = this.topsDisplay.getDrawCanvases();
-        List<String> epSS = new ArrayList<>();
+        List<List<String>> epSS = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         for (TopsDrawCanvas tdc : dcs) {
         	try {
-        	    epSS.add(tdc.getEPS());
+        	    List<String> hackyFix = new ArrayList<>();
+        	    hackyFix.add(tdc.getEPS());
+        	    epSS.add(hackyFix);
         	} catch (IOException ioe) {
         	    // TODO
         	}
@@ -589,9 +592,9 @@ public class TopsEditor implements ActionListener {
 
         List<String> postScript;
         try {
-            postScript = PostscriptFactory.PSArrayA4(titles, epSS, 54, 0.5f);
-        } catch (PSException pse) {
-            this.error(pse.message);
+            postScript = PostscriptFactory.psArrayA4(titles, epSS, 54, 0.5f);
+        } catch (PSException e1) {
+            e1.printStackTrace();
             return;
         }
 
@@ -885,7 +888,9 @@ public class TopsEditor implements ActionListener {
         if (p != null) {
             this.addProtein(p);
         }
-        tmpf.delete();
+        if (!tmpf.delete()) {
+            log.warning("Error deleting tmpfile");
+        }
 
     }
 

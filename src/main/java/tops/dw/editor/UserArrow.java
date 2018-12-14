@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Vector;
 
+import tops.view.cartoon.PostscriptFactory;
+
 public class UserArrow
 {
   

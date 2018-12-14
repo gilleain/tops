@@ -15,7 +15,6 @@ public class Annotation {
 	}
 	
 	public void draw(Graphics g) {
-		//g.drawString("X", this.location.x, this.location.y);
 		g.fillRect(this.location.x, this.location.y, 10, 10);
 	}
 	

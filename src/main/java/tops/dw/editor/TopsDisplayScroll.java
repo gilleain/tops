@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.ScrollPane;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
@@ -22,8 +21,6 @@ import tops.web.display.applet.TopsDrawCanvas;
  */
 
 public class TopsDisplayScroll extends ScrollPane {
-
-    /* START class variables */
 
     static final int MIN_HEIGHT = 400;
 
@@ -43,10 +40,10 @@ public class TopsDisplayScroll extends ScrollPane {
 
         super(ScrollPane.SCROLLBARS_AS_NEEDED);
 
-        Adjustable Vadjust = this.getVAdjustable();
-        Adjustable Hadjust = this.getHAdjustable();
-        Vadjust.setUnitIncrement(10);
-        Hadjust.setUnitIncrement(10);
+        Adjustable vAdjust = this.getVAdjustable();
+        Adjustable hAdjust = this.getHAdjustable();
+        vAdjust.setUnitIncrement(10);
+        hAdjust.setUnitIncrement(10);
 
         this.displayPanel = new TopsDisplayPanel();
         this.add(this.displayPanel);
@@ -59,14 +56,14 @@ public class TopsDisplayScroll extends ScrollPane {
     /**
      * Construct for a set of Tops diagrams and labels
      * 
-     * @param Diagrams -
+     * @param diagrams -
      *            a vector of Tops diagrams
-     * @param Labels -
+     * @param labels -
      *            a vector of labels concurrent with the Tops diagrams
      */
-    public TopsDisplayScroll(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
+    public TopsDisplayScroll(List<Cartoon> diagrams, List<DomainDefinition> labels) {
         this();
-        this.setDiagrams(Diagrams, Labels);
+        this.setDiagrams(diagrams, labels);
         this.doLayout();
     }
 
@@ -115,14 +112,14 @@ public class TopsDisplayScroll extends ScrollPane {
     /**
      * method sets/re-sets the diagrams being managed
      * 
-     * @param Diagrams -
+     * @param diagrams -
      *            the new set of diagrams (all SecStrucElements)
      * @param Labels -
      *            the new set of labels
      */
-    public void setDiagrams(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
+    public void setDiagrams(List<Cartoon> diagrams, List<DomainDefinition> labels) {
         if (this.displayPanel != null)
-            this.displayPanel.setDiagrams(Diagrams, Labels);
+            this.displayPanel.setDiagrams(diagrams, labels);
         this.doLayout();
     }
 
@@ -141,14 +138,14 @@ public class TopsDisplayScroll extends ScrollPane {
     /**
      * method adds to the diagrams being managed
      * 
-     * @param Diagrams -
+     * @param diagrams -
      *            the new set of diagrams (all SecStrucElements)
      * @param Labels -
      *            the new set of labels
      */
-    public void addDiagrams(List<Cartoon> Diagrams, Vector<DomainDefinition> Labels) {
+    public void addDiagrams(List<Cartoon> diagrams, List<DomainDefinition> labels) {
         if (this.displayPanel != null)
-            this.displayPanel.addDiagrams(Diagrams, Labels);
+            this.displayPanel.addDiagrams(diagrams, labels);
         this.doLayout();
     }
 
@@ -181,12 +178,12 @@ public class TopsDisplayScroll extends ScrollPane {
      * 
      * @param index -
      *            the diagram index
-     * @param EditMode -
+     * @param editMode -
      *            the required edit mode
      */
-    public void setEditMode(int index, int EditMode) {
+    public void setEditMode(int index, int editMode) {
         if (this.displayPanel != null)
-            this.displayPanel.setEditMode(index, EditMode);
+            this.displayPanel.setEditMode(index, editMode);
     }
 
     /**
@@ -194,19 +191,19 @@ public class TopsDisplayScroll extends ScrollPane {
      * 
      * @param s -
      *            the root SecStrucElement for the diagram
-     * @param EditMode -
+     * @param editMode -
      *            the required edit mode
      */
-    public void setEditMode(Cartoon s, int EditMode) {
+    public void setEditMode(Cartoon s, int editMode) {
         if (this.displayPanel != null)
-            this.displayPanel.setEditMode(s, EditMode);
+            this.displayPanel.setEditMode(s, editMode);
     }
 
     /**
      * returns the number of TopsDrawCanvases being managed by the
      * TopsDisplayPanel
      */
-    public int NumberDrawCanvases() {
+    public int numberDrawCanvases() {
         int n = 0;
         if (this.displayPanel != null)
             n = this.displayPanel.numberDrawCanvases();

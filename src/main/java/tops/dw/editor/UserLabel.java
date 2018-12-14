@@ -1,8 +1,14 @@
 
 package tops.dw.editor;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.util.List;
+import java.util.Vector;
+
+import tops.view.cartoon.PostscriptFactory;
 
 /**
  * Class for labels added to the TopsDrawCanvas
@@ -82,10 +88,9 @@ public class UserLabel
 
   // a method to draw as postscript (added to the vector ps)
   // remember that postscript has a different coordinate system to the canvas 
-  public Vector<String> Draw( Vector<String> ps, int canv_height )
-    {
-      ps = PostscriptFactory.makeText("Times-Roman",12, this.getPosition().x, canv_height-this.getPosition().y, this.getText(), ps);
-      return ps;
+  public List<String> Draw( Vector<String> ps, int canv_height ) {
+      return PostscriptFactory.makeText(
+              "Times-Roman",12, this.getPosition().x, canv_height-this.getPosition().y, this.getText(), ps);
     }
 
   // approximate width for Postscript
