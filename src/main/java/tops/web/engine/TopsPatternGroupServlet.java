@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//import tops.engine.drg.Explorer;
-
 public class TopsPatternGroupServlet extends HttpServlet {
 
     /**
@@ -25,16 +23,15 @@ public class TopsPatternGroupServlet extends HttpServlet {
                 + pattern_id + ";";
         try {
             ResultSet rs = DataSourceWrapper.executeQuery(query);
-            // ArrayList in = new ArrayList();
-            String pattern = new String();
+            StringBuilder pattern = new StringBuilder();
             while (rs.next()) {
-                pattern += rs.getString("pattern_id") + " ";
-                pattern += rs.getString("pattern_vertices") + " ";
-                pattern += rs.getString("pattern_edges") + " ";
-                pattern += rs.getString("compression") + " ";
-                pattern += rs.getString("note");
+                pattern.append(rs.getString("pattern_id") + " ");
+                pattern.append(rs.getString("pattern_vertices") + " ");
+                pattern.append(rs.getString("pattern_edges") + " ");
+                pattern.append(rs.getString("compression") + " ");
+                pattern.append(rs.getString("note"));
             }
-            return pattern;
+            return pattern.toString();
 
         } catch (SQLException sqle) {
             this.getServletContext().log("getPattern! :", sqle);
@@ -52,15 +49,15 @@ public class TopsPatternGroupServlet extends HttpServlet {
         try {
             ResultSet rs = DataSourceWrapper.executeQuery(query + pattern_id
                     + ";");
-            ArrayList<String> in = new ArrayList<String>();
+            ArrayList<String> in = new ArrayList<>();
             while (rs.next()) {
-                String nextInstance = new String();
-                nextInstance += rs.getString("instance_id") + " ";
-                nextInstance += rs.getString("vertex_string") + " ";
-                nextInstance += rs.getString("edge_string");
-                in.add(nextInstance);
+                StringBuilder nextInstance = new StringBuilder();
+                nextInstance.append(rs.getString("instance_id") + " ");
+                nextInstance.append(rs.getString("vertex_string") + " ");
+                nextInstance.append(rs.getString("edge_string"));
+                in.add(nextInstance.toString());
             }
-            return (String[]) in.toArray(new String[0]);
+            return in.toArray(new String[0]);
 
         } catch (SQLException sqle) {
             this.getServletContext().log("getInstances! :", sqle);

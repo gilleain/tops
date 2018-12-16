@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -27,14 +29,14 @@ public class PipelineServlet extends HttpServlet {
 
 	private PDBToGraph pdbFileConverter;
 
-    private String path_to_scratch;
+    private String pathToScratch;
 
     @Override
     public void init() throws ServletException {
         String home = this.getInitParameter("home.dir");
-        this.path_to_scratch = home + "/scratch/";
+        this.pathToScratch = home + "/scratch/";
         this.log("home directory = " + home);
-        this.pdbFileConverter = new PDBFileConverter(this.path_to_scratch);
+        this.pdbFileConverter = new PDBFileConverter(this.pathToScratch);
     }
 
     @Override
@@ -46,22 +48,23 @@ public class PipelineServlet extends HttpServlet {
         if (filenameTypeMap.size() > 0) {
         	int i = 0;
             String[] results = new String[filenameTypeMap.size()];
-            for (String file_name : filenameTypeMap.keySet()) {
-                String file_type = filenameTypeMap.get(file_name);
-                String four_char_id = this.randomName();
-                this.log("submitted file : " + file_name + " type : " + file_type
-                        + " four_char_id : " + four_char_id);
+            for (Entry<String, String> entry : filenameTypeMap.entrySet()) {
+                String fileName = entry.getKey();
+                String fileType = entry.getValue();
+                String fourCharId = this.randomName();
+                this.log("submitted file : " + fileName + " type : " + fileType
+                        + " four_char_id : " + fourCharId);
                 String[] domains = null;
                 try {
-                    domains = this.pdbFileConverter.convertToGraphs(file_name, file_type, four_char_id);
+                    domains = this.pdbFileConverter.convertToGraphs(fileName, fileType, fourCharId);
                     for (int j = 0; j < domains.length; j++) {
-                        this.log("made domain string : " + domains[j] + " for job : " + four_char_id);
+                        this.log("made domain string : " + domains[j] + " for job : " + fourCharId);
                     }
                 } catch (IOException ioe) {
-                    this.log("tops file io exception! : " + four_char_id + ".tops " + ioe);
+                    this.log("tops file io exception! : " + fourCharId + ".tops " + ioe);
                 }
                 if (domains == null) {
-                    this.log("domains null, no results for four_char_id : " + four_char_id);
+                    this.log("domains null, no results for four_char_id : " + fourCharId);
                 } else {
                     results[i++] = domains[0];
                 }
@@ -100,7 +103,6 @@ public class PipelineServlet extends HttpServlet {
         } else {
             this.log("no filenames!");
             this.failure(response, "No filenames!");
-            return;
         }
 
     }
@@ -119,7 +121,7 @@ public class PipelineServlet extends HttpServlet {
     }
 
     private String randomName() {
-        StringBuffer name = new StringBuffer();
+        StringBuilder name = new StringBuilder();
         name.append(this.d10());
         name.append(this.d10());
         name.append(this.d10());
@@ -128,13 +130,13 @@ public class PipelineServlet extends HttpServlet {
     }
 
     private int d10() {
-        return (int) (Math.random() * 9) + 1;
+        return new Random().nextInt(10) + 1;
     }
 
     public Map<String, String> uploadPDBFiles(HttpServletRequest request) {
-        Map<String, String> filenames = new HashMap<String, String>();
+        Map<String, String> filenames = new HashMap<>();
 
-        File repository = new File(path_to_scratch);
+        File repository = new File(pathToScratch);
         
         // Create a factory for disk-based file items
         int sizeThreshold = 5 * 1024 * 1024;	// lower limit below which file is in-memory

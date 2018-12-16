@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,20 +38,19 @@ public class ClassificationServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -5144597700148212412L;
 
-	private static final String cartoonURL = "/tops/view";
+	private static final String CARTOON_URL = "/tops/view";
 
-    private static final String diagramURL = "/tops/diagram";
+    private static final String DIAGRAM_URL = "/tops/diagram";
 
-    private static final String classificationURL = "http://localhost:8080/tops/classification.html";
+    private static final String CLASSIFICATION_URL = "http://localhost:8080/tops/classification.html";
 
-    private static final String cathNameURL = "http://www.biochem.ucl.ac.uk/tops.dw.cgi-bin/cath/SearchPdb.pl?type=PDB&query=";
+    private static final String CATH_NAME_URL = "http://www.biochem.ucl.ac.uk/tops.dw.cgi-bin/cath/SearchPdb.pl?type=PDB&query=";
 
 //    private static final String scopNameURL = "http://www.biochem.ucl.ac.uk/tops.dw.cgi-bin/cath/SearchPdb.pl?type=PDB&query="; // FIXME
 
-    private static final String cartoonSize = "100x100";
+    private static final String CARTOON_SIZE = "100x100";
 
-    public HashMap<String, String> getInstances(String classificationSchemeName,
-            String classificationStub, int repLevel) {
+    public Map<String, String> getInstances(String classificationSchemeName, String classificationStub, int repLevel) {
 
         String query = "SELECT dom_id, vertex_string, edge_string, class FROM TOPS_instance_nr JOIN TOPS_nr ";
         query += "WHERE classification = \"" + classificationSchemeName
@@ -72,22 +72,20 @@ public class ClassificationServlet extends HttpServlet {
             classificationStub += ".%";
         }
 
-        try {
+        query  = query + " '" + classificationStub + ".%' ORDER BY class;";
+        try (
             Connection connection = DataSourceWrapper.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query + " '"
-                    + classificationStub + ".%' ORDER BY class;");
-            HashMap<String, String> in = new HashMap<String, String>();
+            ResultSet rs = statement.executeQuery(query)) {
+            Map<String, String> in = new HashMap<>();
             while (rs.next()) {
-                String nextInstance = new String();
+                String nextInstance = "";
                 nextInstance += rs.getString("dom_id") + " ";
                 nextInstance += rs.getString("vertex_string") + " ";
                 nextInstance += rs.getString("edge_string") + " ";
                 String classification = rs.getString("class");
                 in.put(classification, nextInstance);
             }
-            connection.close();
-            statement.close();
             return in;
         } catch (SQLException squeel) {
             this.log("getInstances! :", squeel);
@@ -112,11 +110,8 @@ public class ClassificationServlet extends HttpServlet {
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-//        String from = request.getContextPath();
-//        ServletContext context = getServletContext();
         String classificationStub = request.getParameter("code");
-        String classificationSchemeName = request
-                .getParameter("scheme");
+        String classificationSchemeName = request.getParameter("scheme");
 
         int levelIndex;
         int subLevelIndex;
@@ -162,8 +157,7 @@ public class ClassificationServlet extends HttpServlet {
 
         // get the TOPSStrings the database, along with their classifications as
         // the keys to a map
-        HashMap<String, String> instances = 
-        		this.getInstances(classificationSchemeName, classificationStub, subLevelIndex);
+        Map<String, String> instances = getInstances(classificationSchemeName, classificationStub, subLevelIndex);
         if (instances == null || instances.size() == 0) {
             this.warning("no reps for this level!", response);
             return;
@@ -175,14 +169,14 @@ public class ClassificationServlet extends HttpServlet {
         out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"tops.css\">");
         out.println("<title>" + levelName + " Group Pattern: "
                 + classificationStub + "</title></head><body>");
-        out.println("<a href=\"" + ClassificationServlet.classificationURL + "\">Another level?</a>");
+        out.println("<a href=\"" + ClassificationServlet.CLASSIFICATION_URL + "\">Another level?</a>");
 
         // calculate a common pattern
         Comparer ex = new Comparer();
         Pattern result = null;
         float compression = 1.0f;
         try {
-            List<String> instanceValues = new ArrayList<String>(instances.values());
+            List<String> instanceValues = new ArrayList<>(instances.values());
             result = ex.findPattern(instanceValues);
             result.rename(classificationStub);
             compression = 1 - Utilities.doCompression(instanceValues, result);
@@ -201,7 +195,7 @@ public class ClassificationServlet extends HttpServlet {
         out.println("<h1>Pattern for CATH " + levelName + " Group "
                 + classificationStub + " with " + instances.size() + " "
                 + subLevelName + " sublevels</h1>");
-        out.println("<img align=\"center\" src=\"" + ClassificationServlet.diagramURL
+        out.println("<img align=\"center\" src=\"" + ClassificationServlet.DIAGRAM_URL
                 + "/200/100/none/" + patternDiagramURL + ".gif\"/>");
         out.println("<p>Compression = " + compression + "</p>");
         out.println("<hr>");
@@ -214,8 +208,8 @@ public class ClassificationServlet extends HttpServlet {
 
         while (itr.hasNext()) {
             // lookup the string by its classification
-            String classification = (String) itr.next();
-            String diagram = (String) instances.get(classification);
+            String classification = itr.next();
+            String diagram = instances.get(classification);
 
             // split it into bits again...
             parser.load(diagram);
@@ -225,7 +219,7 @@ public class ClassificationServlet extends HttpServlet {
 
             // trim the classification to make a new stub
             String[] bits = classification.split("\\.");
-            StringBuffer stringBuffer = new StringBuffer();
+            StringBuilder stringBuffer = new StringBuilder();
             for (int i = 0; i < subLevelIndex; i++) {
                 stringBuffer.append(bits[i]).append(".");
             }
@@ -235,17 +229,17 @@ public class ClassificationServlet extends HttpServlet {
             // provide a link to the cath or scop page and to the level below
             // and an pair of images
             out.println("<tr>");
-            out.println("<td><a href=\"" + ClassificationServlet.cathNameURL + name + "\">" + name
+            out.println("<td><a href=\"" + ClassificationServlet.CATH_NAME_URL + name + "\">" + name
                     + "</a></td>");
             out.println("<td><a href=\"class?scheme="
                     + classificationSchemeName + "&code="
                     + newClassificationStub + "\">" + newClassificationStub
                     + "</a></td>");
-            out.println("<td><img align=\"center\" src=\"" + ClassificationServlet.diagramURL
+            out.println("<td><img align=\"center\" src=\"" + ClassificationServlet.DIAGRAM_URL
                     + "/200/100/none/" + patternDiagramURL + ".gif\"/></td>");
-            out.println("<td><img align=\"center\" src=\"" + ClassificationServlet.cartoonURL + "/"
+            out.println("<td><img align=\"center\" src=\"" + ClassificationServlet.CARTOON_URL + "/"
                     + classificationSchemeName.toLowerCase() + "/"
-                    + ClassificationServlet.cartoonSize + "/all/" + name + ".gif\"/></a></td>");
+                    + ClassificationServlet.CARTOON_SIZE + "/all/" + name + ".gif\"/></a></td>");
             out.println("</tr>");
         }
 

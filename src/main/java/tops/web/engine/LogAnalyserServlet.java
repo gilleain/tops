@@ -35,8 +35,7 @@ public class LogAnalyserServlet extends HttpServlet {
 
     private String suffix = "txt";
 
-    private DateFormat inputDateFormat = new SimpleDateFormat(
-            "dd/MMM/yyyy:HH:mm:ss +0000");
+    private DateFormat inputDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss +0000");
 
     private DateFormat outputTimeFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -72,12 +71,10 @@ public class LogAnalyserServlet extends HttpServlet {
     }
 
     public void analyzeFile(Calendar calendar, File logFile, PrintWriter out) {
-        StringBuffer table = new StringBuffer();
+        StringBuilder table = new StringBuilder();
         table.append("<table align=\"center\" border=\"1\">");
         table.append("<thead><th>TIME</th><th>IP</th></thead>");
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(
-                    logFile));
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(logFile))) {
             String line;
             String lastIP = null;
             String earliestTimeString = null;
@@ -97,8 +94,7 @@ public class LogAnalyserServlet extends HttpServlet {
                     }
 
                     if (!lastIP.equals(ip)) {
-                        this.addRecordToTable(earliestTimeString,
-                                lastTimeString, lastIP, table);
+                        this.addRecordToTable(earliestTimeString, lastTimeString, lastIP, table);
                         earliestTimeString = timeString;
                     }
 
@@ -106,9 +102,7 @@ public class LogAnalyserServlet extends HttpServlet {
                     lastTimeString = timeString;
                 }
             }
-            this.addRecordToTable(earliestTimeString, lastTimeString, lastIP,
-                    table);
-            bufferedReader.close();
+            this.addRecordToTable(earliestTimeString, lastTimeString, lastIP, table);
         } catch (IOException ioe) {
             out.write(ioe.toString());
             return;
@@ -118,7 +112,7 @@ public class LogAnalyserServlet extends HttpServlet {
     }
 
     public void addRecordToTable(String earliestTimeString,
-            String lastTimeString, String lastIP, StringBuffer table) {
+            String lastTimeString, String lastIP, StringBuilder table) {
         Date earliestTime = this.makeDate(earliestTimeString);
         Date latestTime = this.makeDate(lastTimeString);
         String timeSpan = this.outputTimeFormat.format(earliestTime) + " - "
@@ -153,5 +147,5 @@ public class LogAnalyserServlet extends HttpServlet {
         }
     }
 
-}// EOC
+}
 

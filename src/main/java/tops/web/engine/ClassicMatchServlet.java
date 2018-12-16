@@ -2,30 +2,29 @@ package tops.web.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.RequestDispatcher;
-
-import javax.servlet.http.HttpSession;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class ClassicMatchServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 7212090454159915390L;
 
-	private static final String servletName = "classicmatch"; // for the form action
+	private static final String SERVLET_NAME = "classicmatch"; // for the form action
 
-    private static final String imageDir = "/tops/images/"; // where the pattern images are
+    private static final String IMAGE_DIR = "/tops/images/"; // where the pattern images are
 
     @SuppressWarnings("unchecked")
 	@Override
@@ -35,22 +34,19 @@ public class ClassicMatchServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
-        HashMap<String, String> pattern_map = new HashMap<String, String>();
+        Map<String, String> patternMap;
 
         if (generateForm == null) {
-            pattern_map = this.generateForm(out); // do a query to get the data for the map
-            session.setAttribute("pattern_map", pattern_map); // store the
-                                                                // pattern data
-                                                                // in the
-                                                                // session
+            patternMap = this.generateForm(out); // do a query to get the data for the map
+            // store the pattern data in the session
+            session.setAttribute("pattern_map", patternMap); 
         } else {
-            pattern_map = (HashMap<String, String>) session.getAttribute("pattern_map"); // get
-                                                                            // the
-                                                                            // pattern
-                                                                            // definitions
-            String pattern_id = request.getParameter("pattern_id");
-            this.log("pattern id : " + pattern_id);
-            String pattern = (String) pattern_map.get(pattern_id);
+            // get the pattern definitions
+            patternMap = (HashMap<String, String>) session.getAttribute("pattern_map");
+            
+            String patternId = request.getParameter("pattern_id");
+            this.log("pattern id : " + patternId);
+            String pattern = patternMap.get(patternId);
 
             request.setAttribute("targetService", "match");
             request.setAttribute("topnum", "all");
@@ -58,8 +54,7 @@ public class ClassicMatchServlet extends HttpServlet {
             request.setAttribute("target", pattern); // how much does this
                                                         // not make sense!
             request.setAttribute("newSubmission", "true");
-            request.setAttribute("sub", request
-                    .getParameter("subclasses"));
+            request.setAttribute("sub", request.getParameter("subclasses"));
 
             String next = "/pattern/compare";
             RequestDispatcher dispatcher = request.getRequestDispatcher(next);
@@ -69,21 +64,21 @@ public class ClassicMatchServlet extends HttpServlet {
 
     // this method gets the data from the database, prints out some of it and
     // returns the rest.
-    public HashMap<String, String> generateForm(PrintWriter out) {
+    public Map<String, String> generateForm(PrintWriter out) {
         String query = "SELECT pattern_id, pattern_vertices, pattern_edges, note, picfile FROM TOPS_classic_pattern";
 
-        ArrayList<String> ids = new ArrayList<String>();
-        ArrayList<String> names = new ArrayList<String>();
-        ArrayList<String> pics = new ArrayList<String>();
-        HashMap<String, String> pattern_map = new HashMap<String, String>();
+        List<String> ids = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<String> pics = new ArrayList<>();
+        Map<String, String> patternMap = new HashMap<>();
 
-        try {
+        try (
             Connection connection = DataSourceWrapper.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery(query)) {
             while (rs.next()) {
-                String pattern_id = rs.getString("pattern_id");
-                ids.add(pattern_id);
+                String patternId = rs.getString("pattern_id");
+                ids.add(patternId);
                 String name = rs.getString("note");
                 names.add(name);
                 pics.add(rs.getString("picfile"));
@@ -92,11 +87,8 @@ public class ClassicMatchServlet extends HttpServlet {
                 pattern += rs.getString("pattern_vertices");
                 pattern += " ";
                 pattern += rs.getString("pattern_edges");
-                pattern_map.put(pattern_id, pattern);
+                patternMap.put(patternId, pattern);
             }
-            rs.close();
-            statement.close();
-            connection.close();
         } catch (SQLException squeel) {
             this.log("generateform! :", squeel);
         }
@@ -111,19 +103,19 @@ public class ClassicMatchServlet extends HttpServlet {
 
         // print out the pictures
 
-        int images_per_cell = 2;
+        int imagesPerCell = 2;
         for (int j = 0; j < pics.size(); j++) {
-            if (j % images_per_cell == 0)
+            if (j % imagesPerCell == 0)
                 out.println("<td>");
-            String filename = (String) pics.get(j);
+            String filename = pics.get(j);
             filename += "_thumb.png"; // start by printing the thumbnails
             String imgid = "img" + j;
-            out.println("<img id=\"" + imgid + "\" src=\"" + ClassicMatchServlet.imageDir+ filename + "\" ");
+            out.println("<img id=\"" + imgid + "\" src=\"" + ClassicMatchServlet.IMAGE_DIR+ filename + "\" ");
             out.println("onclick=\"selectName(" + j + ", this.id)\">");
-            if (j % images_per_cell == (images_per_cell - 1))
+            if (j % imagesPerCell == (imagesPerCell - 1))
                 out.println("</td>");
         }
-        out.println("<td><form id=\"theForm\" action=\"" + ClassicMatchServlet.servletName + "\" method=\"POST\">");
+        out.println("<td><form id=\"theForm\" action=\"" + ClassicMatchServlet.SERVLET_NAME + "\" method=\"POST\">");
 
         // print out the patterns
         int numberOfPatterns = names.size();
@@ -160,6 +152,6 @@ public class ClassicMatchServlet extends HttpServlet {
         out.println("</table>"); // finish outer table
         out.println("</body></html>");
 
-        return pattern_map;
+        return patternMap;
     }
 }

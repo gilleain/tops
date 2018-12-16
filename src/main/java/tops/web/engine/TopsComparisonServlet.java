@@ -117,7 +117,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                     + "\">Advanced Match again?</a><p>");
             out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
-            if (results.size() == 0) {
+            if (results.isEmpty()) {
             	// probably from pattern invention
                 out.println("Sorry, no matches for this pattern!"); 
                 return;
@@ -127,7 +127,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                     + "\">Insert Match again?</a><p>");
             out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
-            if (results.size() == 0) {
+            if (results.isEmpty()) {
             	// probably from pattern invention
                 out.println("Sorry, no matches for this pattern!"); 
                 return;

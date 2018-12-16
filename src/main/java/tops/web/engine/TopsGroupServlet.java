@@ -25,35 +25,30 @@ public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 6078417380709102405L;
-	private static final String diagramURL = "/tops/diagram";
+	private static final String DIAGRAM_URL = "/tops/diagram";
 
     public String[] getInstances(String names) {
 
         String query = "SELECT dom_id, vertex_string, edge_string FROM TOPS_instance_nr JOIN TOPS_nr WHERE gr = group_id AND dom_id in";
         String nameList = names.replaceAll(",", "','");
 
-        try {
+        try (
             Connection connection = DataSourceWrapper.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query + " ('" + nameList
-                    + "');");
-            ArrayList<String> in = new ArrayList<String>();
+            ResultSet rs = statement.executeQuery(query + " ('" + nameList  + "');")) {
+            List<String> in = new ArrayList<>();
             while (rs.next()) {
-                String nextInstance = new String();
+                String nextInstance = "";
                 nextInstance += rs.getString("dom_id") + " ";
                 nextInstance += rs.getString("vertex_string") + " ";
                 nextInstance += rs.getString("edge_string");
                 in.add(nextInstance);
             }
-            rs.close();
-            statement.close();
-            connection.close();
-            this.getServletContext().log(
-                    "Instances! :" + in.toString() + " " + nameList);
-            return (String[]) in.toArray(new String[0]);
+            this.getServletContext().log("Instances! :" + in.toString() + " " + nameList);
+            return in.toArray(new String[0]);
         } catch (SQLException squeel) {
             this.getServletContext().log("getInstances! :", squeel);
-            return null;
+            return new String[] {};
         }
     }
 
@@ -105,7 +100,7 @@ public class TopsGroupServlet extends javax.servlet.http.HttpServlet {
                 out.println("<tr><td>" + instances.get(i) + "</td><td>");
                 String patternDiagramURL = "/" + parser.getVertexString() + "/"
                         + parser.getEdgeString() + "/" + parser.getName();
-                out.println("<img src=\"" + TopsGroupServlet.diagramURL + "/200/100/none"
+                out.println("<img src=\"" + TopsGroupServlet.DIAGRAM_URL + "/200/100/none"
                         + patternDiagramURL + ".gif\"/></p>");
                 out.println("</td></tr>");
             }

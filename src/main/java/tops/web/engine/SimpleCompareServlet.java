@@ -59,4 +59,4 @@ public class SimpleCompareServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-}// EOC
+}

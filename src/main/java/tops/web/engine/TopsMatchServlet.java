@@ -27,7 +27,7 @@ public class TopsMatchServlet extends HttpServlet {
 		if (patternSourceType.equals("DB")) {
 			// TODO
 		} else if (patternSourceType.equals("MEMORY")){
-			Map<String, String[]> patterns = new HashMap<String, String[]>();
+			Map<String, String[]> patterns = new HashMap<>();
 			patterns.put("PATTERNS", new String[] {
 					"greek_key NEeEeEC 1:4A2:3A2:5A3:4A",
 			});
@@ -40,8 +40,7 @@ public class TopsMatchServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String requestPath = request.getContextPath();
-        String target = (String) request.getParameter("target");
-//        String target = (String) request.getAttribute("target");
+        String target = request.getParameter("target");
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -88,7 +87,7 @@ public class TopsMatchServlet extends HttpServlet {
 //        }
         // TODO : /move to db graph source
 
-        if (patterns.size() != 0) {
+        if (patterns.isEmpty()) {
             try {
                 Matcher m = new Matcher();
                 List<String> results = m.run(patterns, target);

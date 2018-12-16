@@ -6,108 +6,80 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.List;
-import java.util.Vector;
 
 import tops.view.cartoon.PostscriptFactory;
 
 /**
  * Class for labels added to the TopsDrawCanvas
+ * 
  * @author David Westhead
  * @version 1.00 25 Nov. 1997
  */
-public class UserLabel
-{
+public class UserLabel {
 
-  /* START class variables */
+    private static final Font USE_FONT = new Font("TimesRoman", Font.PLAIN, 12);
 
-  static Font UseFont = new Font( "TimesRoman", Font.PLAIN, 12 );
+    private Color colour = Color.black;
+    private StringBuilder text = new StringBuilder();
+    private Point position = new Point(0, 0);
 
-  /* END class variables */
-
-
-  /* START instance variables */
-
-  private Color colour = Color.black;
-  private StringBuffer Text = new StringBuffer();
-  private Point Position = new Point(0,0);
-
-  /* END instance variables */
- 
-  /* START Constructors */
-
-  public UserLabel()
-    {
-      super();
+    public UserLabel() {
+        super();
     }
 
-
-  /* END Constructors */
-
-
-  /* START instance methods */
-
-  public void setPosition( int x, int y )
-    {
-      this.Position.x = x;
-      this.Position.y = y;
+    public void setPosition(int x, int y) {
+        this.position.x = x;
+        this.position.y = y;
     }
 
-  public void append( String text )
-    {
-      this.Text.append(text);
+    public void append(String text) {
+        this.text.append(text);
     }
 
-  public void append( char c )
-    {
-      this.Text.append(c);
+    public void append(char c) {
+        this.text.append(c);
     }
 
-  public String getText()
-    {
-      if ( this.Text == null ) return null;
-      else return this.Text.toString();
+    public String getText() {
+        if (this.text == null)
+            return null;
+        else
+            return this.text.toString();
     }
 
-  public Point getPosition()
-    {
-      return this.Position;
+    public Point getPosition() {
+        return this.position;
     }
 
-  public void Draw( Graphics g )
-    {
-      Font old_font = g.getFont();
-      g.setFont(UserLabel.UseFont);
-      Color old_colour = g.getColor();
-      g.setColor(this.colour);
+    public void draw(Graphics g) {
+        Font oldFont = g.getFont();
+        g.setFont(UserLabel.USE_FONT);
+        Color oldColour = g.getColor();
+        g.setColor(this.colour);
 
-      g.drawString( this.getText(), this.Position.x, this.Position.y );
+        g.drawString(this.getText(), this.position.x, this.position.y);
 
-      g.setFont(old_font);
-      g.setColor(old_colour);
+        g.setFont(oldFont);
+        g.setColor(oldColour);
     }
 
-  // a method to draw as postscript (added to the vector ps)
-  // remember that postscript has a different coordinate system to the canvas 
-  public List<String> Draw( Vector<String> ps, int canv_height ) {
-      return PostscriptFactory.makeText(
-              "Times-Roman",12, this.getPosition().x, canv_height-this.getPosition().y, this.getText(), ps);
+    // a method to draw as postscript (added to the vector ps)
+    // remember that postscript has a different coordinate system to the canvas
+    public List<String> draw(List<String> ps, int canvHeight) {
+        return PostscriptFactory.makeText("Times-Roman", 12, this.getPosition().x, canvHeight - this.getPosition().y,
+                this.getText(), ps);
     }
 
-  // approximate width for Postscript
-  public int getPSWidth()
-    {
-      int n = this.getText().length();
-      float len = (UserLabel.UseFont.getSize()*n);
-      len = len*0.4f;
-      return Math.round(len);
+    // approximate width for Postscript
+    public int getPSWidth() {
+        int n = this.getText().length();
+        float len = (UserLabel.USE_FONT.getSize() * n);
+        len = len * 0.4f;
+        return Math.round(len);
     }
 
-  // approximate height for Postscript
-  public int getPSHeight()
-    {
-      return UserLabel.UseFont.getSize();
+    // approximate height for Postscript
+    public int getPSHeight() {
+        return UserLabel.USE_FONT.getSize();
     }
-
-  /* END instance methods */  
-
 }
