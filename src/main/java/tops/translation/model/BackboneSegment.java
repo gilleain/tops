@@ -19,7 +19,7 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
     protected String orientation;
 
     public BackboneSegment() {
-        this.residues = new TreeSet<Residue>();
+        this.residues = new TreeSet<>();
         this.axis = null;
         this.orientation = "None";
     }
@@ -39,6 +39,18 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
         } catch (NoSuchElementException n) {
             return 0;
         }
+    }
+    
+    public boolean equals(Object o) {
+        if (o instanceof BackboneSegment) {
+            BackboneSegment other = (BackboneSegment) o;
+            return firstResidue().equals(other.firstResidue());
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return residues.hashCode();
     }
 
     public void setNumber(int number) {
@@ -69,11 +81,11 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
         }
     }
 
-    public Residue firstResidue() throws NoSuchElementException {
+    public Residue firstResidue() {
         return this.residues.first();
     }
 
-    public Residue lastResidue() throws NoSuchElementException {
+    public Residue lastResidue() {
         return this.residues.last();
     }
 
@@ -101,11 +113,7 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
 
     public boolean continuousWith(BackboneSegment other) {
         if (this.getClass() == other.getClass()) {
-            if (this.getAxis().approximatelyLinearTo(other.getAxis())) {
-                return true;
-            } else {
-                return false;
-            }
+            return this.getAxis().approximatelyLinearTo(other.getAxis());
         } else {
             return false;
         }
@@ -128,7 +136,7 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
     }
 
     public List<Point3d> getCAlphaCoordinates() {
-        List<Point3d> cAlphas = new ArrayList<Point3d>();
+        List<Point3d> cAlphas = new ArrayList<>();
         Iterator<Residue> itr = this.residues.iterator();
         while (itr.hasNext()) {
             Residue nextResidue = itr.next();
@@ -206,7 +214,6 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
     }
 
     public void calculateAxis() {
-        // this.axis = Geometer.leastSquareAxis(this.getCAlphaCoordinates());
         // if this segment is only one or no residues, make a zero axis
         if (this.residues.size() < 2) {
             this.axis = new Axis();
@@ -224,14 +231,11 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
             // do nothing?
             System.out.println("NoSuchElementException for " + this);
         }
-        // System.out.println("setting axis of " + this + " to : " + this.axis);
     }
 
     // the axis we pass into the function is considered to be "UP"
     public void determineOrientation(Axis axis) {
         double angle = this.getAxis().angle(axis);
-        // System.out.println("Angle of " + this + " with axis " + axis + " is "
-        // + angle);
         if (angle > 90) {
             this.orientation = "DOWN";
         } else {
@@ -249,8 +253,6 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
 
     public char getRelativeOrientation(Axis other) {
         double angle = this.getAxis().angle(other);
-        // System.out.println("angle between " + this + " and " + other + " = "
-        // + angle);
         if (angle > 90) {
             return 'A';
         } else {

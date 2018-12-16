@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.vecmath.Point3d;
@@ -13,10 +15,12 @@ import javax.vecmath.Vector3d;
 import tops.translation.Geometer;
 
 public class Sheet implements Iterable<BackboneSegment> {
+    
+    private Logger log = Logger.getLogger(Sheet.class.getName());
 
     private int number;
 
-    // The strand map has as the keys all the strands in the map;
+    // The strand map has as the keys all the strands in the map - 
     // the values are the other strands in the sheet that the key is attached to.
     // In theory, a nice pure sheet would only have one value per key. In theory...
     private TreeMap<BackboneSegment, List<BackboneSegment>> strandMap;
@@ -25,7 +29,7 @@ public class Sheet implements Iterable<BackboneSegment> {
 
     public Sheet(int number) {
         this.number = number;
-        this.strandMap = new TreeMap<BackboneSegment, List<BackboneSegment>>();
+        this.strandMap = new TreeMap<>();
         this.axis = null;
     }
 
@@ -47,7 +51,7 @@ public class Sheet implements Iterable<BackboneSegment> {
         if (this.strandMap.containsKey(keyStrand)) {
             values = this.strandMap.get(keyStrand);
         } else {
-            values = new ArrayList<BackboneSegment>();
+            values = new ArrayList<>();
             this.strandMap.put(keyStrand, values);
         }
         values.add(partner);
@@ -78,7 +82,7 @@ public class Sheet implements Iterable<BackboneSegment> {
     }
 
     public Point3d calculateCentroid() {
-        List<Point3d> centers = new ArrayList<Point3d>();
+        List<Point3d> centers = new ArrayList<>();
         for (BackboneSegment strand : this.strandMap.keySet()) {
             centers.add(strand.getAxis().getCentroid());
         }
@@ -87,9 +91,9 @@ public class Sheet implements Iterable<BackboneSegment> {
 
     public int size() {
         int size = 0;
-        for (BackboneSegment strand : this.strandMap.keySet()) {
+        for (Entry<BackboneSegment, List<BackboneSegment>> entry : this.strandMap.entrySet()) {
             size++;
-            size += this.strandMap.get(strand).size();
+            size += entry.getValue().size();
         }
         return size;
     }
@@ -97,7 +101,7 @@ public class Sheet implements Iterable<BackboneSegment> {
     public void extend(Sheet other) {
         Iterator<BackboneSegment> keyIterator = other.iterator();
         while (keyIterator.hasNext()) {
-            BackboneSegment key = (BackboneSegment) keyIterator.next();
+            BackboneSegment key = keyIterator.next();
             List<BackboneSegment> otherValues = other.getPartners(key);
 
             if (this.strandMap.containsKey(key)) {
@@ -114,13 +118,13 @@ public class Sheet implements Iterable<BackboneSegment> {
     }
 
     public Iterator<BackboneSegment> chainOrderIterator() {
-        List<BackboneSegment> chainOrder = new ArrayList<BackboneSegment>();
+        List<BackboneSegment> chainOrder = new ArrayList<>();
         chainOrder.addAll(this.strandMap.keySet());
         Iterator<BackboneSegment> iterator = this.iterator();
         while (iterator.hasNext()) {
             List<BackboneSegment> partners = this.strandMap.get(iterator.next());
             for (int i = 0; i < partners.size(); i++) {
-                BackboneSegment partner = (BackboneSegment) partners.get(i);
+                BackboneSegment partner = partners.get(i);
                 if (!chainOrder.contains(partner)) {
                     chainOrder.add(partner);
                 }
@@ -145,10 +149,10 @@ public class Sheet implements Iterable<BackboneSegment> {
     }
     
     public List<List<BackboneSegment>> getSheetPaths() {
-        List<List<BackboneSegment>> paths = new ArrayList<List<BackboneSegment>>();
+        List<List<BackboneSegment>> paths = new ArrayList<>();
         Iterator<BackboneSegment> iterator = this.iterator();
         while (iterator.hasNext()) {
-            BackboneSegment key = (BackboneSegment) iterator.next();
+            BackboneSegment key = iterator.next();
             paths.add(this.traverseSheetPath(key, new ArrayList<BackboneSegment>()));
         }
         return paths;
@@ -250,7 +254,7 @@ public class Sheet implements Iterable<BackboneSegment> {
                 } else {
                     sheetVector.sub(partner.getAxis().getAxisVector());
                 }
-                Logger.getLogger("translation.FoldAnalyser").info("orientation " + strand + " -> " + partner);
+                log.log(Level.INFO, "orientation {0} -> {1}", new Object[] {strand, partner});
             }
         }
 
@@ -265,13 +269,13 @@ public class Sheet implements Iterable<BackboneSegment> {
             if (strandOrientation.equals("None")) {
                 String partnerOrientation = partner.getOrientation();
                 if (partnerOrientation.equals("None")) {
-                    Logger.getLogger("translation.FoldAnalyser").info("No orientation known for " + strand + " and " + partner);
+                    log.log(Level.INFO, "No orientation known for {0} and {1}", new Object[] {strand, partner});
                 } else {
-                    Logger.getLogger("translation.FoldAnalyser").info("Assigning orientation : " + partnerOrientation + " to " + strand);
+                    log.log(Level.INFO, "Assigning orientation : {0} to {1}", new Object[] {partnerOrientation, strand});
                     strand.setOrientation(partnerOrientation);
                 }
             } else {
-                Logger.getLogger("translation.FoldAnalyser").info("Assigning orientation : " + strandOrientation + " to " + partner);
+                log.log(Level.INFO, "Assigning orientation : {0} to {1}", new Object[] { strandOrientation, partner});
                 partner.setOrientation(strandOrientation);
             }
         } else {
@@ -279,23 +283,23 @@ public class Sheet implements Iterable<BackboneSegment> {
             if (strandOrientation.equals("None")) {
                 String partnerOrientation = partner.getOrientation();
                 if (partnerOrientation.equals("None")) {
-                    Logger.getLogger("translation.FoldAnalyser").info("No orientation known for " + strand + " and " + partner);
+                    log.log(Level.INFO, "No orientation known for {0}, and {1}", new Object[] {strand, partner});
                 } else {
-                    Logger.getLogger("translation.FoldAnalyser").info("Assigning orientation : " + partnerOrientation + " to " + strand);
+                    log.log(Level.INFO, "Assigning orientation : {0} to {1}", new Object[] {partnerOrientation, strand});
                     strand.setOrientation(partnerOrientation);
                 }
             } else if (strandOrientation.equals("UP")) {
-                Logger.getLogger("translation.FoldAnalyser").info("Assigning orientation : UP to " + partner);
+                log.log(Level.INFO, "Assigning orientation : DOWN to {0}", partner);
                 partner.setOrientation("DOWN");
             } else if (strandOrientation.equals("DOWN")) {
-                Logger.getLogger("translation.FoldAnalyser").info("Assigning orientation : DOWN to " + partner);
+                log.log(Level.INFO, "Assigning orientation : UP to {0}", partner);
                 partner.setOrientation("UP");
             }
         }
     }
 
     public List<Edge> toTopsEdges(Domain domain) {
-        List<Edge> edges = new ArrayList<Edge>();
+        List<Edge> edges = new ArrayList<>();
 
         for (BackboneSegment strand : this.strandMap.keySet()) {
             if (!domain.contains(strand)) {
@@ -304,7 +308,7 @@ public class Sheet implements Iterable<BackboneSegment> {
 
             Iterator<BackboneSegment> partnerIterator = this.getPartnerIterator(strand);
             while (partnerIterator.hasNext()) {
-                BackboneSegment partner = (BackboneSegment) partnerIterator.next();
+                BackboneSegment partner = partnerIterator.next();
                 if (!domain.contains(partner)) {
                     continue;
                 }
@@ -316,7 +320,6 @@ public class Sheet implements Iterable<BackboneSegment> {
                 } else {
                     edge = new Edge(partner, strand, relativeOrientation);
                 }
-                //System.err.println("Made edge : " + edge);
 
                 // since the mapping is symmetric, we have to discard half the edges we make!
                 if (!edges.contains(edge)) {
@@ -330,18 +333,18 @@ public class Sheet implements Iterable<BackboneSegment> {
 
     @Override
     public String toString() {
-        StringBuffer returnValue = new StringBuffer();
+        StringBuilder returnValue = new StringBuilder();
         returnValue.append("Sheet (" + this.number + ") [");
 
         Iterator<BackboneSegment> iterator = this.strandMap.keySet().iterator();
 
         while (iterator.hasNext()) {
-            BackboneSegment strand = (BackboneSegment) iterator.next();
+            BackboneSegment strand = iterator.next();
             returnValue.append(strand);
 
             Iterator<BackboneSegment> partnerIterator = this.getPartnerIterator(strand);
             while (partnerIterator.hasNext()) {
-                BackboneSegment partner = (BackboneSegment) partnerIterator.next();
+                BackboneSegment partner = partnerIterator.next();
                 returnValue.append(" -> ").append(partner); 
             }
             returnValue.append("\n");

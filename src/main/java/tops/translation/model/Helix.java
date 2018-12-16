@@ -32,7 +32,7 @@ public class Helix extends RepetitiveStructure {
     public static boolean hbondsMatch(Residue r) {
         Iterator<HBond> iterator = r.getHBondIterator();
         while (iterator.hasNext()) {
-            HBond hbond = (HBond) iterator.next();
+            HBond hbond = iterator.next();
             if (hbond.hasHelixResidueSeparation()) {
                 return true;
             }

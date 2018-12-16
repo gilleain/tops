@@ -42,6 +42,54 @@ public class HBond implements Comparable<HBond> {
         }
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((acceptor == null) ? 0 : acceptor.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(distance);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((donor == null) ? 0 : donor.hashCode());
+        temp = Double.doubleToLongBits(energy);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(hocAngle);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(nhoAngle);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        HBond other = (HBond) obj;
+        if (acceptor == null) {
+            if (other.acceptor != null)
+                return false;
+        } else if (!acceptor.equals(other.acceptor))
+            return false;
+        if (Double.doubleToLongBits(distance) != Double.doubleToLongBits(other.distance))
+            return false;
+        if (donor == null) {
+            if (other.donor != null)
+                return false;
+        } else if (!donor.equals(other.donor))
+            return false;
+        if (Double.doubleToLongBits(energy) != Double.doubleToLongBits(other.energy))
+            return false;
+        if (Double.doubleToLongBits(hocAngle) != Double.doubleToLongBits(other.hocAngle))
+            return false;
+        if (Double.doubleToLongBits(nhoAngle) != Double.doubleToLongBits(other.nhoAngle))
+            return false;
+        return true;
+    }
+
     public Residue getPartner(Residue residue) {
         if (residue == this.donor) {
             return this.acceptor;

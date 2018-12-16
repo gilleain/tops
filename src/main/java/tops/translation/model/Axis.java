@@ -15,7 +15,7 @@ public class Axis {
 
     private Point3d end;
 
-    public static double ANGLE_DELTA = 5.0;
+    private static final double ANGLE_DELTA = 5.0;
 
     public Axis() {
         this.centroid = new Point3d();
@@ -70,30 +70,26 @@ public class Axis {
     }
 
     public boolean approximatelyLinearTo(Axis other) {
-        // return (this.angle(other) - Axis.ANGLE_DELTA) < 0;
-        double angleDiff = this.angle(other) - Axis.ANGLE_DELTA;
-        // System.err.println("angle diff = " + angleDiff);
-        return angleDiff < 0;
+         return (this.angle(other) - Axis.ANGLE_DELTA) < 0;
     }
 
     @Override
     public String toString() {
+        String formatString = "(%.2f, %.2f, %.2f)";
         if (this.start == null) {
             return "[], []";
         } else {
-            String startS = String.format("(%.2f, %.2f, %.2f)", this.start.x,
+            String startS = String.format(formatString, this.start.x,
                     this.start.y, this.start.z);
-            String endS = String.format("(%.2f, %.2f, %.2f)", this.end.x,
+            String endS = String.format(formatString, this.end.x,
                     this.end.y, this.end.z);
 
-            String centroidS = String.format("(%.2f, %.2f, %.2f)",
+            String centroidS = String.format(formatString,
                     this.centroid.x, this.centroid.y, this.centroid.z);
-            String axisS = String.format("(%.2f, %.2f, %.2f)",
+            String axisS = String.format(formatString,
                     this.axisVector.x, this.axisVector.y, this.axisVector.z);
 
-            // return String.format("[%s, %s]", centroidS, axisS);
-            return String.format("[%s, %s], [%s, %s]", startS, endS, centroidS,
-                    axisS);
+            return String.format("[%s, %s], [%s, %s]", startS, endS, centroidS, axisS);
         }
     }
 

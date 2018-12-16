@@ -14,12 +14,11 @@ public class DomainSegment {
     }
 
     public boolean contains(BackboneSegment backboneSegment) {
-        //return backboneSegment.containedInPDBNumberRange(this.start, this.end);
         return backboneSegment.overlapsPDBNumberRange(this.start, this.end);
     }
 
     public List<BackboneSegment> filter(List<BackboneSegment> backboneSegments) {
-        List<BackboneSegment> subList = new ArrayList<BackboneSegment>();
+        List<BackboneSegment> subList = new ArrayList<>();
 
         for (BackboneSegment backboneSegment : backboneSegments) {
             if (this.contains(backboneSegment)) {

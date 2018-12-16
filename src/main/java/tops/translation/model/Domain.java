@@ -12,7 +12,7 @@ public class Domain {
 
     public Domain(int number) {
         this.number = number;
-        this.segments = new ArrayList<DomainSegment>();
+        this.segments = new ArrayList<>();
     }
 
     public boolean isEmpty() {
@@ -37,7 +37,7 @@ public class Domain {
         }
 
         for (int i = 0; i < this.segments.size(); i++) {
-            DomainSegment domainSegment = (DomainSegment) this.segments.get(i);
+            DomainSegment domainSegment = this.segments.get(i);
             if (domainSegment.contains(backboneSegment)) {
                 return true;
             }
@@ -46,7 +46,7 @@ public class Domain {
     }
 
     public List<BackboneSegment> filter(List<BackboneSegment> backboneSegments) {
-        List<BackboneSegment> segmentsInDomain = new ArrayList<BackboneSegment>();
+        List<BackboneSegment> segmentsInDomain = new ArrayList<>();
         for (DomainSegment domainSegment : this.segments) {
             segmentsInDomain.addAll(domainSegment.filter(backboneSegments));
         }
@@ -54,7 +54,7 @@ public class Domain {
     }
 
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append(this.number);
 
         for (DomainSegment domainSegment : this.segments) {

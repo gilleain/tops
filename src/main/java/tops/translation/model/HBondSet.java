@@ -31,19 +31,15 @@ public class HBondSet {
     }
 
     public HBondSet() {
-        this.hBonds = new HashSet<HBond>();
+        this.hBonds = new HashSet<>();
     }
     
     public void addHBond(HBond hBond) {
-        if (hBonds.add(hBond)) {
-//            System.out.println("Adding bond " + hBond);
-        } else {
-//            System.out.println("Duplicate bond " + hBond);
-        }
+        hBonds.add(hBond);
     }
     
     public String toString() {
-        List<HBond> hBondList = new ArrayList<HBond>();
+        List<HBond> hBondList = new ArrayList<>();
         hBondList.addAll(hBonds);
         Collections.sort(hBondList);
         return start + ":" + end + " " + hBondList.toString();

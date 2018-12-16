@@ -22,8 +22,8 @@ public class Residue implements Comparable<Residue> {
     private double psi;
 
     public Residue() {
-        atoms = new HashMap<String, Point3d>();
-        hBonds = new ArrayList<HBond>();
+        atoms = new HashMap<>();
+        hBonds = new ArrayList<>();
         this.phi = 0;
         this.psi = 0;
         this.type = "None";
@@ -48,7 +48,71 @@ public class Residue implements Comparable<Residue> {
     }
 
     public int compareTo(Residue other) {
-        return new Integer(this.absoluteNumber).compareTo(new Integer(other.absoluteNumber));
+        return Integer.valueOf(this.absoluteNumber).compareTo(Integer.valueOf(other.absoluteNumber));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + absoluteNumber;
+        result = prime * result + ((atoms == null) ? 0 : atoms.hashCode());
+        result = prime * result + ((environment == null) ? 0 : environment.hashCode());
+        result = prime * result + ((hBonds == null) ? 0 : hBonds.hashCode());
+        result = prime * result + pdbNumber;
+        long temp;
+        temp = Double.doubleToLongBits(phi);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((polymerType == null) ? 0 : polymerType.hashCode());
+        temp = Double.doubleToLongBits(psi);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Residue other = (Residue) obj;
+        if (absoluteNumber != other.absoluteNumber)
+            return false;
+        if (atoms == null) {
+            if (other.atoms != null)
+                return false;
+        } else if (!atoms.equals(other.atoms))
+            return false;
+        if (environment == null) {
+            if (other.environment != null)
+                return false;
+        } else if (!environment.equals(other.environment))
+            return false;
+        if (hBonds == null) {
+            if (other.hBonds != null)
+                return false;
+        } else if (!hBonds.equals(other.hBonds))
+            return false;
+        if (pdbNumber != other.pdbNumber)
+            return false;
+        if (Double.doubleToLongBits(phi) != Double.doubleToLongBits(other.phi))
+            return false;
+        if (polymerType == null) {
+            if (other.polymerType != null)
+                return false;
+        } else if (!polymerType.equals(other.polymerType))
+            return false;
+        if (Double.doubleToLongBits(psi) != Double.doubleToLongBits(other.psi))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
     }
 
     public boolean isPro() {
@@ -103,11 +167,10 @@ public class Residue implements Comparable<Residue> {
     }
 
     public List<HBond> getNTerminalHBonds() {
-    	List<HBond> nTerminalHBonds = new ArrayList<HBond>();
+    	List<HBond> nTerminalHBonds = new ArrayList<>();
         for (int i = 0; i < this.hBonds.size(); i++) {
             HBond hBond = this.hBonds.get(i);
             if (hBond.residueIsDonor(this)) {
-                //System.out.println("N : " + hBond + " for " + this);
                 nTerminalHBonds.add(hBond);
             }
         }
@@ -115,11 +178,10 @@ public class Residue implements Comparable<Residue> {
     }
 
     public List<HBond> getCTerminalHBonds() {
-    	List<HBond> cTerminalHBonds = new ArrayList<HBond>();
+    	List<HBond> cTerminalHBonds = new ArrayList<>();
         for (int i = 0; i < this.hBonds.size(); i++) {
             HBond hBond = this.hBonds.get(i);
             if (hBond.residueIsAcceptor(this)) {
-                //System.out.println("C : " + hBond + " for " + this);
                 cTerminalHBonds.add(hBond);
             }
         }
@@ -201,7 +263,7 @@ public class Residue implements Comparable<Residue> {
     }
 
     public Point3d getCoordinates(String atomType) {
-        return (Point3d) this.atoms.get(atomType);
+        return this.atoms.get(atomType);
     }
 
     public int getAbsoluteNumber() {
@@ -217,8 +279,8 @@ public class Residue implements Comparable<Residue> {
     }
 
     public String hBondString() {
-        StringBuffer strbuf = new StringBuffer();
-       for (HBond hbond : this.hBonds) {
+        StringBuilder strbuf = new StringBuilder();
+        for (HBond hbond : this.hBonds) {
             strbuf.append(hbond).append(" ");
         }
         return strbuf.toString();

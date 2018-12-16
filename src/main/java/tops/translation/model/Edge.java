@@ -22,7 +22,15 @@ public class Edge implements Comparable<Edge> {
     }
 
     public boolean equals(Object other) {
-        return this.first == ((Edge)other).first && this.second == ((Edge)other).second;
+        if (other instanceof Edge) {
+            Edge otherEdge = (Edge) other;
+            return this.first == otherEdge.first && this.second == otherEdge.second;
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return this.first.hashCode() * this.second.hashCode() * type;
     }
 
     public void mergeWith(Edge chiral) {

@@ -17,7 +17,7 @@ public class Protein implements Iterable<Chain> {
     }
 
     public Protein(String id) {
-        this.chains = new ArrayList<Chain>();
+        this.chains = new ArrayList<>();
         setID(id);
     }
     
@@ -34,7 +34,7 @@ public class Protein implements Iterable<Chain> {
     }
 
     public Map<String, Map<String, String>> toTopsDomainStrings(Map<String, List<Domain>> chainDomainMap) {
-        Map<String, Map<String, String>> chainDomainStringMap = new HashMap<String, Map<String, String>>();
+        Map<String, Map<String, String>> chainDomainStringMap = new HashMap<>();
         for (int i = 0; i < this.chains.size(); i++) {
             Chain chain = this.chains.get(i);
             chainDomainStringMap.put(
@@ -54,7 +54,7 @@ public class Protein implements Iterable<Chain> {
 
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         for (int i = 0; i < this.chains.size(); i++) {
             Chain chain = this.chains.get(i);
             stringBuffer.append(chain.toString());
