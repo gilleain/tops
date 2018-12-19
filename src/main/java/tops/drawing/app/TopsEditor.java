@@ -10,7 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.EmptyStackException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.JApplet;
@@ -24,6 +27,9 @@ import tops.drawing.Cartoon;
 import tops.drawing.symbols.CartoonConnector;
 
 public class TopsEditor extends JApplet {
+    
+    private static final String TOPS_EXTENSION = ".tops";
+    private Logger log = Logger.getLogger(TopsEditor.class.getName());
     
     // Activities
     public enum State {
@@ -92,7 +98,7 @@ public class TopsEditor extends JApplet {
         try {
         	templateDialog = new TemplateDialog(this);
         } catch (NullPointerException npe) {
-        	System.err.println("npe when making template dialog");
+        	log.info("npe when making template dialog");
         }
         submitDialog = new SubmissionDialog(this);
         addEditDialog = new InsertEditRangeDialog(this);
@@ -172,7 +178,7 @@ public class TopsEditor extends JApplet {
     public void fireHorizontalAlign() {
         int numberOfSelected = this.canvas.numberOfSelectedSSESymbols();
         if (numberOfSelected < 1) {
-            System.err.println("You must select two or more figures to align!");
+            log.warning("You must select two or more figures to align!");
         } else {
             this.setState(State.HORIZONTAL_ALIGN);
         }
@@ -181,7 +187,7 @@ public class TopsEditor extends JApplet {
     public void fireVerticalAlign() {
         int numberOfSelected = this.canvas.numberOfSelectedSSESymbols();
         if (numberOfSelected < 1) {
-            System.err.println("You must select two or more figures to align!");
+            log.warning("You must select two or more figures to align!");
         } else {
             this.setState(State.VERTICAL_ALIGN);
         }
@@ -201,6 +207,7 @@ public class TopsEditor extends JApplet {
     }
 
     public void fireInsertRangesEvent() {
+        // TODO
     }
 
     public void installInFrame(JFrame host) {
@@ -210,7 +217,6 @@ public class TopsEditor extends JApplet {
     
     public void exportImage(String imageType) {
         String baseDir = System.getProperty("home");
-        System.err.println("home.dir " + baseDir);
         String extension;
         if (imageType.equals("jpeg")) {
             extension = ".jpg";
@@ -226,13 +232,13 @@ public class TopsEditor extends JApplet {
 
         String fileLocation = null;
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            String currentFilename = fc.getSelectedFile().getName();
-            String currentDir = fc.getCurrentDirectory().getAbsolutePath();
+            String currentFilenameSelected = fc.getSelectedFile().getName();
+            String currentDirSelected = fc.getCurrentDirectory().getAbsolutePath();
             
-            if (currentFilename.endsWith(extension)) {
-                fileLocation = currentDir + "/" + currentFilename;
+            if (currentFilenameSelected.endsWith(extension)) {
+                fileLocation = currentDirSelected + "/" + currentFilenameSelected;
             } else {
-                fileLocation = currentDir + "/" + currentFilename + extension;
+                fileLocation = currentDirSelected + "/" + currentFilenameSelected + extension;
             }
         }
         
@@ -244,7 +250,7 @@ public class TopsEditor extends JApplet {
         try {
             ImageIO.write(image, imageType, new File(fileLocation));
         } catch (IOException ioe) {
-            
+            log.log(Level.INFO, "Error exporting image", ioe);
         }
     }
     
@@ -252,7 +258,7 @@ public class TopsEditor extends JApplet {
         try {
             this.canvas.revert();
         } catch (EmptyStackException e) {
-            System.err.println("empty undo stack");
+            log.warning("empty undo stack");
         }
         this.setAsUnSaved();
     }
@@ -287,19 +293,15 @@ public class TopsEditor extends JApplet {
 
     // performs the Saving of the TOPS Diagrams
     public boolean save() {
-        try {
-            File filename = new File(currentDir, currentFilename);
-            PrintWriter pw = new PrintWriter(new FileWriter(filename));
+        File filename = new File(currentDir, currentFilename);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filename))) {
 
             Cartoon cartoon = this.canvas.getCartoon();
             cartoon.writeToStream(pw);
             
-            pw.close();
-
             return true;
         } catch (Exception e) {
-            System.out.println("Error in performSaving() \n");
-            e.printStackTrace();
+            log.log(Level.INFO, "Error in performSaving() \n", e);
             return false;
         }
     }
@@ -342,11 +344,11 @@ public class TopsEditor extends JApplet {
                 int dot = currentFilename.lastIndexOf('.');
 
                 if (dot == -1)
-                    currentFilename = currentFilename + ".tops";
+                    currentFilename = currentFilename + TOPS_EXTENSION;
 
-                else if (!(currentFilename.substring(dot)).equals(".tops"))
+                else if (!(currentFilename.substring(dot)).equals(TOPS_EXTENSION))
                     currentFilename =
-                        currentFilename.substring(0, dot) + ".tops";
+                        currentFilename.substring(0, dot) + TOPS_EXTENSION;
 
                 if (save())
                     return true;
@@ -411,10 +413,10 @@ public class TopsEditor extends JApplet {
             int dot = currentFilename.lastIndexOf('.');
 
             if (dot == -1)
-                currentFilename = currentFilename + ".tops";
+                currentFilename = currentFilename + TOPS_EXTENSION;
 
-            else if (!(currentFilename.substring(dot)).equals(".tops"))
-                currentFilename = currentFilename.substring(0, dot) + ".tops";
+            else if (!(currentFilename.substring(dot)).equals(TOPS_EXTENSION))
+                currentFilename = currentFilename.substring(0, dot) + TOPS_EXTENSION;
 
             if (save()) {
                 return true;
@@ -504,8 +506,7 @@ public class TopsEditor extends JApplet {
 
             return true;
         } catch (Exception e) {
-            System.out.println("Exception in performLoading()");
-            e.printStackTrace();
+            log.log(Level.WARNING, "Exception in performLoading()", e);
         }
         return false;
     }
@@ -516,37 +517,34 @@ public class TopsEditor extends JApplet {
         fc.setFileFilter(new MyFilter());
         int returnVal = fc.showOpenDialog(null);
 
-        BufferedReader inf = null;
-
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             currentFilename = fc.getSelectedFile().getName();
             currentDir = fc.getCurrentDirectory().getAbsolutePath();
             File newFile = new File(currentDir, currentFilename);
 
-            try {
-                inf = new BufferedReader(new FileReader(newFile));
+            try ( BufferedReader inf = new BufferedReader(new FileReader(newFile))) {
+
+                // perform loading
+                if (load(inf)) {
+                    return true;
+                } else {
+                    //pop up a dialog
+                    Object[] options = { "OK" };
+
+                    JOptionPane.showOptionDialog(
+                            null,
+                            "Load Failed! \n Possible file corruption.",
+                            "Load Failed",
+                            JOptionPane.YES_OPTION,
+                            JOptionPane.ERROR_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
+
+                    return false;
+                }
             } catch (Exception e) {
-                System.out.println("Exception in openCartoon() \n");
-                e.printStackTrace();
-            }
-
-            // perform loading
-            if (load(inf)) {
-                return true;
-            } else {
-                //pop up a dialog
-                Object[] options = { "OK" };
-
-                JOptionPane.showOptionDialog(
-                    null,
-                    "Load Failed! \n Possible file corruption.",
-                    "Load Failed",
-                    JOptionPane.YES_OPTION,
-                    JOptionPane.ERROR_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
-
+                log.log(Level.WARNING, "Exception in openCartoon() \n", e);
                 return false;
             }
 
@@ -557,7 +555,7 @@ public class TopsEditor extends JApplet {
     // loads the filename  file
     public boolean openCartoon(String filename) {
         BufferedReader inf = null;
-        java.net.URL fileURL = this.getClass().getResource(filename);
+        URL fileURL = this.getClass().getResource(filename);
 
         try {
             inf = new BufferedReader(new InputStreamReader(fileURL.openStream()));
@@ -568,10 +566,7 @@ public class TopsEditor extends JApplet {
         }
 
         // perform loading
-        if (load(inf))
-            return true;
-        else
-            return false;
+        return load(inf);
     }
 
     public void fireSaveAsCartoonEvent() {
@@ -667,7 +662,7 @@ public class TopsEditor extends JApplet {
                     if (openCartoon(filename)) {
                         isSaved = true;
                     } else {
-                        isSaved = true;
+                        isSaved = false;
                     }
                 }
             } else if (n == 1) {
@@ -679,7 +674,7 @@ public class TopsEditor extends JApplet {
                     if (openCartoon(filename)) {
                         isSaved = true;
                     } else {
-                        isSaved = true; //to prevent a 'Save?' dialog
+                        isSaved = false; //to prevent a 'Save?' dialog
                     }
                 }
             } else if (n == 2 )   {       /* if user clicks 'don't save'*/
@@ -687,7 +682,7 @@ public class TopsEditor extends JApplet {
                 if (openCartoon(filename)) {
                     isSaved = true;
                 } else {
-                    isSaved = true; //to prevent a 'Save?' dialog
+                    isSaved = false; //to prevent a 'Save?' dialog
                 }
             }
         } else {
@@ -695,7 +690,7 @@ public class TopsEditor extends JApplet {
             if (openCartoon(filename)) {
                 isSaved = true;
             } else {
-                isSaved = true; //to prevent a 'Save?' dialog
+                isSaved = false; //to prevent a 'Save?' dialog
             }
         }
     }
@@ -722,7 +717,7 @@ public class TopsEditor extends JApplet {
                     if (openCartoon()) {
                         isSaved = true;
                     } else {
-                        isSaved = true;
+                        isSaved = false;
                     }
                 }
             } else if (n == 1) {
@@ -733,7 +728,7 @@ public class TopsEditor extends JApplet {
                     if (openCartoon()) {
                         isSaved = true;
                     } else {
-                        isSaved = true;
+                        isSaved = false;
                     }
                 }
             } else if (n == 2 )    {      /* if user clicks 'don't save'*/

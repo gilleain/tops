@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.port.ConnectionCalculator;
 import tops.port.DomainBoundaryFileReader;
 import tops.port.DomainCalculator;
@@ -40,9 +40,9 @@ import tops.port.model.SSE;
  * @author maclean
  *
  */
-public class BuildTopologyCommand implements Command {
+public class BuildTopologyCommand extends BaseCommand {
     
-    private String STANDARD_DEFAULTS_FILE = "tops.def";
+    private static final String STANDARD_DEFAULTS_FILE = "tops.def";
 
     @Override
     public String getDescription() {
@@ -81,9 +81,8 @@ public class BuildTopologyCommand implements Command {
         }
         
         if (options.isVerbose()) {
-            System.out.println("Starting TOPS\n");
-            System.out.println(
-                    "Copyright � 1996 by European Bioinformatics Institute, Cambridge, UK.\n\n");
+            output("Starting TOPS\n");
+            output("Copyright 1996 by European Bioinformatics Institute, Cambridge, UK.\n\n");
             options.printRunParams(System.out);
         }
         
@@ -94,7 +93,7 @@ public class BuildTopologyCommand implements Command {
             log("Error running main method %s", ioe.getMessage());
         }
         if (options.isVerbose()) {
-            System.out.println("TOPS completed successfully\n");
+            output("TOPS completed successfully\n");
         }
         
     }
@@ -152,7 +151,7 @@ public class BuildTopologyCommand implements Command {
         
         /* add default domains */
         if (options.isVerbose()) {
-            System.out.println("Setting default domains\n");
+            output("Setting default domains\n");
         }
         DomainCalculator domainCalculator = new DomainCalculator();
         List<DomainDefinition> domains = 
@@ -160,11 +159,9 @@ public class BuildTopologyCommand implements Command {
 
         /* check domain definitions */
         DomDefError ddep  = domainCalculator.checkDomainDefs(domains, protein);
-        if (ddep != null) {
-            if (ddep.errorType != null) {
-                log("Tops warning: problem with domain definitions type %d\n", ddep.errorType);
-                log("%s\n", ddep.errorString);
-            }
+        if (ddep != null && ddep.errorType != null) {
+            log("Tops warning: problem with domain definitions type %d\n", ddep.errorType);
+            log("%s\n", ddep.errorString);
         }
         
         /*
@@ -174,7 +171,7 @@ public class BuildTopologyCommand implements Command {
 
         /* set up the domain breaks and PlotFragInfo */
         if (options.isVerbose()) {
-            System.out.println("Setting domain breaks and domains to plot\n");
+            output("Setting domain breaks and domains to plot\n");
         }
         List<SSE> root = null;
         // TODO - Root will be null here!! XXX
@@ -190,7 +187,7 @@ public class BuildTopologyCommand implements Command {
         }
 
         /* Loop over domains to plot */
-        List<Cartoon> cartoons = new ArrayList<Cartoon>();
+        List<Cartoon> cartoons = new ArrayList<>();
         for (DomainDefinition domainToPlot : domainsToPlot) {
 
             if (options.isVerbose()) {
@@ -209,7 +206,7 @@ public class BuildTopologyCommand implements Command {
 
         /* temporary write out of TOPS file */
         if (options.isVerbose()) {
-            System.out.println("\nWriting tops file\n");
+            output("\nWriting tops file\n");
         }
         
         String topsFilename;
@@ -225,7 +222,7 @@ public class BuildTopologyCommand implements Command {
         new PostscriptFileWriter(options).makePostscript(cartoons, protein, plotFragInf);
 
         if (options.isVerbose()) {
-            System.out.println("\n");
+            output("Written postscript\n");
         }
     }
     
@@ -264,8 +261,9 @@ public class BuildTopologyCommand implements Command {
          * Read the domain boundary file if ChainToPlot was not specified as ALL
          */
         if (options.getChainToPlot() != null && !options.getChainToPlot().equals("ALL")) {
-            if (options.isVerbose())
-                System.out.println("Reading domain boundary file\n");
+            if (options.isVerbose()) {
+                output("Reading domain boundary file\n");
+            }
 
             /*
              * first check if specified file exists, otherwise look for one in
