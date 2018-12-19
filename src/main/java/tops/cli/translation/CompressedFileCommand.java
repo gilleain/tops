@@ -1,6 +1,8 @@
 package tops.cli.translation;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.ParseException;
 
@@ -8,6 +10,8 @@ import tops.cli.Command;
 import tops.translation.CompressedFileHandler;
 
 public class CompressedFileCommand implements Command {
+    
+    private Logger log = Logger.getLogger(CompressedFileCommand.class.getName());
 
     @Override
     public String getDescription() {
@@ -25,17 +29,15 @@ public class CompressedFileCommand implements Command {
         try {
             String decompressedFileName = 
                     cfh.attemptDecompressionOfFile(fileName, mimeType);
-            System.err.println("Decompressing : " + fileName + " to "
-                    + decompressedFileName);
+            log.log(Level.INFO, "Decompressing : {0} to {1}", new Object[] {fileName, decompressedFileName});
         } catch (IOException ioe) {
-            System.err.println(ioe.toString());
+            log.warning(ioe.toString());
         }
     }
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<fileName> <mimeType> <workingDirectory>";
     }
 
 }

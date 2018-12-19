@@ -30,7 +30,7 @@ public class Tops {
     private Map<String, Command> commands;
     
     public Tops() {
-        commands = new HashMap<String, Command>();
+        commands = new HashMap<>();
         
         // special command to print help
         commands.put("help", new HelpCommand(commands));

@@ -1,10 +1,11 @@
 package tops.cli;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.cli.ParseException;
 
-public class HelpCommand implements Command {
+public class HelpCommand extends BaseCommand {
     
     private Map<String, Command> commands;
     
@@ -20,15 +21,16 @@ public class HelpCommand implements Command {
     @Override
     public void handle(String[] args) throws ParseException {
         if (args.length == 0) {
-            System.err.println("Commands:");
-            for (String keyword : commands.keySet()) {
+            error("Commands:");
+            for (Entry<String, Command> entry : commands.entrySet()) {
+                String keyword = entry.getKey();
                 Command command = commands.get(keyword);
-                System.err.println(keyword + " : " + command.getDescription());
+                error(keyword + " : " + command.getDescription());
             }
         } else if (args.length == 1) {
             String commandKey = args[0];
             Command command = commands.get(commandKey);
-            System.err.println(commandKey + " " + command.getHelp());
+            error(commandKey + " " + command.getHelp());
         }
     }
 

@@ -8,27 +8,26 @@ import tops.cli.Command;
 
 public class RunDssp extends Executer implements Command {
 
-    private String path_to_dssp;
+    private String pathToDssp;
 
-    private String pdb_directory;
+    private String pdbDirectory;
 
-    private String output_directory;
+    private String outputDirectory;
 
-    private String run_directory;
+    private String runDirectory;
 
-    public RunDssp(String path_to_dssp, String pdb_directory, 
-    			   String output_directory, String run_directory) {
-        this.path_to_dssp = path_to_dssp;
-        this.pdb_directory = pdb_directory;
-        this.output_directory = output_directory;
-        this.run_directory = run_directory;
+    public RunDssp(String pathToDssp, String pdbDirectory, String outputDirectory, String runDirectory) {
+        this.pathToDssp = pathToDssp;
+        this.pdbDirectory = pdbDirectory;
+        this.outputDirectory = outputDirectory;
+        this.runDirectory = runDirectory;
     }
 
-    public void convert(String pdb_file_name, String dssp_file_name) {
-        String pdb_file_path = new File(this.pdb_directory, pdb_file_name).toString();
-        String dssp_file_path = new File(this.output_directory, dssp_file_name).toString();
-        String command = this.path_to_dssp + " " + pdb_file_path + " " + dssp_file_path;
-        this.execute(command, this.run_directory);
+    public void convert(String pdbFilename, String dsspFilename) {
+        String pdbFilepath = new File(this.pdbDirectory, pdbFilename).toString();
+        String dsspFilepath = new File(this.outputDirectory, dsspFilename).toString();
+        String command = this.pathToDssp + " " + pdbFilepath + " " + dsspFilepath;
+        this.execute(command, this.runDirectory);
     }
 
     @Override
@@ -38,13 +37,16 @@ public class RunDssp extends Executer implements Command {
 
     @Override
     public void handle(String[] args) throws ParseException {
-        RunDssp dssp = new RunDssp(args[0], args[1], args[1], args[1]);
-        dssp.convert(args[2], args[3]);   
+        String pathToDssp = args[0];
+        String outputDir = args[1];
+        String pdbFilename = args[2];
+        String dsspFilename = args[3];
+        RunDssp dssp = new RunDssp(pathToDssp, outputDir, outputDir, outputDir);
+        dssp.convert(pdbFilename, dsspFilename);
     }
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<pathToDssp> <outputDir> <pdbFilename> <dsspFilename>";
     }
 }

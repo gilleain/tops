@@ -8,40 +8,35 @@ import tops.cli.Command;
 
 public class RunTops extends Executer implements Command {
 
-    private String path_to_tops;
+    private String pathToTops;
 
-    private String dssp_directory;
+    private String dsspDirectory;
 
-    private String output_directory;
+    private String outputDirectory;
 
-    private String run_directory;
+    private String runDirectory;
 
-    public RunTops(String path_to_tops, String dssp_directory,
-            String output_directory, String run_directory) {
-        this.path_to_tops = path_to_tops;
-        this.dssp_directory = dssp_directory;
-        this.output_directory = output_directory;
-        this.run_directory = run_directory;
+    public RunTops(String pathToTops, String dsspDirectory, String outputDirectory, String runDirectory) {
+        this.pathToTops = pathToTops;
+        this.dsspDirectory = dsspDirectory;
+        this.outputDirectory = outputDirectory;
+        this.runDirectory = runDirectory;
     }
 
-    public void convert(String pdbid, String chain, String tops_file_name,
-            String domainFilePath) { // pdbid is the 4 character code the
-                                        // tops program needs
-        String tops_file_path = 
-                new File(this.output_directory, tops_file_name).toString();
+    public void convert(String pdbid, String chain, String topsFilename, String domainFilePath) { 
+        // pdbid is the 4 character code the tops program needs
+        String topsFilepath = new File(this.outputDirectory, topsFilename).toString();
         String command;
         if (chain.equals("")) {
-            //command = this.path_to_tops + " -P " + this.dssp_directory + " -B "
-            //        + domainFilePath + " -t " + tops_file_path + " " + pdbid;
-            command = this.path_to_tops + " -P " + this.dssp_directory +
-                        " -t " + tops_file_path + " " + pdbid;
+            command = this.pathToTops + " -P " + this.dsspDirectory +
+                        " -t " + topsFilepath + " " + pdbid;
         } else {
-            command = this.path_to_tops + " -P " + this.dssp_directory + " -B "
-                    + domainFilePath + " -C " + chain + " -t " + tops_file_path
+            command = this.pathToTops + " -P " + this.dsspDirectory + " -B "
+                    + domainFilePath + " -C " + chain + " -t " + topsFilepath
                     + " " + pdbid;
 
         }
-        this.execute(command, this.run_directory);
+        this.execute(command, this.runDirectory);
     }
 
     @Override
@@ -51,13 +46,18 @@ public class RunTops extends Executer implements Command {
 
     @Override
     public void handle(String[] args) throws ParseException {
-        RunTops tops = new RunTops(args[0], args[1], args[1], args[1]);
-        tops.convert(args[2], args[3], args[4], args[5]);
+        String pathToTops = args[0];
+        String dsspDir = args[1];
+        String pdbid = args[2];
+        String chain = args[3];
+        String topsFilename = args[4];
+        String domainFilePath = args[5];
+        RunTops tops = new RunTops(pathToTops, dsspDir, dsspDir, dsspDir);
+        tops.convert(pdbid, chain, topsFilename, domainFilePath);
     }
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<pdbid> <chain> <topsFilename> <domainFilePath>";
     }
 }

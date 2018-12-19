@@ -1,12 +1,13 @@
 package tops.cli.translation;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.dw.io.TopsFileReader;
 import tops.dw.protein.Protein;
 import tops.translation.CompressedFileHandler;
@@ -19,7 +20,9 @@ import tops.translation.Tops2String;
  * @author maclean
  *
  */
-public class DsspTopsRunner implements PDBToGraph, PDBToCartoon, Command {
+public class DsspTopsRunner extends BaseCommand implements PDBToGraph, PDBToCartoon {
+    
+    private Logger log = Logger.getLogger(DsspTopsRunner.class.getName());
     
     private RunDssp dssp;
     
@@ -63,17 +66,17 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon, Command {
                 try {
                     runner.convertAndPrint(files[i]);
                 } catch (IOException ioe) {
-                    ioe.printStackTrace();
+                    log.warning(ioe.toString());
                 }
             }
         } else if (pathFile.isFile()) {
             try {
                 runner.convertAndPrint(pathFile.getName());
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                log.warning(ioe.toString());
             }
         } else {
-            System.out.println("Path is not a file or directory " + path);
+            log.log(Level.WARNING, "Path is not a file or directory {0}", path);
         }
     }
     
@@ -117,13 +120,12 @@ public class DsspTopsRunner implements PDBToGraph, PDBToCartoon, Command {
         String[] topsStrings = this.convertToGraphs(pdbFilename, "", fourLetterCode);
         for (int j = 0; j < topsStrings.length; j++) {
             // XXX topsStrings have a space in front!
-            System.out.println(topsStrings[j]); 
+            output(topsStrings[j]); 
         }
     }
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<path> <scratchDir>";
     }
 }

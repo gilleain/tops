@@ -3,14 +3,18 @@ package tops.cli.translation;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.translation.CATHDomainFileParser;
 import tops.translation.model.Domain;
 
-public class CATHDomainFileParserCommand implements Command {
+public class CATHDomainFileParserCommand extends BaseCommand {
+    
+    private Logger log = Logger.getLogger(CATHDomainFileParserCommand.class.getName());
 
     @Override
     public String getDescription() {
@@ -23,23 +27,24 @@ public class CATHDomainFileParserCommand implements Command {
         try {
             Map<String, Map<String, List<Domain>>> pdbChainDomainMap = 
                     CATHDomainFileParser.parseWholeFile(domainFile);
-            for (String pdbID : pdbChainDomainMap.keySet()) {
-                Map<String, List<Domain>> chainDomainMap = pdbChainDomainMap.get(pdbID);
-                for (String chainID : chainDomainMap.keySet()) {
-                    for (Domain domain : chainDomainMap.get(chainID)) {
-                        System.out.println(pdbID + chainID + " " + domain);
+            for (Entry<String, Map<String, List<Domain>>> entry : pdbChainDomainMap.entrySet()) {
+                String pdbID = entry.getKey();
+                Map<String, List<Domain>> chainDomainMap = entry.getValue();
+                for (Entry<String, List<Domain>> entry2 : chainDomainMap.entrySet()) {
+                    String chainID = entry2.getKey();
+                    for (Domain domain : entry2.getValue()) {
+                        output(pdbID + chainID + " " + domain);
                     }
                 }
             }
         } catch (IOException ioe) {
-            System.err.println(ioe.toString());
+            log.warning(ioe.toString());
         }
     }
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<domainFile>";
     }
 
 }

@@ -3,10 +3,11 @@ package tops.cli.translation;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.translation.CATHDomainFileParser;
 import tops.translation.FoldAnalyser;
 import tops.translation.PDBReader;
@@ -14,12 +15,11 @@ import tops.translation.PropertyError;
 import tops.translation.model.Domain;
 import tops.translation.model.Protein;
 
-public class FoldAnalyzerCommand implements Command {
+public class FoldAnalyzerCommand extends BaseCommand {
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Analyse folds";
     }
 
     @Override
@@ -33,7 +33,7 @@ public class FoldAnalyzerCommand implements Command {
             FoldAnalyser foldAnalyser = new FoldAnalyser();
             foldAnalyser.analyse(protein);
 
-            System.out.println(protein);
+            output(protein.toString()); // TODO - do we really want to print the whole protein
 
             Map<String, List<Domain>> cathChainDomainMap = 
                     CATHDomainFileParser.parseUpToParticularID(
@@ -41,24 +41,23 @@ public class FoldAnalyzerCommand implements Command {
             Map<String, Map<String, String>> chainDomainStringMap = 
                     protein.toTopsDomainStrings(cathChainDomainMap);
 
-            for (String chainID : chainDomainStringMap.keySet()) {
-                Map<String, String> domainStrings = chainDomainStringMap.get(chainID);
+            for (Entry<String, Map<String, String>> entry : chainDomainStringMap.entrySet()) {
+                Map<String, String> domainStrings = entry.getValue();
                 for (String domainString : domainStrings.keySet()) {
-                    System.out.println(protein.getID() + domainString);
+                    output(protein.getID() + domainString);
                 }
             }
 
         } catch (IOException ioe) {
-            System.err.println(ioe);
+            error(ioe);
         } catch (PropertyError pe) {
-            System.err.println(pe);
+            error(pe);
         }
     }
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<pdbFilename> <cathFilename>";
     }
 
 }

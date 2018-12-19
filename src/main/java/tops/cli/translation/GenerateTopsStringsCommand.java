@@ -5,14 +5,14 @@ import java.io.IOException;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.data.dssp.DSSPReader;
 import tops.translation.model.Protein;
 import tops.view.diagram.DiagramConverter;
 
-public class GenerateTopsStringsCommand implements Command {
+public class GenerateTopsStringsCommand extends BaseCommand {
     
-    private final double DEFAULT_MIN_ENERGY = -0.9;
+    private static final double DEFAULT_MIN_ENERGY = -0.9;
     
     private final String directoryPath = "/Users/maclean/data/dssp/reps";
 
@@ -32,8 +32,8 @@ public class GenerateTopsStringsCommand implements Command {
             try {
                 System.out.println(name + " " + getTopsString(file));
             } catch (Exception e) {
-                System.out.println("Error for " + name);
-                e.printStackTrace();
+                error("Error for " + name);
+                error(e);
             }
         }
     }

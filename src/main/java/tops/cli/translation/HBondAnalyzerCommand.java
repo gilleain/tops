@@ -5,13 +5,13 @@ import java.io.IOException;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.translation.HBondAnalyser;
 import tops.translation.PDBReader;
 import tops.translation.PropertyError;
 import tops.translation.model.Protein;
 
-public class HBondAnalyzerCommand implements Command {
+public class HBondAnalyzerCommand extends BaseCommand {
 
     @Override
     public String getDescription() {
@@ -31,18 +31,17 @@ public class HBondAnalyzerCommand implements Command {
             Protein protein = PDBReader.read(pdbFilename);
 
             hBondAnalyser.analyse(protein);
-            System.out.println(protein);
+            output(protein.toString());
         } catch (IOException ioe) {
-            System.err.println(ioe);
+            error(ioe);
         } catch (PropertyError pe) {
-            System.err.println(pe);
+            error(pe);
         }
     }
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<pdbFilename> <propertiesFilename>";
     }
 
 }
