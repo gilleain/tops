@@ -12,12 +12,7 @@ import java.awt.event.ActionListener;
 
 public class TopsShow extends Panel {
 
-   
-
     public TopsShow(boolean enabled) {
-
-        
-
     }
     
     public void addActionListener(ActionListener listener) {

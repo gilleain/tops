@@ -32,35 +32,29 @@ import tops.dw.protein.Protein;
  */
 public class ResultsApp extends Applet implements ActionListener, PostscriptPrinter {
 
-    /* START class variables */
+    static final int LARGE_FONT_SIZE = 12;
 
-    static final int LargeFontSize = 12;
+    static final int SMALL_FONT_SIZE = 12;
 
-    static final int SmallFontSize = 12;
+    static final String EDITOR_HELP_FILE = "EditorHelp11.html";
 
-    static final String EditorHelpFile = "EditorHelp11.html";
+    static final String TOPS_FILE_URL_BASE = "http://www.bioinformatics.leeds.ac.uk/tops_server_files/TOPS";
 
-    static final String TopsFileURLbase = "http://www.bioinformatics.leeds.ac.uk/tops_server_files/TOPS";
+    private static final String CGI_PROG_PATH = "http://www.bioinformatics.leeds.ac.uk/tops.dw.cgi-bin/tops/";
 
-    private static String cgi_prog_path = "http://www.bioinformatics.leeds.ac.uk/tops.dw.cgi-bin/tops/";
+    private static final String CGI_PS_PRINT_PROG = "TOPS_PS_Print.cgi";
 
-    private static final String cgi_ps_print_prog = "TOPS_PS_Print.cgi";
+    private TextField diagIdInput = null;
 
-    /* END class variables */
+    private TextField magicInput = null;
 
-    /* START instance variables */
+    private TextArea errorTextArea = null;
 
-    private TextField DiagIdInput = null;
-
-    private TextField MagicInput = null;
-
-    private TextArea ErrorTextArea = null;
-
-    private String diag_id = null;
+    private String diagId = null;
 
     private String magic = null;
 
-    private URL EdHelpURL = null;
+    private URL edHelpURL = null;
 
     private TopsEditor editor = null;
 
@@ -73,7 +67,7 @@ public class ResultsApp extends Applet implements ActionListener, PostscriptPrin
     @Override
     public void init() {
 
-        this.setFont(new Font("TimesRoman", Font.BOLD, ResultsApp.LargeFontSize));
+        this.setFont(new Font("TimesRoman", Font.BOLD, ResultsApp.LARGE_FONT_SIZE));
         this.setLayout(new GridLayout(1, 2));
         this.setBackground(Color.white);
 
@@ -84,17 +78,17 @@ public class ResultsApp extends Applet implements ActionListener, PostscriptPrin
         l.setAlignment(Label.LEFT);
         p.add(l);
 
-        this.DiagIdInput = new TextField(20);
-        this.DiagIdInput.setEditable(true);
-        p.add(this.DiagIdInput);
+        this.diagIdInput = new TextField(20);
+        this.diagIdInput.setEditable(true);
+        p.add(this.diagIdInput);
 
         l = new Label("Enter your magic number:");
         l.setAlignment(Label.LEFT);
         p.add(l);
 
-        this.MagicInput = new TextField(20);
-        this.MagicInput.setEditable(true);
-        p.add(this.MagicInput);
+        this.magicInput = new TextField(20);
+        this.magicInput.setEditable(true);
+        p.add(this.magicInput);
 
         Button viewb = new Button("View cartoon");
         p.add(viewb);
@@ -102,69 +96,63 @@ public class ResultsApp extends Applet implements ActionListener, PostscriptPrin
 
         this.add(p);
 
-        this.ErrorTextArea = new TextArea("Messages from the Tops Server\n");
-        this.ErrorTextArea.setEditable(false);
+        this.errorTextArea = new TextArea("Messages from the Tops Server\n");
+        this.errorTextArea.setEditable(false);
 
-        this.add(this.ErrorTextArea);
+        this.add(this.errorTextArea);
 
         /* set up host and port */
-        URL DocBase = this.getDocumentBase();
-        this.host = DocBase.getHost();
-        this.port = DocBase.getPort();
+        URL docBase = this.getDocumentBase();
+        this.host = docBase.getHost();
+        this.port = docBase.getPort();
         if (this.port <= 0)
             this.port = 80;
 
-        String dcb_file = DocBase.getFile();
-        StringBuffer path = new StringBuffer();
+        String dcbFile = docBase.getFile();
+        StringBuilder path = new StringBuilder();
 
         boolean copy;
         int i;
-        for (i = (dcb_file.length() - 1), copy = false; i >= 0; i--) {
-            if (dcb_file.charAt(i) == '/')
+        for (i = (dcbFile.length() - 1), copy = false; i >= 0; i--) {
+            if (dcbFile.charAt(i) == '/')
                 copy = true;
             if (copy) {
-                path.insert(0, dcb_file.charAt(i));
+                path.insert(0, dcbFile.charAt(i));
             }
         }
 
         try {
-            this.EdHelpURL = new URL("http", this.host, this.port, path.toString()
-                    + ResultsApp.EditorHelpFile);
+            this.edHelpURL = new URL("http", this.host, this.port, path.toString()
+                    + ResultsApp.EDITOR_HELP_FILE);
         } catch (MalformedURLException mue) {
-            this.EdHelpURL = null;
+            this.edHelpURL = null;
         }
 
     }
 
     @Override
     public void stop() {
-
-        // just dispose of any windows created
-        if (this.editor == null)
-            return;
-        this.editor.quit();
-        this.editor = null;
-        return;
-
+        clean();
     }
 
     @Override
     public void destroy() {
-
+        clean();
+    }
+    
+    private void clean() {
         // just dispose of any windows created
         if (this.editor == null)
             return;
         this.editor.quit();
-        this.editor = null;
-        return;
-
+        this.editor = null;        
     }
 
     /* this class only listens for action events from the magic input field */
     public void actionPerformed(ActionEvent e) {
 
-        this.diag_id = this.DiagIdInput.getText().trim();
-        this.magic = this.MagicInput.getText().trim();
+        this.diagId = this.diagIdInput.getText().trim();
+        this.magic = this.magicInput.getText().trim();
 
         if (this.editor != null) {
             this.editor.quit();
@@ -174,78 +162,69 @@ public class ResultsApp extends Applet implements ActionListener, PostscriptPrin
         String status = null;
 
         try {
-            status = this.getTOPSstatus(this.diag_id, this.magic);
+            status = this.getTOPSstatus(this.diagId, this.magic);
         } catch (MalformedURLException mue) {
-            this.ErrorTextArea.append("There is a problem with the status URL.\n");
-            this.ErrorTextArea
+            this.errorTextArea.append("There is a problem with the status URL.\n");
+            this.errorTextArea
                     .append("This may be a server bug, please contact the administrator.\n");
             return;
         } catch (IOException ioe) {
-            this.ErrorTextArea
+            this.errorTextArea
                     .append("There is a problem reading your cartoon status.\n");
-            this.ErrorTextArea.append("Your magic number may be wrong.\n");
+            this.errorTextArea.append("Your magic number may be wrong.\n");
             return;
         }
 
         if (status == null) {
-            this.ErrorTextArea
+            this.errorTextArea
                     .append("There is a problem reading your cartoon status.\n");
-            this.ErrorTextArea.append("Your magic number may be wrong.\n");
+            this.errorTextArea.append("Your magic number may be wrong.\n");
             return;
         }
 
         Protein p = null;
         if (status.equals("Successful")) {
             try {
-                p = this.getTOPSdiag(this.diag_id, this.magic);
+                p = this.getTOPSdiag(this.diagId, this.magic);
             } catch (MalformedURLException mue) {
-                this.ErrorTextArea
-                        .append("There is a problem with the calculated cartoon URL.\n");
-                this.ErrorTextArea
-                        .append("This may be a server bug, please contact the administrator.\n");
+                this.errorTextArea.append("There is a problem with the calculated cartoon URL.\n");
+                this.errorTextArea.append("This may be a server bug, please contact the administrator.\n");
                 return;
             } catch (IOException ioe) {
-                this.ErrorTextArea
-                        .append("There is a problem reading your cartoon.\n");
-                this.ErrorTextArea
-                        .append("Your cartoon identifier might not match your magic number.\n");
+                this.errorTextArea.append("There is a problem reading your cartoon.\n");
+                this.errorTextArea.append("Your cartoon identifier might not match your magic number.\n");
                 return;
             }
 
             if (p != null) {
-                this.ErrorTextArea.append("Cartoon found!\n");
-                this.ErrorTextArea.append("Setting up viewer and editor!\n");
-                this.editor = new TopsEditor(this, this.EdHelpURL);
+                this.errorTextArea.append("Cartoon found!\n");
+                this.errorTextArea.append("Setting up viewer and editor!\n");
+                this.editor = new TopsEditor(this, this.edHelpURL);
                 this.editor.addProtein(p);
             } else {
-                this.ErrorTextArea
-                        .append("There is a problem reading your cartoon.\n");
-                this.ErrorTextArea
-                        .append("Your cartoon identifier might not match your magic number.\n");
-                return;
+                this.errorTextArea.append("There is a problem reading your cartoon.\n");
+                this.errorTextArea.append("Your cartoon identifier might not match your magic number.\n");
             }
         } else if (status.equals("Processing")) {
-            this.ErrorTextArea.append("Your cartoon is not yet ready.\n");
-            this.ErrorTextArea.append("Please try again later.\n");
-            return;
+            this.errorTextArea.append("Your cartoon is not yet ready.\n");
+            this.errorTextArea.append("Please try again later.\n");
         } else {
-            this.ErrorTextArea.append("Your cartoon generation failed.\n");
-            this.ErrorTextArea.append("Please check the format of your PDB file.\n");
-            this.ErrorTextArea.append("If the format is OK, then contact us.\n");
-            return;
+            this.errorTextArea.append("Your cartoon generation failed.\n");
+            this.errorTextArea.append("Please check the format of your PDB file.\n");
+            this.errorTextArea.append("If the format is OK, then contact us.\n");
         }
 
     }
 
     public void printPostscript(List<String> ps) {
 
-        StringBuffer urlbase = new StringBuffer(ResultsApp.TopsFileURLbase);
+        StringBuilder urlbase = new StringBuilder(ResultsApp.TOPS_FILE_URL_BASE);
         urlbase.append(this.magic);
         urlbase.append("/");
-        urlbase.append(this.diag_id);
+        urlbase.append(this.diagId);
 
         AppletPSPrinter apsp = new AppletPSPrinter(ps, this.host, this.port,
-                ResultsApp.cgi_prog_path, ResultsApp.cgi_ps_print_prog, urlbase.toString());
+                ResultsApp.CGI_PROG_PATH, ResultsApp.CGI_PS_PRINT_PROG, urlbase.toString());
 
         try {
             apsp.doPrint();
@@ -253,48 +232,39 @@ public class ResultsApp extends Applet implements ActionListener, PostscriptPrin
             URL printURL = new URL(urlbase.toString());
             this.getAppletContext().showDocument(printURL, "_blank");
         } catch (IOException ioe) {
-            this.ErrorTextArea.append("Error encoutered while trying to print\n");
-            this.ErrorTextArea.append(ioe.getMessage());
-            this.ErrorTextArea.append("\n");
+            this.errorTextArea.append("Error encoutered while trying to print\n");
+            this.errorTextArea.append(ioe.getMessage());
+            this.errorTextArea.append("\n");
         }
 
     }
 
-    private Protein getTOPSdiag(String diagram_id, String magic)
-            throws MalformedURLException, IOException {
+    private Protein getTOPSdiag(String diagramId, String magic) throws IOException {
+        StringBuilder topsfileUrlSb = new StringBuilder(ResultsApp.TOPS_FILE_URL_BASE);
+        topsfileUrlSb.append(magic);
+        topsfileUrlSb.append("/");
+        topsfileUrlSb.append(diagramId);
+        topsfileUrlSb.append(".tops");
 
-        Protein p = null;
-
-        StringBuffer topsfile_url_sb = new StringBuffer(ResultsApp.TopsFileURLbase);
-        topsfile_url_sb.append(magic);
-        topsfile_url_sb.append("/");
-        topsfile_url_sb.append(diagram_id);
-        topsfile_url_sb.append(".tops");
-
-        URL topsfile_url = new URL(topsfile_url_sb.toString());
-        InputStream tis = topsfile_url.openStream();
+        URL topsfileUrl = new URL(topsfileUrlSb.toString());
+        InputStream tis = topsfileUrl.openStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(tis));
         TopsFileReader topsFileReader = new TopsFileReader();
-        p = topsFileReader.readTopsFile(br);
-
-        return p;
-
+        return topsFileReader.readTopsFile(br);
     }
 
-    private String getTOPSstatus(String diagram_id, String magic)
-            throws MalformedURLException, IOException {
+    private String getTOPSstatus(String diagramId, String magic) throws IOException {
 
-        StringBuffer topsfile_url_sb = new StringBuffer(ResultsApp.TopsFileURLbase);
-        topsfile_url_sb.append(magic);
-        topsfile_url_sb.append("/");
-        topsfile_url_sb.append("status");
+        StringBuilder topsfileUrlSb = new StringBuilder(ResultsApp.TOPS_FILE_URL_BASE);
+        topsfileUrlSb.append(magic);
+        topsfileUrlSb.append("/");
+        topsfileUrlSb.append("status");
 
-        URL topsfile_url = new URL(topsfile_url_sb.toString());
-        InputStream tis = topsfile_url.openStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(tis));
-
-        return br.readLine();
-
+        URL topsfileUrl = new URL(topsfileUrlSb.toString());
+        InputStream tis = topsfileUrl.openStream();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(tis))) {
+            return br.readLine();
+        }
     }
 
 }

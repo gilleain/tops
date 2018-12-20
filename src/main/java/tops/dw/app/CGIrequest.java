@@ -11,27 +11,24 @@ import java.io.*;
  */
 public class CGIrequest {
 
-    /* START instance variables */
+    private String errorString = null;
 
-    private String ErrorString = null;
+    private String host = null;
 
-    private String Host = null;
+    private int port = 80;
 
-    private int Port = 80;
+    private String method = "GET";
 
-    private String Method = "GET";
+    private String cgiProg = null;
 
-    private String CGI_prog = null;
-
-    private String Query = null;
+    private String query = null;
 
     private Socket s = null;
 
     private PrintWriter pw = null;
 
-    private InputStream response_stream = null;
+    private InputStream responseStream = null;
 
-    /* END instance variables */
 
     /**
      * The constructor takes
@@ -47,14 +44,12 @@ public class CGIrequest {
      * @param query:
      *            the query string
      */
-    public CGIrequest(String host, int port, String method, String cgi_prog,
-            String query) {
-
-        this.Host = host;
-        this.Port = port;
-        this.Method = method;
-        this.CGI_prog = cgi_prog;
-        this.Query = query;
+    public CGIrequest(String host, int port, String method, String cgiProg, String query) {
+        this.host = host;
+        this.port = port;
+        this.method = method;
+        this.cgiProg = cgiProg;
+        this.query = query;
 
     }
 
@@ -66,23 +61,23 @@ public class CGIrequest {
      */
     public InputStream doRequest() {
 
-        this.response_stream = null;
+        this.responseStream = null;
 
         try {
             String request = this.buildRequest();
-            this.response_stream = this.queryHTTPServer(request);
+            this.responseStream = this.queryHTTPServer(request);
         } catch (UnknownCGIMethodException ucme) {
-            this.response_stream = null;
-            this.ErrorString = "CGIRequest: unknown CGI method";
+            this.responseStream = null;
+            this.errorString = "CGIRequest: unknown CGI method";
         } catch (SocketException se) {
-            this.response_stream = null;
-            this.ErrorString = "CGIRequest: a socket exception occurred";
+            this.responseStream = null;
+            this.errorString = "CGIRequest: a socket exception occurred";
         } catch (IOException ioe) {
-            this.response_stream = null;
-            this.ErrorString = "CGIRequest: an IO exception occurred";
+            this.responseStream = null;
+            this.errorString = "CGIRequest: an IO exception occurred";
         } finally {
         }
-        return this.response_stream;
+        return this.responseStream;
 
     }
 
@@ -93,31 +88,30 @@ public class CGIrequest {
      * 
      */
     public String getErrorString() {
-        return this.ErrorString;
+        return this.errorString;
     }
 
     /**
      * MUST be called after doRequest but only when all data has been read from
      * the returned stream
      */
-    public void Close() throws IOException {
-        if (this.response_stream != null)
-            this.response_stream.close();
+    public void close() throws IOException {
+        if (this.responseStream != null)
+            this.responseStream.close();
         if (this.pw != null)
             this.pw.close();
         if (this.s != null)
             this.s.close();
     }
 
-    private InputStream queryHTTPServer(String request) throws SocketException,
-            IOException {
+    private InputStream queryHTTPServer(String request) throws IOException {
 
-        InputStream response_stream = null;
+        InputStream responseStream = null;
 
         try {
 
-            this.s = new Socket(this.Host, this.Port);
-            response_stream = this.s.getInputStream();
+            this.s = new Socket(this.host, this.port);
+            responseStream = this.s.getInputStream();
 
             PrintStream sout = new PrintStream(this.s.getOutputStream());
             sout.println(request);
@@ -130,7 +124,7 @@ public class CGIrequest {
 
         } finally {
         }
-        return response_stream;
+        return responseStream;
 
     }
 
@@ -138,15 +132,15 @@ public class CGIrequest {
 
         String request = null;
 
-        if (this.Method.equals("GET")) {
-            request = this.Method + " " + this.CGI_prog + "?" + this.Query + " HTTP/1.0\n"
+        if (this.method.equals("GET")) {
+            request = this.method + " " + this.cgiProg + "?" + this.query + " HTTP/1.0\n"
                     + "Content-type: application/x-www-form-urlencoded\n"
                     + "Accept: text/plain\n\n";
-        } else if (this.Method.equals("POST")) {
-            request = this.Method + " " + this.CGI_prog + " HTTP/1.0\n"
+        } else if (this.method.equals("POST")) {
+            request = this.method + " " + this.cgiProg + " HTTP/1.0\n"
                     + "Content-type: application/x-www-form-urlencoded\n"
                     + "Accept: text/plain\n" + "Content-length:"
-                    + this.Query.length() + "\n\n" + this.Query + "\n";
+                    + this.query.length() + "\n\n" + this.query + "\n";
         } else {
             throw new UnknownCGIMethodException();
         }

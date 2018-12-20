@@ -1,4 +1,4 @@
-package tops.dw.app;
+package tops.cli.view;
 
 import java.awt.Frame;
 import java.awt.Graphics2D;
@@ -8,12 +8,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.cli.ParseException;
+
+import tops.cli.BaseCommand;
 import tops.dw.io.TopsFileReader;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
@@ -21,26 +23,32 @@ import tops.dw.protein.TopsFileFormatException;
 import tops.port.model.DomainDefinition;
 import tops.web.display.applet.TopsDrawCanvas;
 
-public class TopsToImage {
+public class TopsToImageCommand extends BaseCommand {
 
-    public static void main(String args[]) {    // TODO: make this a command
-
-        TopsToImage tti = new TopsToImage();
-
-        if (args.length != 1) {
-            System.out.println("Usage: TopsToImage InputFile.tops");
-        } else {
-            String infile = args[0];
-            if (tti.makeImageFiles(infile) == 0) {
-                System.out.println("TopsToImage completed successfully");
-            } else {
-                System.out.println("TopsToImage failed");
-            }
-        }
-
+    @Override
+    public String getDescription() {
+        return "Make a tops file into an image";
     }
 
-    private int makeImageFiles(String infile) {
+    @Override
+    public String getHelp() {
+        return "InputFile.tops";
+    }
+
+    @Override
+    public void handle(String[] args) throws ParseException {
+        TopsToImageCommand tti = new TopsToImageCommand();
+
+        String infile = args[0];
+        if (tti.makeImageFiles(infile) == 0) {
+            output("TopsToImage completed successfully");
+        } else {
+            output("TopsToImage failed");
+        }
+    }
+    
+
+    public int makeImageFiles(String infile) {
 
         File inFile = new File(infile);
         String filestem = this.getFileStem(infile);
@@ -50,16 +58,13 @@ public class TopsToImage {
         try {
             p = new TopsFileReader().readTopsFile(inFile);
         } catch (FileNotFoundException e1) {
-            System.out
-                    .println("Error: file " + inFile.toString() + "not found");
+            error("Error: file " + inFile.toString() + "not found");
             return 1;
         } catch (TopsFileFormatException e1) {
-            System.out.println("Error: format error in file "
-                    + inFile.toString());
+            error("Error: format error in file " + inFile.toString());
             return 1;
         } catch (IOException e1) {
-            System.out.println("Error: IO error reading file "
-                    + inFile.toString());
+            error("Error: IO error reading file "+ inFile.toString());
             return 1;
         }
 
@@ -67,8 +72,9 @@ public class TopsToImage {
         List<DomainDefinition> domains = p.getDomainDefs();
 
         int n = 0;
-        Vector<TopsDrawCanvas> draw_canvs = new Vector<>();
-        float MinScale = 1.0F, scale;
+        List<TopsDrawCanvas> drawCanvases = new ArrayList<>();
+        float minScale = 1.0F;
+        float scale;
         int index = 0;
         for (Cartoon rootSSE : diagrams) {
             DomainDefinition domDefinition = domains.get(index);
@@ -84,21 +90,19 @@ public class TopsToImage {
             tdc.setSize(tdc.getPreferredSize());
 
             scale = tdc.getMaxScale();
-            if (scale < MinScale)
-                MinScale = scale;
+            if (scale < minScale)
+                minScale = scale;
 
-            draw_canvs.addElement(tdc);
+            drawCanvases.add(tdc);
             index++;
         }
 
-        Enumeration<TopsDrawCanvas> canvs = draw_canvs.elements();
-        while (canvs.hasMoreElements()) {
+        for (TopsDrawCanvas tdc : drawCanvases) {
 
             n++;
             outfile = filestem + n + ".png";
 
-            TopsDrawCanvas tdc = (TopsDrawCanvas) canvs.nextElement();
-            tdc.setCanvasCoordinates(MinScale);
+            tdc.setCanvasCoordinates(minScale);
 
             Frame f = new Frame("Dummy frame");
             Panel pn = new Panel();
@@ -115,11 +119,8 @@ public class TopsToImage {
                 this.printImage(outfile, w, h, img);
                 f.setVisible(false);
                 f.dispose();
-            } catch (InterruptedException ie) {
-                System.out.println("Error: interrupted while printing image");
-                return 1;
             } catch (IOException ioe) {
-                System.out.println("Error: IO problem while printing image");
+                error("Error: IO problem while printing image");
                 return 1;
             }
         }
@@ -128,8 +129,7 @@ public class TopsToImage {
 
     }
 
-    private void printImage(String outfile, int w, int h, Image img)
-            throws InterruptedException, IOException {
+    private void printImage(String outfile, int w, int h, Image img) throws IOException {
         BufferedImage bufferedImg = new BufferedImage(w, h,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = bufferedImg.createGraphics();
@@ -138,13 +138,13 @@ public class TopsToImage {
     }
 
 
-    private String getFileStem(String Filename) {
-        int seppt = Filename.lastIndexOf(".");
-        if (seppt >= Filename.length() || seppt < 0)
-            seppt = Filename.length();
+    private String getFileStem(String filename) {
+        int seppt = filename.lastIndexOf('.');
+        if (seppt >= filename.length() || seppt < 0)
+            seppt = filename.length();
 
-        return Filename.substring(0, seppt);
+        return filename.substring(0, seppt);
 
     }
-    
+
 }

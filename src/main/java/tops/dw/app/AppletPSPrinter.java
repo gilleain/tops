@@ -5,69 +5,63 @@ import java.io.*;
 
 public class AppletPSPrinter {
 
-
-    private List<String> Postscript = null;
+    private List<String> postscript = null;
 
     private String host = null;
 
     private int port = 80;
 
-    private String cgi_prog = null;
+    private String cgiProg = null;
 
-    private String ErrorString = "No error";
+    private String errorString = "No error";
 
-    private String base_url = null;
+    private String baseUrl = null;
 
-    public AppletPSPrinter(Vector<String> ps, String Host, int Port, String CGI_path,
-            String CGI_print_prog) {
-        this(ps, Host, Port, CGI_path, CGI_print_prog, null);
+    public AppletPSPrinter(List<String> ps, String host, int port, String cgiPath, String cgiPrintProg) {
+        this(ps, host, port, cgiPath, cgiPrintProg, null);
     }
 
-    public AppletPSPrinter(List<String> ps, String Host, int Port, String CGI_path,
-            String CGI_print_prog, String URLfilebase) {
-        this.Postscript = ps;
-        this.host = Host;
-        this.port = Port;
-        this.cgi_prog = CGI_path + CGI_print_prog;
-        this.base_url = URLfilebase;
+    public AppletPSPrinter(List<String> ps, String host, int port, String cgiPath, String cgiPrintProg, String urlFilebase) {
+        this.postscript = ps;
+        this.host = host;
+        this.port = port;
+        this.cgiProg = cgiPath + cgiPrintProg;
+        this.baseUrl = urlFilebase;
     }
 
     public String getErrorString() {
-        return this.ErrorString;
+        return this.errorString;
     }
 
     public void doPrint() throws IOException {
 
         if (this.host == null) {
-            this.ErrorString = "AppletPSPrinter: No Host";
-            throw new IOException(this.ErrorString);
+            this.errorString = "AppletPSPrinter: No Host";
+            throw new IOException(this.errorString);
         }
 
-        if (this.cgi_prog == null) {
-            this.ErrorString = "AppletPSPrinter: No CGI program";
-            throw new IOException(this.ErrorString);
+        if (this.cgiProg == null) {
+            this.errorString = "AppletPSPrinter: No CGI program";
+            throw new IOException(this.errorString);
         }
 
-        if (this.Postscript == null) {
-            this.ErrorString = "AppletPSPrinter: No PS";
-            throw new IOException(this.ErrorString);
+        if (this.postscript == null) {
+            this.errorString = "AppletPSPrinter: No PS";
+            throw new IOException(this.errorString);
         }
 
-        String query = this.formQuery(this.Postscript);
+        String query = this.formQuery(this.postscript);
 
         if (query != null) {
 
-            CGIrequest cgir = new CGIrequest(this.host, this.port, "POST", this.cgi_prog,
-                    query);
-            InputStream cgi_response = cgir.doRequest();
+            CGIrequest cgir = new CGIrequest(this.host, this.port, "POST", this.cgiProg, query);
+            InputStream cgiResponse = cgir.doRequest();
 
-            if (cgi_response == null) {
-                this.ErrorString = "AppletPSPrinter: CGI error";
-                throw new IOException(this.ErrorString);
+            if (cgiResponse == null) {
+                this.errorString = "AppletPSPrinter: CGI error";
+                throw new IOException(this.errorString);
             } else {
-
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        cgi_response));
+                BufferedReader br = new BufferedReader(new InputStreamReader(cgiResponse));
                 String line;
 
                 /* expect DONE in response */
@@ -77,43 +71,32 @@ public class AppletPSPrinter {
                 }
 
                 if (line == null) {
-                    this.ErrorString = "AppletPSPrinter: Error unexpected CGI response";
-                    throw new IOException(this.ErrorString);
+                    this.errorString = "AppletPSPrinter: Error unexpected CGI response";
+                    throw new IOException(this.errorString);
                 }
-
             }
-
-            cgir.Close();
+            cgir.close();
 
         } else {
-            this.ErrorString = "AppletPSPrinter: Error forming query";
-            throw new IOException(this.ErrorString);
+            this.errorString = "AppletPSPrinter: Error forming query";
+            throw new IOException(this.errorString);
         }
-
     }
 
     private String formQuery(List<String> postscript2) {
-
-        String query = null;
-
         if (postscript2 == null)
             return null;
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder query = new StringBuilder();
 
-        sb.append("URLbase:");
-        sb.append(this.base_url);
-        sb.append("\n");
+        query.append("URLbase:");
+        query.append(this.baseUrl);
+        query.append("\n");
 
         for (String element : postscript2) {
-            sb.append(element);
-            sb.append("\n");
+            query.append(element);
+            query.append("\n");
         }
-
-        query = sb.toString();
-
-        return query;
-
+        return query.toString();
     }
-
 }

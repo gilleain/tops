@@ -8,30 +8,25 @@ import java.io.*;
 
 public class AppletImagePrinter {
 
-    /* START instance variables */
-
     private Image image = null;
 
     private String host = null;
 
     private int port = 80;
 
-    private String cgi_prog = null;
+    private String cgiProg = null;
 
-    private String ErrorString = "No error";
+    private String errorString = "No error";
 
-    /* END instance variables */
-
-    public AppletImagePrinter(Image img, String Host, int Port,
-            String CGI_path, String CGI_print_prog) {
+    public AppletImagePrinter(Image img, String host, int port, String cgiPath, String cgiPrintProg) {
         this.image = img;
-        this.host = Host;
-        this.port = Port;
-        this.cgi_prog = CGI_path + CGI_print_prog;
+        this.host = host;
+        this.port = port;
+        this.cgiProg = cgiPath + cgiPrintProg;
     }
 
     public String getErrorString() {
-        return this.ErrorString;
+        return this.errorString;
     }
 
     public URL doPrint() {
@@ -39,17 +34,17 @@ public class AppletImagePrinter {
         URL target = null;
 
         if (this.host == null) {
-            this.ErrorString = "AppletImagePrinter: No Host";
+            this.errorString = "AppletImagePrinter: No Host";
             return null;
         }
 
-        if (this.cgi_prog == null) {
-            this.ErrorString = "AppletImagePrinter: No CGI program";
+        if (this.cgiProg == null) {
+            this.errorString = "AppletImagePrinter: No CGI program";
             return null;
         }
 
         if (this.image == null) {
-            this.ErrorString = "AppletImagePrinter: No Image";
+            this.errorString = "AppletImagePrinter: No Image";
             return null;
         }
 
@@ -57,18 +52,15 @@ public class AppletImagePrinter {
 
         if (query != null) {
 
-            CGIrequest cgir = new CGIrequest(this.host, this.port, "POST", this.cgi_prog,
-                    query);
-            InputStream cgi_response = cgir.doRequest();
+            CGIrequest cgir = new CGIrequest(this.host, this.port, "POST", this.cgiProg, query);
+            InputStream cgiResponse = cgir.doRequest();
 
-            if (cgi_response == null) {
+            if (cgiResponse == null) {
                 System.out.println(cgir.getErrorString());
-                this.ErrorString = "AppletImagePrinter: CGI error";
+                this.errorString = "AppletImagePrinter: CGI error";
                 target = null;
             } else {
-                try {
-                    BufferedReader br = new BufferedReader(
-                            new InputStreamReader(cgi_response));
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(cgiResponse))) {
                     String line;
 
                     /* expect URL_FOLLOWS in response */
@@ -77,42 +69,44 @@ public class AppletImagePrinter {
                         line = br.readLine();
                     }
 
-                    if (line.equals("URL_FOLLOWS")) {
+                    if ("URL_FOLLOWS".equals(line)) {
                         line = br.readLine();
-                        if (line != null) {
-                            try {
-                                target = new URL(line);
-                            } catch (MalformedURLException urle) {
-                                target = null;
-                                this.ErrorString = "AppletImagePrinter: URL Error";
-                            }
-                        } else {
-                            target = null;
-                            this.ErrorString = "AppletImagePrinter: Error unexpected CGI response";
-                        }
-
+                        target = getURL(line);
                     } else {
                         target = null;
-                        this.ErrorString = "AppletImagePrinter: Error unexpected CGI response";
+                        this.errorString = "AppletImagePrinter: Error unexpected CGI response";
                     }
                 } catch (IOException ioe) {
-                    this.ErrorString = "AppletImagePrinter: Error reading CGI response";
+                    this.errorString = "AppletImagePrinter: Error reading CGI response";
                     target = null;
                 }
             }
 
             try {
-                cgir.Close();
+                cgir.close();
             } catch (IOException e) {
             }
 
         } else {
-            this.ErrorString = "AppletImagePrinter: Error forming query";
+            this.errorString = "AppletImagePrinter: Error forming query";
             target = null;
         }
 
         return target;
-
+    }
+    
+    private URL getURL(String line) {
+        if (line != null) {
+            try {
+                return new URL(line);
+            } catch (MalformedURLException urle) {
+                this.errorString = "AppletImagePrinter: URL Error";
+                return null;
+            }
+        } else {
+            this.errorString = "AppletImagePrinter: Error unexpected CGI response";
+            return null;
+        }
     }
 
     private String formQuery(Image img) {
@@ -125,7 +119,7 @@ public class AppletImagePrinter {
         int w = 500;
         int h = 400;
 
-        int pixels[] = new int[w * h];
+        int[] pixels = new int[w * h];
         PixelGrabber pg = new PixelGrabber(img, 0, 0, w, h, pixels, 0, w);
         boolean success = false;
         try {
@@ -137,50 +131,37 @@ public class AppletImagePrinter {
         if (success) {
             ColorModel cm = pg.getColorModel();
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("P3 " + w + " " + h + " 255\n");
 
-            int i;
-            int red, green, blue;
-            int background[] = new int[3];
+            int[] background = new int[3];
             this.getBackground(cm, pixels, background);
 
-            for (i = 0; i < w * h; i++) {
+            for (int i = 0; i < w * h; i++) {
 
-                red = cm.getRed(pixels[i]);
-                green = cm.getGreen(pixels[i]);
-                blue = cm.getBlue(pixels[i]);
+                int red = cm.getRed(pixels[i]);
+                int green = cm.getGreen(pixels[i]);
+                int blue = cm.getBlue(pixels[i]);
 
-                if ((red != background[0]) || (green != background[1])
-                        || (blue != background[2])) {
-                    sb.append(i);
-                    sb.append(" ");
-                    sb.append(red);
-                    sb.append(" ");
-                    sb.append(green);
-                    sb.append(" ");
-                    sb.append(blue);
+                if (red != background[0] || green != background[1] || blue != background[2]) {
+                    sb.append(i).append(" ");
+                    sb.append(red).append(" ").append(green).append(" ").append(blue);
                     sb.append("\n");
                 }
             }
-
             query = sb.toString();
 
         } else {
             query = null;
         }
-
         return query;
-
     }
 
     /* for the moment we'll assume a white background */
-    private void getBackground(ColorModel cmod, int pixels[], int background[]) {
-
+    private void getBackground(ColorModel cmod, int[] pixels, int[] background) {
         background[0] = 255;
         background[1] = 255;
         background[2] = 255;
-
     }
 
 }
