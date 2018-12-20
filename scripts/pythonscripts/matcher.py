@@ -33,7 +33,7 @@ class Matcher(object):
 		for pattern_index in match_table.keys():
 			match_list = match_table[pattern_index]
 			if pattern_index in match_table_positions:
-			for i in range(match_list:
+				continue
 		target_index 
 
 if __name__=="__main__":

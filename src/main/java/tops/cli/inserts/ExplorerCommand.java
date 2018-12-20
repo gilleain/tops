@@ -5,14 +5,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.engine.PlainFormatter;
 import tops.engine.Result;
 import tops.engine.TParser;
@@ -21,24 +22,29 @@ import tops.engine.TopsStringFormatException;
 import tops.engine.helix.Explorer;
 import tops.engine.helix.Matcher;
 
-public class ExplorerCommand implements Command {
+public class ExplorerCommand extends BaseCommand {
+    
+    private Logger log = Logger.getLogger(ExplorerCommand.class.getName());
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Explorer ... "; // TODO
+    }
+
+    @Override
+    public String getHelp() {
+        return "-f <file> OR -s <string> OR -d <string> OR -m <file> OR -c <file> <string>";
     }
 
     @Override
     public void handle(String[] args) throws ParseException {
         if (args.length == 0) {
-            System.out.println("-f <file> OR -s <string> OR -d <string> OR -m <file> OR -c <file> <string>");
             System.exit(0);
         }
-        String mode = new String(); // this is the second flag, depending on
-                                    // whether file is specified or not
-        ArrayList<String> examples = new ArrayList<String>(); // shared between the argument
-                                                // modes
+        
+        // this is the second flag, depending on whether file is specified or not
+        String mode = "";
+        List<String> examples = new ArrayList<>(); // shared between the argument modes
 
         boolean matcherLogging = false;
         boolean explorerDebugLogging = false;
@@ -46,14 +52,13 @@ public class ExplorerCommand implements Command {
         if (args[0].equals("-f")) { // READ FROM A FILE
             String line;
             String filename = args[1];
-            try {
-                BufferedReader buff = new BufferedReader(new FileReader(filename));
+            try (BufferedReader buff = new BufferedReader(new FileReader(filename))) {
                 while ((line = buff.readLine()) != null) {
                     examples.add(line);
                 }
-                buff.close();
             } catch (IOException ioe) {
-                System.out.println(ioe);
+                error(ioe);
+                return;
             }
             mode = args[2];
         } else if (args[0].equals("-s")) { // USE A STRING
@@ -61,77 +66,68 @@ public class ExplorerCommand implements Command {
             explorerDebugLogging = true;
             examples.add(args[1]);
             mode = args[2];
-        } else if (args[0].equals("--")) { // -- TODO -- INTENDED TO PIPE IN
-                                            // DATA
+        } else if (args[0].equals("--")) { // -- TODO -- INTENDED TO PIPE IN DATA
             mode = args[1];
         }
 
         Explorer ex = new Explorer();
-        Logger exLogger = Logger.getLogger("tops.engine.helix.Explorer");
-        if (explorerDebugLogging) {
-            exLogger.setLevel(Level.ALL);
-            exLogger.addHandler(new StreamHandler(System.err,
-                    new PlainFormatter()));
-            exLogger.setUseParentHandlers(false);
+        
+        if (explorerDebugLogging) { // TODO - clashing logging techniques...
+            log.setLevel(Level.ALL);
+            log.addHandler(new StreamHandler(System.err, new PlainFormatter()));
+            log.setUseParentHandlers(false);
         } else {
-            exLogger.addHandler(new StreamHandler(System.out,
-                    new TabFormatter()));
-            exLogger.setUseParentHandlers(false);
+            log.addHandler(new StreamHandler(System.out, new TabFormatter()));
+            log.setUseParentHandlers(false);
         }
 
         try {
             if (mode.equals("-r")) { // REPRODUCE A LIST
                 for (int i = 0; i < examples.size(); i++) {
-                    String example = (String) examples.get(i);
-                    System.out.println("input....." + example);
+                    String example = examples.get(i);
+                    output("input....." + example);
                     ex.reproduce(example);
-                    System.out.println();
+                    output("\n");
                 }
-            } else if (mode.equals("-m")) { // MATCH A FILE OF PATTERNS TO A
-                                            // TARGET (ARGS[2])
+            } else if (mode.equals("-m")) { // MATCH A FILE OF PATTERNS TO A TARGET (ARGS[2])
                 if (args.length < 2)
-                    System.out.println("please supply filename and probe");
+                    error("please supply filename and probe");
                 String target = args[3];
                 Matcher ma = new Matcher();
-                String[] patterns = (String[]) examples.toArray(new String[0]);
+                String[] patterns = examples.toArray(new String[0]);
                 String[] results = ma.run(patterns, target);
                 for (int k = 0; k < results.length; k++) {
-                    System.out.println(results[k]);
+                    output(results[k]);
                 }
             } else if (mode.equals("-g")) { // FIND A PATTERN FOR A GROUP
 
-                String result = ex.findPattern((String[]) examples
-                        .toArray(new String[0]), matcherLogging);
-                System.out.println(result);
-            } else if (mode.equals("-c")) { // COMPARE ARG[2] TO THE CONTENTS OF
-                                            // ARG[1]
+                String result = ex.findPattern(examples.toArray(new String[0]), matcherLogging);
+                output(result);
+            } else if (mode.equals("-c")) { // COMPARE ARG[2] TO THE CONTENTS OF ARG[1]
                 String probe = args[3];
-                String[] exampleStrings = (String[]) examples
-                        .toArray(new String[0]);
-                Result[] results = ex.compare(exampleStrings, probe,
-                        matcherLogging);
+                String[] exampleStrings = examples.toArray(new String[0]);
+                Result[] results = ex.compare(exampleStrings, probe, matcherLogging);
                 for (int i = 0; i < results.length; i++) {
-                    System.out.println(results[i]);
+                    output(results[i].toString());
                 }
             } else if (mode.equals("-a")) { // ALL AGAINST ALL OF A FILE
-                ArrayList<String[]> pairList = new ArrayList<String[]>();
-                HashMap<String, String> instMap = new HashMap<String, String>(3000);
+                List<String[]> pairList = new ArrayList<>();
+                Map<String, String> instMap = new HashMap<>();
 
                 // use a map for the strings (more efficient lookup?)
-                ArrayList<String> tmpList = new ArrayList<String>();
+                List<String> tmpList = new ArrayList<>();
                 TParser tp = new TParser();
 
-                Iterator<String> itr = examples.iterator();
-                while (itr.hasNext()) {
-                    String nextLine = (String) itr.next();
-                    tp.load(nextLine);
+                for (String example : examples) {
+                    tp.load(example);
                     String name = tp.getName();
                     tmpList.add(name);
-                    instMap.put(name, nextLine); // KEY is the head/domId
+                    instMap.put(name, example); // KEY is the head/domId
                 }
                 boolean verbose = false;
                 // handle the indices to the loops
-                int lowerindex, upperindex;
+                int lowerindex;
+                int upperindex;
                 if (args.length > 3) {
                     lowerindex = Integer.parseInt(args[3]);
                     upperindex = Integer.parseInt(args[4]);
@@ -152,71 +148,59 @@ public class ExplorerCommand implements Command {
                 for (int i = lowerindex; i < upperindex; i++) {
                     for (int j = i + 1; j < tmpList.size(); j++) {
                         if (i != j) {
-                            String[] miniContainer = { (String) tmpList.get(i),
-                                    (String) tmpList.get(j) };
+                            String[] miniContainer = { tmpList.get(i), tmpList.get(j) };
                             pairList.add(miniContainer);
                         }
                     }
                 }
-                System.err.println("NOTE : " + pairList.size()
-                        + " comparisons!");
+                error("NOTE : " + pairList.size() + " comparisons!");
                 ex.allVsAll(pairList, instMap, verbose);
             } else if (mode.equals("-p")) { // COMPARE FIRST IN A LIST TO THE
                                             // REST OF THE LIST, PAIRWISE
-                String first = (String) examples.get(0);
-                ex.compare((String[]) examples.toArray(new String[0]), first,
-                        matcherLogging);
+                String first = examples.get(0);
+                ex.compare(examples.toArray(new String[0]), first, matcherLogging);
             } else if (mode.equals("-v")) {
-                ArrayList<String[]> pairList = new ArrayList<String[]>();
-                HashMap<String, String> instMap = new HashMap<String, String>(3000);
                 String pairFilename = args[3];
                 String verboseFlag = args[4];
-                String line;
-
-                try {
-                    BufferedReader buff = new BufferedReader(new FileReader(pairFilename));
-                    while ((line = buff.readLine()) != null) {
-                        int tab = line.indexOf("\t");
-                        String first = line.substring(0, tab);
-                        String second = line.substring(tab + 1, line.indexOf(
-                                "\t", tab + 1));
-                        // String second = line.substring(tab + 1);
-                        String[] miniContainer = { first, second };
-                        pairList.add(miniContainer);
-                    }
-                    buff.close();
-                } catch (IOException ioe) {
-                    System.out.println(ioe);
-                }
-
-                // use a map for the strings (more efficient lookup?)
-                TParser tp = new TParser();
-                Iterator<String> itr = examples.iterator();
-                while (itr.hasNext()) {
-                    String nextLine = (String) itr.next();
-                    tp.load(nextLine);
-                    String name = tp.getName();
-                    instMap.put(name, nextLine); // KEY is the head/domId
-                }
-
-                if (verboseFlag.equals("-v")) {
-                    ex.allVsAll(pairList, instMap, true);
-                } else {
-                    ex.allVsAll(pairList, instMap, false);
-                }
+                
+                versus(pairFilename, examples, verboseFlag);
             } else {
-                System.out.println("-f <file> or -s <string>");
+                error("-f <file> or -s <string>");
             }
         } catch (TopsStringFormatException tsfe) {
-            System.err.println(tsfe.getMessage());
-            tsfe.printStackTrace();
+            error(tsfe);
         }
     }
+    
+    private void versus(String pairFilename, List<String> examples, String verboseFlag) throws TopsStringFormatException {
+        Explorer ex = new Explorer();
+        List<String[]> pairList = new ArrayList<>();
+        Map<String, String> instMap = new HashMap<>();
+       
+        String line;
 
-    @Override
-    public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        try(BufferedReader buff = new BufferedReader(new FileReader(pairFilename))) {
+            while ((line = buff.readLine()) != null) {
+                int tab = line.indexOf('\t');
+                String first = line.substring(0, tab);
+                String second = line.substring(tab + 1, line.indexOf('\t', tab + 1));
+                String[] miniContainer = { first, second };
+                pairList.add(miniContainer);
+            }
+        } catch (IOException ioe) {
+            error(ioe);
+        }
+
+        // use a map for the strings (more efficient lookup?)
+        TParser tp = new TParser();
+        for(String nextLine : examples) {
+            tp.load(nextLine);
+            String name = tp.getName();
+            instMap.put(name, nextLine); // KEY is the head/domId
+        }
+
+        boolean isVerbose = verboseFlag.equals("-v");
+        ex.allVsAll(pairList, instMap, isVerbose);
     }
 
 }
