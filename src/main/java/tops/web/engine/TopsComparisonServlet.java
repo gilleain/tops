@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -20,38 +21,45 @@ import tops.engine.Result;
 import tops.engine.TopsStringFormatException;
 import tops.engine.drg.Comparer;
 
-public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
+public class TopsComparisonServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -7416381583234400690L;
+	private static final String PAGESIZE_ATTR = "pagesize";
 
-	private static String compareStartPageURL;
+    private static final String TOPNUM_ATTR = "topnum";
 
-    private static String advancedStartPageURL;
+    private static final String TARGET_SERVICE_ATTR = "targetService";
 
-    private static String matchStartPageURL;
+    private static final long serialVersionUID = -7416381583234400690L;
 
-    private static String servletURL;
+	private String compareStartPageURL;
 
-    private static String cartoonURL;
+    private String advancedStartPageURL;
 
-    private static String diagramURL;
+    private String matchStartPageURL;
 
-    private static String cathNumberURL;
+    private String servletURL;
 
-    private static String cathNameURL;
+    private String cartoonURL;
 
-    private static String scopURL;
+    private String diagramURL;
 
+    private String cathNumberURL;
+
+    private String cathNameURL;
+
+    private String scopURL;
+
+    @Override
     public void init() throws ServletException {
-        TopsComparisonServlet.compareStartPageURL = this.getInitParameter("compareStartPageURL");
-        TopsComparisonServlet.advancedStartPageURL = this.getInitParameter("advancedStartPageURL");
-        TopsComparisonServlet.matchStartPageURL = this.getInitParameter("matchStartPageURL");
-        TopsComparisonServlet.servletURL = this.getInitParameter("servletURL");
-        TopsComparisonServlet.cartoonURL = this.getInitParameter("cartoonURL");
-        TopsComparisonServlet.diagramURL = this.getInitParameter("diagramURL");
-        TopsComparisonServlet.cathNumberURL = this.getInitParameter("cathNumberURL");
-        TopsComparisonServlet.cathNameURL = this.getInitParameter("cathNameURL");
-        TopsComparisonServlet.scopURL = this.getInitParameter("scopURL");
+        this.compareStartPageURL = this.getInitParameter("compareStartPageURL");
+        this.advancedStartPageURL = this.getInitParameter("advancedStartPageURL");
+        this.matchStartPageURL = this.getInitParameter("matchStartPageURL");
+        this.servletURL = this.getInitParameter("servletURL");
+        this.cartoonURL = this.getInitParameter("cartoonURL");
+        this.diagramURL = this.getInitParameter("diagramURL");
+        this.cathNumberURL = this.getInitParameter("cathNumberURL");
+        this.cathNameURL = this.getInitParameter("cathNameURL");
+        this.scopURL = this.getInitParameter("scopURL");
     }
 
     public void displayIndex(int page, int startPage, int endPage,
@@ -60,16 +68,14 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         out.println("<colgroup width=\"15\"/><tr>");
         if (page > 5) {
             int prev = page - 5;
-            out.println("<td><a href=\"" + TopsComparisonServlet.servletURL + "?page=" + prev
-                    + "&name=" + name + "\">&lt;&lt;</a></td>");
+            cellWithLink(out, servletURL, "page=" + prev + "&name=" + name, "&lt;&lt;");
         }
 
         for (int j = startPage; j < endPage; j++) {
             out.println("<td>");
             if (j == page)
                 out.println("<b>");
-            out.println("<a href=\"" + TopsComparisonServlet.servletURL + "?page=" + j + "&name="
-                    + name + "\">" + j + "</a>");
+            cellWithLink(out, servletURL, "page=" + j + "&name=" + name, "&lt;&lt;");
             if (j == page)
                 out.println("</b>");
             out.println("</td>");
@@ -77,10 +83,17 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
 
         if (page < (totalPages - 5)) {
             int next = page + 5;
-            out.println("<td><a href=\"" + TopsComparisonServlet.servletURL + "?page=" + next
-                    + "&name=" + name + "\">&gt;&gt;</a></td>");
+            cellWithLink(out, servletURL, "page=" + next + "&name=" + name, "&gt;&gt;");
         }
         out.println("</tr></table></p>");
+    }
+    
+    private void cellWithLink(PrintWriter out, String url, String queryParams, String cellContents) {
+        out.println("<td><a href=\"" + url + "?" + queryParams + "\">" + cellContents + "</a></td>");
+    }
+    
+    private void imageCell(PrintWriter out, String imgSrc) {
+        out.println("<td><img src=\"" + imgSrc + "\"></img></td>");
     }
 
     public void displayPage(int page, int pageSize, List<Result> results,
@@ -103,18 +116,15 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         out.println("</style></head><body>");
 
         if (targetService.equals("compare")) {
-            out.println("<a href=\"" + TopsComparisonServlet.compareStartPageURL
-                    + "\">Compare again?</a><p>");
+            out.println("<a href=\"" + compareStartPageURL + "\">Compare again?</a><p>");
             out.println("<p><b>Pairwise comparison of " + classification
                     + " with target: " + targetName + "</b>");
         } else if (targetService.equals("advanced-compare")) {
-            out.println("<a href=\"" + TopsComparisonServlet.advancedStartPageURL
-                    + "\">Advanced Compare again?</a><p>");
+            out.println("<a href=\"" + advancedStartPageURL + "\">Advanced Compare again?</a><p>");
             out.println("<p><b>Pairwise comparison of " + classification
                     + " with target: " + targetName + "</b>");
         } else if (targetService.equals("advanced-match")) {
-            out.println("<a href=\"" + TopsComparisonServlet.advancedStartPageURL
-                    + "\">Advanced Match again?</a><p>");
+            out.println("<a href=\"" + advancedStartPageURL + "\">Advanced Match again?</a><p>");
             out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
             if (results.isEmpty()) {
@@ -123,8 +133,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 return;
             }
         } else if (targetService.equals("insert-match")) {
-            out.println("<a href=\"" + TopsComparisonServlet.advancedStartPageURL
-                    + "\">Insert Match again?</a><p>");
+            out.println("<a href=\"" + advancedStartPageURL + "\">Insert Match again?</a><p>");
             out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
             if (results.isEmpty()) {
@@ -133,11 +142,10 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 return;
             }
         } else {
-            out.println("<a href=\"" + TopsComparisonServlet.matchStartPageURL
-                    + "\">Classic Match again?</a><p>");
+            out.println("<a href=\"" + matchStartPageURL + "\">Classic Match again?</a><p>");
             out.println("<p><b>" + results.size() + " Matches for pattern: "
                     + targetName + " to " + classification + "</b>");
-            if (results.size() == 0) {
+            if (results.isEmpty()) {
             	// probably from pattern invention
                 out.println("Sorry, no matches for this pattern!"); 
                 return;
@@ -164,8 +172,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             edgeString = "none";
         }
         String patternDiagramURL = "/" + vertexString + "/" + edgeString + "/" + nameString + ".gif";
-        out.println("<img src=\"" + TopsComparisonServlet.diagramURL + "/300/100/none"
-        			+ patternDiagramURL + "\"/></p><hr>");
+        out.println("<img src=\"" + diagramURL + "/300/100/none" + patternDiagramURL + "\"/></p><hr>");
 
         if (pageSize > results.size())
             pageSize = results.size(); // no funny business!
@@ -173,7 +180,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         int startIndex = (page - 1) * pageSize; // page-1 because array index is
                                                 // from 0!
         int endIndex = startIndex + pageSize;
-        int totalPages = Math.round(results.size() / pageSize);
+        int totalPages = results.size() / pageSize;
 
         int startPage = (page > 5) ? page - 5 : 1;
         int endPage = (page < (totalPages - 5)) ? page + 5 : totalPages;
@@ -205,14 +212,14 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         boolean evenrow = true; // a flag to enable altering the class of alternate group 'blocks'
         float compression = 0;
 
-        String nameUrl = new String();
-        String numUrl = new String();
+        String nameUrl = "";
+        String numUrl = "";
         if (classification.equals("scop")) {
-            nameUrl = TopsComparisonServlet.scopURL; // scop treats names and numbers the same - as 'keys'
-            numUrl = TopsComparisonServlet.scopURL;
+            nameUrl = scopURL; // scop treats names and numbers the same - as 'keys'
+            numUrl = scopURL;
         } else {
-            nameUrl = TopsComparisonServlet.cathNameURL;
-            numUrl = TopsComparisonServlet.cathNumberURL;
+            nameUrl = cathNameURL;
+            numUrl = cathNumberURL;
         }
         String body = null;
         String tail = null;
@@ -240,11 +247,10 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 if (tail.equals(""))
                     tail = "none";
                 compression = result.getCompression();
-                // compression = 1 - compression;
             }
 
             for (int j = 0; j < nameList.size(); j++) {
-                String nameAndClass = (String) nameList.get(j);
+                String nameAndClass = nameList.get(j);
                 int tabindex = nameAndClass.indexOf('\t');
                 String name = nameAndClass.substring(0, tabindex);
                 String classif = nameAndClass.substring(tabindex + 1);
@@ -254,20 +260,20 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                     out.println("<tr class=\"oddrow\">");
                 }
                 if (comparisonStyle) {
-                    String cartoonImageURL = TopsComparisonServlet.cartoonURL + "/" + classification
+                    String cartoonImageURL = cartoonURL + "/" + classification
                             + "/100x100/" + name + ".gif";
-                    String diagramImageURL = TopsComparisonServlet.diagramURL + "/200/100/none/"
+                    String diagramImageURL = diagramURL + "/200/100/none/"
                             + body + "/" + tail + "/" + name + ".gif";
 
-                    out.println("<td><img src=\"" + cartoonImageURL + "\"></img></td>");
-                    out.println("<td><img src=\"" + diagramImageURL + "\"></img></td>");
+                    imageCell(out, cartoonImageURL);
+                    imageCell(out, diagramImageURL);
                     out.println("<td>" + compression + "</td>");
                 } else {
-                    String cartoonImageHighlightedURL = TopsComparisonServlet.cartoonURL + "/"
+                    String cartoonImageHighlightedURL = cartoonURL + "/"
                             + classification + "/100x100/" + matchString + "/"
                             + name + ".gif";
 
-                    out.println("<td><img src=\"" + cartoonImageHighlightedURL + "\"></img></td>");
+                    imageCell(out, cartoonImageHighlightedURL);
                 }
                 out.println("<td><a href=\"" + nameUrl + name + "\">" + name + "</a></td>");
                 out.println("<td><a href=\"" + numUrl + classif + "\">" + classif + "</a></td>");
@@ -285,7 +291,7 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             list = map.get(key);
             list.add(value); // ADD VALUE! :)
         } else {
-            list = new ArrayList<String>(); // make a new list, starting with the current key
+            list = new ArrayList<>(); // make a new list, starting with the current key
             list.add(value); // look lively!
         }
         map.put(key, list);
@@ -313,13 +319,14 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
-        String topResultS, pageSizeS, target, targetService; // all got
-                                                                // /either/ from
-                                                                // session /or/
-                                                                // request.
+        // all got /either/ from session /or/request.
+        String topResultS;
+        String pageSizeS;
+        String target;
+        String targetService;
+        
         String[] subclasses; // parsed from a 'sub' string from input
-        String targetName = "NONAME"; // get the target from request and parse
-                                        // to get head
+        String targetName = "NONAME"; // get the target from request and parse to get head
         Map<Integer, List<String>> idToNameMap = null;
 
         if (newSubmission == null) {
@@ -329,41 +336,47 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
                 return;
             }
 
-            targetService = (String) session.getAttribute("targetService");
-            topResultS = (String) session.getAttribute("topnum");
-            pageSizeS = (String) session.getAttribute("pagesize");
+            targetService = (String) session.getAttribute(TARGET_SERVICE_ATTR);
+            topResultS = (String) session.getAttribute(TOPNUM_ATTR);
+            pageSizeS = (String) session.getAttribute(PAGESIZE_ATTR);
             targetName = (String) session.getAttribute("targetName");
             target = (String) session.getAttribute("target");
             idToNameMap = (Map<Integer, List<String>>) session.getAttribute("idToNameMap");
             subclasses = (String[]) session.getAttribute("subclasses");
 
-            if (pageS != null)
-                page = Integer.parseInt(pageS);
-            if (pageSizeS != null)
-                pageSize = Integer.parseInt(pageSizeS);
-
-            this.displayPage(page, pageSize, results, out, targetName, target,
-                    idToNameMap, targetService, subclasses[0]);
+            try {
+                if (pageS != null)
+                    page = Integer.parseInt(pageS);
+                if (pageSizeS != null)
+                    pageSize = Integer.parseInt(pageSizeS);
+    
+                this.displayPage(page, pageSize, results, out, targetName, target,
+                        idToNameMap, targetService, subclasses[0]);
+            } catch (NumberFormatException n) {
+                this.log("Number format exception " + n.getMessage());
+            }
 
         } else {
 
-            targetService = (String) request.getAttribute("targetService");
-            topResultS = (String) request.getAttribute("topnum");
-            pageSizeS = (String) request.getAttribute("pagesize");
+            targetService = (String) request.getAttribute(TARGET_SERVICE_ATTR);
+            topResultS = (String) request.getAttribute(TOPNUM_ATTR);
+            pageSizeS = (String) request.getAttribute(PAGESIZE_ATTR);
             targetName = (String) request.getAttribute("targetName");
             target = (String) request.getAttribute("target");
-            int firstSpace = target.indexOf(" ");
+            int firstSpace = target.indexOf(' ');
             targetName = target.substring(0, firstSpace);
 
-            String sub = (String) request.getAttribute("sub"); // CATH, nreps,
-                                                                // superfamily,
-                                                                // etc
+            String sub = (String) request.getAttribute("sub"); // CATH, nreps, superfamily, etc
             subclasses = sub.split(","); // split the subclass list into bits
 
-            if (pageS != null)
-                page = Integer.parseInt(pageS);
-            if (pageSizeS != null)
-                pageSize = Integer.parseInt(pageSizeS);
+            try {
+                if (pageS != null)
+                    page = Integer.parseInt(pageS);
+                if (pageSizeS != null)
+                    pageSize = Integer.parseInt(pageSizeS);
+            } catch (NumberFormatException n) {
+                log("Number format exception for " + pageS + " or " + pageSizeS + " " + n.getMessage());
+            }
             this.log("targetName = " + targetName + " target = " + target
                     + " pagesize = " + pageSizeS + " maxresults = "
                     + topResultS);
@@ -371,76 +384,65 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             // subclasses[0] should be the classification (CATH/SCOP)
             // subclasses[1] should be the largest group of the list or 'all'
 
-            String query_a = "SELECT TOPS_nr.* FROM TOPS_instance_nr, TOPS_nr ";
-            String query_b = "SELECT dom_id, gr, class FROM TOPS_instance_nr ";
-            String where_expression = "WHERE classification = '"
-                    + subclasses[0] + "'";
+            String queryA = "SELECT TOPS_nr.* FROM TOPS_instance_nr, TOPS_nr ";
+            String queryB = "SELECT dom_id, gr, class FROM TOPS_instance_nr ";
+            StringBuilder whereExpression = new StringBuilder("WHERE classification = '" + subclasses[0] + "'");
 
             if (!subclasses[1].equals("all")) {
-                where_expression += " AND subclass IN (";
-                for (int k = 1; k < subclasses.length; k++) { // starts from
-                                                                // 1!, becuase
-                                                                // subclasses[0]
-                                                                // is CATH/SCOP
-                    where_expression += "'" + subclasses[k] + "'";
+                whereExpression.append(" AND subclass IN (");
+                for (int k = 1; k < subclasses.length; k++) { // starts from 1!, because subclasses[0] is CATH/SCOP
+                    whereExpression.append("'" + subclasses[k] + "'");
                     if (k < subclasses.length - 1)
-                        where_expression += " , ";
+                        whereExpression.append(" , ");
                 }
-                where_expression += ")";
+                whereExpression.append(")");
             }
 
-            query_b += where_expression + ";";
+            queryB += whereExpression + ";";
 
             if (targetService.equals("match") || targetService.equals("advanced-match")) {
                 tops.engine.TParser parser = new tops.engine.TParser(target);
                 String vertexstring = parser.getVertexString();
-                where_expression += " AND length(vertex_string) >= " + vertexstring.length();
+                whereExpression.append(" AND length(vertex_string) >= " + vertexstring.length());
             } else if (targetService.equals("insert-match")) {
                 tops.engine.inserts.TParser parser = new tops.engine.inserts.TParser(target);
                 char[] vertices = parser.getVerticesWithInserts();
-                where_expression += " AND length(vertex_string) >= "  + vertices.length;
+                whereExpression.append(" AND length(vertex_string) >= "  + vertices.length);
             }
 
-            query_a += where_expression + " AND gr = group_id GROUP BY group_id;";
+            queryA += whereExpression + " AND gr = group_id GROUP BY group_id;";
 
-            this.log("A = " + query_a + " B = " + query_b);
+            this.log("A = " + queryA + " B = " + queryB);
 
-            List<String> instances = new ArrayList<String>();
+            List<String> instances = new ArrayList<>();
 
-            try {
+            try (
                 Connection connection = DataSourceWrapper.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery(query_a);
+                ResultSet rs = statement.executeQuery(queryA)) {
                 while (rs.next()) {
-                    String nextInstance = new String();
-                    nextInstance += rs.getString("group_id") + " ";
-                    nextInstance += rs.getString("vertex_string") + " ";
-                    nextInstance += rs.getString("edge_string");
-                    // log(nextInstance); !!
-                    instances.add(nextInstance);
+                    StringBuilder nextInstance = new StringBuilder();
+                    nextInstance.append(rs.getString("group_id") + " ");
+                    nextInstance.append(rs.getString("vertex_string") + " ");
+                    nextInstance.append(rs.getString("edge_string"));
+                    instances.add(nextInstance.toString());
                 }
-                rs.close();
 
                 // now concatenate the names together into a csv list, put lists
                 // into a map
-                ResultSet rs2 = statement.executeQuery(query_b);
-                idToNameMap = new HashMap<Integer, List<String>>();
-                // idToClassMap = new HashMap();
+                ResultSet rs2 = statement.executeQuery(queryB);
+                idToNameMap = new HashMap<>();
 
                 while (rs2.next()) {
-                    Integer gr = new Integer(rs2.getInt("gr"));
+                    Integer gr = rs2.getInt("gr");
 
-                    String dom_id = rs2.getString("dom_id");
+                    String domId = rs2.getString("dom_id");
                     String cl = rs2.getString("class");
-                    String data = dom_id + "\t" + cl;
+                    String data = domId + "\t" + cl;
 
                     this.mapList(idToNameMap, gr, data); // map the groupid to the domain name
-                    // mapList(idToClassMap, gr, cl); //map the groupid to the
-                    // class //ERRR...just use the one map
                 }
                 rs2.close();
-                statement.close();
-                connection.close();
             } catch (SQLException squeel) {
                 this.log("sql exception!", squeel);
             }
@@ -482,13 +484,13 @@ public class TopsComparisonServlet extends javax.servlet.http.HttpServlet {
             }
         }
 
-        session.setAttribute("topnum", topResultS);
-        session.setAttribute("pagesize", pageSizeS);
+        session.setAttribute(TOPNUM_ATTR, topResultS);
+        session.setAttribute(PAGESIZE_ATTR, pageSizeS);
         session.setAttribute("targetName", targetName);
         session.setAttribute("target", target);
         session.setAttribute("results", results);
         session.setAttribute("idToNameMap", idToNameMap);
-        session.setAttribute("targetService", targetService);
+        session.setAttribute(TARGET_SERVICE_ATTR, targetService);
         session.setAttribute("subclasses", subclasses);
         // session.setAttribute("idToClassMap", idToClassMap);
 
