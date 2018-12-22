@@ -24,22 +24,13 @@ public class LevelIterator implements Iterator<Level> {
 
     public boolean hasNext() {
         this.nextPosition = this.nextPosition(1, this.subLevels);
-        // System.out.println("next Position = " + this.nextPosition);
-        if (this.nextPosition != -1) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.nextPosition != -1;
     }
 
     public int nextPosition(int currentDepth, List<Level> currentSubLevel) {
         if (currentDepth == this.relativeTargetDepth) {
-            // System.out.println("At target depth : " + currentDepth);
             int nextPositionAtThisLevel = 1 + this.positions[this.positions.length - 1];
             if (nextPositionAtThisLevel >= currentSubLevel.size()) {
-                // System.out.println("Reached end of level at depth : " +
-                // currentDepth + " index = " + nextPositionAtThisLevel + " size
-                // = " + currentSubLevel.size());
                 this.positions[currentDepth - 1] = -1;
                 return -1;
             } else {
@@ -47,13 +38,11 @@ public class LevelIterator implements Iterator<Level> {
                 return nextPositionAtThisLevel;
             }
         } else {
-            // System.out.println("Reached depth : " + currentDepth);
             int indexAtThisLevel = this.positions[currentDepth - 1];
             Level subLevel = currentSubLevel.get(indexAtThisLevel);
             int nextPositionAtLowerLevel = this.nextPosition(currentDepth + 1, subLevel.getSubLevels());
             // not found => go on to the next
             if (nextPositionAtLowerLevel == -1) {
-                // System.out.println("Shifting at depth : " + currentDepth);
                 int nextIndexAtThisLevel = indexAtThisLevel + 1;
                 if (nextIndexAtThisLevel < currentSubLevel.size()) {
                     this.positions[currentDepth - 1]++;
@@ -87,6 +76,4 @@ public class LevelIterator implements Iterator<Level> {
         }
     }
 
-    public void remove() {
-    }
 }

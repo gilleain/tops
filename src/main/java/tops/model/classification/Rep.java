@@ -49,7 +49,7 @@ public class Rep {
 
     @Override
     public String toString() {
-        StringBuffer stringbuffer = new StringBuffer();
+        StringBuilder stringbuffer = new StringBuilder();
         stringbuffer.append(this.levelName).append(' ');
         stringbuffer.append(this.pdbID).append(' ');
         // stringbuffer.append(this.data).append(' ');

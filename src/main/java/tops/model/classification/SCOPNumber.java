@@ -68,8 +68,9 @@ public class SCOPNumber {
                 return this.sp;
             case 6:
                 return this.px;
+            default:
+                return -1;
         }
-        return -1;
     }
 
     /**

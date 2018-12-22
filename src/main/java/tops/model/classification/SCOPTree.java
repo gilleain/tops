@@ -62,7 +62,7 @@ public class SCOPTree implements ClassificationTree {
      */
 
     public String translate(int name) {
-        return SCOPLevel.fullNames[name];
+        return SCOPLevel.FULL_NAMES[name];
     }
 
     /**

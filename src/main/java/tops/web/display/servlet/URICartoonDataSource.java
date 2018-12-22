@@ -18,6 +18,7 @@ import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
 import tops.dw.protein.SecStrucElement;
 import tops.port.model.DomainDefinition;
+import tops.port.model.SSEType;
 
 /**
  * Get the location for a protein-cartoon from a URI like "/cath/1.2/2bopA0.gif" or
@@ -34,8 +35,7 @@ public class URICartoonDataSource implements CartoonDataSource {
 	
 	private Protein protein;
 
-	public URICartoonDataSource(HttpServletRequest request, ServletConfig config) 
-			throws StringIndexOutOfBoundsException, IOException {
+	public URICartoonDataSource(HttpServletRequest request, ServletConfig config) throws IOException {
 		String uri = request.getPathInfo(); 
 		PathParser pathParser = new PathParser();
 		this.params = pathParser.parsePath(uri);
@@ -43,7 +43,6 @@ public class URICartoonDataSource implements CartoonDataSource {
 		// translate the group ID into a location for the data
 		String pathToFiles = config.getInitParameter(params.get("group"));
         this.sourceDirectory = config.getServletContext().getRealPath(pathToFiles);
-        System.out.println(pathToFiles + " -> " + sourceDirectory);
         
         if (params.get("group").equals("session")) {
 			protein = (Protein) request.getSession().getAttribute("protein");	// ugh...
@@ -81,7 +80,6 @@ public class URICartoonDataSource implements CartoonDataSource {
 
 	private Protein getProtein(String domid, File f) throws IOException {
 		Protein p = new TopsFileReader().readTopsFile(f);
-//		System.out.println("Got protein " + p.getName());
 
 		List<Cartoon> doms = p.getLinkedLists();
 		int domainIndex = p.getDomainIndex(new CathCode(domid));
@@ -93,7 +91,6 @@ public class URICartoonDataSource implements CartoonDataSource {
 		Cartoon s = doms.get(domainIndex);
 		DomainDefinition d = p.getDomainDefs().get(domainIndex);
         pp.addTopsLinkedList(s, d);
-//        System.out.println("Made protein " + pp.getName());
         return pp;
 	}
 
@@ -122,9 +119,9 @@ public class URICartoonDataSource implements CartoonDataSource {
 		for (int i = 0; i < bits.length; i++) {
 			int index = Integer.parseInt(bits[i]);
 			SecStrucElement s = cartoon.getSSEByNumber(index);
-			if (s.getType().equals("E")) {
+			if (s.getType() == SSEType.EXTENDED) {
 				s.setColour(strandColor);
-			} else if (s.getType().equals("H")) {
+			} else if (s.getType() == SSEType.HELIX) {
 				s.setColour(helixColor);
 			} else {
 				s.setColour(otherColor);

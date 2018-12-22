@@ -18,7 +18,7 @@ public class RepSet {
     private BitSet repBitSet;
 
     public RepSet() {
-        this.reps = new ArrayList<Rep>();
+        this.reps = new ArrayList<>();
         this.repBitSet = new BitSet();
     }
 
@@ -35,7 +35,7 @@ public class RepSet {
     }
 
     public Rep getRep(int i) {
-        return (Rep) this.reps.get(i);
+        return this.reps.get(i);
     }
 
     public int indexOfID(String pdbID) {
@@ -98,7 +98,7 @@ public class RepSet {
     }
 
     public List<String> getInstances() {
-        List<String> instances = new ArrayList<String>(this.cardinality());
+        List<String> instances = new ArrayList<>(this.cardinality());
         for (int i = 0; i < this.size(); i++) {
             if (!this.repBitSet.get(i)) {
                 instances.add(this.reps.get(i).getTopsString());
@@ -128,8 +128,6 @@ public class RepSet {
     public tops.engine.inserts.Pattern generatePatternWithInserts() {
         try {
             Comparer ex = new Comparer();
-            // String pattern =
-            // ex.findPatternStringWithInserts(this.getInstances());
             tops.engine.drg.Pattern simplePattern = 
                     ex.findPattern(this.getInstances());
             float compression = 1 - Utilities.doCompression(this.getInstances(),
@@ -148,10 +146,7 @@ public class RepSet {
     public tops.engine.drg.Pattern generatePattern() {
         try {
             Comparer ex = new Comparer();
-            tops.engine.drg.Pattern pattern = ex.findPattern(this
-                    .getInstances());
-            // System.out.println("DEBUG : pattern created = " + pattern);
-            return pattern;
+            return ex.findPattern(this.getInstances());
         } catch (TopsStringFormatException tsfe) {
             System.err.println(tsfe);
             return new tops.engine.drg.Pattern();
@@ -164,7 +159,7 @@ public class RepSet {
 
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         for (int i = 0; i < this.size(); i++) {
             if (!this.repBitSet.get(i)) {
                 stringBuffer.append(this.getRep(i).toString());

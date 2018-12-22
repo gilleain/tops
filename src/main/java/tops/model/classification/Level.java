@@ -9,23 +9,23 @@ import java.util.List;
 
 public class Level {
 
-    public final static int ROOT = 0;
+    public static final int ROOT = 0;
 
-    public final static int C = 1;
+    public static final int C = 1;
 
-    public final static int A = 2;
+    public static final int A = 2;
 
-    public final static int T = 3;
+    public static final int T = 3;
 
-    public final static int H = 4;
+    public static final int H = 4;
 
-    public final static int S = 5;
+    public static final int S = 5;
 
-    public final static int N = 6;
+    public static final int N = 6;
 
-    public final static int I = 7;
+    public static final int I = 7;
 
-    public final static int D = 8;
+    public static final int D = 8;
 
     public int depth;
 
@@ -40,7 +40,7 @@ public class Level {
     public Level() {
         this.depth = Level.ROOT;
         this.levelCode = "UNKNOWN";
-        this.subLevels = new ArrayList<Level>();
+        this.subLevels = new ArrayList<>();
         this.repSet = new RepSet();
     }
 
@@ -55,8 +55,16 @@ public class Level {
         this(depth, levelCode, fullCode);
     }
 
-    public boolean equals(Level other) {
-        return this.fullCode.equals(other.getFullCode());
+    public boolean equals(Object other) {
+        if (other instanceof Level) {
+            Level otherLevel = (Level) other;
+            return this.fullCode.equals(otherLevel.getFullCode());
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return fullCode.hashCode();
     }
 
     public static String levelName(int depth) {
@@ -79,8 +87,9 @@ public class Level {
                 return "Identical";
             case Level.D:
                 return "Domain";
+            default:
+                return "Unknown";
         }
-        return "Unknown";
     }
 
     public void addSubLevel(Level subLevel) {
@@ -130,16 +139,15 @@ public class Level {
             Level existingLevel = this.getSubLevel(subLevelCode);
             // no subLevel found
             if (existingLevel == null) {
-                StringBuffer fullCode = new StringBuffer();
+                StringBuilder fullCodeBuilder = new StringBuilder();
                 for (int i = 0; i <= subLevelPosition; i++) {
-                    fullCode.append(bits[i]).append(".");
+                    fullCodeBuilder.append(bits[i]).append(".");
                 }
-                existingLevel = new Level(this.depth + 1, subLevelCode, fullCode.toString());
+                existingLevel = new Level(this.depth + 1, subLevelCode, fullCodeBuilder.toString());
                 this.addSubLevel(existingLevel);
             }
             existingLevel.addRep(rep);
         } else if (bits.length == this.depth) {
-            // System.out.println("adding rep " + rep + " to " + this);
             this.repSet.addRep(rep);
         } else {
             System.err.println("gone beyond the level " + this.depth + " " + code);
@@ -171,12 +179,12 @@ public class Level {
     public static Level fromFile(String filename, int cathLevelConstant, String levelName) throws IOException {
         String line;
         Level level = new Level(cathLevelConstant, levelName, levelName);
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(filename));
-        while ((line = bufferedReader.readLine()) != null) {
-            Rep rep = new Rep(levelName, line);
-            level.addRep(rep);
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filename))) {
+            while ((line = bufferedReader.readLine()) != null) {
+                Rep rep = new Rep(levelName, line);
+                level.addRep(rep);
+            }
         }
-        bufferedReader.close();
         return level;
     }
 
@@ -190,7 +198,7 @@ public class Level {
 
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append("Level ").append(Level.levelName(this.depth))
                 .append(" ").append(this.fullCode);
         if (this.hasReps()) {
@@ -198,7 +206,7 @@ public class Level {
         }
         for (int i = 0; i < this.subLevels.size(); i++) {
             stringBuffer.append("\n");
-            Level subLevel = (Level) this.subLevels.get(i);
+            Level subLevel = this.subLevels.get(i);
             stringBuffer.append(subLevel.toString());
         }
         return stringBuffer.toString();

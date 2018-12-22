@@ -15,7 +15,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import tops.dw.protein.Cartoon;
@@ -24,12 +23,17 @@ import tops.port.model.Direction;
 import tops.view.cartoon.builder.BuilderFactory;
 import tops.view.cartoon.builder.GraphicsBuilder;
 
-//the 'director' class for CartoonBuilders
-//usage :
-//	c = new CartoonDrawer();
-//  c.draw("name", "PDF" | "IMG", cartoon);
-//  Obj o = c.getProduct();
 
+/**
+ * The 'director' class for CartoonBuilders
+ * usage :
+ *  c = new CartoonDrawer();
+ *  c.draw("name", "PDF" | "IMG", cartoon);
+ *  Obj o = c.getProduct();
+ * 
+ * @author gilleain
+ *
+ */
 public class CartoonDrawer {
 
     private static final int BORDER_WIDTH = 10;
@@ -63,7 +67,6 @@ public class CartoonDrawer {
         // neded to convert c tops coordinates to Java coordinates
         cartoon.invertY(); 
         Rectangle bb = cartoon.boundingBox();
-        System.err.println("bb before = " + bb);
 
         this.centerDiagram(cartoon, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, bb.width, bb.height, bb);
         Point currentCorner = bb.getLocation();
@@ -73,25 +76,18 @@ public class CartoonDrawer {
 
     private Rectangle init(Cartoon cartoon, int length, int w, int h) {
         Rectangle bb = cartoon.boundingBox();
-        //System.err.println("bb before = " + bb);
 
         // get the largest dimension
         int largestDimension = Math.max(bb.width, bb.height); 
 
-        //System.err.println("largest dimension = " + largestDimension + " length = " + length);
-
         // rounding can give you 0.0!
         float scale = ((float) length / (float) largestDimension); 
 
-        //System.err.println("scale = " + scale);
         cartoon.applyScale(scale);
         cartoon.invertY(); // needed to convert c tops coordinates to Java  coordinates
         if (scale != 1.0) bb = cartoon.boundingBox(); // get the new bounds
 
-        //System.err.println("bb after = " + bb);
         Point currentCorner = bb.getLocation();
-
-        //System.err.println("location of current corner = " + currentCorner);
 
         this.centerDiagram(cartoon, CartoonDrawer.BORDER_WIDTH, CartoonDrawer.BORDER_WIDTH, w, h, bb);
 
@@ -109,16 +105,6 @@ public class CartoonDrawer {
                 this.drawConnection(builder, last, s);
             }
             last = s;
-        }
-    }
-
-    private void invertY(SecStrucElement root) {
-        for (SecStrucElement s : new ArrayList<SecStrucElement>()) { // TODO
-            s.getPosition().y *= -1;
-
-            for (Point p : s.getConnectionTo()) {
-                p.y *= -1;
-            }
         }
     }
 
@@ -143,9 +129,6 @@ public class CartoonDrawer {
         Point currentCenter = new Point(bounds.x + (bounds.width / 2), bounds.y + (bounds.height / 2));
         Point trueCenter = new Point((x + width) / 2, (y + height) / 2);
 
-        System.err.println("Current center = " + currentCenter);
-        System.err.println("True center = " + trueCenter);
-
         int shiftX = trueCenter.x - currentCenter.x;
         int shiftY = trueCenter.y - currentCenter.y;
 
@@ -164,7 +147,9 @@ public class CartoonDrawer {
         int rmax = Integer.MIN_VALUE;
 
         Point pos;
-        int rad, x, y;
+        int rad;
+        int x;
+        int y;
         for (SecStrucElement s : cartoon.getSSEs()) {
             pos = s.getPosition();
             x = pos.x;
@@ -289,7 +274,7 @@ public class CartoonDrawer {
          * draw to border rather than centre if direction is up (U) or if Type
          * is N or C
          */
-        if (to.getDirection().equals("U") || to.getType() == CTERMINUS || to.getType() == NTERMINUS) {
+        if (to.getDirection() == Direction.UP || to.getType() == CTERMINUS || to.getType() == NTERMINUS) {
             if (to.getType() == EXTENDED) {
                 pointTo = this.upTriangleBorder(to.getPosition(),
                         from.getPosition(), radiusTo);
@@ -331,8 +316,12 @@ public class CartoonDrawer {
      */
     private Point circleBorder(Point p1, Point p2, int r) {
 
-        double xb, yb;
-        double x1, y1, x2, y2;
+        double xb;
+        double yb;
+        double x1;
+        double y1;
+        double x2;
+        double y2;
 
         x1 = p1.x;
         y1 = p1.y;
@@ -358,10 +347,14 @@ public class CartoonDrawer {
      */
     private Point downTriangleBorder(Point p1, Point p2, int r) {
 
-        double xb, yb;
-        double x1, y1, x2, y2;
+        double xb;
+        double yb;
+        double x1;
+        double y1;
+        double x2;
+        double y2;
 
-        double theta = 0.0, gamma = 0.0;
+        double gamma = 0.0;
 
         double l;
 
@@ -377,7 +370,7 @@ public class CartoonDrawer {
         double s = p1.distance(p2);
 
         /* theta in range -PI < theta <= PI */
-        theta = Math.atan2(y2 - y1, x2 - x1);
+        double theta = Math.atan2(y2 - y1, x2 - x1);
 
         if ((-pi6 < theta) && (theta <= pi2)) {
             gamma = theta - pi6;
@@ -405,10 +398,14 @@ public class CartoonDrawer {
      */
     private Point upTriangleBorder(Point p1, Point p2, int r) {
 
-        double xb, yb;
-        double x1, y1, x2, y2;
+        double xb;
+        double yb;
+        double x1;
+        double y1;
+        double x2;
+        double y2;
 
-        double theta = 0.0, gamma = 0.0;
+        double gamma = 0.0;
 
         double l;
 
@@ -424,7 +421,7 @@ public class CartoonDrawer {
         double s = p1.distance(p2);
 
         /* theta in range -PI < theta <= PI */
-        theta = Math.atan2(y2 - y1, x2 - x1);
+        double theta = Math.atan2(y2 - y1, x2 - x1);
 
         if ((-pi2 < theta) && (theta <= pi6)) {
             gamma = theta + pi6;

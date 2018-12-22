@@ -31,7 +31,7 @@ public class SCOPLevel {
     public static final int PX = 6;
 
     /** The actual strings for the level names */
-    public static final String[] fullNames = new String[] { "Class", "Fold",
+    public static final String[] FULL_NAMES = new String[] { "Class", "Fold",
             "Superfamily", "Family", "Protein", "Species", "Domain" };
 
     /** The level name (Class, Fold, Superfamily, Family, etc) for this level */
@@ -64,7 +64,7 @@ public class SCOPLevel {
         this.name = name;
         this.sunid = sunid;
         this.repName = repName;
-        this.children = new ArrayList<Object>();
+        this.children = new ArrayList<>();
 
         // determine the name of the next level : -1 indicates the leaves
         this.childLevelName = -1;
@@ -180,11 +180,11 @@ public class SCOPLevel {
      *            assembling.
      */
 
-    public void getReps(SCOPNumber scopNumber, ArrayList<Integer> repInts) {
+    public void getReps(SCOPNumber scopNumber, List<Integer> repInts) {
         // add a rep to the list if necessary
         if (this.name != SCOPLevel.ROOT
                 && this.repName.equals(scopNumber.getDomainID())) {
-            repInts.add(new Integer(this.name));
+            repInts.add(this.name);
         }
 
         // no more reps
@@ -227,7 +227,7 @@ public class SCOPLevel {
     @Override
     public String toString() {
         if (this.name != SCOPLevel.ROOT) {
-            return SCOPLevel.fullNames[this.name] + " " + this.sunid
+            return SCOPLevel.FULL_NAMES[this.name] + " " + this.sunid
                     + " rep : " + this.repName;
         }
         return "ROOT";

@@ -141,11 +141,11 @@ public class ClassificationServlet extends HttpServlet {
         // now get the names of the levels we are looking at ... if we can
         try {
             if (classificationSchemeName.equals("CATH")) {
-                levelName = CATHLevel.fullNames[levelIndex];
-                subLevelName = CATHLevel.fullNames[subLevelIndex];
+                levelName = CATHLevel.FULL_NAMES[levelIndex];
+                subLevelName = CATHLevel.FULL_NAMES[subLevelIndex];
             } else if (classificationSchemeName.equals("SCOP")) {
-                levelName = SCOPLevel.fullNames[levelIndex];
-                subLevelName = SCOPLevel.fullNames[subLevelIndex];
+                levelName = SCOPLevel.FULL_NAMES[levelIndex];
+                subLevelName = SCOPLevel.FULL_NAMES[subLevelIndex];
             } else {
                 this.warning("Unknown classification scheme : " + classificationSchemeName, response);
                 return;

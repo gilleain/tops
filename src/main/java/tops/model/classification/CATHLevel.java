@@ -31,7 +31,7 @@ public class CATHLevel {
     public static final int S100 = 6;
 
     /** The actual strings for the level names */
-    public static final String[] fullNames = new String[] { "Class",
+    public static final String[] FULL_NAMES = new String[] { "Class",
             "Architecture", "Topology", "Homology", "S35 Family", "S95 Family",
             "S100 Family" };
 
@@ -65,7 +65,7 @@ public class CATHLevel {
         this.name = name;
         this.code = code;
         this.repName = repName;
-        this.children = new ArrayList<Object>();
+        this.children = new ArrayList<>();
 
         // determine the name of the next level : -1 indicates the leaves
         this.childLevelName = -1;
@@ -180,7 +180,7 @@ public class CATHLevel {
      *            the list of ints we are assembling.
      */
 
-    public void getReps(CATHNumber cathNumber, ArrayList<Integer> repInts) {
+    public void getReps(CATHNumber cathNumber, List<Integer> repInts) {
         // add a rep to the list if necessary
         if (this.name != CATHLevel.ROOT
                 && this.repName.equals(cathNumber.getDomainID())) {
@@ -231,7 +231,7 @@ public class CATHLevel {
     @Override
     public String toString() {
         if (this.name != CATHLevel.ROOT) {
-            return CATHLevel.fullNames[this.name] + " " + this.code + " rep : "
+            return CATHLevel.FULL_NAMES[this.name] + " " + this.code + " rep : "
                     + this.repName;
         }
         return "ROOT";

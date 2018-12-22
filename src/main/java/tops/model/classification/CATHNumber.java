@@ -6,13 +6,13 @@ package tops.model.classification;
 
 public class CATHNumber {
 
-    private int C;
+    private int classNumber;
 
-    private int A;
+    private int architectureNumber;
 
-    private int T;
+    private int topologyNumber;
 
-    private int H;
+    private int homologyNumber;
 
     private int S35;
 
@@ -22,12 +22,11 @@ public class CATHNumber {
 
     private String domainID;
 
-    public CATHNumber(int C, int A, int T, int H, int S35, int S95, int S100,
-            String domainID) {
-        this.C = C;
-        this.A = A;
-        this.T = T;
-        this.H = H;
+    public CATHNumber(int classNumber, int architectureNumber, int topologyNumber, int homologyNumber, int S35, int S95, int S100, String domainID) {
+        this.classNumber = classNumber;
+        this.architectureNumber = architectureNumber;
+        this.topologyNumber = topologyNumber;
+        this.homologyNumber = homologyNumber;
         this.S35 = S35;
         this.S95 = S95;
         this.S100 = S100;
@@ -45,21 +44,22 @@ public class CATHNumber {
     public int getCodeForName(int name) {
         switch (name) {
             case 0:
-                return this.C;
+                return this.classNumber;
             case 1:
-                return this.A;
+                return this.architectureNumber;
             case 2:
-                return this.T;
+                return this.topologyNumber;
             case 3:
-                return this.H;
+                return this.homologyNumber;
             case 4:
                 return this.S35;
             case 5:
                 return this.S95;
             case 6:
                 return this.S100;
+            default:
+                return -1;
         }
-        return -1;
     }
 
     /**
@@ -72,11 +72,11 @@ public class CATHNumber {
     }
 
     public String getFullCode() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(this.C).append(".");
-        stringBuffer.append(this.A).append(".");
-        stringBuffer.append(this.T).append(".");
-        stringBuffer.append(this.H).append(".");
+        StringBuilder stringBuffer = new StringBuilder();
+        stringBuffer.append(this.classNumber).append(".");
+        stringBuffer.append(this.architectureNumber).append(".");
+        stringBuffer.append(this.topologyNumber).append(".");
+        stringBuffer.append(this.homologyNumber).append(".");
         stringBuffer.append(this.S35).append(".");
         stringBuffer.append(this.S95).append(".");
         stringBuffer.append(this.S100);

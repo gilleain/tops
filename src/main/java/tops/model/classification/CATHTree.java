@@ -61,7 +61,7 @@ public class CATHTree implements ClassificationTree {
      */
 
     public String translate(int name) {
-        return CATHLevel.fullNames[name];
+        return CATHLevel.FULL_NAMES[name];
     }
 
     /**
