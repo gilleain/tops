@@ -5,10 +5,10 @@ import java.io.IOException;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.model.classification.SCOPTree;
 
-public class ScopTreeCommand implements Command {
+public class ScopTreeCommand extends BaseCommand {
 
     @Override
     public String getDescription() {
@@ -26,7 +26,7 @@ public class ScopTreeCommand implements Command {
             SCOPTree tree = SCOPTree.fromFile(new File(args[0]));
             tree.printToStream(System.out);
         } catch (IOException ioe) {
-            System.err.println(ioe);
+            error(ioe);
         }
     }
 }

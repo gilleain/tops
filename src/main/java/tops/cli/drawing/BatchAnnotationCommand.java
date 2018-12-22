@@ -3,6 +3,7 @@ package tops.cli.drawing;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.cli.ParseException;
 
@@ -29,8 +30,9 @@ public class BatchAnnotationCommand implements Command {
         
         Map<String, List<Integer>> map = BatchAnnotater.parse(new File(inputFile));
         
-        for (String pdbid : map.keySet()) {
-            List<Integer> r = map.get(pdbid);
+        for (Entry<String, List<Integer>> entry : map.entrySet()) {
+            String pdbid = entry.getKey();
+            List<Integer> r = entry.getValue();
             int[] residuesToAnnotate = new int[r.size()];
             for (int i = 0; i < r.size(); i++) {
                 residuesToAnnotate[i] = r.get(i);

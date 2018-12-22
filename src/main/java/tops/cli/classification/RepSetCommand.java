@@ -4,24 +4,22 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.ParseException;
 
-import com.sun.istack.internal.logging.Logger;
-
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.engine.inserts.Pattern;
 import tops.model.classification.Rep;
 import tops.model.classification.RepSet;
 
-public class RepSetCommand implements Command {
+public class RepSetCommand extends BaseCommand {
     
-    private Logger log = Logger.getLogger(RepSetCommand.class);
+    private Logger log = Logger.getLogger(RepSetCommand.class.getName());
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
+        return "";
     }
 
     @Override
@@ -42,28 +40,28 @@ public class RepSetCommand implements Command {
                 repSet.addRep(rep);
             }
         } catch (IOException e) {
-            log.logException(e, Level.ALL);
+            log.log(Level.ALL, e.toString());
         }
 
-        log.info(repSet.toString());
+        output(repSet.toString());
 
         int halfSize = repSet.size() / 2;
 
-        log.info("1st random subset : ");
+        output("1st random subset : ");
         RepSet firstHalf = repSet.randomSubset(halfSize);
-        log.info(firstHalf.toString());
-        log.info(firstHalf.generatePattern().toString());
+        output(firstHalf.toString());
+        output(firstHalf.generatePattern().toString());
 
-        log.info("2nd random subset : ");
+        output("2nd random subset : ");
         RepSet secondHalf = repSet.randomSubset(halfSize);
-        log.info(secondHalf.toString());
-        log.info(secondHalf.generatePatternWithInserts().toString());
+        output(secondHalf.toString());
+        output(secondHalf.generatePatternWithInserts().toString());
 
         repSet.resetBitSet();
 
         Pattern pattern = repSet.generatePatternWithInserts();
         boolean matched = repSet.matches(pattern);
-        log.info(pattern + " matches = " + matched);
+        output(pattern + " matches = " + matched);
     }
 
 }

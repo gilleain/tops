@@ -12,7 +12,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 
 import tops.cli.BaseCLIHandler;
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.dw.io.TopsFileReader;
 import tops.dw.protein.Cartoon;
 import tops.dw.protein.Protein;
@@ -20,7 +20,7 @@ import tops.dw.protein.TopsFileFormatException;
 import tops.port.model.DomainDefinition;
 import tops.view.cartoon.CartoonDrawer;
 
-public class CartoonCommand implements Command {
+public class CartoonCommand extends BaseCommand {
     
     public static final String KEY = "cartoon";
     
@@ -37,10 +37,10 @@ public class CartoonCommand implements Command {
     public void handle(String[] args) throws ParseException {
         CLIHandler handler = new CLIHandler().processArguments(args);
         
-        int w = 300;
-        int h = 200;
+        final int w = 300;
+        final int h = 200;
 
-        System.err.println("Making " + handler.outputType 
+        error("Making " + handler.outputType 
                         + " file for " + handler.topsFilepath
                         + " in " + handler.outputFilepath);
         
@@ -49,36 +49,46 @@ public class CartoonCommand implements Command {
         try {
             TopsFileReader topsFileReader = new TopsFileReader();
             Protein protein = topsFileReader.readTopsFile(new File(handler.topsFilepath));
-            List<DomainDefinition> dd = protein.getDomainDefs();
-            List<Cartoon> ll = protein.getLinkedLists();
 
             if (handler.outputType.equals("PDF") || handler.outputType.equals("IMG")) {
-                FileOutputStream fos = new FileOutputStream(handler.outputFilepath);
-                
-                for (int i = 0; i < dd.size(); i++) {
-//                    DomainDefinition d = (DomainDefinition) dd.get(i);
-                    Cartoon cartoon = ll.get(i);
-                    drawer.draw(handler.topsFilepath, handler.outputType, w, h, cartoon, fos);
-                }
-                
+                handleBinaryFormat(handler, protein, drawer, w, h);
             } else if (handler.outputType.equals("SVG") || handler.outputType.equals("PS")) {
-                PrintWriter pw = new PrintWriter(handler.outputFilepath);
-
-                for (int i = 0; i < dd.size(); i++) {
-//                    DomainDefinition d = (DomainDefinition) dd.get(i);
-                    Cartoon cartoon = ll.get(i);
-                    drawer.draw(handler.topsFilepath, handler.outputType, cartoon, pw);
-                }
-                pw.flush();
-                pw.close();
+                handleVectorFormat(handler, protein, drawer);
             }
         
         } catch (TopsFileFormatException tffe) {
-            System.err.println(tffe.toString());
+            error(tffe.toString());
         } catch (FileNotFoundException fnf) {
-            System.err.println(fnf.toString());
+            error(fnf.toString());
         } catch (IOException ioe) {
-            System.err.println(ioe.toString());
+            error(ioe.toString());
+        }
+    }
+    
+    private void handleBinaryFormat(CLIHandler handler, Protein protein, CartoonDrawer drawer, int w, int h) {
+        List<DomainDefinition> dd = protein.getDomainDefs();
+        List<Cartoon> ll = protein.getLinkedLists();
+        try (FileOutputStream fos = new FileOutputStream(handler.outputFilepath)) {
+        
+            for (int i = 0; i < dd.size(); i++) {
+                Cartoon cartoon = ll.get(i);
+                drawer.draw(handler.topsFilepath, handler.outputType, w, h, cartoon, fos);
+            }
+        } catch (IOException ioe) {
+            error(ioe);
+        }
+    }
+    
+    private void handleVectorFormat(CLIHandler handler, Protein protein,  CartoonDrawer drawer) throws IOException {
+        List<DomainDefinition> dd = protein.getDomainDefs();
+        List<Cartoon> ll = protein.getLinkedLists();
+        try (PrintWriter pw = new PrintWriter(handler.outputFilepath)) {
+
+            for (int i = 0; i < dd.size(); i++) {
+                Cartoon cartoon = ll.get(i);
+                drawer.draw(handler.topsFilepath, handler.outputType, cartoon, pw);
+            }
+            pw.flush();
         }
     }
     
@@ -122,7 +132,7 @@ public class CartoonCommand implements Command {
         }
         
         private void printHelp() {
-            System.err.println("Help");
+            error("Help");
         }
         
     }

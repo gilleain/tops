@@ -5,15 +5,14 @@ import java.util.Iterator;
 
 import org.apache.commons.cli.ParseException;
 
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.model.classification.Level;
 
-public class LevelIteratorCommand implements Command {
+public class LevelIteratorCommand extends BaseCommand {
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Describe a CATH hierarchy file in terms of its levels";
     }
 
     @Override
@@ -29,39 +28,35 @@ public class LevelIteratorCommand implements Command {
             Level root = Level.fromFile(filename, Level.ROOT, "test");
 
             Iterator<Level> cLevelIterator = root.getSubLevelIterator(Level.C);
-            System.out.println("Classes : ");
+            output("Classes : ");
             while (cLevelIterator.hasNext()) {
                 Level classLevel = cLevelIterator.next();
-                System.out.println(Level.levelName(classLevel.depth) + " "
-                        + classLevel.getFullCode());
+                output(Level.levelName(classLevel.depth) + " " + classLevel.getFullCode());
             }
 
             Iterator<Level> aLevelIterator = root.getSubLevelIterator(Level.A);
-            System.out.println("Architectures : ");
+            output("Architectures : ");
             while (aLevelIterator.hasNext()) {
                 Level architectureLevel = aLevelIterator.next();
-                System.out.println(Level.levelName(architectureLevel.depth)
-                        + " " + architectureLevel.getFullCode());
+                output(Level.levelName(architectureLevel.depth) + " " + architectureLevel.getFullCode());
             }
 
             Iterator<Level> tLevelIterator = root.getSubLevelIterator(Level.T);
-            System.out.println("Topologies : ");
+            output("Topologies : ");
             while (tLevelIterator.hasNext()) {
                 Level topologyLevel = tLevelIterator.next();
-                System.out.println(Level.levelName(topologyLevel.depth) + " "
-                        + topologyLevel.getFullCode());
+                output(Level.levelName(topologyLevel.depth) + " " + topologyLevel.getFullCode());
             }
 
             Iterator<Level> hLevelIterator = root.getSubLevelIterator(Level.H);
-            System.out.println("Homologous Superfamilies : ");
+            output("Homologous Superfamilies : ");
             while (hLevelIterator.hasNext()) {
                 Level homologyLevel = hLevelIterator.next();
-                System.out.println(Level.levelName(homologyLevel.depth) + " "
-                        + homologyLevel.getFullCode());
+                output(Level.levelName(homologyLevel.depth) + " " + homologyLevel.getFullCode());
             }
 
         } catch (IOException ioe) {
-            System.out.println(ioe);
+            error(ioe);
         }
         
     }
