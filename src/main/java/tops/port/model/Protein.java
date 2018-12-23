@@ -41,14 +41,13 @@ public class Protein {
     
     ///////////////////////
 
-    public int getSequenceNumber(int PDBIndex, char Chain) {
-//        for (int i = 0; i < sequenceLength; i++) {
-//            if ((PDBIndices[i] == PDBIndex)
-//                    && (GetChainIdentifier(i) == Chain)) {
-//                return i;
-//            }
-//        }
-        return -1; // XXX TODO
+    public int getSequenceNumber(int pdbIndex, char chainCode) {
+        for (Chain chain : chains) {
+            if (chain.getName() == chainCode) {
+                chain.getPDBIndex(pdbIndex);    /// XXX TODO - is this right?
+            }
+        }
+        return -1;
     }
 
 }

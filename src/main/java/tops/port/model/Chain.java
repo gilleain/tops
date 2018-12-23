@@ -570,20 +570,20 @@ public class Chain {
          }
      }
 
-    public List<SSE> getListAtXPosition(SSE startSSE, double XPosition) {
-        List<SSE> filtered = new ArrayList<SSE>();
+    public List<SSE> getListAtXPosition(SSE startSSE, double xPosition) {
+        List<SSE> filtered = new ArrayList<>();
         for (SSE p : this.iterFixed(startSSE)) {
-            if (p.getCartoonX() == XPosition) {
+            if (p.getCartoonX() == xPosition) {
                 filtered.add(p);
             }
         }
         return filtered;
     }
 
-    public List<SSE> getListAtPosition(SSE startSSE, double XPosition, double YPosition) {
-        List<SSE> filtered = new ArrayList<SSE>();
+    public List<SSE> getListAtPosition(SSE startSSE, double xPosition, double yPosition) {
+        List<SSE> filtered = new ArrayList<>();
         for (SSE p : this.iterFixed(startSSE)) {
-            if (p.getCartoonX() == XPosition && p.getCartoonY() == YPosition) {
+            if (p.getCartoonX() == xPosition && p.getCartoonY() == yPosition) {
                 filtered.add(p);
             }
         }
@@ -699,7 +699,6 @@ public class Chain {
         Point2d center = this.calculateCenter();
         double w2 = ((double)size.width) / 2;
         double h2 = ((double)size.height) / 2;
-        // TODO : use Rectangle2D.Double?
         return new Rectangle2D.Double(center.x - w2, center.y - h2, center.x + w2, center.y + h2);
     }
 

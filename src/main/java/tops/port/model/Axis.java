@@ -7,14 +7,14 @@ import javax.vecmath.Vector3d;
 
 public class Axis {
     
-    private char sseType;
+    private SSEType sseType;
     private double length;
     private Vector3d axisStartPoint;
     private Vector3d axisFinishPoint;
 
-    public Axis(List<Point3d> coords) { 
+    public Axis(SSEType sseType, List<Point3d> coords) { 
         int n = coords.size();
-        boolean isE = (this.sseType == 'E');    /// XXX TODO
+        boolean isE = (this.sseType == SSEType.EXTENDED);
         if ((n < 3 && isE) || (n < 5 && !isE)) {
             this.axisStartPoint = new Vector3d(coords.get(0));
             this.axisFinishPoint = new Vector3d(coords.get(n - 1));
@@ -29,7 +29,7 @@ public class Axis {
     }
     
 
-    public char getSseType() {
+    public SSEType getSseType() {
         return sseType;
     }
 
@@ -98,9 +98,9 @@ public class Axis {
         /* Diagonalise matrix and sort eigen values */
         double[] v = new double[n];
         double[][] e = new double[n][n];
-        int njr = Jacobi( m, 3, v, e);    // TODO - try/catch?
+        int njr = jacobi( m, 3, v, e);    // TODO - try/catch?
         
-        Eigsrt( v, e, 3 );
+        eigsrt( v, e, 3 );
 
         /* Store unit vector of axis */
         int j=((isE)?0:2);
@@ -122,8 +122,8 @@ public class Axis {
         }
 
         /* Calculate beginning and end */
-        double sb = DotProduct( ap, st );
-        double se = DotProduct( ap, fn );
+        double sb = dotProduct( ap, st );
+        double se = dotProduct( ap, fn );
         for (int i=0;i<3;i++) {
                 st[i] = c[i] + sb * ap[i];
                 fn[i] = c[i] + se * ap[i];
@@ -133,10 +133,10 @@ public class Axis {
         axisFinishPoint = new Vector3d(fn[0], fn[1], fn[2]);
 
         /* return length of axis */
-        return Math.sqrt(SQR(st[0]-fn[0])+SQR(st[1]-fn[1])+SQR(st[2]-fn[2]));
+        return Math.sqrt(square(st[0]-fn[0])+square(st[1]-fn[1])+square(st[2]-fn[2]));
     }
     
-    private double SQR(double x) { return x * x; }
+    private double square(double x) { return x * x; }
     
     /*
         Function to calculate dot product.
@@ -147,7 +147,7 @@ public class Axis {
     
         Version 1: 21st November 1991.
      */
-    private double DotProduct(double[] a, double[] b) {
+    private double dotProduct(double[] a, double[] b) {
         int i;
         double dotp = 0.0;
 
@@ -166,7 +166,7 @@ public class Axis {
         this routine sorts the eigenvalues into descending order and rearranges
         the columns of v correspondingly
      */
-    private void Eigsrt(double[] d, double[][] v, int n) {
+    private void eigsrt(double[] d, double[][] v, int n) {
 
         for (int i=0;i<n-1;i++) {
             int k = i;
@@ -204,15 +204,22 @@ public class Axis {
 
     Tom F. July 1992.
 */
-    private void ROTATE(double s, double tau, double[][] a, int i, int j, int k, int l) {
+    private void rotate(double s, double tau, double[][] a, int i, int j, int k, int l) {
         double g = a[i][j];
         double h = a[k][l];
         a[i][j] = g-s*(h+g*tau);
         a[k][l] = h+s*(g-h*tau);
     }
 
-    private int Jacobi(double[][] a, int n, double[] d, double[][] v) {
-        double tresh,theta,tau,t,s,h,g,c;
+    private int jacobi(double[][] a, int n, double[] d, double[][] v) {
+        double tresh;
+        double theta;
+        double tau;
+        double t;
+        double s;
+        double h;
+        double g;
+        double c;
         double[] b = new double[n];
         double[] z = new double[n];
         
@@ -267,16 +274,16 @@ public class Axis {
                         d[iq] += h;
                         a[ip][iq]=0.0;
                         for (int j=0;j<=ip-1;j++) {
-                            ROTATE(s, tau, a,j,ip,j,iq);
+                            rotate(s, tau, a,j,ip,j,iq);
                         }
                         for (int j=ip+1;j<=iq-1;j++) {
-                            ROTATE(s, tau, a,ip,j,j,iq);
+                            rotate(s, tau, a,ip,j,j,iq);
                         }
                         for (int j=iq+1;j<n;j++) {
-                            ROTATE(s, tau, a,ip,j,iq,j);
+                            rotate(s, tau, a,ip,j,iq,j);
                         }
                         for (int j=0;j<n;j++) {
-                            ROTATE(s, tau, v,j,ip,j,iq);
+                            rotate(s, tau, v,j,ip,j,iq);
                         }
                         ++nrot;
                     }
@@ -311,25 +318,25 @@ public class Axis {
         return this.length;
     }
     
-    private Vector3d diff(Vector3d a, Vector3d b) {
-        Vector3d c = new Vector3d(a);
-        c.sub(b);
-        return c;
+    private static Vector3d diff(Vector3d vec1, Vector3d vec2) {
+        Vector3d vec3 = new Vector3d(vec1);
+        vec3.sub(vec2);
+        return vec3;
     }
     
-    private Vector3d mult(Vector3d a, Vector3d b) {
+    private static Vector3d mult(Vector3d a, Vector3d b) {
         Vector3d c = new Vector3d(a);
         c.angle(b);
         return c;
     }
     
-    private Vector3d mult(Vector3d a, double d) {
+    private static Vector3d mult(Vector3d a, double d) {
         Vector3d x = new Vector3d(a);
         x.scale(d);
         return x;
     }
     
-    private Vector3d plus(Vector3d a, Vector3d b) {
+    private static Vector3d plus(Vector3d a, Vector3d b) {
         Vector3d c = new Vector3d(a);
         c.add(b);
         return c;
@@ -384,64 +391,68 @@ public class Axis {
             ejbj = diff(plus(pcj, bj), ej);
             
             // Return the torsion angle and other values
-            return new TorsionResult( pck, pcj, sk, sj, Axis.torsion(ekbk, pck, pcj, ejbj));
+            return new TorsionResult( pck, pcj, sk, sj, torsion(ekbk, pck, pcj, ejbj));
         }
+    }
+    
+    private static double div(Vector3d vec, double scale) {
+        vec.scale(scale);
+        return vec.length();    // XXX TODO
     }
 
     public static double torsion(Vector3d a, Vector3d b, Vector3d c, Vector3d d) {
-        double conv = 0.01745329;
+        final double conv = 0.01745329;
 
         // Calculate vectors and lengths a-b, b-c, c-d 
-//        Vector3d a_b = diff(b, a);
-//        Vector3d b_c = diff(c, b);
-//        Vector3d c_d = diff(d, c);
+        Vector3d aDiffB = diff(b, a);
+        Vector3d bDiffC = diff(c, b);
+        Vector3d cDiffD = diff(d, c);
 
-//        double len_a_b = a_b.length();
-//        double len_b_c = b_c.length();
-//        double len_c_d = c_d.length();
+        double lenAB = aDiffB.length();
+        double lenBC = bDiffC.length();
+        double lenCD = cDiffD.length();
 
         // Error check, are any vectors of zero length ?
-//        if (len_a_b == 0.0 || len_b_c == 0.0 || len_c_d == 0.0) return -999.0;
+        if (lenAB == 0.0 || lenBC == 0.0 || lenCD == 0.0) return -999.0;
 
         // Calculate dot products to form cosines 
-//        Vector3d ab_bc = mult(mult(a_b, b_c), 1 / (len_a_b * len_b_c));
-//        Vector3d ab_cd = mult(mult(a_b, c_d), 1 / (len_a_b * len_c_d));
-//        Vector3d bc_cd = mult(mult(b_c, c_d), 1 / (len_b_c * len_c_d));
+        Vector3d abBC = mult(mult(aDiffB, bDiffC), 1 / (lenAB * lenBC));
+        Vector3d abCD = mult(mult(aDiffB, cDiffD), 1 / (lenAB * lenCD));
+        Vector3d bcCD = mult(mult(bDiffC, cDiffD), 1 / (lenBC * lenCD));
 
-//        // Form sines 
-//        double s_ab = Math.sqrt(1.0 - mult(ab_bc, ab_bc));
-//        double s_bc = Math.sqrt(1.0 - mult(bc_cd, bc_cd));
-//        double s = s_ab * s_bc;
-//        if (s == 0.0) return 0.0;
-//
-//        double costor = (mult(ab_bc , bc_cd) - ab_cd ) / ((double) s );
-//        double costsq = costor * costor;
-//        double tor;
-//        if (costsq >= 1.0 && costor < 0.0) tor = 180.0;
-//
-//        // If the angle is not == 180 degs calculate sign using sine 
-//        if (costsq < 1.0) {
-//            double sintor = Math.sqrt(1.0 - costsq);
-//            tor = Math.atan2(sintor, costor);
-//            tor = tor / conv;
-//
-//            // Find unit vectors 
-//            a_b /= len_a_b;
-//            b_c /= len_b_c;
-//            c_d /= len_c_d;
-//
-//            // Find determinant 
-//            double sign  = a_b[0] * (b_c[1] * c_d[2] - b_c[2] * c_d[1]);
-//            sign += a_b[1] * (b_c[2] * c_d[0] - b_c[0] * c_d[2]);
-//            sign += a_b[2] * (b_c[0] * c_d[1] - b_c[1] * c_d[0]);
-//
-//            // Change sign if necessary 
-//            if (sign < 0.0) tor = -1.0 * tor;
-//        }
+        // Form sines 
+        double sAB = Math.sqrt(1.0 - mult(abBC, abBC).length());    // XXX wrong
+        double sBC = Math.sqrt(1.0 - mult(bcCD, bcCD).length());    // XXX wrong
+        double s = sAB * sBC;
+        if (s == 0.0) return 0.0;
+
+        double costor = div(diff(mult(abBC , bcCD), abCD), s);
+        double costsq = costor * costor;
+        double tor = 0;
+        if (costsq >= 1.0 && costor < 0.0) tor = 180.0;
+
+        // If the angle is not == 180 degs calculate sign using sine 
+        if (costsq < 1.0) {
+            double sintor = Math.sqrt(1.0 - costsq);
+            tor = Math.atan2(sintor, costor);
+            tor = tor / conv;
+
+            // Find unit vectors 
+            aDiffB.scale(lenAB);
+            bDiffC.scale(lenBC);
+            cDiffD.scale(lenCD);
+
+            // Find determinant 
+            double sign  = aDiffB.x * (bDiffC.y * cDiffD.z - bDiffC.z * cDiffD.y);
+            sign += aDiffB.y * (bDiffC.z * cDiffD.x - bDiffC.x * cDiffD.z);
+            sign += aDiffB.z * (bDiffC.x * cDiffD.y - bDiffC.y * cDiffD.x);
+
+            // Change sign if necessary 
+            if (sign < 0.0) tor = -1.0 * tor;
+        }
 
         // Return torsion 
-//        return tor;
-        return 0.0;
+        return tor;
      }
 
     public String toString() {
