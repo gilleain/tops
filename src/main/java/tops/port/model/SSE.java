@@ -5,8 +5,8 @@ import static tops.port.model.Direction.UP;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 import javax.vecmath.Point2d;
 
@@ -21,7 +21,7 @@ public class SSE {
     public int domainBreakNumber;             // Number identifying possible domain breaks (0 -> No break) 
     public DomainBreakType domainBreakType;                // Number identifying domain break type (Nterm, Cterm or both)
     
-    public Hand chirality;                      // Local structure hand 
+    private Hand chirality;                      // Local structure hand 
     public Axis axis;
     private FixedType fixedType;
     
@@ -438,11 +438,6 @@ public class SSE {
     public String getLabel() {
         return cartoonSymbol.getLabel();
     }
-//
-//    public String getChain() {
-//        if (this.Chain == ' ') return "";
-//        else return String.valueOf(this.Chain);
-//    }
 
     public String toTopsFile(Chain chain) {
         //sys.stderr.write(this.dump())
@@ -615,6 +610,10 @@ public class SSE {
 
     public Point2d getConnectionTo(int i) {
         return cartoonSymbol.getConnectionsTo().get(i);
+    }
+
+    public void setChirality(Hand chirality) {
+        this.chirality = chirality;
     }
     
 }

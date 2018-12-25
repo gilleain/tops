@@ -170,8 +170,8 @@ public class Optimise {
 
         if (handPenalty > 0 && chain.numberOfSSEs() > 4) {
             for (SSE sse : chain.getSSEs()) {
-                if (sse.chirality != Hand.NONE && 
-                        ChiralityCalculator.hand2D(chain, sse) != sse.chirality) {
+                if (sse.getChirality() != Hand.NONE && 
+                        ChiralityCalculator.hand2D(chain, sse) != sse.getChirality()) {
                     totalEnergy += handPenalty;
                     energyComps[4] += handPenalty;
                 }
@@ -226,14 +226,17 @@ public class Optimise {
      */
 
     private double calculateAngle( SSE p, SSE q, SSE r ) {
-
-        double l1 = Math.sqrt( square(p.getCartoonX() - q.getCartoonX()) + square( p.getCartoonY() - q.getCartoonY()) );
-        double l2 = Math.sqrt( square(r.getCartoonX() - q.getCartoonX()) + square( r.getCartoonY() - q.getCartoonY()) );
-        if ( l1==0.0 || l2==0.0 ){
+        double pqX = (double) p.getCartoonX() - q.getCartoonX();
+        double pqY = (double) p.getCartoonY() - q.getCartoonY();
+        double l1 = Math.sqrt( square(pqX) + square( pqY) );
+        
+        double rqX = (double) r.getCartoonX() - q.getCartoonX();
+        double rqY = (double) r.getCartoonY() - q.getCartoonY();
+        double l2 = Math.sqrt( square(rqX) + square( rqY) );
+        if ( l1==0.0 || l2==0.0 ) {
             return 0.0;
         }
-        l1 = ( (p.getCartoonX() - q.getCartoonX())*(r.getCartoonX() - q.getCartoonX()) 
-                + (p.getCartoonY() - q.getCartoonY())*(r.getCartoonY() - q.getCartoonY()) ) / (l1 * l2);
+        l1 = ((pqX) * (rqX) + (pqY) * (rqY)) / (l1 * l2);
         if (l1 < -1.0) l1 = -1.0;
         if (l1 > 1.0) l1 = 1.0;
         return Math.acos(l1);

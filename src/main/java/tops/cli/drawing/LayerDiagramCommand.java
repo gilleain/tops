@@ -17,8 +17,7 @@ public class LayerDiagramCommand implements Command {
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Draw the diagram as layers";
     }
 
     @Override
@@ -57,8 +56,7 @@ public class LayerDiagramCommand implements Command {
 
     @Override
     public String getHelp() {
-        // TODO Auto-generated method stub
-        return null;
+        return "<directionString> [<geometric_params> ... ]";
     }
 
 }

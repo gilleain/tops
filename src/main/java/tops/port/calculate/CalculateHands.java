@@ -14,14 +14,14 @@ public class CalculateHands implements Calculation {
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Calculating chiralities");
         for (SSE p : chain.getSSEs()) {
-            p.chirality = ChiralityCalculator.hand3D(chain, p);
+            p.setChirality(ChiralityCalculator.hand3D(chain, p));
         }
     }
     
 
     @Override
     public void setParameter(String key, double value) {
-        // TODO Auto-generated method stub
+        // No-op
     }
 
 }

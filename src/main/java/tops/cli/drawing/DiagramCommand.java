@@ -14,11 +14,11 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.ParseException;
 
 import tops.cli.BaseCLIHandler;
-import tops.cli.Command;
+import tops.cli.BaseCommand;
 import tops.view.app.TParser;
 import tops.view.diagram.DiagramDrawer;
 
-public class DiagramCommand implements Command {
+public class DiagramCommand extends BaseCommand {
     
     @Override
     public String getDescription() {
@@ -39,12 +39,7 @@ public class DiagramCommand implements Command {
         DiagramDrawer drawer = new DiagramDrawer(handler.width, handler.height);
         
         try {
-            Reader reader;
-            if (handler.fileString.equals("-")) {
-                reader = new InputStreamReader(System.in);
-            } else {
-                reader = new FileReader(handler.fileString);
-            }
+            Reader reader = getReader(handler);
 
             BufferedReader bufferedReader = new BufferedReader(reader);
             TParser tParser = new TParser();
@@ -53,18 +48,29 @@ public class DiagramCommand implements Command {
             while ((line = bufferedReader.readLine()) != null) {
                 tParser.setCurrent(line);
                 drawer.setData(tParser.getVertexString(), tParser.getEdgeString(), null);    
-
-                FileWriter fileWriter = new FileWriter(tParser.getName() + ".eps");
-                String postscript = drawer.toPostscript();
-                fileWriter.write(postscript, 0, postscript.length());
-                fileWriter.flush();
-                fileWriter.close();
+                writeToFile(drawer, tParser);
             }
             
         } catch (FileNotFoundException fnf) {
-            System.err.println(fnf.toString());
+            error(fnf);
         } catch (IOException ioe) {
-            System.err.println(ioe.toString());
+            error(ioe);
+        }
+    }
+    
+    private void writeToFile(DiagramDrawer drawer, TParser tParser) throws IOException {
+        try (FileWriter fileWriter = new FileWriter(tParser.getName() + ".eps")) {
+            String postscript = drawer.toPostscript();
+            fileWriter.write(postscript, 0, postscript.length());
+            fileWriter.flush();
+        }
+    }
+    
+    private Reader getReader(CLIHandler handler) throws FileNotFoundException {
+        if (handler.fileString.equals("-")) {
+            return new InputStreamReader(System.in);
+        } else {
+            return new FileReader(handler.fileString);
         }
     }
     

@@ -10,12 +10,16 @@ import tops.port.model.Hand;
 import tops.port.model.SSE;
 
 public class ChiralityCalculator {
+    
+    private ChiralityCalculator() {
+        // prevent instantiation
+    }
 
     /**
      * Calculates chiralities for 2D TOPS cartoon
      */
     public static Hand hand2D(Chain chain, SSE p) {
-        if (p.chirality != Hand.NONE) {
+        if (p.getChirality() != Hand.NONE) {
             SSE q = topsChiralPartner(chain, p);
             if (q != null) return chiral2d(chain, p, q);
         }
@@ -28,9 +32,11 @@ public class ChiralityCalculator {
      */
     public static Hand chiral2d(Chain chain, SSE p, SSE q) {
         Hand hand = Hand.UNKNOWN;
-        Hand lasthand = Hand.UNKNOWN;
 
-        Vector3d a, b, c, d;
+        Vector3d a;
+        Vector3d b;
+        Vector3d c;
+        Vector3d d;
         if (p.getDirection() == UP) {
             a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
         } else {
@@ -44,7 +50,7 @@ public class ChiralityCalculator {
         int i = 0;
         for (SSE r : chain.range(chain.getNext(p), q)) {
             d = new Vector3d(r.getCartoonX(), r.getCartoonY(), 0.0);
-            lasthand = hand;
+            Hand lasthand = hand;
             double theta = angleBetweenLines(b, c, d);
             if (theta < 0.5 || theta > 179.5) {
                 hand = Hand.UNKNOWN;
@@ -72,9 +78,9 @@ public class ChiralityCalculator {
         return Math.toDegrees(ba.angle(bc));
     }
     
-    private static Vector3d diff(Vector3d a, Vector3d b) {
-        Vector3d ab = a;
-        ab.sub(b);
+    private static Vector3d diff(Vector3d aVec, Vector3d bVec) {
+        Vector3d ab = aVec;
+        ab.sub(bVec);
         return ab;
     }
 
@@ -103,36 +109,46 @@ public class ChiralityCalculator {
     }
     
     
-    public static SSE topsChiralPartner(Chain chain, SSE p) {
+    public static SSE topsChiralPartner(Chain chain, SSE sse) {
         /*
         this piece of code finds sequences of ss elements to which a chirality should be attached
         for TOPS this is two parallel strands in the same fixed structure with a connection of at least one and no 
         more than five ss elements, none of which should be in the same sheet,
         OR two parallel helices each of more than 12 residues connected by at least one and no more than 2 other helices.
         */
-        int startIndex = chain.getSSEs().indexOf(p) + 1;
+        int startIndex = chain.getSSEs().indexOf(sse) + 1;
 
-        if (p.isStrand()) {
-            int endIndex = startIndex + 5;
-            for (int i = startIndex; i < endIndex; i++) {
-                SSE q;
-                if (i >= chain.getSSEs().size()) return null;
-                else q = chain.getSSEs().get(i);
-                if ((q.isStrand()) && (chain.findFixedStart(q) == chain.findFixedStart(p))) {
-                    if (q.getDirection() == p.getDirection()) return q;
-                    else return null;
-                }
-            }
-        } else if ((p.isHelix()) && (p.secStrucLength() > 12)) {
-            int endIndex = startIndex + 2;
-            for (int i = startIndex; i < endIndex; i++) {
-                SSE q;
-                if (i >= chain.getSSEs().size()) return null;
-                else q = chain.getSSEs().get(i);
-                if (!q.isHelix()) return null;
-                if ((q.getDirection() == p.getDirection()) && (q.secStrucLength() > 12)) return q;
-            }
+        if (sse.isStrand()) {
+            return findStrandPartner(chain, startIndex, sse);
+        } else if ((sse.isHelix()) && (sse.secStrucLength() > 12)) {
+            return findHelixPartner(chain, startIndex, sse);
         }
         return null; // none found
+    }
+    
+    public static SSE findStrandPartner(Chain chain, int startIndex, SSE sse) {
+        int endIndex = startIndex + 5;
+        for (int i = startIndex; i < endIndex; i++) {
+            SSE partner;
+            if (i >= chain.getSSEs().size()) return null;
+            else partner = chain.getSSEs().get(i);
+            if ((partner.isStrand()) && (chain.findFixedStart(partner) == chain.findFixedStart(sse))) {
+                if (partner.getDirection() == sse.getDirection()) return partner;
+                else return null;
+            }
+        }
+        return null;
+    }
+    
+    public static SSE findHelixPartner(Chain chain, int startIndex, SSE sse) {
+        int endIndex = startIndex + 2;
+        for (int i = startIndex; i < endIndex; i++) {
+            SSE partner;
+            if (i >= chain.getSSEs().size()) return null;
+            else partner = chain.getSSEs().get(i);
+            if (!partner.isHelix()) return null;
+            if ((partner.getDirection() == sse.getDirection()) && (partner.secStrucLength() > 12)) return partner;
+        }
+        return null;
     }
 }

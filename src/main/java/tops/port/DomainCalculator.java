@@ -325,11 +325,10 @@ public class DomainCalculator {
                  */
                 for (Chain chain : protein.getChains()) {
                     SSE cp = ChiralityCalculator.topsChiralPartner(chain, r);
-                    if ((r.chirality != Hand.NONE) && (cp != null)) {
-//                        for (s = r; s != cp; s = s.To) {
+                    if ((r.getChirality() != Hand.NONE) && (cp != null)) {
                         for (SSE s : originalSSEList) {    // TODO - incorrect: should be range(r, cp)?
                             if (s.domainBreakType == C_DOM_BREAK || s.domainBreakType == NC_DOM_BREAK) {
-                                q.chirality = Hand.NONE;
+                                q.setChirality(Hand.NONE);
                                 break;
                             }
                         }
