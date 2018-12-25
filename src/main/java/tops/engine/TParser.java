@@ -66,9 +66,9 @@ public class TParser {
 
     public String[] getEdgesAsStrings() {
         String tail = this.getEdgeString();
-        ArrayList<String> bytes = new ArrayList<String>();
+        ArrayList<String> bytes = new ArrayList<>();
         char[] bits = tail.toCharArray();
-        StringBuffer numstr = new StringBuffer();
+        StringBuilder numstr = new StringBuilder();
         for (int i = 0; i < bits.length; i++) {
             char c = bits[i];
             if (Character.isDigit(c)) {
@@ -76,13 +76,13 @@ public class TParser {
             } else if (Character.isLetter(c)) {
                 bytes.add(numstr.toString());
                 bytes.add(String.valueOf(c));
-                numstr = new StringBuffer();
+                numstr = new StringBuilder();
             } else {
                 bytes.add(numstr.toString());
-                numstr = new StringBuffer();
+                numstr = new StringBuilder();
             }
         }
-        return (String[]) bytes.toArray(new String[0]);
+        return bytes.toArray(new String[0]);
     }
 
     public String getClassification() {

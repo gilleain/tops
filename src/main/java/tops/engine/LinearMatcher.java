@@ -1,6 +1,7 @@
 package tops.engine;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * Matches a single pattern to an instance.
@@ -20,7 +21,7 @@ public class LinearMatcher {
         public void handle(PatternI pattern, PatternI instance) {
             isMatch = true;
         }
-    };
+    }
     
     public boolean matches(PatternI pattern, PatternI instance) {
         SingleMatchHandler handler = new SingleMatchHandler();
@@ -52,7 +53,6 @@ public class LinearMatcher {
 
     private boolean match(PatternI pattern, PatternI instance) {
         currentEdgeIndex = 0;
-        int last = 1;
         while (currentEdgeIndex < pattern.esize()) {
             Edge current = pattern.getEdge(currentEdgeIndex);
             if (!current.hasMoreMatches()) {
@@ -60,14 +60,11 @@ public class LinearMatcher {
             }
             if (findNextMatch(pattern, current) 
                     && pattern.verticesIncrease()
-                    && subSeqMatch(pattern, current, last, instance)) {
-                last = current.getRightVertex().getPos() + 1;
+                    && subSeqMatch(pattern, current, instance)) {
                 ++currentEdgeIndex;
             } else {
-                if (currentEdgeIndex > 0) {
-                    if (!nextSmallestEdge(pattern, current)) {
-                        return false;
-                    }
+                if (currentEdgeIndex > 0 && !nextSmallestEdge(pattern, current)) {
+                    return false;
                 }
                 pattern.setMovedUpTo(currentEdgeIndex);
                 if (!advancePositions(pattern, current)) {
@@ -85,11 +82,7 @@ public class LinearMatcher {
             String doutCup = instance.getVertexString(rhe + 1, 0, false);
             String doutCdn = instance.getVertexString(rhe + 1, 0, true);
             String outsertC = pattern.getOutsertC(false);
-            if (subSeqMatch(outsertC, doutCup)|| subSeqMatch(outsertC, doutCdn)) {
-                return true;
-            } else {
-                return false;
-            }
+            return subSeqMatch(outsertC, doutCup)|| subSeqMatch(outsertC, doutCdn);
         }
     }
     
@@ -126,7 +119,8 @@ public class LinearMatcher {
     }
     
     private boolean subSeqMatch(String probe, String target) {
-        int ptrP, ptrT;
+        int ptrP;
+        int ptrT;
         char c;
         ptrP = ptrT = 0;
         while (ptrP < probe.length()) {
@@ -156,7 +150,7 @@ public class LinearMatcher {
         return found;
     }
     
-    private boolean subSeqMatch(PatternI p, Edge c, int last, PatternI diagram) {
+    private boolean subSeqMatch(PatternI p, Edge c, PatternI diagram) {
         String probe = 
                 p.getVertexString(
                         c.getLeftVertex().getPos() + 1,
@@ -169,17 +163,20 @@ public class LinearMatcher {
     
     private boolean advancePositions(PatternI pattern, Edge current) {
         // 'isRight' tells you which end of backedge pvert is...
-        boolean found = false, isRight = false, attached = false;
-        int wt2 = 0, vt2 = 0;
+        boolean found = false;
+        boolean isRight = false;
+        boolean attached = false;
+        int wt2 = 0;
+        int vt2 = 0;
         int pvert = current.getLeftVertex().getPos();
         int tvert = current.getCurrentMatch().getLeftVertex().getPos();
 
-        Stack<Integer> patternVertexStack = new Stack<Integer>();
-        Stack<Integer> targetVertexStack = new Stack<Integer>();
-        patternVertexStack.push(new Integer(pvert));
-        targetVertexStack.push(new Integer(tvert));
+        Deque<Integer> patternVertexStack = new ArrayDeque<>();
+        Deque<Integer> targetVertexStack = new ArrayDeque<>();
+        patternVertexStack.push(pvert);
+        targetVertexStack.push(tvert);
 
-        while (!patternVertexStack.empty()) {
+        while (!patternVertexStack.isEmpty()) {
             pvert = patternVertexStack.pop().intValue();
             tvert = targetVertexStack.pop().intValue();
             // FORALL EDGES LESS THAN THE STUCK EDGE
@@ -197,7 +194,7 @@ public class LinearMatcher {
                 }
 
                 if (attached) {
-                    if (backedge.moved == false) {
+                    if (!backedge.moved) {
 
                         backedge.moved = true;
                         found = false;
@@ -205,22 +202,22 @@ public class LinearMatcher {
                             Edge e = backedge.getCurrentMatch();
                             wt2 = e.getLeftVertex().getPos();
                             vt2 = e.getLeftVertex().getPos();
-                            if ((wt2 >= tvert) || ((vt2 >= tvert) && (isRight == true))) {
+                            if ((wt2 >= tvert) || ((vt2 >= tvert) && isRight)) {
                                 if (isRight) {
                                     tvert = wt2;
                                     if (backedge.getLeftVertex().getMatch() != 0) {
                                         backedge.getLeftVertex().resetMatch();
                                         pvert = backedge.getLeftVertex().getPos();
-                                        patternVertexStack.push(new Integer(pvert));
-                                        targetVertexStack.push(new Integer(tvert));
+                                        patternVertexStack.push(pvert);
+                                        targetVertexStack.push(tvert);
                                     }
                                 } else {
                                     tvert = vt2;
                                     if (backedge.getRightVertex().getMatch() != 0) {
                                         backedge.getRightVertex().resetMatch();
                                         pvert = backedge.getRightVertex().getPos();
-                                        patternVertexStack.push(new Integer(pvert));
-                                        targetVertexStack.push(new Integer(tvert));
+                                        patternVertexStack.push(pvert);
+                                        targetVertexStack.push(tvert);
                                     }
                                 }
                                 found = true;
@@ -232,11 +229,9 @@ public class LinearMatcher {
                         return false;
                     } // DANGER WIL ROBINSON!
 
-                } // end if (attached)
-
-            } // end for all edges less than current
-
-        } // end while PVS != 0
+                }
+            } 
+        } 
 
         // move edgeIndex to the smallest edge with an unmatched end
         for (int l = 0; l < pattern.esize(); ++l) {

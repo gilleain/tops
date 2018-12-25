@@ -13,7 +13,11 @@ public class Edge implements Comparable<Edge> {
 
     private char type;
 
-    private int S1, S2, E1, E2, matchPointer;
+    private int s1;
+    private int s2;
+    private int e1;
+    private int e2;
+    private int matchPointer;
 
     private List<Edge> matchList;
 
@@ -25,8 +29,8 @@ public class Edge implements Comparable<Edge> {
         this.left = l;
         this.right = r;
         this.type = t;
-        this.S1 = this.S2 = this.E1 = this.E2 = 0;
-        this.matchList = new ArrayList<Edge>();
+        this.s1 = this.s2 = this.e1 = this.e2 = 0;
+        this.matchList = new ArrayList<>();
         this.matchPointer = 0;
         this.moved = false;
         this.rangeMinimum = -1; // -1 indicates 'infinite' bounds.
@@ -34,19 +38,19 @@ public class Edge implements Comparable<Edge> {
     }
     
     public void addS1() {
-    	this.S1++;
+    	this.s1++;
     }
     
     public void addS2() {
-    	this.S2++;
+    	this.s2++;
     }
     
     public void addE1() {
-    	this.E1++;
+    	this.e1++;
     }
     
     public void addE2() {
-    	this.E2++;
+    	this.e2++;
     }
     
     public int getRangeMinimum() {
@@ -149,19 +153,17 @@ public class Edge implements Comparable<Edge> {
             }
             // OTHERWISE, /accept/ !
         }
-//        System.out.println("this " + this.indexString() + " other " + te.indexString());
-        
-        return ((this.S1 <= te.S1) 
-        		&& (this.S2 <= te.S2) 
-        		&& (this.E1 <= te.E1) 
-        		&& (this.E2 <= te.E2)) // Edge
+        return ((this.s1 <= te.s1) 
+        		&& (this.s2 <= te.s2) 
+        		&& (this.e1 <= te.e1) 
+        		&& (this.e2 <= te.e2)) // Edge
                 && (this.left.vertexMatches(te.left)) // indexes match?
                 && (this.right.vertexMatches(te.right)); // Vertices match?
     }
     
     // DEBUG METHOD
     public String indexString() {
-    	return this.S1 + "," + this.S2 + "," + this.E1 + "," + this.E2;
+    	return this.s1 + "," + this.s2 + "," + this.e1 + "," + this.e2;
     }
 
     public boolean alreadyMatched(Edge t) {
@@ -209,13 +211,25 @@ public class Edge implements Comparable<Edge> {
     }
 
     public void reset() {
-        this.matchList = new ArrayList<Edge>();
+        this.matchList = new ArrayList<>();
         this.matchPointer = 0;
     }
 
     public boolean connectedTo(Edge dat) {
         return (this.left.getPos() == dat.left.getPos())
                 || (this.right.getPos() == dat.right.getPos());
+    }
+    
+    public boolean equals(Object other) {
+        if (other instanceof Edge) {
+            Edge otherEdge = (Edge) other;
+            return matches(otherEdge);  // TODO
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return left.hashCode() * right.hashCode();
     }
 
     public int compareTo(Edge other) {

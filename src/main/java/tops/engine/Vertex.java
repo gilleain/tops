@@ -6,7 +6,7 @@ public class Vertex implements Comparable<Vertex> {
 
     private Vertex matchpos;
 
-    private int[] Vindex;
+    private int[] vIndex;
 
     private char type;
     
@@ -14,7 +14,7 @@ public class Vertex implements Comparable<Vertex> {
         this.p = p;
         this.matchpos = null;
         this.type = t;
-        this.Vindex = new int[8];
+        this.vIndex = new int[8];
     }
     
     /*
@@ -24,12 +24,12 @@ public class Vertex implements Comparable<Vertex> {
     	this.p = other.p;
     	this.matchpos = null;
     	this.type = other.type;
-    	this.Vindex = other.Vindex;
+    	this.vIndex = other.vIndex;
     }
 
     public int compareTo(Vertex o) {
         int otherPosition = o.getPos();
-        return (new Integer(this.p)).compareTo(new Integer(otherPosition));
+        return Integer.compare(p, otherPosition);
     }
 
     public char getType() {
@@ -63,44 +63,46 @@ public class Vertex implements Comparable<Vertex> {
     public void setIndex(char t) {
         switch (t) {
             case 'L':
-                this.Vindex[0]++;
+                this.vIndex[0]++;
                 break;
             case 'R':
-                this.Vindex[1]++;
+                this.vIndex[1]++;
                 break;
             case 'P':
-                this.Vindex[2]++;
+                this.vIndex[2]++;
                 break;
             case 'A':
-                this.Vindex[3]++;
+                this.vIndex[3]++;
                 break;
             case 'l':
-                this.Vindex[4]++;
+                this.vIndex[4]++;
                 break;
             case 'r':
-                this.Vindex[5]++;
+                this.vIndex[5]++;
                 break;
             case 'p':
-                this.Vindex[6]++;
+                this.vIndex[6]++;
                 break;
             case 'a':
-                this.Vindex[7]++;
+                this.vIndex[7]++;
                 break;
             case 'X':
-                this.Vindex[0]++;
-                this.Vindex[2]++;
+                this.vIndex[0]++;
+                this.vIndex[2]++;
                 break;
             case 'Z':
-                this.Vindex[1]++;
-                this.Vindex[2]++;
+                this.vIndex[1]++;
+                this.vIndex[2]++;
                 break;
             case 'x':
-                this.Vindex[4]++;
-                this.Vindex[6]++;
+                this.vIndex[4]++;
+                this.vIndex[6]++;
                 break;
             case 'z':
-                this.Vindex[5]++;
-                this.Vindex[6]++;
+                this.vIndex[5]++;
+                this.vIndex[6]++;
+                break;
+            default:
                 break;
         }
 
@@ -109,12 +111,10 @@ public class Vertex implements Comparable<Vertex> {
     public boolean vertexMatches(Vertex vt) {
     	
     	for (int i = 0; i < 8; i++) {
-    		if (this.Vindex[i] > vt.Vindex[i]) {
+    		if (this.vIndex[i] > vt.vIndex[i]) {
     			return false;
     		}
     	}
-//    	System.out.println(p + "," + type + " matches " + vt.p + "," + vt.type);
-
         // make sure the TYPES match too!
         return (this.type == vt.type);
 
@@ -133,7 +133,7 @@ public class Vertex implements Comparable<Vertex> {
 
     @Override
     public String toString() {
-        return new String(this.type + ":" + this.p);
+        return this.type + ":" + this.p;
     }
 
 }
