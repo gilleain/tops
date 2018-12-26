@@ -46,7 +46,8 @@ public class CalculateMergedStrands implements Calculation {
                 if ((cbpd == 2 && p.sameBPSide(prev)) || (cbpd > 5) ||sheetMerge ) {
                     TorsionResult result = p.closestApproach(prev);
                     if (Math.abs(result.getTorsion()) < 90.0) { 
-//                        System.out.println(String.format("Merging Strands %d %d\n", p.From.getSymbolNumber(), p.getSymbolNumber()));
+                        log.log(Level.INFO, "Merging Strands {0} {1}%n", 
+                                new Object[] {p.getSymbolNumber(), prev.getSymbolNumber()});
                         this.joinToLast(p, prev, chain);
                         p.sortBridgePartners(); // XXX not sure why we have to sort
                     }
@@ -62,7 +63,7 @@ public class CalculateMergedStrands implements Calculation {
     
 
     public int connectBPDistance(SSE p, SSE q) {
-        Map<SSE, Integer> distanceMap = new HashMap<SSE, Integer>();
+        Map<SSE, Integer> distanceMap = new HashMap<>();
         this.listBPConnected(p, 0, distanceMap);
         if (distanceMap.containsKey(q)) {
             return distanceMap.get(q);
@@ -155,7 +156,6 @@ public class CalculateMergedStrands implements Calculation {
 
     @Override
     public void setParameter(String key, double value) {
-        // TODO Auto-generated method stub
-        
+        // no-op
     }
 }

@@ -18,7 +18,7 @@ public class Configure {
     private List<Calculation> calculators;
     
     public Configure() {
-        calculators = new ArrayList<Calculation>();
+        calculators = new ArrayList<>();
         calculators.add(new CalculateStructureAxes());
         calculators.add(new CalculateRelativeSides());
         calculators.add(new CalculateMergedStrands());
@@ -37,7 +37,6 @@ public class Configure {
     }
 
     public void configure(Chain chain) {
-//        System.out.println("Beginning to configure the master linked list");
         for (Calculation calculator : calculators) {
             calculator.calculate(chain);
         }

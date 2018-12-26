@@ -44,18 +44,18 @@ public class CalculateFixedHands implements Calculation {
      **/
     public void setFixedHand(Chain chain, SSE p) {
         if (allowedTypes.contains(p.getFixedType())) {
-//            System.out.println(String.format("Checking fixed structure chirality for fixed start %d", p.getSymbolNumber()));
+            log.log(Level.INFO, "Checking fixed structure chirality for fixed start {0}", p.getSymbolNumber());
             SSE q = find(chain, p);
             if (q != null) {
-//                System.out.println("Found suitable motif for fixed chirality check");
+                log.info("Found suitable motif for fixed chirality check");
                 SSE r = null;   // XXX FIXME XXX
                 Hand chir = chiral2d(chain, q, r);
                 if (chir != Hand.UNKNOWN) {
-//                    System.out.println(String.format("Changing chirality of fixed structure starting at %d", p.getSymbolNumber()));
+                    log.log(Level.INFO, "Changing chirality of fixed structure starting at {0}", p.getSymbolNumber());
                     chain.reflectFixedXY(p);
                 }
             } else {
-//                System.out.println("No suitable motif found for fixed chirality check");
+                log.info("No suitable motif found for fixed chirality check");
             }
 
         }
@@ -75,13 +75,11 @@ public class CalculateFixedHands implements Calculation {
                     n += 1;
                     if (sseB.getDirection() == sseA.getDirection()) {
                         Hand chir = chiral2d(chain, sseA, sseB);
-//                        System.out.println("chir " + chir);
                         if (n > 1 && chir != Hand.UNKNOWN) {
                             found = true;
                         } else {
                             found = false;
                         }
-                        break;
                     }
                     if (found) {
                         return sseA;
@@ -99,9 +97,11 @@ public class CalculateFixedHands implements Calculation {
      */
     public Hand chiral2d(Chain chain, SSE p, SSE q) {
         Hand hand = Hand.UNKNOWN;
-        Hand lasthand = Hand.UNKNOWN;
 
-        Vector3d a, b, c, d;
+        Vector3d a;
+        Vector3d b;
+        Vector3d c;
+        Vector3d d;
         if (p.getDirection() == UP) {
             a = new Vector3d(p.getCartoonX(), p.getCartoonY(), 1.0);
         } else {
@@ -115,8 +115,8 @@ public class CalculateFixedHands implements Calculation {
         int i = 0;
         for (SSE r : chain.range(chain.getNext(p), q)) {
             d = new Vector3d(r.getCartoonX(), r.getCartoonY(), 0.0);
-            lasthand = hand;
-            double theta = this.AngleBetweenLines(b, c, d);
+            Hand lasthand = hand;
+            double theta = this.angleBetweenLines(b, c, d);
             if (theta < 0.5 || theta > 179.5) {
                 hand = Hand.UNKNOWN;
             } else {
@@ -130,27 +130,28 @@ public class CalculateFixedHands implements Calculation {
             if (i > 0 && hand != lasthand) { 
                 return Hand.UNKNOWN;
             }
+            i++;
         }
         return hand;
     }
 
     // might not be as accurate as the original
-    public double AngleBetweenLines(Vector3d a, Vector3d b, Vector3d c) {
+    public double angleBetweenLines(Vector3d a, Vector3d b, Vector3d c) {
         Vector3d ba = diff(b, a);
         Vector3d bc = diff(b, c);
         if (ba.length() == 0.0 || bc.length() == 0.0) return 0.0;
         return Math.toDegrees(ba.angle(bc));
     }
 
-    private Vector3d diff(Vector3d a, Vector3d b) {
-        Vector3d ab = a;
-        ab.sub(b);
+    private Vector3d diff(Vector3d va, Vector3d vb) {
+        Vector3d ab = va;
+        ab.sub(vb);
         return ab;
     }
 
     @Override
     public void setParameter(String key, double value) {
-        // TODO Auto-generated method stub
+        // no-op
         
     }
 

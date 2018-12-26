@@ -14,7 +14,7 @@ public class CalculateNeighbours implements Calculation {
     
     private static Logger log = Logger.getLogger(CalculateNeighbours.class.getName());
     
-    private double CutoffDistance = 20;
+    private double cutoffDistance = 20;
     
     /**
      * Function to assign spatial neighbours
@@ -31,7 +31,7 @@ public class CalculateNeighbours implements Calculation {
                  if (neitherStrandNorHelix(q)) continue;
                  if (p.hasBridgePartner(q)) continue;
                  double shdis = simpleSSESeparation(p, q);
-                 if (shdis > CutoffDistance) continue;
+                 if (shdis > cutoffDistance) continue;
 
                  // Update first secondary structure //
                  p.addNeighbour(q, (int)shdis);
@@ -63,7 +63,7 @@ public class CalculateNeighbours implements Calculation {
     @Override
     public void setParameter(String key, double value) {
         if (key.equals("cutoffDistance")) {
-            CutoffDistance = value;
+            cutoffDistance = value;
         }
     }
 

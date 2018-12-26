@@ -19,15 +19,13 @@ public class CalculateSheets implements Calculation {
     
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Calculating sheets and barrels");
-//        System.out.println(s(chain.getSSEs()));
 
         BitSet seen = new BitSet(chain.countStructures());
-        List<List<SSE>> components = new ArrayList<List<SSE>>();
+        List<List<SSE>> components = new ArrayList<>();
         for (SSE sse : chain.getSSEs()) {
             int index = chain.getSSEs().indexOf(sse);
             if (sse.isStrand() && !seen.get(index)) {
-                List<SSE> component = new ArrayList<SSE>();
-//                System.out.println("searching with " + s(sse) + " seen " + seen);
+                List<SSE> component = new ArrayList<>();
                 search(chain, sse, null, component, seen);
                 components.add(component);
             }
@@ -47,18 +45,11 @@ public class CalculateSheets implements Calculation {
         List<Bridge> bridges = chain.getBridges(current);
         for (Bridge bridge : bridges) {
             SSE next = bridge.getOther(current);
-//            System.out.print("Current = " + s(current) + " Bridge = " + bridge 
-//                    + " Next = " + s(next)
-//                    + " Last = " + s(last));
             if (last != null && next.getSymbolNumber() == last.getSymbolNumber()) {
-//                System.out.println(" Ignoring");
                 continue;
             } else {
                 int nextIndex = chain.getSSEs().indexOf(next);
-                if (visited.get(nextIndex)) {
-//                    System.out.println(" Already seen");
-                } else {
-//                    System.out.println(" Following");
+                if (!visited.get(nextIndex)) {
                     search(chain, next, current, tse, visited);
                 }
             }
@@ -88,8 +79,7 @@ public class CalculateSheets implements Calculation {
      * participating in another sheet
      */
     public boolean isBarrel(Chain chain, List<SSE> component) {
-        List<SSE> visited = new ArrayList<SSE>();
-//        System.out.println("Searching barrel");
+        List<SSE> visited = new ArrayList<>();
         return this.isBarrel(chain, component.get(0), visited, null);
     }
     
@@ -98,10 +88,10 @@ public class CalculateSheets implements Calculation {
      * strands connected by BridgePartner relationships
      */
     private boolean isBarrel(Chain chain, SSE sse, List<SSE> visited, SSE addFrom) {
-//        System.out.println("Visiting " + s(sse));
+        System.out.println("Visiting " + s(sse));
         if (visited.contains(sse)) {
             //If we've been to this node before then we've detected a barrel - return true//
-//            System.out.println("Found barrel");
+            log.info("Found barrel");
             return true;
         } else {
             //else continue looking//
@@ -117,13 +107,13 @@ public class CalculateSheets implements Calculation {
                 }
             }
         }
-//        System.out.println("No barrel");
+        log.info("No barrel");
         return false;
     }
     
     @Override
     public void setParameter(String key, double value) {
-        
+        // no-op
     }
 
 }

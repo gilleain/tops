@@ -36,12 +36,11 @@ public class CalculateBridgePartners implements Calculation {
 
     @Override
     public void setParameter(String key, double value) {
-        // TODO Auto-generated method stub
-        
+        // no-op
     }
     
     private void log(String typeString, int index, SSE otherSSE) {
-//        log.log(Level.OFF, typeString + " lookup " + index + " = " + (otherSSE == null? "null" : otherSSE.getSummary()));
+        log.log(Level.OFF, typeString + " lookup " + index + " = " + (otherSSE == null? "null" : otherSSE.getSummary()));
     }
 
     private void typeA(Chain chain, SSE sse, int i) {

@@ -37,10 +37,10 @@ public class CalculateRelativeSides implements Calculation {
                 // Assign side for those 'BridgeOverlap'ing with the RefBP //
                 for (int j = 0; j < sse.getBridgePartners().size(); j++) {
                     BridgePartner bridgePartner2 = sse.getBridgePartners().get(j);
-                    if (bridgePartner2 != null && !bridgePartner2.equals(bridgePartner1)) {
-                        if (bridgeOverlap(bridgePartner1, bridgePartner2)) {
-                            bridgePartner2.setRight();
-                        }
+                    if (bridgePartner2 != null 
+                            && !bridgePartner2.equals(bridgePartner1)
+                            && bridgeOverlap(bridgePartner1, bridgePartner2)) {
+                        bridgePartner2.setRight();
                     }
                 }
                 // Sort out any other sides which can be calculated by 
@@ -125,8 +125,7 @@ public class CalculateRelativeSides implements Calculation {
 
     @Override
     public void setParameter(String key, double value) {
-        // TODO Auto-generated method stub
-
+        // no-op
     }
 
 }

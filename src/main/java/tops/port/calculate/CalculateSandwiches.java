@@ -16,7 +16,7 @@ public class CalculateSandwiches implements Calculation {
     
     private static Logger log = Logger.getLogger(CalculateSandwiches.class.getName());
     
-    private double GridUnitSize = 50;
+    private double gridUnitSize = 50;
     
     public void calculate(Chain chain) {
         log.log(Level.INFO, "STEP : Searching for beta sandwiches");
@@ -32,17 +32,18 @@ public class CalculateSandwiches implements Calculation {
         log.log(Level.INFO, "STEP : Searching for beta sandwiches");
 
         // detect and form sandwiches //
-        List<SSE[]> sandwiches = new ArrayList<SSE[]>();
+        List<SSE[]> sandwiches = new ArrayList<>();
         for (SSE r : chain.getSSEs()) {
             if (r.isStrand() && r.hasFixedType(FixedType.SHEET)) {
-                String rDomain = this.FindDomain(r);
+                String rDomain = this.findDomainFromSSE(r);
                 for (SSE s : chain.iterNext(r)) {
-                    String sDomain = this.FindDomain(s);
-                    if (s.isStrand() && s.hasFixedType(FixedType.SHEET) && sDomain == rDomain) { 
-                        if (this.isSandwich(chain, r, s)) {
-//                            System.out.println(String.format("Sandwich detected between %s and %s" , r, s));
-                            sandwiches.add(new SSE[] {r, s});
-                        }
+                    String sDomain = this.findDomainFromSSE(s);
+                    if (s.isStrand() 
+                            && s.hasFixedType(FixedType.SHEET) 
+                            && sDomain == rDomain
+                            && this.isSandwich(chain, r, s)) {
+                        log.log(Level.INFO, "Sandwich detected between {0} and {1}" , new Object[] {r, s});
+                        sandwiches.add(new SSE[] {r, s});
                     }
                 }
             }
@@ -55,7 +56,7 @@ public class CalculateSandwiches implements Calculation {
     }
     
     private List<Sandwich> findSandwiches(Chain chain) {
-        List<Sandwich> sandwiches = new ArrayList<Sandwich>();
+        List<Sandwich> sandwiches = new ArrayList<>();
         List<BaseTSE> tses = chain.getTSEs();
         for (int tseIndex = 0; tseIndex < tses.size(); tseIndex++) {
             BaseTSE tse1 = tses.get(tseIndex);
@@ -66,7 +67,7 @@ public class CalculateSandwiches implements Calculation {
                     BaseTSE tse2 = tses.get(tseIndex2);
                     if (tse2 instanceof Sheet) {
                         Sheet sheet2 = (Sheet) tse2;
-                        log.info("Examining " + sheet1 + " against " + sheet2);
+                        log.log(Level.INFO, "Examining {0} against {1}", new Object[] {sheet1, sheet2});
                         String domain2 = findDomain(sheet2);
                         if (!domain1.equals(domain2)) continue;
                         if (isSandwich(chain, sheet1, sheet2)) {
@@ -94,12 +95,12 @@ public class CalculateSandwiches implements Calculation {
                 }
             }
         }
-        log.log(Level.INFO, String.format("contacts = %s, min = %s", contacts, minContacts));
+        log.log(Level.INFO, "contacts = {0}, min = {1}", new Object[] {contacts, minContacts});
         return contacts > minContacts;
     }
 
     // FIXME! : need to implement domains asap
-    public String FindDomain(SSE sse) {
+    public String findDomainFromSSE(SSE sse) {
         return "YES!";
     }
     
@@ -122,13 +123,13 @@ public class CalculateSandwiches implements Calculation {
      */
     public boolean isSandwich(Chain chain, SSE r, SSE s) {
         double maxContactSeparation = 13.0;
-        double minOverlap = 2 * this.GridUnitSize;
+        double minOverlap = 2 * this.gridUnitSize;
 
         SSE p = chain.findFixedStart(r);
         SSE q = chain.findFixedStart(s);
 
-        double s1 = chain.fixedSpan(p, this.GridUnitSize);
-        double s2 = chain.fixedSpan(q, this.GridUnitSize);
+        double s1 = chain.fixedSpan(p, this.gridUnitSize);
+        double s2 = chain.fixedSpan(q, this.gridUnitSize);
 
         double minContacts = 0;
         if (s1 < s2) {
@@ -175,7 +176,7 @@ public class CalculateSandwiches implements Calculation {
     @Override
     public void setParameter(String key, double value) {
         if (key.equals("gridUnitSize")) {
-            GridUnitSize = value;
+            gridUnitSize = value;
         }
     }
 

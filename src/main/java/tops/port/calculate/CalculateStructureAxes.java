@@ -30,7 +30,7 @@ public class CalculateStructureAxes implements Calculation {
 
     @Override
     public void setParameter(String key, double value) {
-        // TODO Auto-generated method stub
+        // no-op
     }
 
 }
