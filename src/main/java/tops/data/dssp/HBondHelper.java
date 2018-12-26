@@ -13,11 +13,16 @@ import tops.translation.model.Residue;
 
 public class HBondHelper {
     
+    private HBondHelper() {
+        // prevent instantiation
+    }
+    
     public static List<HBondSet> makeHBondSets(Map<BackboneSegment, List<HBond>> sseToHBondMap) {
         
         Set<BackboneSegment> sseSet = sseToHBondMap.keySet();
-        Map<BackboneSegment, List<HBondSet>> hBondSetMap = new HashMap<BackboneSegment, List<HBondSet>>();
+        Map<BackboneSegment, List<HBondSet>> hBondSetMap = new HashMap<>();
         for (BackboneSegment sse : sseSet) {
+            if (!sseToHBondMap.containsKey(sse)) continue;
             for (HBond hBond : sseToHBondMap.get(sse)) {
                 Residue otherEnd = getOtherEnd(hBond, sse);
                 if (otherEnd.getAbsoluteNumber() < sse.firstResidue().getAbsoluteNumber()) {
@@ -52,7 +57,7 @@ public class HBondHelper {
         }
         
         // collect all the hbond sets 
-        List<HBondSet> hBondSets = new ArrayList<HBondSet>();
+        List<HBondSet> hBondSets = new ArrayList<>();
         for (List<HBondSet> hBondSetList : hBondSetMap.values()) {
             hBondSets.addAll(hBondSetList);
         }
@@ -75,7 +80,7 @@ public class HBondHelper {
     }
     
     private static HBondSet makeHBondSet(BackboneSegment sse, BackboneSegment otherBackboneSegment, Map<BackboneSegment, List<HBondSet>> hBondSetMap) {
-        List<HBondSet> hBondSets = new ArrayList<HBondSet>();
+        List<HBondSet> hBondSets = new ArrayList<>();
         HBondSet targetHBondSet = makeHBondSet(sse, otherBackboneSegment);
         hBondSets.add(targetHBondSet);
         hBondSetMap.put(sse, hBondSets);

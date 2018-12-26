@@ -38,7 +38,7 @@ public class CartoonDrawer {
 
     private static final int BORDER_WIDTH = 10;
     
-    private BuilderFactory factory;
+    private BuilderFactory factory = new BuilderFactory();
     
     public void draw(Graphics g, int w, int h, Cartoon cartoon) {
         Rectangle bb = this.init(cartoon, w - (2 * CartoonDrawer.BORDER_WIDTH), w, h);

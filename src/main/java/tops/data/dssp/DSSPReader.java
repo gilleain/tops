@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Point3d;
 
@@ -23,6 +25,8 @@ import tops.translation.model.UnstructuredSegment;
 
 
 public class DSSPReader {
+    
+    private Logger log = Logger.getLogger(DSSPReader.class.getName());
     
     /**
      * A filter for hydrogen bonds - the more negative this value, 
@@ -55,18 +59,20 @@ public class DSSPReader {
         BackboneSegment currentSSE = null;
         Chain currentChain = null;
         
-        Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<BackboneSegment, List<HBond>>();
+        Map<BackboneSegment, List<HBond>> sseToHBondMap = new HashMap<>();
         Map<String, List<Residue>> residueMap = parseResidues(dsspModel);
         int index = 0;
-        List<Residue> residues = new ArrayList<Residue>();
+        List<Residue> residues = new ArrayList<>();
         for (DsspModel.Line line : dsspModel.getLines()) {
+            // ignore chain breaks
+            if (line.aminoAcidName.contains("!")) continue;
             if (currentChain == null) {
                 index = 0;  // start a new chain index
                 currentChain = new Chain(line.chainName);
-//                System.out.println("Making new chain " + line.chainName);
+                log.log(Level.INFO, "Making new chain {0}", line.chainName);
             }
             if (!currentChain.getLabel().equals(line.chainName)) {
-//                System.out.println("finishing chain " + line.chainName + " " + sseToHBondMap);
+                log.log(Level.INFO, "finishing chain {0} {1}", new Object[] {line.chainName, sseToHBondMap});
                 finishChain(protein, currentChain, residues, sseToHBondMap);
                 sseToHBondMap.clear();
                 currentChain = new Chain(line.chainName);
@@ -74,7 +80,7 @@ public class DSSPReader {
             if (currentSSEType == null || !currentSSEType.equals(line.sseType)) {
                 currentSSE = makeSSE(line.sseType);
                 currentChain.addBackboneSegment(currentSSE);
-                sseToHBondMap.put(currentSSE, new ArrayList<HBond>());
+                sseToHBondMap.put(currentSSE, new ArrayList<>());
                 currentSSEType = line.sseType;
             }
             Point3d caPosition = parsePosition(line.xca, line.yca, line.zca);
@@ -83,36 +89,36 @@ public class DSSPReader {
             residue.setAtom("CA", caPosition);
             currentSSE.expandBy(residue);
             
-            HBond nho1 = makeNHOBond(residue, residues, line.nho1, currentChain);
+            HBond nho1 = makeNHOBond(residue, residues, line.nho1);
             addToHBondMap(sseToHBondMap, currentSSE, nho1);
                     
-            HBond ohn1 = makeOHNBond(residue, residues, line.ohn1, currentChain);
+            HBond ohn1 = makeOHNBond(residue, residues, line.ohn1);
             addToHBondMap(sseToHBondMap, currentSSE, ohn1);
             
-            HBond nho2 = makeNHOBond(residue, residues, line.nho2, currentChain);
+            HBond nho2 = makeNHOBond(residue, residues, line.nho2);
             addToHBondMap(sseToHBondMap, currentSSE, nho2);
             
-            HBond ohn2 = makeNHOBond(residue, residues, line.ohn2, currentChain);
+            HBond ohn2 = makeNHOBond(residue, residues, line.ohn2);
             addToHBondMap(sseToHBondMap, currentSSE, ohn2);
             
             index++;
         }
-//        System.out.println("finishing chain " + currentChain.getName() + " " + sseToHBondMap);
+        log.log(Level.INFO, "finishing chain {0} {1}", new Object[] {currentChain.getLabel(), sseToHBondMap });
         finishChain(protein, currentChain, residues, sseToHBondMap);
         return protein;
     }
     
     private Map<String, List<Residue>> parseResidues(DsspModel dsspModel) {
-        Map<String, List<Residue>> residueMap = new HashMap<String, List<Residue>>();
+        Map<String, List<Residue>> residueMap = new HashMap<>();
         for (DsspModel.Line line : dsspModel.getLines()) {
             int pdbIndex = parsePdbIndex(line.pdbNumber);
-            int dsspNumber = Integer.valueOf(line.dsspNumber);
+            int dsspNumber = Integer.parseInt(line.dsspNumber);
             String chainName = line.chainName;
             List<Residue> residues;
             if (residueMap.containsKey(chainName)) {
                 residues = residueMap.get(chainName);
             } else {
-                residues = new ArrayList<Residue>();
+                residues = new ArrayList<>();
                 residueMap.put(chainName, residues);
             }
             residues.add(new Residue(dsspNumber, pdbIndex, line.aminoAcidName));
@@ -132,14 +138,14 @@ public class DSSPReader {
             if (map.containsKey(sse)) {
                 hBonds = map.get(sse);
             } else {
-                hBonds = new ArrayList<HBond>();
+                hBonds = new ArrayList<>();
                 map.put(sse, hBonds);
             }
             hBonds.add(hBond);
         }
     }
     
-    private HBond makeNHOBond(Residue residue, List<Residue> residues, String hbondString, Chain currentChain) {
+    private HBond makeNHOBond(Residue residue, List<Residue> residues, String hbondString) {
         String[] parts = hbondString.split(",");
         int offset = Integer.parseInt(parts[0].trim());
         double energy = Double.parseDouble(parts[1].trim());
@@ -155,7 +161,7 @@ public class DSSPReader {
         }
     }
     
-    private HBond makeOHNBond(Residue residue, List<Residue> residues, String hbondString, Chain currentChain) {
+    private HBond makeOHNBond(Residue residue, List<Residue> residues, String hbondString) {
         String[] parts = hbondString.split(",");
         int offset = Integer.parseInt(parts[0].trim());
         double energy = Double.parseDouble(parts[1].trim());
@@ -211,6 +217,8 @@ public class DSSPReader {
             numberOfChains = Integer.parseInt(headerBits[startIndex + 1]);
             // increase number of residues to include chain termination records in file 
             numberOfResidues += numberOfChains - 1;
+            dsspModel.setNumberOfChains(numberOfChains);
+            dsspModel.setNumberOfResidues(numberOfResidues);
         } else if (lineNumber > 28) {
             dsspModel.addLine(lineString);
         }

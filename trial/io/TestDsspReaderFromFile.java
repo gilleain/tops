@@ -28,62 +28,57 @@ public class TestDsspReaderFromFile {
     private static final String PATH = DsspDirectory.DIR;
     
     @Test
-    public void test1NOT() throws FileNotFoundException, IOException {
+    public void test1NOT() throws IOException {
         Protein protein = new DSSPReader().read(stream("1notH.dssp"));
         assertNotNull(protein);
         System.out.println(protein.iterator().next());
     }
     
     @Test
-    public void test1QRE() throws FileNotFoundException, IOException {
-//       test("1qre", SSEType.EXTENDED, -0.9);
+    public void test1QRE() throws IOException {
         test("1qreH", SSEType.S_BEND, -0.9);
     }
     
     @Test
-    public void test1TGX() throws FileNotFoundException, IOException {
+    public void test1TGX() throws IOException {
        test("1tgxAH", SSEType.EXTENDED, -0.1);
     }
     
     @Test
-    public void test1WAP() throws FileNotFoundException, IOException {
+    public void test1WAP() throws IOException {
         test("1wapBH", SSEType.EXTENDED, SSEType.EXTENDED, -0.9);
     }
     
     @Test
-    public void test1SWU() throws FileNotFoundException, IOException {
+    public void test1SWU() throws IOException {
        test("1swuBH", SSEType.EXTENDED, -0.9);
     }
     
     @Test
-    public void test1IFC() throws FileNotFoundException, IOException {
+    public void test1IFC() throws IOException {
        test("1ifcH", null, -0.9);
     }
     
     @Test
-    public void test1MOL() throws FileNotFoundException, IOException {
+    public void test1MOL() throws IOException {
        test("1molAH", SSEType.EXTENDED, -0.9);
     }
     
     @Test
-    public void test1NAR() throws FileNotFoundException, IOException {
+    public void test1NAR() throws IOException {
        test("1narH", SSEType.EXTENDED, -0.9);
     }
     
     @Test
-    public void test2BOP() throws FileNotFoundException, IOException {
+    public void test2BOP() throws IOException {
        test("2bopAH", null, -0.9);
     }
     
-    private void test(String name) throws FileNotFoundException, IOException {
-        test(name, SSEType.EXTENDED, -0.01);
-    }
-    
-    private void test(String name, SSEType type, double minEnergy) throws FileNotFoundException, IOException {
+    private void test(String name, SSEType type, double minEnergy) throws IOException {
         test(name, type, type, minEnergy);
     }
     
-    private void test(String name, SSEType startType, SSEType endType, double minEnergy) throws FileNotFoundException, IOException {
+    private void test(String name, SSEType startType, SSEType endType, double minEnergy) throws IOException {
         Protein protein = new DSSPReader(minEnergy).read(stream(name + ".dssp"));
         assertNotNull(protein);
         Chain chain = protein.iterator().next();

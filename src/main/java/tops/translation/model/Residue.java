@@ -58,7 +58,7 @@ public class Residue implements Comparable<Residue> {
         result = prime * result + absoluteNumber;
         result = prime * result + ((atoms == null) ? 0 : atoms.hashCode());
         result = prime * result + ((environment == null) ? 0 : environment.hashCode());
-        result = prime * result + ((hBonds == null) ? 0 : hBonds.hashCode());
+//        result = prime * result + ((hBonds == null) ? 0 : hBonds.hashCode()); // TODO - recursive hashcode!
         result = prime * result + pdbNumber;
         long temp;
         temp = Double.doubleToLongBits(phi);

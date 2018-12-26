@@ -44,7 +44,15 @@ public abstract class BackboneSegment implements Comparable<BackboneSegment>, It
     public boolean equals(Object o) {
         if (o instanceof BackboneSegment) {
             BackboneSegment other = (BackboneSegment) o;
-            return firstResidue().equals(other.firstResidue());
+            if (residues.isEmpty()) {
+                return other.residues.isEmpty();
+            } else {
+                if (other.residues.isEmpty()) {
+                    return false;
+                } else {
+                    return firstResidue().equals(other.firstResidue());
+                }
+            }
         }
         return false;
     }

@@ -113,8 +113,28 @@ public class DsspModel {
     
     private List<Line> lines;
     
+    private int numberOfResidues;
+    
+    private int numberOfChains;
+    
+    public int getNumberOfResidues() {
+        return numberOfResidues;
+    }
+
+    public void setNumberOfResidues(int numberOfResidues) {
+        this.numberOfResidues = numberOfResidues;
+    }
+
+    public int getNumberOfChains() {
+        return numberOfChains;
+    }
+
+    public void setNumberOfChains(int numberOfChains) {
+        this.numberOfChains = numberOfChains;
+    }
+
     public DsspModel() {
-        this.lines = new ArrayList<Line>();
+        this.lines = new ArrayList<>();
     }
     
     public List<Line> getLines() {
@@ -132,7 +152,7 @@ public class DsspModel {
     }
     
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (Line line : lines) {
             buffer.append(line).append("\n");
         }
