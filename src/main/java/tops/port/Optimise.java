@@ -13,7 +13,6 @@ import javax.vecmath.Point2d;
 
 import tops.port.IntersectionCalculator.Intersection;
 import tops.port.calculate.chirality.ChiralityCalculator;
-import tops.port.model.Cartoon;
 import tops.port.model.Chain;
 import tops.port.model.FixedType;
 import tops.port.model.Hand;
@@ -50,9 +49,6 @@ public class Optimise {
     
     private Random random = new Random();
 
-    // TODO refactor away this global! 
-    private long[][] Energy;
-    
     private IntersectionCalculator intersectionCalculator;
     
     public Optimise() {
@@ -67,7 +63,7 @@ public class Optimise {
                 s.getCartoonCenter());
     }
 
-    private double calculateEnergy(Chain chain) {
+    private double[] calculateEnergy(Chain chain) {
         double[] energyComps = new double[nEnergyComps];
         double totalEnergy = 0;
 
@@ -101,7 +97,7 @@ public class Optimise {
         }
         if (chainPenalty > 0) {
             List<SSE> sses = chain.getSSEs(); 
-            for (int index = 0; index < sses.size(); index++) {
+            for (int index = 0; index < sses.size() - 1; index++) {
                 SSE sseA = sses.get(index);
                 SSE sseB = sses.get(index + 1);
                 if (sseB == null || (sseA.isTerminus() && sseB.isTerminus())) continue;
@@ -128,7 +124,7 @@ public class Optimise {
                     SSE sseB = neighbour.getSse();
                     double centerSeparation = distance2D(sseA, sseB);
                     double diameter = sseA.getSymbolRadius() + sseB.getSymbolRadius();
-                    double ratio = first.getDistance() / neighbour.getDistance();
+                    double ratio = first.getDistance() / (double)neighbour.getDistance();
                     double clashEnergy = Math.pow((centerSeparation - diameter) / gridUnitSize, 2) 
                             * neighbourPenalty * Math.pow(ratio, 2);
                     totalEnergy += clashEnergy;
@@ -143,7 +139,7 @@ public class Optimise {
                 SSE sseA = sses.get(index);
                 SSE nextA = sses.get(index + 1);
                 if (nextA == null || (sseA.isTerminus() && nextA.isTerminus())) continue;
-                for (int secondIndex = index + 2; index < sses.size(); secondIndex++) {
+                for (int secondIndex = index + 2; secondIndex < sses.size() - 1; secondIndex++) {
                     SSE sseB = sses.get(secondIndex);
                     SSE nextB = sses.get(secondIndex + 1);
                     if (nextB == null || (sseB.isTerminus() && nextB.isTerminus())) continue;
@@ -213,7 +209,7 @@ public class Optimise {
         }
 
         energyComps[8] = totalEnergy;
-        return totalEnergy;
+        return energyComps;
     }
 
 
@@ -388,7 +384,7 @@ public class Optimise {
         // print "CenterFixed =", CenterFixed
         int noMove = cartoon.numberLink(centerFixed);
 
-        double lowestEnergy = calculateEnergy(cartoon);
+        double lowestEnergy = calculateEnergy(cartoon)[8];
         double startingEnergy = lowestEnergy;
         double currentEnergy = lowestEnergy;
 
@@ -454,7 +450,7 @@ public class Optimise {
                 }
 
                 //test step
-                double newEnergy = calculateEnergy(cartoon);
+                double newEnergy = calculateEnergy(cartoon)[8];
                 boolean accept = metropolis(newEnergy - currentEnergy, currentTemperature);
                 if (accept) {
                     numberLow += 1;
@@ -498,20 +494,20 @@ public class Optimise {
             z++;
         }
 
-        calculateEnergy(cartoon);
-        printEnergy(Energy);
+        double[] currentValues = calculateEnergy(cartoon);
+        printEnergy(currentValues);
     }
 
-    private void printEnergy(long[][] energyComps) {
-        log.info(String.format("Clash energy            %ld" , energyComps[0]));
-        log.info(String.format("Chain energy            %ld" , energyComps[1]));
-        log.info(String.format("Neighbour energy        %ld" , energyComps[2]));
-        log.info(String.format("LineCross energy        %ld" , energyComps[3]));
-        log.info(String.format("Chirality energy        %ld" , energyComps[4]));
-        log.info(String.format("Angle energy            %ld" , energyComps[5]));
-        log.info(String.format("Line hit energy         %ld" , energyComps[6]));
-        log.info(String.format("Inside barrel energy    %ld" , energyComps[7]));
-        log.info(String.format("Total Energy            %ld" , energyComps[8]));
+    private void printEnergy(double[] energyComps) {
+        log.log(Level.INFO, "Clash energy            {0}" , energyComps[0]);
+        log.log(Level.INFO, "Chain energy            {0}" , energyComps[1]);
+        log.log(Level.INFO, "Neighbour energy        {0}" , energyComps[2]);
+        log.log(Level.INFO, "LineCross energy        {0}" , energyComps[3]);
+        log.log(Level.INFO, "Chirality energy        {0}" , energyComps[4]);
+        log.log(Level.INFO, "Angle energy            {0}" , energyComps[5]);
+        log.log(Level.INFO, "Line hit energy         {0}" , energyComps[6]);
+        log.log(Level.INFO, "Inside barrel energy    {0}" , energyComps[7]);
+        log.log(Level.INFO, "Total Energy            {0}" , energyComps[8]);
     }
     
     public SSE largestFixed(Chain chain) {
@@ -533,21 +529,21 @@ public class Optimise {
     private Point2d generateRandomXandY(SSE prev, SSE sse, SSE next) {
         double rx = 0;
         double ry = 0;
+        
+        if (prev == null || next == null || sse == null) {
+            return new Point2d(rx, ry);
+        }
 
         double randomNumber = random.nextDouble();
         if (randomNumber <= lineSample / 100.0 && sse.hasFixed()) {
-            if (prev != null) {
-                randomNumber = random.nextDouble();
-                randomNumber *= randomNumber;
-                rx += randomNumber * (prev.getCartoonX() - sse.getCartoonX());
-                ry += randomNumber * (prev.getCartoonY() - sse.getCartoonY());
-            }
-            if (next != null) {
-                randomNumber = random.nextDouble();
-                randomNumber *= randomNumber;
-                rx += randomNumber * (next.getCartoonX() - sse.getCartoonX());
-                ry += randomNumber * (next.getCartoonY() - sse.getCartoonY());
-            }
+            randomNumber = random.nextDouble();
+            randomNumber *= randomNumber;
+            rx += randomNumber * (prev.getCartoonX() - sse.getCartoonX());
+            ry += randomNumber * (prev.getCartoonY() - sse.getCartoonY());
+            randomNumber = random.nextDouble();
+            randomNumber *= randomNumber;
+            rx += randomNumber * (next.getCartoonX() - sse.getCartoonX());
+            ry += randomNumber * (next.getCartoonY() - sse.getCartoonY());
             rx = rx == 0 ? 0 : gridFix(rx);
             ry = ry == 0 ? 0 : gridFix(ry);
         }
@@ -587,7 +583,7 @@ public class Optimise {
                 } else {
                     direction = 1;
                 }
-                ry = gridFix(stepSize * random.nextDouble()) * direction;
+                ry = gridFix(stepSize * random.nextDouble()) * (double) direction;
             }
         }
         return new Point2d(rx, ry);

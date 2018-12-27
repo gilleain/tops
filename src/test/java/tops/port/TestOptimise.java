@@ -16,6 +16,7 @@ import tops.dw.protein.Cartoon;
 import tops.dw.protein.SecStrucElement;
 import tops.dw.protein.TopsFileFormatException;
 import tops.port.calculate.Configure;
+import tops.port.calculate.DsspDirectory;
 import tops.port.io.TopsFileWriter;
 import tops.port.model.Chain;
 import tops.port.model.DomainDefinition;
@@ -25,11 +26,13 @@ import tops.view.cartoon.CartoonDrawer;
 
 public class TestOptimise {
     
+    private static final String PATH = DsspDirectory.DIR;
+    
 //    @Test
     public void test1GSO() throws IOException {
         DsspReader dsspReader = new DsspReader();
         Protein protein = 
-                dsspReader.readDsspFile("/Users/maclean/data/dssp/reps/1ifc.dssp");
+                dsspReader.readDsspFile(PATH + "/1ifcH.dssp");
         Chain chain = protein.getChains().get(0);
         Configure configure = new Configure();
         configure.configure(chain);
