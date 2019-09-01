@@ -28,7 +28,9 @@ public class RunAll {
 
             @Override
             public void handle(Protein protein, Chain chain) {
-                System.out.println(protein.getProteinCode() + chain.toString());                
+                String chainString = chain.toString();
+                chainString = chainString.charAt(0) + "0" + chainString.substring(1, chainString.length());
+                System.out.println(protein.getProteinCode() + chainString);
             }
             
         });

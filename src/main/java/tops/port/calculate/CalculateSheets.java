@@ -88,7 +88,7 @@ public class CalculateSheets implements Calculation {
      * strands connected by BridgePartner relationships
      */
     private boolean isBarrel(Chain chain, SSE sse, List<SSE> visited, SSE addFrom) {
-        System.out.println("Visiting " + s(sse));
+//        System.out.println("Visiting " + s(sse));
         if (visited.contains(sse)) {
             //If we've been to this node before then we've detected a barrel - return true//
             log.info("Found barrel");
