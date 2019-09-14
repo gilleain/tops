@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -22,7 +21,8 @@ public class CompareOutputs {
         
         Map<String, String> gMap = toMap(goldenFile);
         Map<String, String> pMap = toMap(portFile);
-        
+         
+        int identityCount = 0;
         for (String key : gMap.keySet()) {
             if (pMap.containsKey(key)) {
                 String gString = gMap.get(key);
@@ -30,22 +30,17 @@ public class CompareOutputs {
                 
                 System.out.println(gString);
                 System.out.println(pString);
+                if (gString.equals(pString)) {
+                    identityCount++;
+                }
             }
         }
+        System.out.println(identityCount + " identical");
     }
 
     private Map<String, String> toMap(File file) throws FileNotFoundException {
         Map<String, String> map = new HashMap<>();
-        Function<String, Void> f = new Function<String, Void>() {
-
-            @Override
-            public Void apply(String l) {
-                String[] s = l.split(" ");
-                map.put(s[0], l);
-                return null;
-            }
-            
-        };
+        
         try (BufferedReader r =new BufferedReader(new FileReader(file))) {
             for (String line : r.lines().collect(Collectors.toList())) {
                 String[] s = line.split(" ");

@@ -1,5 +1,7 @@
 package transform;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 
 import org.junit.Test;
@@ -15,10 +17,11 @@ public class RunOne {
     
     @Test
     public void test() {
-        run("9wga");
+        String result = run("1fxd");
+        assertEquals("0 NEhEeHeC 1:6A3:4A", result);
     }
     
-    private void run(String pdbcode) {
+    private String run(String pdbcode) {
         DsspReader dsspReader = new DsspReader();
         Configure configure = new Configure();
         File file = new File(PATH, pdbcode + ".dssp");
@@ -26,10 +29,11 @@ public class RunOne {
             Protein protein = dsspReader.readDsspFile(file.getAbsolutePath());
             Chain chain = protein.getChains().get(0);
             configure.configure(chain);
-            System.out.println(chain.toString());
+            return chain.toString();
         } catch (Exception e) {
             System.out.println("Failed " + file.getName() + " " + e.getStackTrace()[0]);
         }
+        return "";
     }
 
 }

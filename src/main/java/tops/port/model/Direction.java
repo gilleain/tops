@@ -11,6 +11,16 @@ public enum Direction {
         this.c = c;
     }
     
+    public Direction opposite() {
+        if (this == UP) {
+            return DOWN;
+        } else if (this == DOWN){
+            return UP;
+        } else {
+            return UNKNOWN;
+        }
+    }
+    
     @Override
     public String toString() {
         return String.valueOf(c);
