@@ -32,8 +32,10 @@ public class CalculateSheets implements Calculation {
         }
         for (List<SSE> component : components) {
             if (isBarrel(chain, component)) {
+                log.log(Level.INFO, "Adding barrel");
                 chain.addTSE(new Barrel(component));
             } else {
+                log.log(Level.INFO, "Adding sheet");
                 chain.addTSE(new Sheet(component));
             }
         }
