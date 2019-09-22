@@ -28,8 +28,7 @@ public class CompareOutputs {
         Map<String, String> pMap = toMap(portFile);
          
         int identityCount = 0;
-//        Map<String, Double> compressionMap = new HashMap<>();
-        Histogram h = new Histogram(50);
+        Histogram h = new Histogram(10);
         for (String key : gMap.keySet()) {
             if (pMap.containsKey(key)) {
                 String gString = gMap.get(key);
@@ -39,7 +38,6 @@ public class CompareOutputs {
                 System.out.println(pString);
                 double c = compression(gString, pString);
                 System.out.println(c);
-//                compressionMap.put(key, c);
                 h.add(key, c);
                 if (gString.equals(pString)) {
                     identityCount++;
@@ -47,8 +45,7 @@ public class CompareOutputs {
             }
         }
         System.out.println(identityCount + " identical");
-        System.out.println(h);
-//        System.out.println(compressionMap);
+        System.out.println(h.toShortString());
     }
     
     private double compression(String gString, String pString) {
