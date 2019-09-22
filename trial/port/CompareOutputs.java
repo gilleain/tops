@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,14 +13,14 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import tops.engine.TopsStringFormatException;
-import tops.engine.drg.Comparer;
 import tops.engine.drg.Pattern;
 import tops.engine.drg.Utilities;
 
 public class CompareOutputs {
     
     @Test
-    public void compareGoldenToPort() throws FileNotFoundException {
+    public void compareGoldenToPort() throws IOException {
+        String trialLog = "port_comparison.txt";
         String baseDir = "/home/gilleain/Data/topsstrings/";
         File goldenFile = new File(baseDir, "golden.txt");
         File portFile = new File(baseDir, "port.txt");
@@ -46,6 +47,18 @@ public class CompareOutputs {
         }
         System.out.println(identityCount + " identical");
         System.out.println(h.toShortString());
+        writeToFile(h, trialLog);
+    }
+    
+    private void writeToFile(Histogram histogram, String filename) throws IOException {
+        File file = new File(filename);
+        boolean isNew = file.createNewFile();
+        if (isNew) {
+            System.out.println("Making new file " + filename);
+        }
+        FileWriter writer = new FileWriter(file);
+        writer.append(histogram.toShortString()).append('\n');
+        writer.close();
     }
     
     private double compression(String gString, String pString) {
