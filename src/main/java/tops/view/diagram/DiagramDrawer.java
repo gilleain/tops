@@ -20,7 +20,7 @@ public class DiagramDrawer {
     public DiagramDrawer(int w, int h) {
         this.w = w;
         this.h = h;
-        this.axis = (new Integer((2 * h) / 3)).doubleValue();
+        this.axis = (Integer.valueOf((2 * h) / 3)).doubleValue();
         this.gr = new Graph();
         builder = new DiagramConverter();
         this.showLabelNumbers = false;

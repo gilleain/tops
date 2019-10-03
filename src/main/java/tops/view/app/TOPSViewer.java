@@ -204,7 +204,8 @@ public class TOPSViewer implements ActionListener, ListSelectionListener {
     @SuppressWarnings("unchecked")
 	public List<String> getInstances() {
         List<String> instances = new ArrayList<String>();
-        Vector<Vector<?>> dataVector = this.tableModel.getDataVector();
+        // XXX the type below changed after moving from Java8 -> Java11 ...
+        Vector<Vector> dataVector = this.tableModel.getDataVector();
         int nameColumnIndex = 0;
 
         for (int i = 0; i < dataVector.size(); i++) {

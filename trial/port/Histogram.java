@@ -1,11 +1,15 @@
 package port;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-public class Histogram {
+public class Histogram implements Iterable<Histogram.Bin> {
     
-    private class Bin {
+    public class Bin {
         public Bin(double min, double max) {
             this.min = min;
             this.max = max;
@@ -17,6 +21,15 @@ public class Histogram {
         public String toString() {
             return String.format("(%2.2f, %2.2f) %s %s", min, max, values.size(), values);
         }
+        
+        public String rangeLabel() {
+            return String.format("%2.2f:%2.2f", min, max);
+        }
+        
+        public int size() {
+            return values.size();
+        }
+        
         public boolean contains(double value) {
             return value > min && value < max;
         }
@@ -27,10 +40,10 @@ public class Histogram {
         }
     }
     
-    private List<Bin> bins;
+    private SortedMap<String, Bin> bins;
     
     public Histogram() {
-        this.bins = new ArrayList<>();
+        this.bins = new TreeMap<>();
     }
     
     public Histogram(int numberOfBins) {
@@ -39,14 +52,16 @@ public class Histogram {
         double min = 0;
         double max = binSize;
         for (int binCount = 0; binCount < numberOfBins; binCount++) {
-            bins.add(new Bin(min, max));
+            Bin bin = new Bin(min, max); 
+            bins.put(bin.rangeLabel(), bin);
             min = max;
             max += binSize;
         }
     }
     
     public void add(String key, double value) {
-        for (Bin bin : bins) {
+        for (Entry<String, Bin> entry : bins.entrySet()) {
+            Bin bin = entry.getValue();
             if (bin.contains(value)) {
                 bin.values.add(key);
                 return;
@@ -56,7 +71,8 @@ public class Histogram {
     
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Bin bin : bins) {
+        for (Entry<String, Bin> entry : bins.entrySet()) {
+            Bin bin = entry.getValue();
             sb.append(bin).append("\n");
         }
         return sb.toString();
@@ -64,7 +80,8 @@ public class Histogram {
     
     public String toShortString() {
         StringBuilder sb = new StringBuilder("|");
-        for (Bin bin : bins) {
+        for (Entry<String, Bin> entry : bins.entrySet()) {
+            Bin bin = entry.getValue();
             sb.append(bin.shortForm()).append("|");
         }
         return sb.toString();
@@ -84,7 +101,7 @@ public class Histogram {
     public int compareShifts(Histogram to) {
         int fromBinIndex = 1;
         int shift = 0;
-        for (Bin bin : bins) {
+        for (Bin bin : this) {
             for (String key : bin.values) {
                 int toBinIndex = to.getBinIndex(key);
                 shift += toBinIndex - fromBinIndex;
@@ -96,7 +113,7 @@ public class Histogram {
     
     public int getBinIndex(String key) {
         int binIndex = 1;
-        for (Bin bin : bins) {
+        for (Bin bin : this) {
             if (bin.values.contains(key)) {
                 return binIndex;
             }
@@ -118,9 +135,18 @@ public class Histogram {
                    bin.values.add(value);
                 }
             }
-            h.bins.add(bin);
+            h.bins.put(bin.rangeLabel(), bin);
         }
         return h;
+    }
+
+    @Override
+    public Iterator<Bin> iterator() {
+        return bins.values().iterator();
+    }
+
+    public Bin getBin(String binLabel) {
+        return bins.getOrDefault(binLabel, null);   // XXX returns null...
     }
 
 }
