@@ -13,6 +13,25 @@ import javax.vecmath.Vector2d;
  *
  */
 public class Arc implements Shape {
+
+    private Vector2d orientation;
+    
+    private Point2d start;
+    
+    private Point2d end;
+    
+    private double height;
+    
+    private Color color;
+
+    public Arc(Vector2d orientation, Point2d start, Point2d end, double height, Color color) {
+        super();
+        this.orientation = orientation;
+        this.start = start;
+        this.end = end;
+        this.height = height;
+        this.color = color;
+    }
     
     public Vector2d getOrientation() {
         return orientation;
@@ -34,24 +53,6 @@ public class Arc implements Shape {
         return this.height;
     }
 
-    private Vector2d orientation;
-    
-    private Point2d start;
-    
-    private Point2d end;
-    
-    private double height;
-    
-    private Color color;
-
-    public Arc(Vector2d orientation, Point2d start, Point2d end, double height, Color color) {
-        super();
-        this.orientation = orientation;
-        this.start = start;
-        this.end = end;
-        this.height = height;
-        this.color = color;
-    }
     
     @Override
     public void accept(Visitor visitor) {

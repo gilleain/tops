@@ -30,7 +30,8 @@ public class DiagramGenerator {
     private ShapeList generateVertices(String vertices) {
         ShapeList root = new ShapeList();
         
-        Point2d position = new Point2d(0, 0);
+        double yAxis = 0.5;
+        Point2d position = new Point2d(yAxis, yAxis);
         int numberOfVertices = vertices.length();
         for (int index = 0; index < numberOfVertices; index++) {
             switch (vertices.charAt(index)) {
@@ -47,10 +48,10 @@ public class DiagramGenerator {
                     root.add(new Bullet(DOWN, position));
                     break;
                 default:
-                    root.add(new Box(position));
+                    root.add(new Box(position, 1, 1));
                     break;
             }
-            position = new Point2d(position.x + 1, 0);
+            position = new Point2d(position.x + 1, yAxis);
         }
         return root;
     }

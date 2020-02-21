@@ -24,6 +24,10 @@ public class Triangle implements Shape {
         return center;
     }
     
+    public Vector2d getOrientation() {
+        return this.orientation;
+    }
+    
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);

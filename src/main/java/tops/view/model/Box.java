@@ -12,16 +12,18 @@ public class Box implements Shape {
     
     private double height;
     
+    public Box(Point2d center, double width, double height) {
+        this.center = center;
+        this.width = width;
+        this.height = height;
+    }
+    
     public double getWidth() {
         return width;
     }
 
     public double getHeight() {
         return height;
-    }
-
-    public Box(Point2d center) {
-        this.center = center;
     }
 
     @Override
