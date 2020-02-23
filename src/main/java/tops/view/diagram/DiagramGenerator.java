@@ -30,8 +30,12 @@ public class DiagramGenerator {
     private ShapeList generateVertices(String vertices) {
         ShapeList root = new ShapeList();
         
-        final double upAdjustment   = +0.25;   // half the interior radius of the triangle
-        final double downAdjustment = -0.25;   // half the interior radius of the triangle
+        
+        final double triangleRadius = 1.0 / Math.sqrt(3);   // R = a / sqrt(3)
+        // half the interior radius of the triangle, r = R / 2
+        final double adjustment = triangleRadius / 4;
+        final double upAdjustment   =  adjustment;
+        final double downAdjustment = -adjustment;   
         
         double yAxis = 0.5;
         Point2d position = new Point2d(yAxis, yAxis);
@@ -40,11 +44,11 @@ public class DiagramGenerator {
             switch (vertices.charAt(index)) {
                 case 'E':
                     position = new Point2d(position.x + 1, yAxis + upAdjustment);
-                    root.add(new Triangle(UP, position, 1.0));
+                    root.add(new Triangle(UP, position, triangleRadius));
                     break;
                 case 'e':
                     position = new Point2d(position.x + 1, yAxis + downAdjustment);
-                    root.add(new Triangle(DOWN, position, 1.0));
+                    root.add(new Triangle(DOWN, position, triangleRadius));
                     break;
                 case 'H':
                     position = new Point2d(position.x + 1, yAxis);
