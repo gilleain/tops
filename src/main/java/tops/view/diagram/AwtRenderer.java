@@ -41,15 +41,17 @@ public class AwtRenderer {
         }
         
         private void visitTriangle(Triangle shape) {
-            double r = 10.0;    // TODO ...
+//            double r = 10.0;    // TODO ...
+            double r = scaleToFit.getScale() * 0.5;
             
             double ox = shape.getCenter().x;
             double oy = shape.getCenter().y;
             boolean isUp = isUp(shape.getOrientation());    // XXX TODO
             
             Point2d pCenter = scaleToFit.transform(new Point2d(ox, oy));
-            List<Point2d> corners = PointUtils.makePoints(pCenter, isUp? 0 : 180, r, 3);
-            System.out.println("Drawing poly "  + corners);
+            double startAngle = isUp? 270 : 90; // coordinate system transform
+            List<Point2d> corners = PointUtils.makePoints(pCenter, startAngle, r, 3);
+            System.out.println("Drawing poly (orientation = " + shape.getOrientation() + " isUp? "  + isUp + ") at " + corners);
             
             int[] xPoints = new int[] {(int)corners.get(0).x, (int)corners.get(1).x, (int)corners.get(2).x };
             int[] yPoints = new int[] {(int)corners.get(0).y, (int)corners.get(1).y, (int)corners.get(2).y };
@@ -57,12 +59,17 @@ public class AwtRenderer {
             Color c = graphics.getColor();
             graphics.setColor(Color.RED); // TODO
             graphics.draw(new Polygon(xPoints, yPoints, 3));
+            
+            // draw a debug center
+            graphics.setColor(Color.BLACK);
+            graphics.drawRect((int)pCenter.x - 5, (int)pCenter.y - 5, 10, 10);
+            
             graphics.setColor(c);
         }
         
-        private final Vector2d UP = new Vector2d(1, 0);
+        private final Vector2d UP = new Vector2d(0, -1);
         private boolean isUp(Vector2d orientation) {
-            return UP.dot(orientation) == 0;
+            return UP.dot(orientation) == 1;
         }
         
         private void visitBox(Box shape) {

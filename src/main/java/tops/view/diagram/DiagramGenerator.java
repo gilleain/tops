@@ -14,9 +14,9 @@ import tops.view.model.Triangle;
 
 public class DiagramGenerator {
     
-    private static final Vector2d UP = new Vector2d(0, 0);
+    private static final Vector2d UP = new Vector2d(0, -1);
     
-    private static final Vector2d DOWN = new Vector2d(180, 0);  // XXX
+    private static final Vector2d DOWN = new Vector2d(0, 1);  // XXX
     
     public Shape generate(String vertexString, String edgeString, String highlightString) {
         ShapeList root = new ShapeList();
@@ -30,28 +30,35 @@ public class DiagramGenerator {
     private ShapeList generateVertices(String vertices) {
         ShapeList root = new ShapeList();
         
+        final double upAdjustment   = +0.25;   // half the interior radius of the triangle
+        final double downAdjustment = -0.25;   // half the interior radius of the triangle
+        
         double yAxis = 0.5;
         Point2d position = new Point2d(yAxis, yAxis);
         int numberOfVertices = vertices.length();
         for (int index = 0; index < numberOfVertices; index++) {
             switch (vertices.charAt(index)) {
                 case 'E':
+                    position = new Point2d(position.x + 1, yAxis + upAdjustment);
                     root.add(new Triangle(UP, position, 1.0));
                     break;
                 case 'e':
+                    position = new Point2d(position.x + 1, yAxis + downAdjustment);
                     root.add(new Triangle(DOWN, position, 1.0));
                     break;
                 case 'H':
+                    position = new Point2d(position.x + 1, yAxis);
                     root.add(new Bullet(UP, position));
                     break;
                 case 'h':
+                    position = new Point2d(position.x + 1, yAxis);
                     root.add(new Bullet(DOWN, position));
                     break;
                 default:
+                    position = new Point2d(position.x + 1, yAxis);
                     root.add(new Box(position, 1, 1));
                     break;
             }
-            position = new Point2d(position.x + 1, yAxis);
         }
         return root;
     }

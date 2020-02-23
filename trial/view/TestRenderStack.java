@@ -21,13 +21,14 @@ public class TestRenderStack {
         String name = "blah";
         String vertices = "NEeEeEeC";
         String edges = "1:2A2:3A3:4A";
-        int width = 500;
-        int height = 300;
+        int width = 800;
+        int height = 600;
         
         Image image = new BufferedImage(
                 width, height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g = (Graphics2D) image.getGraphics();
-        g.setColor(Color.GRAY);
+//        g.setColor(Color.GRAY);
+        g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
         AwtRenderer renderer = new AwtRenderer();
         Rectangle2D canvas = new Rectangle2D.Double(0, 0, width, height);
