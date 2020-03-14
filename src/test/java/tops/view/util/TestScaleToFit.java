@@ -52,6 +52,27 @@ public class TestScaleToFit {
         assertPoint(p2t, 70, 104);
     }
     
+    @Test
+    public void testConcentricTransform() {
+        Point2d center = new Point2d(75, 75);
+        Rectangle2D canvas = pointCenteredRectangle(center, 100, 100);
+        Rectangle2D model =  pointCenteredRectangle(center, 50, 50);
+        
+        ScaleToFit scale = new ScaleToFit(canvas, model);
+        
+        Point2d p1 = new Point2d(75, 50);
+        Point2d p1t = scale.transform(p1);
+        assertPoint(p1t, 75, 25);
+        
+        Point2d p2 = new Point2d(50, 100);
+        Point2d p2t = scale.transform(p2);
+        assertPoint(p2t, 25, 125);
+        
+        Point2d p3 = new Point2d(100, 100);
+        Point2d p3t = scale.transform(p3);
+        assertPoint(p3t, 125, 125);
+    }
+    
     private void assertPoint(Point2d p, double x, double y) {
         assertEquals("Xcoord", x, p.x, 0.001);
         assertEquals("Ycoord", y, p.y, 0.001);
