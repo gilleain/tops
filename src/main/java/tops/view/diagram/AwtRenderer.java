@@ -13,6 +13,7 @@ import javax.vecmath.Vector2d;
 import tops.view.model.Arc;
 import tops.view.model.BoundsVisitor;
 import tops.view.model.Box;
+import tops.view.model.Bullet;
 import tops.view.model.Shape;
 import tops.view.model.Triangle;
 import tops.view.util.ScaleToFit;
@@ -103,11 +104,12 @@ public class AwtRenderer {
             double y = p.y;
             double w = oW * scale;
             double h = oH * scale;
+            boolean isUp = isUp(shape.getOrientation());
             
             Color old = graphics.getColor();
             graphics.setColor(shape.getColor());
-            System.out.println("Drawing at " + x + " " + y + " " + w + " " + h);
-            graphics.draw(new Arc2D.Double(x, y , w, h, 180, 180, Arc2D.OPEN));
+            System.out.println("Drawing arc at " + x + " " + y + " " + w + " " + h + " isUp? " + isUp);
+            graphics.draw(new Arc2D.Double(x, y , w, h, isUp? 0 : 180, 180, shape.isClosed()? Arc2D.PIE : Arc2D.OPEN));
             graphics.setColor(old);
         }
         

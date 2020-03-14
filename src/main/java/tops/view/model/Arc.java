@@ -22,17 +22,24 @@ public class Arc implements Shape {
     
     private double height;
     
+    private boolean isClosed;
+    
     private Color color;
 
-    public Arc(Vector2d orientation, Point2d start, Point2d end, double height, Color color) {
+    public Arc(Vector2d orientation, Point2d start, Point2d end, double height, boolean isClosed, Color color) {
         super();
         this.orientation = orientation;
         this.start = start;
         this.end = end;
         this.height = height;
+        this.isClosed = isClosed;
         this.color = color;
     }
     
+    public boolean isClosed() {
+        return isClosed;
+    }
+
     public Vector2d getOrientation() {
         return orientation;
     }
@@ -72,6 +79,10 @@ public class Arc implements Shape {
         double x = start.x;
         double y = start.y - height;    // XXX ?
         return new Rectangle2D.Double(x, y, width, height);
+    }
+    
+    public String toString() {
+        return String.format("ARC (%.2f %.2f) -> (%.2f %.2f)", start.x, start.y, end.x, end.y);
     }
 
 }

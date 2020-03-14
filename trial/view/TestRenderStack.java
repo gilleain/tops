@@ -19,8 +19,10 @@ public class TestRenderStack {
     
     public static void main(String[] args) throws IOException {
         String name = "blah";
-        String vertices = "NEeEeEeC";
-        String edges = "1:2A2:3A3:4A";
+//        String vertices = "NHEeEeEehHHHhHC";
+        String vertices = "NHEeEeEehHC";
+//        String edges = "2:3A3:4A4:5A";
+        String edges = "";
         int width = 800;
         int height = 600;
         

@@ -18,6 +18,11 @@ public class DiagramGenerator {
     
     private static final Vector2d DOWN = new Vector2d(0, 1);  // XXX
     
+    private static final Vector2d LEFT = new Vector2d(-1, 0);  // XXX
+    
+    private static final Vector2d RIGHT = new Vector2d(1, 0);  // XXX
+
+    
     public Shape generate(String vertexString, String edgeString, String highlightString) {
         ShapeList root = new ShapeList();
         ShapeList vertices = generateVertices(vertexString);
@@ -37,10 +42,15 @@ public class DiagramGenerator {
         final double upAdjustment   =  adjustment;
         final double downAdjustment = -adjustment;   
         
+        final double bulletHeight = 0.75;
+        final double upBulletAdjustment   = -bulletHeight / 2;
+        final double downBulletAdjustment =  bulletHeight / 2; 
+        
         double yAxis = 0.5;
         Point2d position = new Point2d(yAxis, yAxis);
         int numberOfVertices = vertices.length();
         for (int index = 0; index < numberOfVertices; index++) {
+            System.out.println(index + " " + position.x + " " + position.y);
             switch (vertices.charAt(index)) {
                 case 'E':
                     position = new Point2d(position.x + 1, yAxis + upAdjustment);
@@ -51,12 +61,12 @@ public class DiagramGenerator {
                     root.add(new Triangle(DOWN, position, triangleRadius));
                     break;
                 case 'H':
-                    position = new Point2d(position.x + 1, yAxis);
-                    root.add(new Bullet(UP, position));
+                    position = new Point2d(position.x + 1, yAxis + upBulletAdjustment);
+                    root.add(generateBullet(UP, position, bulletHeight, Color.BLACK));
                     break;
                 case 'h':
-                    position = new Point2d(position.x + 1, yAxis);
-                    root.add(new Bullet(DOWN, position));
+                    position = new Point2d(position.x + 1, yAxis + downBulletAdjustment);
+                    root.add(generateBullet(DOWN, position, bulletHeight, Color.BLACK));
                     break;
                 default:
                     position = new Point2d(position.x + 1, yAxis);
@@ -65,6 +75,17 @@ public class DiagramGenerator {
             }
         }
         return root;
+    }
+    
+    
+    private Shape generateBullet(Vector2d orientation, Point2d center, double height, Color color) {
+        double r = 0.25;
+        Point2d start = new Point2d(LEFT);
+        start.scaleAdd(r, center);
+        Point2d end = new Point2d(RIGHT);
+        end.scaleAdd(r, center);
+        
+        return new Arc(orientation, start, end, height, true, color);
     }
     
     private Shape generateEdges(String estr, ShapeList vertices) {
@@ -88,29 +109,29 @@ public class DiagramGenerator {
                 
                 switch (ch) {
                     case 'A':
-                        root.add(new Arc(UP, left, right, height, colorFor(Edge.Type.ANTIPARALLEL_HBOND)));
+                        root.add(new Arc(UP, left, right, height, false, colorFor(Edge.Type.ANTIPARALLEL_HBOND)));
                         break;
 
                     case 'P':
-                        root.add(new Arc(UP, left, right, height, colorFor(Edge.Type.PARALLEL_HBOND)));
+                        root.add(new Arc(UP, left, right, height, false, colorFor(Edge.Type.PARALLEL_HBOND)));
                         break;
 
                     case 'R':
-                        root.add(new Arc(DOWN, left, right, height, colorFor(Edge.Type.RIGHT_CHIRAL)));
+                        root.add(new Arc(DOWN, left, right, height, false, colorFor(Edge.Type.RIGHT_CHIRAL)));
                         break;
 
                     case 'L':
-                        root.add(new Arc(DOWN, left, right, height, colorFor(Edge.Type.LEFT_CHIRAL)));
+                        root.add(new Arc(DOWN, left, right, height, false, colorFor(Edge.Type.LEFT_CHIRAL)));
                         break;
 
                     case 'Z':
-                        root.add(new Arc(UP, left, right, height, colorFor(Edge.Type.PARALLEL_HBOND)));
-                        root.add(new Arc(DOWN, left, right, height, colorFor(Edge.Type.RIGHT_CHIRAL)));
+                        root.add(new Arc(UP, left, right, height, false, colorFor(Edge.Type.PARALLEL_HBOND)));
+                        root.add(new Arc(DOWN, left, right, height, false, colorFor(Edge.Type.RIGHT_CHIRAL)));
                         break;
 
                     case 'X':
-                        root.add(new Arc(UP, left, right, height, colorFor(Edge.Type.PARALLEL_HBOND)));
-                        root.add(new Arc(DOWN, left, right, height, colorFor(Edge.Type.LEFT_CHIRAL)));
+                        root.add(new Arc(UP, left, right, height, false, colorFor(Edge.Type.PARALLEL_HBOND)));
+                        root.add(new Arc(DOWN, left, right, height, false, colorFor(Edge.Type.LEFT_CHIRAL)));
                         break;
                         
                     default:

@@ -66,7 +66,7 @@ public class TestShapeBounds {
         Point2d s = new Point2d(100, axis);
         Point2d e = new Point2d(200, axis);
         double h = (e.x - s.x) / 2.0;
-        return new Arc(o, s, e, h, Color.BLACK);
+        return new Arc(o, s, e, h, false, Color.BLACK);
     }
 
 }
