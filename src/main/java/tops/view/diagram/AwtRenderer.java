@@ -96,9 +96,8 @@ public class AwtRenderer {
             double oH = shape.getHeight();
             
             System.out.println("Visiting arc " + shape);
-            
-//            Point2d p = transform(new Point2d(oX, oY));
             Point2d p = scaleToFit.transform(new Point2d(oX, oY));
+            System.out.println("Transforming " + new Point2d(oX, oY) + " to " + p);
             double scale = scaleToFit.getScale();
             double x = p.x;
             double y = p.y;
@@ -108,7 +107,7 @@ public class AwtRenderer {
             
             Color old = graphics.getColor();
             graphics.setColor(shape.getColor());
-            System.out.println("Drawing arc at " + x + " " + y + " " + w + " " + h + " isUp? " + isUp);
+            System.out.println(String.format("Drawing arc at (%.2f, %.2f) (%.2f, %.2f) isUp? %s", x, y, w, h, isUp));
             graphics.draw(new Arc2D.Double(x, y , w, h, isUp? 0 : 180, 180, shape.isClosed()? Arc2D.PIE : Arc2D.OPEN));
             graphics.setColor(old);
         }
@@ -120,8 +119,6 @@ public class AwtRenderer {
         Rectangle2D modelBounds = getModelBounds(shape);
         System.out.println("Model bounds " + modelBounds);
         
-//        double scale = calculateScale(canvas, modelBounds);
-        
         // make a visitor
         AwtVisitor visitor = new AwtVisitor(graphics, getScale(canvas, modelBounds));
         
@@ -132,22 +129,8 @@ public class AwtRenderer {
     private ScaleToFit getScale(Rectangle2D canvas, Rectangle2D modelBounds) {
         return new ScaleToFit(canvas, modelBounds);
     }
-    
-    private double calculateScale(Rectangle2D canvas, Rectangle2D modelBounds) {
-        double widthScale = canvas.getWidth() / modelBounds.getWidth();
-        double heightScale = canvas.getHeight() / modelBounds.getHeight();
-        return Math.min(widthScale, heightScale);   /// XXX needs all cases of scaling up/down
-    }
 
     private Rectangle2D getModelBounds(Shape shape) {
-//        double minX = 0;
-//        double minY = 0;
-//        double maxX = 0;
-//        double maxY = 0;
-//        
-//        // TODO
-//        
-//        return new Rectangle2D.Double(minX, minY, minX + maxX, minY + maxY);
         BoundsVisitor boundsVisitor = new BoundsVisitor();
         shape.accept(boundsVisitor);
         return boundsVisitor.getBounds();

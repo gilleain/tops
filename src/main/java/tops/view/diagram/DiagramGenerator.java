@@ -1,6 +1,7 @@
 package tops.view.diagram;
 
 import java.awt.Color;
+import java.awt.geom.Rectangle2D;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Vector2d;
@@ -44,7 +45,7 @@ public class DiagramGenerator {
         
         final double bulletHeight = 0.75;
         final double upBulletAdjustment   = -bulletHeight / 2;
-        final double downBulletAdjustment =  bulletHeight / 2; 
+        final double downBulletAdjustment =  -bulletHeight / 2; 
         
         double yAxis = 0.5;
         Point2d position = new Point2d(yAxis, yAxis);
@@ -98,13 +99,15 @@ public class DiagramGenerator {
             char ch = estr.charAt(pos);
             if (Character.isLetter(ch)) { // when you find a letter (A, P, R, L)
                 String edgeStr = estr.substring(last, pos); // store the edge
-                int Cpos = edgeStr.indexOf(':');
+                int cPos = edgeStr.indexOf(':');
                 
-                int l = Integer.parseInt(edgeStr.substring(0, Cpos));
-                int r = Integer.parseInt(edgeStr.substring(Cpos + 1, edgeStr.length()));
+                int l = Integer.parseInt(edgeStr.substring(0, cPos));
+                int r = Integer.parseInt(edgeStr.substring(cPos + 1, edgeStr.length()));
                 
-                Point2d left = vertices.get(l).getCenter();
-                Point2d right = vertices.get(r).getCenter();
+                Rectangle2D leftBounds = vertices.get(l).getBounds();
+                Rectangle2D rightBounds = vertices.get(r).getBounds();
+                Point2d left = new Point2d(leftBounds.getCenterX(), leftBounds.getCenterY() - leftBounds.getHeight());
+                Point2d right = new Point2d(rightBounds.getCenterX(), rightBounds.getCenterY() - rightBounds.getHeight());
                 double height = (right.x - left.x) / 2;
                 
                 switch (ch) {

@@ -35,8 +35,7 @@ public class Triangle implements Shape {
 
     @Override
     public Rectangle2D getBounds() {
-        // TODO Auto-generated method stub
-        return null;
+        return new Rectangle2D.Double(center.x - size, center.y - size, size, size);
     }
 
 }

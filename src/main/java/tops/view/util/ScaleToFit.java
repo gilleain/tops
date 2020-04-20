@@ -24,8 +24,7 @@ public class ScaleToFit {
     private final Point2d dd;
     
     public ScaleToFit(Rectangle2D canvas, Rectangle2D model) {
-//        this.center = new Point2d(canvas.getCenterX(), canvas.getCenterY());
-        this.center = new Point2d(model.getCenterX(), model.getCenterY());
+        this.center = new Point2d(canvas.getCenterX(), canvas.getCenterY());
         this.dd = new Point2d(canvas.getCenterX() - model.getCenterX(),
                               canvas.getCenterY() - model.getCenterY());
         this.canvas = canvas;
@@ -37,7 +36,7 @@ public class ScaleToFit {
         
 //        this.scale = 0.5 * Math.min(cw / mw, ch / mh);
         this.scale = Math.min(cw / mw, ch / mh);
-        System.out.println("Scale = " + scale);
+        System.out.println("Scale = " + scale + " dd = " + dd);
     }
     
     public double getScale() {
@@ -46,16 +45,17 @@ public class ScaleToFit {
     
     
     public Point2d transform(Point2d original) {
-        double ox = original.x;
-        double oy = original.y;
+        // shift to canvas center
+        double ox = original.x + dd.x;
+        double oy = original.y + dd.y;
         
+        // calculate difference from that center for scaling
         double dx = ox - center.x;
         double dy = oy - center.y;
         
-        double nx = ox + (scale * dx) + dd.x;
-        double ny = oy + (scale * dy) + dd.y;
-        
-        // TODO incorporate the difference between the canvas center and the model center
+        // center-scale from that point
+        double nx = ox + (scale * dx);
+        double ny = oy + (scale * dy);
         
         return new Point2d(nx, ny);
     }

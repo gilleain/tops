@@ -77,12 +77,12 @@ public class Arc implements Shape {
     public Rectangle2D getBounds() {
         double width = end.x - start.x;
         double x = start.x;
-        double y = start.y - height;    // XXX ?
+        double y = start.y + (orientation.y * height);    // XXX ?
         return new Rectangle2D.Double(x, y, width, height);
     }
     
     public String toString() {
-        return String.format("ARC (%.2f %.2f) -> (%.2f %.2f)", start.x, start.y, end.x, end.y);
+        return String.format("ARC (%.2f %.2f) -> (%.2f %.2f) %.2f", start.x, start.y, end.x, end.y, height);
     }
 
 }
