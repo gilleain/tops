@@ -68,8 +68,8 @@ public class Arc implements Shape {
 
     @Override
     public Point2d getCenter() {
-        // TODO Auto-generated method stub
-        return null;
+        double width = end.x - start.x;
+        return new Point2d(start.x + (width / 2), start.y);
     }
 
 

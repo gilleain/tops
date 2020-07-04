@@ -104,11 +104,13 @@ public class AwtRenderer {
             double w = oW * scale;
             double h = oH * scale;
             boolean isUp = isUp(shape.getOrientation());
+            int startAngle = isUp? 0 : 180;
+            int arcType = shape.isClosed()? Arc2D.PIE : Arc2D.OPEN;
             
             Color old = graphics.getColor();
             graphics.setColor(shape.getColor());
             System.out.println(String.format("Drawing arc at (%.2f, %.2f) (%.2f, %.2f) isUp? %s", x, y, w, h, isUp));
-            graphics.draw(new Arc2D.Double(x, y , w, h, isUp? 0 : 180, 180, shape.isClosed()? Arc2D.PIE : Arc2D.OPEN));
+            graphics.draw(new Arc2D.Double(x, y , w, h, startAngle, 180, arcType));
             graphics.setColor(old);
         }
         
