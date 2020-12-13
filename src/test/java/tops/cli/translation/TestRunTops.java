@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class TestRunTops {
     
-    @Test
+//    @Test	// comment out after use!
     public void convert() {
         String topsHome = "/home/gilleain/Code/eclipse/ctops/Debug/";
         String topsDir = topsHome + "Tops";
