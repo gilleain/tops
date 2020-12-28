@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ public class CATHTree implements ClassificationTree {
     private CATHLevel root;
 
     /** A map of domainIDs to CATHNumbers */
-    private HashMap<String, CATHNumber> domainCATHNumberMap;
+    private Map<String, CATHNumber> domainCATHNumberMap;
 
     /**
      * Create the cath tree with default 4 top level classes (without reps).
@@ -75,8 +76,7 @@ public class CATHTree implements ClassificationTree {
 
     public String getNumberForDomainID(String domainID) {
         try {
-            CATHNumber cathNumber = (CATHNumber) this.domainCATHNumberMap
-                    .get(domainID);
+            CATHNumber cathNumber = this.domainCATHNumberMap.get(domainID);
             return cathNumber.getFullCode();
         } catch (NullPointerException npe) {
             return "";
@@ -106,8 +106,7 @@ public class CATHTree implements ClassificationTree {
      */
 
     public int getHighestRep(String domainID) {
-        CATHNumber cathNumber = (CATHNumber) this.domainCATHNumberMap
-                .get(domainID);
+        CATHNumber cathNumber = this.domainCATHNumberMap.get(domainID);
         return this.getHighestRep(cathNumber);
     }
 
@@ -136,7 +135,7 @@ public class CATHTree implements ClassificationTree {
      */
 
     public List<Integer> getReps(String domainID) {
-        CATHNumber cathNumber = (CATHNumber) this.domainCATHNumberMap.get(domainID);
+        CATHNumber cathNumber = this.domainCATHNumberMap.get(domainID);
         return this.getReps(cathNumber);
     }
 
@@ -150,8 +149,8 @@ public class CATHTree implements ClassificationTree {
      * @return a list of ints - one for each level that this domain is a rep of.
      */
 
-    public ArrayList<Integer> getReps(CATHNumber cathNumber) {
-        ArrayList<Integer> repInts = new ArrayList<Integer>();
+    public List<Integer> getReps(CATHNumber cathNumber) {
+        List<Integer> repInts = new ArrayList<Integer>();
 
         this.root.getReps(cathNumber, repInts);
         return repInts;
@@ -168,12 +167,10 @@ public class CATHTree implements ClassificationTree {
         out.println("CATH Tree:");
         this.root.printToStream(out);
 
-        Iterator<String> domainIterator = this.domainCATHNumberMap.keySet().iterator();
-        while (domainIterator.hasNext()) {
-            String domainID = (String) domainIterator.next();
-            List<Integer> repList = this.getReps(domainID);
-            int highestRep = this.getHighestRep(domainID);
-            out.println(highestRep + " " + domainID + " " + repList);
+        for (String domainId : this.domainCATHNumberMap.keySet()) {
+            List<Integer> repList = this.getReps(domainId);
+            int highestRep = this.getHighestRep(domainId);
+            out.println(highestRep + " " + domainId + " " + repList);
         }
     }
 
