@@ -5,12 +5,20 @@ import java.util.List;
 
 
 public class DomainSegment {
-    private int start;
-    private int end;
+    private final int start;
+    private final int end;
 
     public DomainSegment(int start, int end) {
         this.start = start;
         this.end = end;
+    }
+    
+    public int getStart() {
+    	return this.start;
+    }
+    
+    public int getEnd() {
+    	return this.end;
     }
 
     public boolean contains(BackboneSegment backboneSegment) {

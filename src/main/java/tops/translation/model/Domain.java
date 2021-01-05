@@ -30,6 +30,10 @@ public class Domain {
     public void addSegment(int start, int end) {
         this.segments.add(new DomainSegment(start, end));
     }
+    
+    public List<DomainSegment> getSegments() {
+    	return segments;
+    }
 
     public boolean contains(BackboneSegment backboneSegment) {
         if (this.isEmpty()) {

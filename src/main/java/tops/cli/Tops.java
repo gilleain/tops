@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.cli.ParseException;
 
+import tops.cli.classification.CathTreeCommand;
 import tops.cli.drawing.CartoonCommand;
 import tops.cli.drawing.DiagramCommand;
 import tops.cli.engine.drg.CompareCommand;
@@ -37,7 +38,8 @@ public class Tops {
         
         commands.put(CartoonCommand.KEY, new CartoonCommand());
         commands.put("diagram", new DiagramCommand());
-        commands.put("parse-cath", new CATHDomainFileParserCommand());
+        commands.put("parse-cath-domain", new CATHDomainFileParserCommand());
+        commands.put("parse-cath-tree", new CathTreeCommand());
         commands.put("edit-cartoon", new SimpleCartoonEditorCommand());
         commands.put("edit-diagram", new DiagramEditorCommand());
         commands.put("edit-original", new OriginalEditorCommand());

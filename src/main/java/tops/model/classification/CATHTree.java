@@ -190,13 +190,15 @@ public class CATHTree implements ClassificationTree {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filepath));
 
         String line;
+        // note that the old format had 6-char ids...
         Pattern linePattern = Pattern
-                .compile("^(.{6})\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d).+$");
+                .compile("^(.{7})\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d).+$");
 
         CATHTree tree = new CATHTree();
         while ((line = bufferedReader.readLine()) != null) {
             Matcher m = linePattern.matcher(line);
             if (m.matches()) {
+//            	System.out.println("MATCH " + line);
                 CATHNumber cathNumber = new CATHNumber(
                         Integer.parseInt(m.group(2)), // Class
                         Integer.parseInt(m.group(3)), // Architecture
@@ -209,6 +211,9 @@ public class CATHTree implements ClassificationTree {
                 );
                 // System.out.println("Adding " + cathNumber + " to tree");
                 tree.addCATHNumber(cathNumber);
+            } else {
+//            	System.out.println("NOMATCH " + line);
+            	// TODO : log as error?
             }
         }
         bufferedReader.close();
