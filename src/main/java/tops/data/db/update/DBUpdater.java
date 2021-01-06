@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import tops.engine.TParser;
 import tops.model.classification.ClassificationTree;
+import tops.model.classification.LevelCode;
 
 /**
  * This is where the strings and cartoons produced by the
@@ -151,7 +152,7 @@ public class DBUpdater {
             String classif = tree.getNumberForDomainID(domID);
 
             // get the rep status (if any) of this example from the tree
-            int highestRep = tree.getHighestRep(domID);
+            LevelCode highestRep = tree.getHighestRep(domID);
 
             int groupID = -1;
             try {
@@ -184,7 +185,7 @@ public class DBUpdater {
                 insertIntoInstanceNrStatement.setInt(2, groupID);
                 insertIntoInstanceNrStatement.setString(3, classif);
                 insertIntoInstanceNrStatement.setString(4, scheme);
-                insertIntoInstanceNrStatement.setInt(5, highestRep);
+                insertIntoInstanceNrStatement.setInt(5, highestRep.getLevel());
 
                 insertIntoInstanceNrStatement.executeUpdate();
 

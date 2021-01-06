@@ -14,16 +14,14 @@ public interface ClassificationTree {
     public boolean isDomainIDInTree(String domainID);
 
     /**
-     * Given a domainID string, return a list of levels at which this domain is
-     * a rep
+     * Given a domainID string, return a list of levels at which this domain is a rep
      */
-    public List<Integer> getReps(String domainID);
+    public List<LevelCode> getReps(String domainID);
 
     /**
-     * Given a domainID string, return a the highest level at which this domain
-     * is a rep
+     * Given a domainID string, return a the highest level at which this domain is a rep
      */
-    public int getHighestRep(String domainID);
+    public LevelCode getHighestRep(String domainID);
 
     /** Given a domainID string, return a classification number */
     public String getNumberForDomainID(String domainID);

@@ -22,8 +22,8 @@ import tops.engine.TopsStringFormatException;
 import tops.engine.drg.Comparer;
 import tops.engine.drg.Pattern;
 import tops.engine.drg.Utilities;
-import tops.model.classification.CATHLevel;
-import tops.model.classification.SCOPLevel;
+import tops.model.classification.CathLevelCode;
+import tops.model.classification.ScopLevelCode;
 
 /**
  * Browser for the strings database, accepting a classification "stub" and
@@ -141,11 +141,11 @@ public class ClassificationServlet extends HttpServlet {
         // now get the names of the levels we are looking at ... if we can
         try {
             if (classificationSchemeName.equals("CATH")) {
-                levelName = CATHLevel.FULL_NAMES[levelIndex];
-                subLevelName = CATHLevel.FULL_NAMES[subLevelIndex];
+            	levelName = CathLevelCode.values()[levelIndex].getName();
+                subLevelName = CathLevelCode.values()[subLevelIndex].getName();
             } else if (classificationSchemeName.equals("SCOP")) {
-                levelName = SCOPLevel.FULL_NAMES[levelIndex];
-                subLevelName = SCOPLevel.FULL_NAMES[subLevelIndex];
+            	levelName = ScopLevelCode.values()[levelIndex].getName();
+                subLevelName = ScopLevelCode.values()[subLevelIndex].getName();
             } else {
                 this.warning("Unknown classification scheme : " + classificationSchemeName, response);
                 return;

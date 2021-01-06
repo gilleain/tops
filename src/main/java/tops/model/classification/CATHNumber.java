@@ -41,22 +41,24 @@ public class CATHNumber {
      * @return the code at level <code>name</code>
      */
 
-    public int getCodeForName(int name) {
+    public int getCodeForName(CathLevelCode name) {
         switch (name) {
-            case 0:
+            case C:
                 return this.classNumber;
-            case 1:
+            case A:
                 return this.architectureNumber;
-            case 2:
+            case T:
                 return this.topologyNumber;
-            case 3:
+            case H:
                 return this.homologyNumber;
-            case 4:
+            case S:
                 return this.S35;
-            case 5:
+            case O:
                 return this.S95;
-            case 6:
+            case L:
                 return this.S100;
+            case I:	// TODO
+            case D:	// TODO
             default:
                 return -1;
         }

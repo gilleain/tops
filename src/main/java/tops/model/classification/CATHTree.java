@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -24,9 +23,8 @@ public class CATHTree implements ClassificationTree {
     /**
      * Create the cath tree with default 4 top level classes (without reps).
      */
-
     public CATHTree() {
-        this.root = new CATHLevel(CATHLevel.ROOT, 0, null);
+        this.root = new CATHLevel(CathLevelCode.R, 0, null);
         this.domainCATHNumberMap = new HashMap<String, CATHNumber>();
     }
 
@@ -37,7 +35,6 @@ public class CATHTree implements ClassificationTree {
      * @param cathNumber
      *            the CATHNumber object to get data from
      */
-
     public void addCATHNumber(CATHNumber cathNumber) {
         this.root.addCATHNumber(cathNumber);
         this.domainCATHNumberMap.put(cathNumber.getDomainID(), cathNumber);
@@ -53,17 +50,6 @@ public class CATHTree implements ClassificationTree {
         this.domainCATHNumberMap.remove(domainID);
     }
 
-    /**
-     * Convenience method for converting a level name flag into a string.
-     * 
-     * @param name
-     *            the CATHLevel static int representing a level
-     * @return a String for the name of the level
-     */
-
-    public String translate(int name) {
-        return CATHLevel.FULL_NAMES[name];
-    }
 
     /**
      * Get the number for this domainID. Note that it returns an empty string if
@@ -73,7 +59,6 @@ public class CATHTree implements ClassificationTree {
      *            the domain we are looking up.
      * @return a String classification identifier.
      */
-
     public String getNumberForDomainID(String domainID) {
         try {
             CATHNumber cathNumber = this.domainCATHNumberMap.get(domainID);
@@ -90,7 +75,6 @@ public class CATHTree implements ClassificationTree {
      *            the domain we want to know about.
      * @return true or false
      */
-
     public boolean isDomainIDInTree(String domainID) {
         return this.domainCATHNumberMap.containsKey(domainID);
     }
@@ -99,13 +83,10 @@ public class CATHTree implements ClassificationTree {
      * Lookup a domain (in the form of a domainID string) in the tree to find
      * out its highest rep status.
      * 
-     * @param domainID
-     *            a domain ID String.
-     * @return a single int - the level closest to the root that this domid is a
-     *         rep for.
+     * @param domainID a domain ID String.
+     * @return a single int - the level closest to the root that this domid is a rep for.
      */
-
-    public int getHighestRep(String domainID) {
+    public LevelCode getHighestRep(String domainID) {
         CATHNumber cathNumber = this.domainCATHNumberMap.get(domainID);
         return this.getHighestRep(cathNumber);
     }
@@ -115,13 +96,10 @@ public class CATHTree implements ClassificationTree {
      * highest rep status. The reason for using a CATHNumber object is so that
      * we don't have to DFS the tree.
      * 
-     * @param scopNumber
-     *            a domain in the form of a CATHNumber.
-     * @return a single int - the level closest to the root that this domid is a
-     *         rep for.
+     * @param cathNumber a domain in the form of a CATHNumber.
+     * @return a single int - the level closest to the root that this domid is a rep for.
      */
-
-    public int getHighestRep(CATHNumber cathNumber) {
+    public CathLevelCode getHighestRep(CATHNumber cathNumber) {
         return this.root.getHighestRep(cathNumber);
     }
 
@@ -133,8 +111,7 @@ public class CATHTree implements ClassificationTree {
      *            a domain ID String.
      * @return a list of ints - one for each level that this domain is a rep of.
      */
-
-    public List<Integer> getReps(String domainID) {
+    public List<LevelCode> getReps(String domainID) {
         CATHNumber cathNumber = this.domainCATHNumberMap.get(domainID);
         return this.getReps(cathNumber);
     }
@@ -144,13 +121,11 @@ public class CATHTree implements ClassificationTree {
      * rep status. The reason for using a CATHNumber object is so that we don't
      * have to DFS the tree.
      * 
-     * @param cathNumber
-     *            a domain in the form of a CATHNumber.
+     * @param cathNumber a domain in the form of a CATHNumber.
      * @return a list of ints - one for each level that this domain is a rep of.
      */
-
-    public List<Integer> getReps(CATHNumber cathNumber) {
-        List<Integer> repInts = new ArrayList<Integer>();
+    public List<LevelCode> getReps(CATHNumber cathNumber) {
+        List<LevelCode> repInts = new ArrayList<LevelCode>();
 
         this.root.getReps(cathNumber, repInts);
         return repInts;
@@ -162,20 +137,19 @@ public class CATHTree implements ClassificationTree {
      * @param out
      *            the PrintStream to write to (eg: System.out)
      */
-
     public void printToStream(PrintStream out) {
         out.println("CATH Tree:");
         this.root.printToStream(out);
 
         for (String domainId : this.domainCATHNumberMap.keySet()) {
-            List<Integer> repList = this.getReps(domainId);
-            int highestRep = this.getHighestRep(domainId);
-            out.println(highestRep + " " + domainId + " " + repList);
+            List<LevelCode> repList = this.getReps(domainId);
+            LevelCode highestRep = this.getHighestRep(domainId);
+            out.println(highestRep.getName() + " " + domainId + " " + repList);
         }
     }
 
     /**
-     * Classmethod to create trees from a file of cathnumbers - assumes a
+     * Class method to create trees from a file of cathnumbers - assumes a
      * certain format.
      * 
      * @param filepath
@@ -185,7 +159,6 @@ public class CATHTree implements ClassificationTree {
      * @throws IOException
      *             if the path is wrong, file missing, etc
      */
-
     public static CATHTree fromFile(File filepath) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filepath));
 

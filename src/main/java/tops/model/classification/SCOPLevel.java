@@ -6,39 +6,11 @@ import java.util.List;
 
 public class SCOPLevel {
 
-    /** ROOT */
-    public static final int ROOT = -1;
-
-    /** Class */
-    public static final int CL = 0;
-
-    /** Fold */
-    public static final int CF = 1;
-
-    /** Superfamily */
-    public static final int SF = 2;
-
-    /** Family */
-    public static final int FA = 3;
-
-    /** Protein */
-    public static final int DM = 4;
-
-    /** Species */
-    public static final int SP = 5;
-
-    /** Domain */
-    public static final int PX = 6;
-
-    /** The actual strings for the level names */
-    public static final String[] FULL_NAMES = new String[] { "Class", "Fold",
-            "Superfamily", "Family", "Protein", "Species", "Domain" };
-
     /** The level name (Class, Fold, Superfamily, Family, etc) for this level */
-    private int name;
+    private ScopLevelCode name;
 
     /** The level name for the children */
-    private int childLevelName;
+    private ScopLevelCode childLevelName;
 
     /** The sunid for this level - equivalent of 'code' in CATHLevel */
     private int sunid;
@@ -53,23 +25,22 @@ public class SCOPLevel {
      * Create a new level.
      * 
      * @param name
-     *            the flag for this level type (C, A, T, H, etc)
+     *            the ScopLevelCode for this level type 
      * @param sunid
      *            the numerical id for this level (53931, 103233, etc)
      * @param repName
      *            the domain id of the level representative
      */
-
-    public SCOPLevel(int name, int sunid, String repName) {
+    public SCOPLevel(ScopLevelCode name, int sunid, String repName) {
         this.name = name;
         this.sunid = sunid;
         this.repName = repName;
         this.children = new ArrayList<>();
 
         // determine the name of the next level : -1 indicates the leaves
-        this.childLevelName = -1;
-        if (this.name != SCOPLevel.PX) {
-            this.childLevelName = this.name + 1;
+        this.childLevelName = ScopLevelCode.ROOT;
+        if (this.name != ScopLevelCode.PX) {
+            this.childLevelName = ScopLevelCode.values()[this.name.getLevel() + 1];
         }
     }
 
@@ -80,17 +51,16 @@ public class SCOPLevel {
      * @param scopNumber
      *            the data to be added
      */
-
     public void addSCOPNumber(SCOPNumber scopNumber) {
 
         // adding the domain name is the last step, stop recursing
-        if (this.childLevelName == -1) {
+        if (this.childLevelName == ScopLevelCode.PX) {
             this.children.add(scopNumber.getDomainID());
             return;
         }
 
         // try to find a child level with the appropriate sunid
-        int childLevelSunid = scopNumber.getSunidForName(this.childLevelName);
+        int childLevelSunid = this.childLevelName.getLevel();
         SCOPLevel childLevel = this.getChildLevel(childLevelSunid);
 
         // create new levels as appropriate, making this scopNumber the rep
@@ -113,7 +83,6 @@ public class SCOPLevel {
      * @return a level, or null if none is found with a sunid like
      *         <code>sunid</code>.
      */
-
     public SCOPLevel getChildLevel(int sunid) {
         for (int i = 0; i < this.children.size(); i++) {
             SCOPLevel child = (SCOPLevel) this.children.get(i);
@@ -144,27 +113,27 @@ public class SCOPLevel {
      *            the domain we are searching for.
      */
 
-    public int getHighestRep(SCOPNumber scopNumber) {
+    public LevelCode getHighestRep(SCOPNumber scopNumber) {
         // the first level we reach with this domainID as a rep, we return
-        if (this.name != SCOPLevel.ROOT
+        if (this.name != ScopLevelCode.ROOT
                 && this.repName.equals(scopNumber.getDomainID())) {
             return this.name;
         }
 
         // no more reps
-        if (this.childLevelName == -1) {
-            return 8;
+        if (this.childLevelName == ScopLevelCode.PX) {
+            return ScopLevelCode.PX;
         }
 
         // we are making the dangerous assumption that the tree actually
         // contains the domain we are searching for!
-        int childLevelCode = scopNumber.getSunidForName(this.childLevelName);
+        int childLevelCode = this.childLevelName.getLevel();
         SCOPLevel childLevel = this.getChildLevel(childLevelCode);
 
         // continue to search
         if (childLevel == null) {
             System.err.println(scopNumber + " " + this);
-            return -1;
+            return ScopLevelCode.ROOT;
         } else {
             return childLevel.getHighestRep(scopNumber);
         }
@@ -180,21 +149,21 @@ public class SCOPLevel {
      *            assembling.
      */
 
-    public void getReps(SCOPNumber scopNumber, List<Integer> repInts) {
+    public void getReps(SCOPNumber scopNumber, List<LevelCode> repInts) {
         // add a rep to the list if necessary
-        if (this.name != SCOPLevel.ROOT
+        if (this.name != ScopLevelCode.ROOT
                 && this.repName.equals(scopNumber.getDomainID())) {
             repInts.add(this.name);
         }
 
         // no more reps
-        if (this.childLevelName == -1) {
+        if (this.childLevelName == ScopLevelCode.PX) {
             return;
         }
 
         // we are making the dangerous assumption that the tree actually
         // contains the domain we are searching for!
-        int childLevelSunid = scopNumber.getSunidForName(this.childLevelName);
+        int childLevelSunid = this.childLevelName.getLevel();
         SCOPLevel childLevel = this.getChildLevel(childLevelSunid);
 
         // continue to search
@@ -210,11 +179,11 @@ public class SCOPLevel {
 
     public void printToStream(PrintStream out) {
         // pretty-print the level by tabbing
-        for (int l = 0; l < this.name; l++) {
+        for (int l = 0; l < this.name.getLevel(); l++) {
             out.print("\t");
         }
 
-        if (this.childLevelName != -1) {
+        if (this.childLevelName != ScopLevelCode.PX) {
             out.println(this);
             for (int i = 0; i < this.children.size(); i++) {
                 ((SCOPLevel) this.children.get(i)).printToStream(out);
@@ -226,8 +195,8 @@ public class SCOPLevel {
 
     @Override
     public String toString() {
-        if (this.name != SCOPLevel.ROOT) {
-            return SCOPLevel.FULL_NAMES[this.name] + " " + this.sunid
+        if (this.name != ScopLevelCode.ROOT) {
+            return this.name.getName() + " " + this.sunid
                     + " rep : " + this.repName;
         }
         return "ROOT";

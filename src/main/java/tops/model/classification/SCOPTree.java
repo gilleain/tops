@@ -5,11 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +24,7 @@ public class SCOPTree implements ClassificationTree {
      */
 
     public SCOPTree() {
-        this.root = new SCOPLevel(SCOPLevel.ROOT, 0, null);
+        this.root = new SCOPLevel(ScopLevelCode.ROOT, 0, null);
         this.domainSCOPNumberMap = new HashMap<String, SCOPNumber>();
     }
 
@@ -53,17 +51,6 @@ public class SCOPTree implements ClassificationTree {
         this.domainSCOPNumberMap.remove(domainID);
     }
 
-    /**
-     * Convenience method for converting a level name flag into a string.
-     * 
-     * @param name
-     *            the SCOPLevel static int representing a level
-     * @return a String for the name of the level
-     */
-
-    public String translate(int name) {
-        return SCOPLevel.FULL_NAMES[name];
-    }
 
     /**
      * Get the number for this domainID. Note that it returns an empty string if
@@ -73,7 +60,6 @@ public class SCOPTree implements ClassificationTree {
      *            the domain we are looking up.
      * @return a String classification identifier.
      */
-
     public String getNumberForDomainID(String domainID) {
         try {
             SCOPNumber scopNumber = (SCOPNumber) this.domainSCOPNumberMap
@@ -91,7 +77,6 @@ public class SCOPTree implements ClassificationTree {
      *            the domain we want to know about.
      * @return true or false
      */
-
     public boolean isDomainIDInTree(String domainID) {
         return this.domainSCOPNumberMap.containsKey(domainID);
     }
@@ -105,10 +90,8 @@ public class SCOPTree implements ClassificationTree {
      * @return a single int - the level closest to the root that this domid is a
      *         rep for.
      */
-
-    public int getHighestRep(String domainID) {
-        SCOPNumber scopNumber = (SCOPNumber) this.domainSCOPNumberMap
-                .get(domainID);
+    public LevelCode getHighestRep(String domainID) {
+        SCOPNumber scopNumber = this.domainSCOPNumberMap.get(domainID);
         return this.getHighestRep(scopNumber);
     }
 
@@ -119,11 +102,9 @@ public class SCOPTree implements ClassificationTree {
      * 
      * @param scopNumber
      *            a domain in the form of a SCOPNumber.
-     * @return a single int - the level closest to the root that this domid is a
-     *         rep for.
+     * @return a single level code - the level closest to the root that this domid is a rep for.
      */
-
-    public int getHighestRep(SCOPNumber scopNumber) {
+    public LevelCode getHighestRep(SCOPNumber scopNumber) {
         return this.root.getHighestRep(scopNumber);
     }
 
@@ -135,10 +116,8 @@ public class SCOPTree implements ClassificationTree {
      *            a domain ID String.
      * @return a list of ints - one for each level that this domain is a rep of.
      */
-
-    public ArrayList<Integer> getReps(String domainID) {
-        SCOPNumber scopNumber = (SCOPNumber) this.domainSCOPNumberMap
-                .get(domainID);
+    public List<LevelCode> getReps(String domainID) {
+        SCOPNumber scopNumber = this.domainSCOPNumberMap.get(domainID);
         return this.getReps(scopNumber);
     }
 
@@ -151,9 +130,8 @@ public class SCOPTree implements ClassificationTree {
      *            a domain in the form of a SCOPNumber.
      * @return a list of ints - one for each level that this domain is a rep of.
      */
-
-    public ArrayList<Integer> getReps(SCOPNumber scopNumber) {
-        ArrayList<Integer> repInts = new ArrayList<Integer>();
+    public List<LevelCode> getReps(SCOPNumber scopNumber) {
+        List<LevelCode> repInts = new ArrayList<LevelCode>();
         this.root.getReps(scopNumber, repInts);
         return repInts;
     }
@@ -164,21 +142,18 @@ public class SCOPTree implements ClassificationTree {
      * @param out
      *            the PrintStream to write to (eg: System.out)
      */
-
     public void printToStream(PrintStream out) {
         out.println("SCOP Tree:");
         this.root.printToStream(out);
 
-        Iterator<String> domainIterator = this.domainSCOPNumberMap.keySet().iterator();
-        while (domainIterator.hasNext()) {
-            String domainID = (String) domainIterator.next();
-            ArrayList<Integer> repList = this.getReps(domainID);
-            out.println(domainID + " " + repList);
+        for (String domainId : this.domainSCOPNumberMap.keySet()) {
+            List<LevelCode> repList = this.getReps(domainId);
+            out.println(domainId + " " + repList);
         }
     }
 
     /**
-     * Classmethod to create trees from a file of scopnumbers - assumes a
+     * Class method to create trees from a file of scop numbers - assumes a
      * certain format.
      * 
      * @param filepath
@@ -188,7 +163,6 @@ public class SCOPTree implements ClassificationTree {
      * @throws IOException
      *             if the path is wrong, file missing, etc
      */
-
     public static SCOPTree fromFile(File filepath) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filepath));
 

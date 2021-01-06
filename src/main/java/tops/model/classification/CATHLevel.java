@@ -6,40 +6,11 @@ import java.util.List;
 
 public class CATHLevel {
 
-    /** ROOT */
-    public static final int ROOT = -1;
-
-    /** Class */
-    public static final int C = 0;
-
-    /** Architecture */
-    public static final int A = 1;
-
-    /** Topology */
-    public static final int T = 2;
-
-    /** Homology */
-    public static final int H = 3;
-
-    /** Sequence 35 family */
-    public static final int S35 = 4;
-
-    /** Sequence 95 family */
-    public static final int S95 = 5;
-
-    /** Sequence 100 family */
-    public static final int S100 = 6;
-
-    /** The actual strings for the level names */
-    public static final String[] FULL_NAMES = new String[] { "Class",
-            "Architecture", "Topology", "Homology", "S35 Family", "S95 Family",
-            "S100 Family" };
-
     /** The level name (C, A, T, H, etc) for this level */
-    private int name;
+    private CathLevelCode name;
 
     /** The level name for the children */
-    private int childLevelName;
+    private CathLevelCode childLevelName;
 
     /** The code for this level - the code for the T level for 1.10.20 is 20 */
     private int code;
@@ -61,16 +32,17 @@ public class CATHLevel {
      *            the domain id of the level representative
      */
 
-    public CATHLevel(int name, int code, String repName) {
+    public CATHLevel(CathLevelCode name, int code, String repName) {
         this.name = name;
         this.code = code;
         this.repName = repName;
         this.children = new ArrayList<>();
 
-        // determine the name of the next level : -1 indicates the leaves
-        this.childLevelName = -1;
-        if (this.name != CATHLevel.S100) {
-            this.childLevelName = this.name + 1;
+        // determine the name of the next level
+        this.childLevelName = CathLevelCode.D;
+        if (this.name != CathLevelCode.D) {
+        	int index = name.ordinal();
+            this.childLevelName = CathLevelCode.values()[index + 1];
         }
     }
 
@@ -85,7 +57,7 @@ public class CATHLevel {
     public void addCATHNumber(CATHNumber cathNumber) {
 
         // adding the domain name is the last step, stop recursing
-        if (this.childLevelName == -1) {
+        if (this.childLevelName == CathLevelCode.D) {
             this.children.add(cathNumber.getDomainID());
             return;
         }
@@ -97,8 +69,8 @@ public class CATHLevel {
         // create new levels as appropriate, making this cathNumber the rep
         // (assumes an ordering on inputs)
         if (childLevel == null) {
-            childLevel = new CATHLevel(this.childLevelName, childLevelCode,
-                    cathNumber.getDomainID());
+            childLevel = new CATHLevel(
+            		this.childLevelName, childLevelCode, cathNumber.getDomainID());
             this.children.add(childLevel);
         }
 
@@ -133,7 +105,6 @@ public class CATHLevel {
      *            a code to check
      * @return true if the code matches this code
      */
-
     public boolean hasCode(int code) {
         return this.code == code;
     }
@@ -144,17 +115,15 @@ public class CATHLevel {
      * @param cathNumber
      *            the domain we are searching for.
      */
-
-    public int getHighestRep(CATHNumber cathNumber) {
+    public CathLevelCode getHighestRep(CATHNumber cathNumber) {
         // the first level we reach with this domainID as a rep, we return
-        if (this.name != CATHLevel.ROOT
-                && this.repName.equals(cathNumber.getDomainID())) {
+        if (this.name != CathLevelCode.R && this.repName.equals(cathNumber.getDomainID())) {
             return this.name;
         }
 
         // no more reps
-        if (this.childLevelName == -1) {
-            return 8;
+        if (this.childLevelName == CathLevelCode.D) {
+            return CathLevelCode.D;
         }
 
         // we are making the dangerous assumption that the tree actually
@@ -165,7 +134,7 @@ public class CATHLevel {
         // continue to search
         if (childLevel == null) {
             System.err.println(cathNumber + " " + this);
-            return -1;
+            return CathLevelCode.R;	// XXX
         } else {
             return childLevel.getHighestRep(cathNumber);
         }
@@ -174,21 +143,18 @@ public class CATHLevel {
     /**
      * Lookup a domain in the level's children to find out its rep status.
      * 
-     * @param cathNumber
-     *            the domain we are searching for.
-     * @param repInts
-     *            the list of ints we are assembling.
+     * @param cathNumber the domain we are searching for.
+     * @param repInts the list of ints we are assembling.
      */
 
-    public void getReps(CATHNumber cathNumber, List<Integer> repInts) {
+    public void getReps(CATHNumber cathNumber, List<LevelCode> repInts) {
         // add a rep to the list if necessary
-        if (this.name != CATHLevel.ROOT
-                && this.repName.equals(cathNumber.getDomainID())) {
+        if (this.name != CathLevelCode.R && this.repName.equals(cathNumber.getDomainID())) {
             repInts.add(this.name);
         }
 
         // no more reps
-        if (this.childLevelName == -1) {
+        if (this.childLevelName == CathLevelCode.D) {
             return;
         }
 
@@ -208,17 +174,15 @@ public class CATHLevel {
     /**
      * Print out the level and its children to the stream <code>out</code>.
      * 
-     * @param out
-     *            the PrintStream to write to (eg: System.out)
+     * @param out the PrintStream to write to (eg: System.out)
      */
-
     public void printToStream(PrintStream out) {
         // pretty-print the level by tabbing
-        for (int l = 0; l < this.name; l++) {
+        for (int l = 0; l < this.name.ordinal(); l++) {
             out.print("\t");
         }
 
-        if (this.childLevelName != -1) {
+        if (this.childLevelName != CathLevelCode.D) {
             out.println(this);
             for (int i = 0; i < this.children.size(); i++) {
                 ((CATHLevel) this.children.get(i)).printToStream(out);
@@ -230,9 +194,8 @@ public class CATHLevel {
 
     @Override
     public String toString() {
-        if (this.name != CATHLevel.ROOT) {
-            return CATHLevel.FULL_NAMES[this.name] + " " + this.code + " rep : "
-                    + this.repName;
+        if (this.name != CathLevelCode.R) {
+            return this.name.getName() + " " + this.code + " rep : " + this.repName;
         }
         return "ROOT";
     }
