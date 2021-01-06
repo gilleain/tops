@@ -27,6 +27,10 @@ public class CATHTree implements ClassificationTree {
         this.root = new CATHLevel(CathLevelCode.R, 0, null);
         this.domainCATHNumberMap = new HashMap<String, CATHNumber>();
     }
+    
+    public CATHLevel getRoot() {
+    	return this.root;
+    }
 
     /**
      * Add a new CATH number to the tree, determining if it is a rep along the
