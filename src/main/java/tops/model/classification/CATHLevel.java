@@ -1,7 +1,11 @@
 package tops.model.classification;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class CATHLevel {
@@ -18,8 +22,10 @@ public class CATHLevel {
     /** The domain ID of the representative of this level */
     private String repName;
 
-    /** A list of children - either sublevels or domainids */
-    private List<Object> children;	// TODO : FIXME - use design pattern for trees!
+    /** A list of children **/
+    private List<CATHLevel> children;
+    
+    private List<String> domainIds;
 
     /**
      * Create a new level.
@@ -45,6 +51,10 @@ public class CATHLevel {
             this.childLevelName = CathLevelCode.values()[index + 1];
         }
     }
+    
+    public CathLevelCode getName() {
+    	return this.name;
+    }
 
     /**
      * Recursively add the data from the cathNumber into this level and its
@@ -58,7 +68,10 @@ public class CATHLevel {
 
         // adding the domain name is the last step, stop recursing
         if (this.childLevelName == CathLevelCode.D) {
-            this.children.add(cathNumber.getDomainID());
+        	if (domainIds == null) {
+        		domainIds = new ArrayList<>();
+        	}
+            this.domainIds.add(cathNumber.getDomainID());
             return;
         }
 
@@ -96,6 +109,10 @@ public class CATHLevel {
         }
 
         return null;
+    }
+    
+    public List<CATHLevel> getChildren() {
+    	return this.children;
     }
 
     /**
@@ -188,8 +205,22 @@ public class CATHLevel {
                 ((CATHLevel) this.children.get(i)).printToStream(out);
             }
         } else {
-            out.println(this + " " + this.children);
+            out.println(this + " " + this.domainIds);
         }
+    }
+    
+    public static CATHLevel fromFile(String filename, CathLevelCode cathLevelConstant, String levelName) throws IOException {
+        String line;
+        // XXX what is the code here?
+        int code = 0;
+        CATHLevel level = new CATHLevel(cathLevelConstant, code, levelName);
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filename))) {
+            while ((line = bufferedReader.readLine()) != null) {
+                Rep rep = new Rep(levelName, line);
+                level.addRep(rep);
+            }
+        }
+        return level;
     }
 
     @Override
@@ -199,4 +230,52 @@ public class CATHLevel {
         }
         return "ROOT";
     }
+
+	public boolean isSingleton() {
+		return children.size() == 1;
+	}
+	
+	 public Iterator<CATHLevel> getSubLevelIterator(int subLevelDepth) {
+		 return new LevelIterator(this.name.getLevel(), subLevelDepth, this.children);
+	 }
+	 
+	 public Iterator<CATHLevel> getSubLevelIterator(CathLevelCode subLevelCode) {
+		 return new LevelIterator(this.name.getLevel(), subLevelCode.getLevel(), this.children);
+	 }
+	 
+	 public RepSet getRepSet() {
+		 // TODO
+		 return null;
+	 }
+	 
+	 public void addRep(Rep rep) {
+		  String code = rep.getCode();
+		  String[] bits = code.split("\\.");
+	        // if we are above the 'leaf' level
+		  if (this.name.getLevel() < bits.length) {
+			  int subLevelPosition = this.name.getLevel();
+			  String subLevelCode = bits[subLevelPosition];
+			  CATHLevel existingLevel = null;	// TODO
+			  // no subLevel found
+			  if (existingLevel == null) {
+				  StringBuilder fullCodeBuilder = new StringBuilder();
+				  for (int i = 0; i <= subLevelPosition; i++) {
+					  fullCodeBuilder.append(bits[i]).append(".");
+				  }
+				  CathLevelCode subLevel = CathLevelCode.values()[this.name.getLevel() + 1];
+				  int subLevelCodeIntStuff = 0;	// TODO
+				  existingLevel = new CATHLevel(subLevel, subLevelCodeIntStuff, fullCodeBuilder.toString());
+//				  this.addSubLevel(existingLevel);	// TODO
+			  }
+			  existingLevel.addRep(rep);
+		  } else if (bits.length == this.name.getLevel()) {
+//			  this.repSet.addRep(rep); // TODO
+		  } else {
+			  System.err.println("gone beyond the level " + this.name.getLevel() + " " + code);
+		  }
+	 }
+	 
+	 public String getFullCode() {
+		 return "";	// TODO
+	 }
 }

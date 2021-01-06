@@ -3,7 +3,8 @@ package tops.cli.classification;
 import org.apache.commons.cli.ParseException;
 
 import tops.cli.Command;
-import tops.model.classification.Level;
+import tops.model.classification.CATHLevel;
+import tops.model.classification.CathLevelCode;
 
 public class LevelCommand implements Command {
 
@@ -19,7 +20,7 @@ public class LevelCommand implements Command {
         String groupName = args[1];
 
         try {
-            Level root = Level.fromFile(filename, Level.ROOT, groupName);
+        	CATHLevel root = CATHLevel.fromFile(filename, CathLevelCode.R, groupName);
             System.out.println(root);
         } catch (Exception e) {
             e.printStackTrace();

@@ -4,7 +4,8 @@ import org.apache.commons.cli.ParseException;
 
 import tops.cli.Command;
 import tops.engine.crossvalidate.CrossValidator;
-import tops.model.classification.Level;
+import tops.model.classification.CATHLevel;
+import tops.model.classification.CathLevelCode;
 
 public class CrossValidateCommand implements Command {
 
@@ -21,7 +22,7 @@ public class CrossValidateCommand implements Command {
          String tLevelName = args[1];
          
          try { 
-             Level tLevel = Level.fromFile(filename, Level.T, tLevelName);
+        	 CATHLevel tLevel = CATHLevel.fromFile(filename, CathLevelCode.T, tLevelName);
              System.out.println(tLevel); 
              System.out.println("leave one out : ");
              CrossValidator.leaveOneOut(tLevel); 
